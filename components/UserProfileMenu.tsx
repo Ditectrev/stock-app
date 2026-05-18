@@ -53,7 +53,8 @@ export function UserProfileMenu() {
     void refreshAuthState();
     const onAuthChanged = () => void refreshAuthState();
     window.addEventListener("auth-state-changed", onAuthChanged);
-    return () => window.removeEventListener("auth-state-changed", onAuthChanged);
+    return () =>
+      window.removeEventListener("auth-state-changed", onAuthChanged);
   }, []);
 
   useEffect(() => {
@@ -157,7 +158,9 @@ export function UserProfileMenu() {
           onClick={(event) => event.stopPropagation()}
         >
           <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 dark:text-gray-400">Signed in as</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Signed in as
+            </p>
             <p className="mt-0.5 text-sm font-medium text-gray-900 dark:text-gray-100 break-all">
               {user.email}
             </p>

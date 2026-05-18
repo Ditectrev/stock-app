@@ -138,7 +138,8 @@ export function ProfileSettings() {
     void refreshAuthState();
     const onAuthChanged = () => void refreshAuthState();
     window.addEventListener("auth-state-changed", onAuthChanged);
-    return () => window.removeEventListener("auth-state-changed", onAuthChanged);
+    return () =>
+      window.removeEventListener("auth-state-changed", onAuthChanged);
   }, [refreshAuthState]);
 
   useEffect(() => {
@@ -260,7 +261,9 @@ export function ProfileSettings() {
 
   if (loading) {
     return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">Loading profile…</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Loading profile…
+      </p>
     );
   }
 
@@ -291,7 +294,9 @@ export function ProfileSettings() {
         </h1>
         <p className="text-sm text-gray-600 dark:text-gray-300">{user.email}</p>
         {user.name && (
-          <p className="text-sm text-gray-500 dark:text-gray-400">{user.name}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {user.name}
+          </p>
         )}
       </header>
 
@@ -319,7 +324,8 @@ export function ProfileSettings() {
         </dl>
         {subscription.cancelAtPeriodEnd && hasPaidPlan && (
           <p className="text-sm text-amber-700 dark:text-amber-300">
-            Your subscription is set to cancel at the end of this billing period.
+            Your subscription is set to cancel at the end of this billing
+            period.
           </p>
         )}
         <div className="flex flex-wrap gap-2 pt-1">
@@ -369,8 +375,8 @@ export function ProfileSettings() {
         </div>
         {!hasAiTier && (
           <p className="text-sm text-amber-700 dark:text-amber-300/90 rounded-md border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-3 py-2">
-            AI explanations unlock on Local AI, BYOK, or Hosted AI plans. Ads-free
-            and Free tiers do not include server-side AI.
+            AI explanations unlock on Local AI, BYOK, or Hosted AI plans.
+            Ads-free and Free tiers do not include server-side AI.
           </p>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

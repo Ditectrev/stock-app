@@ -74,7 +74,9 @@ export function isProviderAllowedForTier(
   );
 }
 
-export function getDefaultProviderForTier(tier: Tier): ExplanationProvider | null {
+export function getDefaultProviderForTier(
+  tier: Tier
+): ExplanationProvider | null {
   const allowed = PROVIDER_OPTIONS.filter((p) => p.allowedTiers.includes(tier));
   return allowed[0]?.id ?? null;
 }
