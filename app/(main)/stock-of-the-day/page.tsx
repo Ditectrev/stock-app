@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { usePricingTier } from "@/lib/use-pricing-tier";
+import {
+  EXPLANATIONS_PROVIDER_CHANGED_EVENT,
+  getAIProviderHeaders,
+} from "@/lib/explanation-provider";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
 import type { StockOfTheDay } from "@/types";
 
@@ -19,6 +23,20 @@ export default function StockOfTheDayPage() {
   const [item, setItem] = useState<StockOfTheDay | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [aiProviderVersion, setAiProviderVersion] = useState(0);
+
+  useEffect(() => {
+    const onProviderChanged = () => setAiProviderVersion((v) => v + 1);
+    window.addEventListener(
+      EXPLANATIONS_PROVIDER_CHANGED_EVENT,
+      onProviderChanged
+    );
+    return () =>
+      window.removeEventListener(
+        EXPLANATIONS_PROVIDER_CHANGED_EVENT,
+        onProviderChanged
+      );
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -28,16 +46,10 @@ export default function StockOfTheDayPage() {
         return;
       }
 
-      const aiHeaders: Record<string, string> = {};
-      if (typeof window !== "undefined") {
-        const provider = localStorage.getItem("explanations_provider");
-        if (provider) aiHeaders["x-ai-provider"] = provider;
-      }
-
       setLoading(true);
       try {
         const response = await fetch("/api/market/stock-of-the-day", {
-          headers: aiHeaders,
+          headers: getAIProviderHeaders(),
           credentials: "include",
           cache: "no-store",
         });
@@ -61,7 +73,7 @@ export default function StockOfTheDayPage() {
     };
 
     load();
-  }, [hasAIAccess]);
+  }, [hasAIAccess, aiProviderVersion]);
 
   useEffect(() => {
     const loadBYOKAccess = async () => {

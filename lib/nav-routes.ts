@@ -21,7 +21,8 @@ export function pathnameToNavId(pathname: string): MainNavId | string {
     first === "calendars" ||
     first === "heatmaps" ||
     first === "screener" ||
-    first === "pricing"
+    first === "pricing" ||
+    first === "profile"
   ) {
     return first;
   }

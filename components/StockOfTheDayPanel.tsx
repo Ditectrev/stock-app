@@ -75,22 +75,15 @@ export function StockOfTheDayPanel({
               {isMissingByokApiKeyMessage(error) && (
                 <div className="mt-3 space-y-2">
                   <p className="text-xs opacity-90">
-                    Add your API key under the avatar menu → profile → API keys,
-                    then pick the same provider as your explanation model.
+                    Add your API key on the Profile page under API keys, then
+                    pick the same provider as your explanation model.
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (typeof window !== "undefined") {
-                        window.dispatchEvent(
-                          new Event("open-user-profile-menu")
-                        );
-                      }
-                    }}
+                  <a
+                    href="/profile"
                     className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
                   >
-                    Open profile menu
-                  </button>
+                    Open profile
+                  </a>
                 </div>
               )}
             </div>

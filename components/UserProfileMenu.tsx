@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import APIKeyManager from "@/components/APIKeyManager";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 
 type AuthUser = {
   id: string;
@@ -9,80 +9,25 @@ type AuthUser = {
   name?: string;
 };
 
-type Tier = "FREE" | "ADS_FREE" | "LOCAL" | "BYOK" | "HOSTED_AI";
-type ExplanationProvider =
-  | "OLLAMA"
-  | "OPENAI"
-  | "GEMINI"
-  | "MISTRAL"
-  | "DEEPSEEK"
-  | "HOSTED";
-
-const PROVIDER_OPTIONS: Array<{
-  id: ExplanationProvider;
-  name: string;
-  subtitle: string;
-  allowedTiers: Tier[];
-}> = [
-  {
-    id: "OLLAMA",
-    name: "Ollama (Local)",
-    subtitle: "Run on your machine (no provider API key)",
-    allowedTiers: ["LOCAL", "BYOK"],
-  },
-  {
-    id: "OPENAI",
-    name: "OpenAI GPT",
-    subtitle: "Requires your API key",
-    allowedTiers: ["BYOK"],
-  },
-  {
-    id: "GEMINI",
-    name: "Google Gemini",
-    subtitle: "Requires your API key",
-    allowedTiers: ["BYOK"],
-  },
-  {
-    id: "MISTRAL",
-    name: "Mistral AI",
-    subtitle: "Requires your API key",
-    allowedTiers: ["BYOK"],
-  },
-  {
-    id: "DEEPSEEK",
-    name: "DeepSeek",
-    subtitle: "Requires your API key",
-    allowedTiers: ["BYOK"],
-  },
-  {
-    id: "HOSTED",
-    name: "Ditectrev AI",
-    subtitle: "Premium managed service",
-    allowedTiers: ["HOSTED_AI"],
-  },
-];
+function displayLabel(user: AuthUser): string {
+  const name = user.name?.trim();
+  if (name) return name;
+  const local = user.email.split("@")[0]?.trim();
+  return local || user.email;
+}
 
 export function UserProfileMenu() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [tier, setTier] = useState<Tier>("FREE");
-  const [activeUntil, setActiveUntil] = useState<string | null>(null);
-  const [providerSaveMessage, setProviderSaveMessage] = useState<string | null>(
-    null
-  );
-  const [cancelling, setCancelling] = useState(false);
-  const [openingBilling, setOpeningBilling] = useState(false);
-  const [selectedExplanationProvider, setSelectedExplanationProvider] =
-    useState<ExplanationProvider>("OLLAMA");
-  const [selectedProvider, setSelectedProvider] = useState<
-    "OPENAI" | "GEMINI" | "MISTRAL" | "DEEPSEEK"
-  >("OPENAI");
+  const rootRef = useRef<HTMLDivElement>(null);
 
   const initials = useMemo(() => {
     const source = user?.name?.trim() || user?.email || "U";
     return source.slice(0, 1).toUpperCase();
   }, [user]);
+
+  const label = useMemo(() => (user ? displayLabel(user) : ""), [user]);
 
   async function refreshAuthState() {
     setLoading(true);
@@ -93,34 +38,12 @@ export function UserProfileMenu() {
       });
       if (!authRes.ok) {
         setUser(null);
-        setTier("FREE");
         return;
       }
       const authData = (await authRes.json()) as { user?: AuthUser };
-      if (!authData.user) {
-        setUser(null);
-        setTier("FREE");
-        return;
-      }
-      setUser(authData.user);
-
-      const tierRes = await fetch("/api/subscription/current", {
-        method: "GET",
-        credentials: "include",
-      });
-      if (tierRes.ok) {
-        const tierData = (await tierRes.json()) as {
-          data?: { tier?: Tier };
-        };
-        setTier(tierData.data?.tier ?? "FREE");
-        setActiveUntil(null);
-      } else {
-        setTier("FREE");
-        setActiveUntil(null);
-      }
+      setUser(authData.user ?? null);
     } catch {
       setUser(null);
-      setTier("FREE");
     } finally {
       setLoading(false);
     }
@@ -129,71 +52,39 @@ export function UserProfileMenu() {
   useEffect(() => {
     void refreshAuthState();
     const onAuthChanged = () => void refreshAuthState();
-    if (typeof window !== "undefined") {
-      window.addEventListener("auth-state-changed", onAuthChanged);
-    }
-    return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("auth-state-changed", onAuthChanged);
-      }
-    };
+    window.addEventListener("auth-state-changed", onAuthChanged);
+    return () => window.removeEventListener("auth-state-changed", onAuthChanged);
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const onOpenProfile = () => setOpen(true);
-    window.addEventListener("open-user-profile-menu", onOpenProfile);
-    return () =>
-      window.removeEventListener("open-user-profile-menu", onOpenProfile);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const storedProvider = localStorage.getItem(
-      "explanations_provider"
-    ) as ExplanationProvider | null;
-    if (storedProvider) {
-      setSelectedExplanationProvider(storedProvider);
-    }
-    const storedUntil = localStorage.getItem("subscription_active_until");
-    if (storedUntil) {
-      setActiveUntil(storedUntil);
-    }
-  }, []);
-
-  useEffect(() => {
-    const allowedForTier = PROVIDER_OPTIONS.filter((p) =>
-      p.allowedTiers.includes(tier)
-    );
-    if (allowedForTier.length === 0) {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("explanations_provider");
-      }
-      setSelectedExplanationProvider((prev) =>
-        prev === "OPENAI" ? prev : "OPENAI"
-      );
-      return;
-    }
-    const currentOk = allowedForTier.some(
-      (p) => p.id === selectedExplanationProvider
-    );
-    if (currentOk) return;
-    const next = allowedForTier[0].id;
-    setSelectedExplanationProvider(next);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("explanations_provider", next);
-    }
-  }, [tier, selectedExplanationProvider]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     if (params.get("auth_success") === "true") {
       void refreshAuthState();
     }
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    // Register after the opening click finishes so we do not close immediately.
+    const timer = window.setTimeout(() => {
+      document.addEventListener("click", handleClickOutside);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [open]);
+
   async function handleSignOut() {
+    setOpen(false);
     try {
       await fetch("/api/auth/signout", {
         method: "POST",
@@ -201,264 +92,94 @@ export function UserProfileMenu() {
       });
     } finally {
       setUser(null);
-      setTier("FREE");
-      setOpen(false);
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("auth-state-changed"));
-      }
-    }
-  }
-
-  const isProviderAllowed = (provider: ExplanationProvider) =>
-    PROVIDER_OPTIONS.find((p) => p.id === provider)?.allowedTiers.includes(
-      tier
-    ) ?? false;
-
-  const hasPaidPlan = tier !== "FREE";
-  const canManageApiKeys = tier === "BYOK";
-
-  async function handleSaveProvider() {
-    if (!isProviderAllowed(selectedExplanationProvider)) {
-      setProviderSaveMessage(
-        "This provider is not available in your current tier."
-      );
-      return;
-    }
-    if (typeof window !== "undefined") {
-      localStorage.setItem(
-        "explanations_provider",
-        selectedExplanationProvider
-      );
-    }
-    setProviderSaveMessage("Explanation provider saved.");
-  }
-
-  async function handleCancelSubscription() {
-    if (!user || !hasPaidPlan) return;
-    setCancelling(true);
-    try {
-      const res = await fetch("/api/subscription/cancel", {
-        method: "DELETE",
-        credentials: "include",
-      });
-      const data = (await res.json().catch(() => ({}))) as { error?: string };
-      if (!res.ok) {
-        setProviderSaveMessage(data.error ?? "Failed to cancel subscription.");
-        return;
-      }
-      setProviderSaveMessage(
-        "Subscription cancelled. Access remains until the end of billing period."
-      );
-    } finally {
-      setCancelling(false);
-    }
-  }
-
-  async function handleOpenBillingPortal() {
-    if (!user || !hasPaidPlan) return;
-    setOpeningBilling(true);
-    try {
-      const res = await fetch("/api/stripe/create-portal-session", {
-        method: "POST",
-        credentials: "include",
-      });
-      const data = (await res.json().catch(() => ({}))) as {
-        data?: { url?: string };
-        error?: string;
-      };
-      if (!res.ok || !data.data?.url) {
-        setProviderSaveMessage(data.error ?? "Failed to open billing portal.");
-        return;
-      }
-      window.location.assign(data.data.url);
-    } finally {
-      setOpeningBilling(false);
+      window.dispatchEvent(new Event("auth-state-changed"));
     }
   }
 
   if (loading) {
     return (
-      <span className="text-xs text-gray-500 dark:text-gray-400">
-        Checking...
-      </span>
+      <span className="text-xs text-gray-500 dark:text-gray-400 px-1">…</span>
     );
   }
 
   if (!user) {
     return (
-      <button
-        type="button"
-        onClick={() => {
-          setProviderSaveMessage(null);
-          if (typeof window !== "undefined") {
-            window.dispatchEvent(new Event("open-auth-prompt"));
-            window.location.assign("/pricing?signin=1");
-          }
-        }}
-        className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+      <Link
+        href="/pricing?signin=1"
+        className="rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
       >
         Sign in
-      </button>
+      </Link>
     );
   }
 
   return (
-    <div className="relative">
+    <div ref={rootRef} className="relative z-[10060] flex-shrink-0">
       <button
         type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800"
+        onClick={(event) => {
+          event.stopPropagation();
+          setOpen((prev) => !prev);
+        }}
+        className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1.5 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
         aria-expanded={open}
-        aria-label="Open user profile menu"
+        aria-haspopup="menu"
+        aria-label={`Account menu, signed in as ${user.email}`}
+        data-testid="user-profile-menu-trigger"
       >
-        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-white text-xs font-semibold">
+        <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
           {initials}
         </span>
-        <span className="hidden lg:inline text-xs text-gray-700 dark:text-gray-300">
-          {user.email}
+        <span className="hidden truncate max-w-[9rem] text-sm font-medium text-gray-900 dark:text-gray-100 sm:inline">
+          {label}
         </span>
+        <svg
+          className={`h-4 w-4 flex-shrink-0 text-gray-500 transition-transform dark:text-gray-400 ${
+            open ? "rotate-180" : ""
+          }`}
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fillRule="evenodd"
+            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z"
+            clipRule="evenodd"
+          />
+        </svg>
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[360px] max-w-[95vw] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-xl z-[10010] p-4 space-y-4">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                {user.name || "Profile"}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {user.email}
-              </p>
-              <p className="text-xs mt-1 text-blue-600 dark:text-blue-400">
-                Tier: {tier}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Active until:{" "}
-                {activeUntil
-                  ? new Date(activeUntil).toLocaleDateString()
-                  : hasPaidPlan
-                    ? "End of current billing period"
-                    : "No active paid plan"}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-            >
-              Close
-            </button>
-          </div>
-
-          <div className="max-h-[50vh] overflow-auto pr-1 space-y-4">
-            <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Explanations Provider
-              </h3>
-              {!["LOCAL", "BYOK", "HOSTED_AI"].includes(tier) && (
-                <p className="text-xs text-amber-700 dark:text-amber-300/90">
-                  AI explanations (Ollama, cloud keys, or Ditectrev AI) unlock
-                  after you subscribe to an AI plan — Ads-free and Free tiers do
-                  not include server-side AI.
-                </p>
-              )}
-              <div className="grid grid-cols-2 gap-2">
-                {PROVIDER_OPTIONS.map((provider) => {
-                  const allowed = provider.allowedTiers.includes(tier);
-                  const selected = selectedExplanationProvider === provider.id;
-                  return (
-                    <button
-                      key={provider.id}
-                      type="button"
-                      disabled={!allowed}
-                      onClick={() =>
-                        setSelectedExplanationProvider(provider.id)
-                      }
-                      className={`rounded-lg border p-2 text-left transition-colors ${
-                        selected
-                          ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
-                          : "border-gray-200 dark:border-gray-700"
-                      } ${
-                        !allowed
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:border-blue-400"
-                      }`}
-                    >
-                      <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">
-                        {provider.name}
-                      </p>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                        {provider.subtitle}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
-              <button
-                type="button"
-                onClick={() => void handleSaveProvider()}
-                className="text-xs rounded-md bg-blue-600 text-white px-3 py-1.5 hover:bg-blue-700"
-              >
-                Save explanations provider
-              </button>
-            </div>
-
-            {canManageApiKeys ? (
-              <APIKeyManager
-                selectedProvider={selectedProvider}
-                onProviderSelect={setSelectedProvider}
-              />
-            ) : (
-              <div className="rounded-md border border-gray-200 dark:border-gray-700 p-3">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  API key management is available on the BYOK tier.
-                </p>
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-2">
-              <a
-                href="/pricing"
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
-              >
-                Manage subscription
-              </a>
-              {hasPaidPlan && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => void handleOpenBillingPortal()}
-                    disabled={openingBilling}
-                    className="text-xs rounded-md border border-blue-500 text-blue-600 px-3 py-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-50"
-                  >
-                    {openingBilling ? "Opening..." : "Manage billing"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => void handleCancelSubscription()}
-                    disabled={cancelling}
-                    className="text-xs rounded-md border border-red-500 text-red-600 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
-                  >
-                    {cancelling ? "Cancelling..." : "Cancel subscription"}
-                  </button>
-                </>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => void handleSignOut()}
-              className="text-xs rounded-md bg-red-600 text-white px-3 py-1.5 hover:bg-red-700"
-            >
-              Sign out
-            </button>
-          </div>
-          {providerSaveMessage && (
-            <p className="text-xs text-gray-600 dark:text-gray-300">
-              {providerSaveMessage}
+        <div
+          role="menu"
+          data-testid="user-profile-dropdown"
+          className="absolute right-0 top-[calc(100%+0.5rem)] w-72 rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+            <p className="text-xs text-gray-500 dark:text-gray-400">Signed in as</p>
+            <p className="mt-0.5 text-sm font-medium text-gray-900 dark:text-gray-100 break-all">
+              {user.email}
             </p>
-          )}
+          </div>
+          <div className="py-1">
+            <Link
+              href="/profile"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+            >
+              User Profile
+            </Link>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => void handleSignOut()}
+              className="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       )}
     </div>
