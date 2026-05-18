@@ -24,10 +24,16 @@ export async function GET(request: NextRequest) {
     }
 
     const tier = await subscriptionService.getCurrentTier(auth.id);
+    const record = await subscriptionService.getSubscriptionRecord(auth.id);
 
     return NextResponse.json({
       success: true,
-      data: { tier },
+      data: {
+        tier,
+        currentPeriodEnd: record?.currentPeriodEnd ?? null,
+        cancelAtPeriodEnd: record?.cancelAtPeriodEnd ?? false,
+        status: record?.status ?? null,
+      },
       timestamp: new Date(),
     });
   } catch (error) {

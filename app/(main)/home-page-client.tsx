@@ -19,6 +19,10 @@ import { SymbolHeader } from "@/components/SymbolHeader";
 import { TabNavigation } from "@/components/TabNavigation";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { usePricingTier } from "@/lib/use-pricing-tier";
+import {
+  EXPLANATIONS_PROVIDER_CHANGED_EVENT,
+  getAIProviderHeaders,
+} from "@/lib/explanation-provider";
 import { AIPredictionPanel } from "@/components/AIPredictionPanel";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
 const OverviewTab = dynamic(
@@ -379,12 +383,20 @@ export function HomePageClient() {
     };
   }, []);
 
-  const getAIProviderHeader = (): HeadersInit => {
-    if (typeof window === "undefined") return {};
-    const provider = localStorage.getItem("explanations_provider");
-    if (!provider) return {};
-    return { "x-ai-provider": provider };
-  };
+  const [aiProviderVersion, setAiProviderVersion] = useState(0);
+
+  useEffect(() => {
+    const onProviderChanged = () => setAiProviderVersion((v) => v + 1);
+    window.addEventListener(
+      EXPLANATIONS_PROVIDER_CHANGED_EVENT,
+      onProviderChanged
+    );
+    return () =>
+      window.removeEventListener(
+        EXPLANATIONS_PROVIDER_CHANGED_EVENT,
+        onProviderChanged
+      );
+  }, []);
 
   useEffect(() => {
     const fetchAIPrediction = async () => {
@@ -398,7 +410,7 @@ export function HomePageClient() {
       try {
         const response = await fetch(
           `/api/market/ai-prediction/${selectedSymbol}`,
-          { headers: getAIProviderHeader(), credentials: "include" }
+          { headers: getAIProviderHeaders(), credentials: "include" }
         );
         if (!response.ok) {
           const body = (await response.json().catch(() => ({}))) as {
@@ -423,7 +435,7 @@ export function HomePageClient() {
     };
 
     fetchAIPrediction();
-  }, [selectedSymbol, hasAIAccess]);
+  }, [selectedSymbol, hasAIAccess, aiProviderVersion]);
 
   useEffect(() => {
     const fetchStockOfTheDay = async () => {
@@ -436,7 +448,7 @@ export function HomePageClient() {
       setStockOfTheDayLoading(true);
       try {
         const response = await fetch("/api/market/stock-of-the-day", {
-          headers: getAIProviderHeader(),
+          headers: getAIProviderHeaders(),
           credentials: "include",
         });
         if (!response.ok) {
@@ -462,7 +474,7 @@ export function HomePageClient() {
     };
 
     fetchStockOfTheDay();
-  }, [hasAIAccess, selectedSymbol]);
+  }, [hasAIAccess, selectedSymbol, aiProviderVersion]);
 
   const handleTimeRangeChange = (range: TimeRange) => {
     setTimeRange(range);

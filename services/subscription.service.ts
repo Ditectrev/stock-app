@@ -159,6 +159,10 @@ export class SubscriptionService {
    * Falls back to FREE if no active subscription is found.
    * Requirement: 22.8
    */
+  async getSubscriptionRecord(userId: string) {
+    return subscriptionStoreService.getMostRecentForUser(userId);
+  }
+
   async getCurrentTier(userId: string): Promise<PricingTier> {
     try {
       const devOverrideTier = parseTier(process.env.DEV_OVERRIDE_PRICING_TIER);

@@ -143,6 +143,54 @@ export class SubscriptionStoreService {
     return doc ? toRecord(doc) : null;
   }
 
+  async updateRecord(
+    documentId: string,
+    payload: Partial<
+      Pick<
+        SubscriptionRecord,
+        | "tier"
+        | "status"
+        | "stripeCustomerId"
+        | "stripeSubscriptionId"
+        | "stripePriceId"
+        | "currentPeriodStart"
+        | "currentPeriodEnd"
+        | "cancelAtPeriodEnd"
+      >
+    >
+  ): Promise<void> {
+    const { databases, databaseId, subscriptionsCollectionId } =
+      this.getClient();
+    const data: Record<string, unknown> = {};
+    if (payload.tier !== undefined) data.tier = payload.tier;
+    if (payload.status !== undefined) data.status = payload.status;
+    if (payload.stripeCustomerId !== undefined) {
+      data.stripeCustomerId = payload.stripeCustomerId;
+    }
+    if (payload.stripeSubscriptionId !== undefined) {
+      data.stripeSubscriptionId = payload.stripeSubscriptionId;
+    }
+    if (payload.stripePriceId !== undefined) {
+      data.stripePriceId = payload.stripePriceId;
+    }
+    if (payload.currentPeriodStart !== undefined) {
+      data.currentPeriodStart = payload.currentPeriodStart ?? null;
+    }
+    if (payload.currentPeriodEnd !== undefined) {
+      data.currentPeriodEnd = payload.currentPeriodEnd ?? null;
+    }
+    if (payload.cancelAtPeriodEnd !== undefined) {
+      data.cancelAtPeriodEnd = payload.cancelAtPeriodEnd;
+    }
+
+    await databases.updateDocument(
+      databaseId,
+      subscriptionsCollectionId,
+      documentId,
+      data
+    );
+  }
+
   async getByStripeCustomerId(
     stripeCustomerId: string
   ): Promise<SubscriptionRecord | null> {

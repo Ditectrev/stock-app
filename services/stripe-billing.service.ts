@@ -61,6 +61,14 @@ function toIsoFromUnix(timestamp?: number): string | undefined {
   return new Date(timestamp * 1000).toISOString();
 }
 
+function isStripeMissingResource(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const stripeError = error as Error & { code?: string; statusCode?: number };
+  return (
+    stripeError.code === "resource_missing" || stripeError.statusCode === 404
+  );
+}
+
 function getPeriodBounds(subscription: Stripe.Subscription): {
   start?: number;
   end?: number;
@@ -123,12 +131,25 @@ export class StripeBillingService {
   async cancelActiveSubscription(userId: string): Promise<boolean> {
     const stripe = requireStripeClient();
     const current = await subscriptionStoreService.getMostRecentForUser(userId);
-    if (!current?.stripeSubscriptionId) return false;
+    if (!current) return false;
 
-    await stripe.subscriptions.update(current.stripeSubscriptionId, {
-      cancel_at_period_end: true,
-    });
-    return true;
+    const subscriptionId = current.stripeSubscriptionId?.trim();
+    if (!subscriptionId) {
+      await this.markLocalCancelAtPeriodEnd(current);
+      return true;
+    }
+
+    try {
+      await stripe.subscriptions.update(subscriptionId, {
+        cancel_at_period_end: true,
+      });
+      await this.markLocalCancelAtPeriodEnd(current);
+      return true;
+    } catch (error) {
+      if (!isStripeMissingResource(error)) throw error;
+      await this.markLocalCancelAtPeriodEnd(current);
+      return true;
+    }
   }
 
   async createBillingPortalSession(args: {
@@ -136,17 +157,11 @@ export class StripeBillingService {
     baseUrl: string;
   }): Promise<{ url: string }> {
     const stripe = requireStripeClient();
-    const current = await subscriptionStoreService.getMostRecentForUser(
-      args.userId
-    );
-    const customerId = current?.stripeCustomerId?.trim();
-    if (!customerId) {
-      throw new Error("No Stripe customer found for this user.");
-    }
+    const customerId = await this.resolveStripeCustomerId(args.userId);
 
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${args.baseUrl}/pricing`,
+      return_url: `${args.baseUrl}/profile`,
     });
     if (!session.url) {
       throw new Error("Failed to create billing portal session.");
@@ -286,6 +301,68 @@ export class StripeBillingService {
       }
     }
     return null;
+  }
+
+  private async markLocalCancelAtPeriodEnd(
+    record: NonNullable<
+      Awaited<ReturnType<typeof subscriptionStoreService.getMostRecentForUser>>
+    >
+  ): Promise<void> {
+    await subscriptionStoreService.updateRecord(record.id, {
+      cancelAtPeriodEnd: true,
+    });
+  }
+
+  private async resolveStripeCustomerId(userId: string): Promise<string> {
+    const stripe = requireStripeClient();
+    const current = await subscriptionStoreService.getMostRecentForUser(userId);
+    if (!current) {
+      throw new Error("No subscription found for this account.");
+    }
+
+    const storedCustomerId = current.stripeCustomerId?.trim() ?? "";
+    if (storedCustomerId) {
+      try {
+        const customer = await stripe.customers.retrieve(storedCustomerId);
+        if (!("deleted" in customer) || customer.deleted !== true) {
+          return storedCustomerId;
+        }
+      } catch (error) {
+        if (!isStripeMissingResource(error)) throw error;
+      }
+    }
+
+    const subscriptionId = current.stripeSubscriptionId?.trim();
+    if (subscriptionId) {
+      try {
+        const sub = await stripe.subscriptions.retrieve(subscriptionId);
+        const recoveredCustomerId = stripeObjectId(sub.customer);
+        if (recoveredCustomerId) {
+          await subscriptionStoreService.updateRecord(current.id, {
+            stripeCustomerId: recoveredCustomerId,
+          });
+          return recoveredCustomerId;
+        }
+      } catch (error) {
+        if (!isStripeMissingResource(error)) throw error;
+      }
+    }
+
+    const search = await stripe.customers.search({
+      query: `metadata['appUserId']:'${userId}'`,
+      limit: 1,
+    });
+    const found = search.data[0]?.id?.trim();
+    if (found) {
+      await subscriptionStoreService.updateRecord(current.id, {
+        stripeCustomerId: found,
+      });
+      return found;
+    }
+
+    throw new Error(
+      "We could not find your billing account in Stripe. Use Pricing to subscribe again, or contact support if you were charged recently."
+    );
   }
 
   private async writeSubscriptionRecord(payload: SyncPayload): Promise<void> {
