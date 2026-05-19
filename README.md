@@ -67,6 +67,48 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
+### Local Ollama From A Deployed Preview
+
+The Local AI tier uses Ollama at `http://localhost:11434`. When you run this app locally, the Next.js server can call Ollama directly. When you open a deployed preview URL, such as Vercel, the browser must call the Ollama server running on the user's machine, so Ollama must allow that site origin.
+
+Install Ollama from [webinstall.dev/ollama](https://webinstall.dev/ollama/). Set `OLLAMA_ORIGINS` to your deployed app origin, then restart Ollama:
+
+```bash
+# macOS/Linux shell when starting Ollama manually
+OLLAMA_ORIGINS=https://theopenstock.com ollama serve
+```
+
+```bash
+# macOS Ollama desktop app
+launchctl setenv OLLAMA_ORIGINS https://theopenstock.com
+# Fully quit and restart Ollama after setting this.
+```
+
+```bash
+# Linux systemd service
+sudo systemctl edit ollama
+# Add:
+# [Service]
+# Environment="OLLAMA_ORIGINS=https://theopenstock.com"
+sudo systemctl daemon-reload
+sudo systemctl restart ollama
+```
+
+```powershell
+# Windows PowerShell
+setx OLLAMA_ORIGINS "https://theopenstock.com"
+# Restart Ollama after setting this.
+```
+
+```bash
+# Docker
+docker run -e OLLAMA_ORIGINS=https://theopenstock.com -p 11434:11434 ollama/ollama
+```
+
+Use the exact origin shown in the browser address bar: scheme + host, without a trailing slash. For multiple previews, use a comma-separated list if your Ollama version supports it, or update the value before testing that preview.
+
+If `ollama serve` shows `127.0.0.1:11434: bind: address already in use`, Ollama is already running. Quit the existing Ollama process/app before starting it with `OLLAMA_ORIGINS`, or follow the workaround in [ollama/ollama#707](https://github.com/ollama/ollama/issues/707).
+
 ## Environment Variables
 
 ### Required

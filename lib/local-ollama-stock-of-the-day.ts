@@ -31,13 +31,32 @@ export function shouldUseBrowserLocalOllama(
   );
 }
 
+/**
+ * When the app runs on `localhost` / `127.0.0.1`, the Next server can reach
+ * `http://localhost:11434` without browser CORS. AI prediction already uses
+ * that path; match it here so dev does not require Ollama CORS headers.
+ *
+ * On a deployed origin (e.g. Vercel), the server cannot see the user's Ollama,
+ * so we call Ollama from the browser instead (requires Ollama to allow that origin).
+ */
+function isAppOpenedOnLoopbackHost(): boolean {
+  if (typeof window === "undefined") return false;
+  const h = window.location.hostname;
+  return h === "localhost" || h === "127.0.0.1";
+}
+
 export async function fetchStockOfTheDayForCurrentProvider(
   pricingTier: PricingTier | null
 ): Promise<StockOfTheDayResult | null> {
-  if (shouldUseBrowserLocalOllama(pricingTier)) {
+  const useLocalOllama = shouldUseBrowserLocalOllama(pricingTier);
+  if (useLocalOllama && !isAppOpenedOnLoopbackHost()) {
     return fetchStockOfTheDayWithBrowserLocalOllama();
   }
 
+  return fetchStockOfTheDayViaServerGet();
+}
+
+async function fetchStockOfTheDayViaServerGet(): Promise<StockOfTheDayResult | null> {
   const response = await fetch("/api/market/stock-of-the-day", {
     headers: getAIProviderHeaders(),
     credentials: "include",
@@ -117,8 +136,10 @@ async function generateWithBrowserLocalOllama(): Promise<string> {
     }
 
     const detail = error instanceof Error ? error.message : "Unknown error";
+    const corsHint =
+      "If you opened the app from a deployed URL, allow that origin in Ollama and restart Ollama. Example on macOS/Linux shell: OLLAMA_ORIGINS=https://theopenstock.com ollama serve. If you see '127.0.0.1:11434: bind: address already in use', Ollama is already running; quit the existing process/app or see https://github.com/ollama/ollama/issues/707. For the Ollama desktop app on macOS: launchctl setenv OLLAMA_ORIGINS https://theopenstock.com, then fully restart Ollama. Or run the app on http://localhost so the server can call Ollama instead.";
     throw new Error(
-      `Could not reach local Ollama at http://localhost:11434. Make sure Ollama is running locally and allows browser requests. ${detail}`
+      `Could not reach local Ollama at http://localhost:11434 from the browser (${detail}). ${corsHint}`
     );
   } finally {
     window.clearTimeout(timeoutId);
