@@ -48,9 +48,8 @@ export async function resolveMarketRouteLLMConfig(opts: {
       (await appwriteAIKeyStoreService.getPreferredProvider(opts.userId));
     if (!provider) {
       return {
-        ok: false,
-        error:
-          "No cloud API key on file. Add an OpenAI, Gemini, Mistral, or DeepSeek key under Profile, or select Ollama (Local) to use your machine without a provider key.",
+        ok: true,
+        llmConfig: { provider: "OLLAMA", model: ollamaModel },
       };
     }
 
