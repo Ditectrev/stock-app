@@ -15,7 +15,7 @@ export interface OllamaModel {
 }
 
 export interface OllamaGenerateRequest {
-  model: string;
+  model?: string;
   prompt: string;
   stream?: boolean;
   options?: {
@@ -45,7 +45,7 @@ export class OllamaService {
 
   constructor(
     baseUrl: string = "http://localhost:11434",
-    defaultModel: string = "llama3.2"
+    defaultModel: string = process.env.OLLAMA_MODEL ?? ""
   ) {
     this.baseUrl = baseUrl;
     this.defaultModel = defaultModel;
@@ -122,7 +122,10 @@ export class OllamaService {
    * Requirement: 22.11
    */
   async generate(request: OllamaGenerateRequest): Promise<string> {
-    const model = request.model || this.defaultModel;
+    const model =
+      request.model ||
+      this.defaultModel ||
+      (await this.getFirstInstalledModel());
 
     logger.info("Sending prompt to local Ollama model", { model });
 
@@ -158,6 +161,21 @@ export class OllamaService {
    */
   getDefaultModel(): string {
     return this.defaultModel;
+  }
+
+  private async getFirstInstalledModel(): Promise<string> {
+    const models = await this.listModels();
+    const model = models.sort(
+      (a, b) => b.modifiedAt.getTime() - a.modifiedAt.getTime()
+    )[0];
+
+    if (!model) {
+      throw new Error(
+        "No Ollama models are installed. Install one with `ollama pull llama3.2` or another model, then try again."
+      );
+    }
+
+    return model.name;
   }
 }
 
