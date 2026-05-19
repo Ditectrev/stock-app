@@ -7,7 +7,7 @@ import {
   getAIProviderHeaders,
 } from "@/lib/explanation-provider";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
-import type { StockOfTheDay } from "@/types";
+import type { StockOfTheDayResult } from "@/types";
 
 export default function StockOfTheDayPage() {
   const pricingTier = usePricingTier();
@@ -20,7 +20,7 @@ export default function StockOfTheDayPage() {
     pricingTier === "HOSTED_AI";
   const hasAIAccess = hasTierAccess || serverBYOKAccess === true;
 
-  const [item, setItem] = useState<StockOfTheDay | null>(null);
+  const [item, setItem] = useState<StockOfTheDayResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [aiProviderVersion, setAiProviderVersion] = useState(0);

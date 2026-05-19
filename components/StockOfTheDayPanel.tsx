@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import type { PricingTier, StockOfTheDay } from "@/types";
+import type { PricingTier, StockOfTheDay, StockOfTheDayResult } from "@/types";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
 
 interface StockOfTheDayPanelProps {
-  item: StockOfTheDay | null;
+  item: StockOfTheDayResult | null;
   loading: boolean;
   locked: boolean;
   error?: string | null;
@@ -21,6 +21,38 @@ export function StockOfTheDayPanel({
   error,
   pricingTier,
 }: StockOfTheDayPanelProps) {
+  const renderPick = (title: string, pick: StockOfTheDay) => (
+    <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            {title}
+          </p>
+          <p className="mt-1 text-gray-900 dark:text-gray-100 font-medium">
+            {pick.symbol} - {pick.name}
+          </p>
+        </div>
+        <span
+          className={`rounded-full px-2 py-1 text-xs font-semibold uppercase ${
+            pick.recommendation === "buy"
+              ? "bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-300"
+              : "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300"
+          }`}
+        >
+          {pick.recommendation}
+        </span>
+      </div>
+      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+        Confidence {Math.round(pick.confidence * 100)}%
+      </p>
+      <ul className="mt-3 space-y-1 text-sm text-gray-600 dark:text-gray-300">
+        {pick.rationale.map((reason) => (
+          <li key={reason}>- {reason}</li>
+        ))}
+      </ul>
+    </div>
+  );
+
   return (
     <section className="mt-6 sm:mt-8 lg:mt-10">
       <div className="p-4 sm:p-6 rounded-lg shadow-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 relative overflow-hidden">
@@ -29,11 +61,11 @@ export function StockOfTheDayPanel({
         >
           <div className="flex items-center justify-between gap-3 mb-4">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-              Stock of the day
+              AI stock ideas of the day
             </h2>
             {item && (
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                Confidence {Math.round(item.confidence * 100)}%
+                Generated {new Date(item.generatedAt).toLocaleDateString()}
               </span>
             )}
           </div>
@@ -45,21 +77,9 @@ export function StockOfTheDayPanel({
           )}
 
           {!loading && item && (
-            <div className="space-y-3">
-              <p className="text-gray-900 dark:text-gray-100 font-medium">
-                {item.symbol} - {item.name}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Recommendation:{" "}
-                <span className="font-semibold uppercase">
-                  {item.recommendation}
-                </span>
-              </p>
-              <ul className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
-                {item.rationale.map((reason) => (
-                  <li key={reason}>- {reason}</li>
-                ))}
-              </ul>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {renderPick("Stock of the day to buy", item.buy)}
+              {renderPick("Stock of the day to sell", item.sell)}
             </div>
           )}
 

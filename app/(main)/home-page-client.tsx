@@ -13,7 +13,7 @@ import {
   FinancialData,
   TimeRange,
   AIPredictionReport,
-  StockOfTheDay,
+  StockOfTheDayResult,
 } from "@/types";
 import { SymbolHeader } from "@/components/SymbolHeader";
 import { TabNavigation } from "@/components/TabNavigation";
@@ -229,9 +229,8 @@ export function HomePageClient() {
   const [aiPredictionError, setAIPredictionError] = useState<string | null>(
     null
   );
-  const [stockOfTheDay, setStockOfTheDay] = useState<StockOfTheDay | null>(
-    null
-  );
+  const [stockOfTheDay, setStockOfTheDay] =
+    useState<StockOfTheDayResult | null>(null);
   const [stockOfTheDayLoading, setStockOfTheDayLoading] = useState(false);
   const [stockOfTheDayError, setStockOfTheDayError] = useState<string | null>(
     null

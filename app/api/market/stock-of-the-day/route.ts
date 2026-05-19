@@ -32,18 +32,26 @@ export async function GET(request: NextRequest) {
       requestedProviderRaw,
     });
     if (!resolved.ok) {
-      logger.warn(
-        "Stock of the day: no LLM credentials; using heuristic only",
+      logger.warn("Stock of the day: no LLM credentials", {
+        userId: auth.id,
+        tier,
+        detail: resolved.error,
+      });
+      return NextResponse.json(
         {
-          userId: auth.id,
-          tier,
-          detail: resolved.error,
-        }
+          success: false,
+          error:
+            resolved.error ??
+            "Configure an AI explanations provider to generate dynamic stock-of-the-day picks.",
+          timestamp: new Date(),
+        },
+        { status: 400 }
       );
     }
 
-    const llmConfig = resolved.ok ? resolved.llmConfig : undefined;
-    const data = await aiMarketInsightsService.getStockOfTheDay(llmConfig);
+    const data = await aiMarketInsightsService.getStockOfTheDay(
+      resolved.llmConfig
+    );
 
     return NextResponse.json({
       success: true,
