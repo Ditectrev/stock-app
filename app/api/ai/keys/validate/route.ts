@@ -1,23 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { appwriteAIKeyStoreService } from "@/services/appwrite-ai-key-store.service";
-import { getAuthorizedBYOKUser, isBYOKProvider } from "./byok-guard";
+import { getAuthorizedBYOKUser, isBYOKProvider } from "../byok-guard";
 
-export async function GET(request: NextRequest) {
-  const auth = await getAuthorizedBYOKUser(request);
-  if ("response" in auth) return auth.response;
-
-  const rows = await appwriteAIKeyStoreService.listStoredKeyInfo(auth.userId);
-  return NextResponse.json({
-    success: true,
-    data: rows.map((r) => ({
-      provider: r.provider,
-      addedAt: r.addedAt,
-      lastValidated: r.lastValidated,
-    })),
-    timestamp: new Date(),
-  });
-}
-
+/**
+ * Validates a BYOK API key with the upstream provider without persisting it.
+ * Used by the browser client before encrypting the key to localStorage.
+ */
 export async function POST(request: NextRequest) {
   const auth = await getAuthorizedBYOKUser(request);
   if ("response" in auth) return auth.response;
@@ -37,11 +25,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const result = await appwriteAIKeyStoreService.validateAndStore(
-    auth.userId,
-    provider,
-    apiKey
-  );
+  const result = await appwriteAIKeyStoreService.validateKey(provider, apiKey);
   if (!result.valid) {
     return NextResponse.json(
       {
