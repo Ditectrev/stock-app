@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Ibarra_Real_Nova, Merriweather } from "next/font/google";
+import { JsonLd } from "@/components/JsonLd";
+import { buildRootMetadata } from "@/lib/site-seo";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -17,13 +19,7 @@ const bodyFont = Ibarra_Real_Nova({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Stock Exchange Application",
-  description: "Comprehensive web platform for individual long-term investors",
-  other: {
-    "theme-color": "#0a0a0a",
-  },
-};
+export const metadata: Metadata = buildRootMetadata();
 
 export default function RootLayout({
   children,
@@ -60,6 +56,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <body
         className={`${headingFont.variable} ${bodyFont.variable} antialiased`}
       >
+        <JsonLd />
         {gtmId ? (
           <noscript>
             <iframe

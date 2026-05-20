@@ -57,8 +57,12 @@ describe("Lighthouse-recommended meta tags in layout", () => {
     expect(layoutContent).toContain('name="viewport"');
   });
 
-  it("should include a description in metadata export", () => {
-    expect(layoutContent).toContain("description");
+  it("should include root metadata from site SEO helper", () => {
+    expect(layoutContent).toContain("buildRootMetadata");
+    const siteSeoPath = path.resolve(__dirname, "../lib/site-seo.ts");
+    const siteSeoContent = fs.readFileSync(siteSeoPath, "utf-8");
+    expect(siteSeoContent).toContain("description:");
+    expect(siteSeoContent).toContain("DEFAULT_DESCRIPTION");
   });
 
   it("should include preconnect hints for external API domains", () => {

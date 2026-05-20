@@ -148,6 +148,7 @@ jobs:
   # Environment secrets (GitHub "Production" vs "Preview"): only Appwrite targets differ per env:
   #   APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID_TRIAL_SESSIONS, APPWRITE_COLLECTION_ID_AI_KEYS, APPWRITE_COLLECTION_ID_SUBSCRIPTIONS
   # All other deploy secrets stay repository-wide: VERCEL_*, NEXT_PUBLIC_APPWRITE_*, APPWRITE_API_KEY.
+  # Set GitHub variable NEXT_PUBLIC_SITE_URL (e.g. https://theopenstock.com) for canonical URLs, sitemap, and OG.
   # With `environment:` set, GitHub still exposes repository secrets to the job; environment adds/overrides
   # only the names defined on that environment (here: Appwrite DB + collection ids).
   deploy:
@@ -172,6 +173,9 @@ jobs:
           ENV_TYPE=${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
           vercel env add NEXT_PUBLIC_APPWRITE_ENDPOINT $ENV_TYPE "" --value "${{ secrets.NEXT_PUBLIC_APPWRITE_ENDPOINT }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
           vercel env add NEXT_PUBLIC_APPWRITE_PROJECT_ID $ENV_TYPE "" --value "${{ secrets.NEXT_PUBLIC_APPWRITE_PROJECT_ID }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
+          if [ -n "${{ vars.NEXT_PUBLIC_SITE_URL }}" ]; then
+            vercel env add NEXT_PUBLIC_SITE_URL $ENV_TYPE "" --value "${{ vars.NEXT_PUBLIC_SITE_URL }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
+          fi
           if [ -n "${{ vars.NEXT_PUBLIC_GTM_ID }}" ]; then
             vercel env add NEXT_PUBLIC_GTM_ID $ENV_TYPE "" --value "${{ vars.NEXT_PUBLIC_GTM_ID }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
           fi
@@ -219,6 +223,7 @@ jobs:
         run: vercel build ${{ github.ref == 'refs/heads/main' && '--prod' || '' }} --token=${{ secrets.VERCEL_TOKEN }}
         env:
           NEXT_PUBLIC_GTM_ID: ${{ vars.NEXT_PUBLIC_GTM_ID }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_APPWRITE_ENDPOINT: ${{ secrets.NEXT_PUBLIC_APPWRITE_ENDPOINT }}
           NEXT_PUBLIC_APPWRITE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_APPWRITE_PROJECT_ID }}
           APPWRITE_API_KEY: ${{ secrets.APPWRITE_API_KEY }}
