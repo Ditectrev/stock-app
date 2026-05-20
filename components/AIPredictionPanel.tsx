@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { AIPredictionReport, PricingTier } from "@/types";
+import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
 
@@ -61,8 +62,11 @@ export function AIPredictionPanel({
                 <RecommendationBadge
                   recommendation={prediction.recommendation}
                 />
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Confidence {Math.round(prediction.confidence * 100)}%
+                <span className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                  <span>
+                    Confidence {Math.round(prediction.confidence * 100)}%
+                  </span>
+                  <ConfidenceInfoTooltip variant="prediction" />
                 </span>
               </div>
             )}

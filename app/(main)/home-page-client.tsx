@@ -13,7 +13,7 @@ import {
   FinancialData,
   TimeRange,
   AIPredictionReport,
-  StockOfTheDay,
+  StockOfTheDayResult,
 } from "@/types";
 import { SymbolHeader } from "@/components/SymbolHeader";
 import { TabNavigation } from "@/components/TabNavigation";
@@ -23,6 +23,7 @@ import {
   EXPLANATIONS_PROVIDER_CHANGED_EVENT,
   getAIProviderHeaders,
 } from "@/lib/explanation-provider";
+import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
 import { AIPredictionPanel } from "@/components/AIPredictionPanel";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
 const OverviewTab = dynamic(
@@ -229,9 +230,8 @@ export function HomePageClient() {
   const [aiPredictionError, setAIPredictionError] = useState<string | null>(
     null
   );
-  const [stockOfTheDay, setStockOfTheDay] = useState<StockOfTheDay | null>(
-    null
-  );
+  const [stockOfTheDay, setStockOfTheDay] =
+    useState<StockOfTheDayResult | null>(null);
   const [stockOfTheDayLoading, setStockOfTheDayLoading] = useState(false);
   const [stockOfTheDayError, setStockOfTheDayError] = useState<string | null>(
     null
@@ -447,19 +447,8 @@ export function HomePageClient() {
 
       setStockOfTheDayLoading(true);
       try {
-        const response = await fetch("/api/market/stock-of-the-day", {
-          headers: getAIProviderHeaders(),
-          credentials: "include",
-        });
-        if (!response.ok) {
-          const body = (await response.json().catch(() => ({}))) as {
-            error?: string;
-          };
-          throw new Error(body.error ?? "Failed to fetch stock of the day");
-        }
-
-        const result = await response.json();
-        setStockOfTheDay(result.data ?? null);
+        const data = await fetchStockOfTheDayForCurrentProvider(effectiveTier);
+        setStockOfTheDay(data);
         setStockOfTheDayError(null);
       } catch (error) {
         setStockOfTheDay(null);
@@ -474,7 +463,7 @@ export function HomePageClient() {
     };
 
     fetchStockOfTheDay();
-  }, [hasAIAccess, selectedSymbol, aiProviderVersion]);
+  }, [hasAIAccess, selectedSymbol, aiProviderVersion, effectiveTier]);
 
   const handleTimeRangeChange = (range: TimeRange) => {
     setTimeRange(range);

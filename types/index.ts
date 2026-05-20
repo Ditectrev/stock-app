@@ -453,3 +453,9 @@ export interface StockOfTheDay {
   confidence: number;
   rationale: string[];
 }
+
+export interface StockOfTheDayResult {
+  generatedAt: Date;
+  buy: StockOfTheDay;
+  sell: StockOfTheDay;
+}

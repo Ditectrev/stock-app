@@ -1,6 +1,14 @@
+import { scoreToConfidence } from "@/lib/ai-confidence";
 import { marketDataService } from "@/services/market-data.service";
 import { AIIntegrationService } from "@/services/ai-integration.service";
 import { logger } from "@/lib/logger";
+import {
+  extractFirstJsonObject,
+  parseStockOfTheDayCandidates,
+  STOCK_OF_THE_DAY_CANDIDATES_PROMPT,
+  type AIStockCandidate,
+  type StockOfTheDayCandidates,
+} from "@/lib/stock-of-the-day-ai";
 import type {
   AIPredictionReport,
   AIProvider,
@@ -8,6 +16,7 @@ import type {
   ForecastData,
   MarketIndex,
   StockOfTheDay,
+  StockOfTheDayResult,
   TechnicalIndicators,
 } from "@/types";
 
@@ -20,14 +29,21 @@ type PredictionEnhancement = Pick<
   | "riskFactors"
 >;
 
-type StockEnhancement = Pick<StockOfTheDay, "rationale">;
-
 type AssetType = AIPredictionReport["assetType"];
 type Recommendation = AIPredictionReport["recommendation"];
 type LLMConfig = {
   provider: AIProvider;
   apiKey?: string;
   model?: string;
+};
+
+type EnrichedStockCandidate = {
+  symbol: string;
+  name: string;
+  thesis: string;
+  score: number;
+  confidence: number;
+  rationale: string[];
 };
 
 function detectAssetType(symbol: string): AssetType {
@@ -42,14 +58,6 @@ function toRecommendation(score: number): Recommendation {
   if (score >= 0.2) return "buy";
   if (score <= -0.2) return "sell";
   return "hold";
-}
-
-function boundedConfidence(score: number): number {
-  const normalized = Math.min(
-    0.95,
-    Math.max(0.55, 0.65 + Math.abs(score) * 0.2)
-  );
-  return Number(normalized.toFixed(2));
 }
 
 function getLLMConfigFromEnv(): {
@@ -96,22 +104,6 @@ function getLLMConfigFromEnv(): {
 
   // Hosted AI and OLLAMA can be added next; skip if not configured.
   return null;
-}
-
-function extractFirstJsonObject(text: string): Record<string, unknown> | null {
-  const trimmed = text.trim();
-  const codeBlock = trimmed.match(/```json\s*([\s\S]*?)```/i)?.[1];
-  const fallbackCandidate =
-    codeBlock ?? trimmed.match(/\{[\s\S]*\}/)?.[0] ?? null;
-
-  if (!fallbackCandidate) return null;
-
-  try {
-    const parsed = JSON.parse(fallbackCandidate) as Record<string, unknown>;
-    return parsed;
-  } catch {
-    return null;
-  }
 }
 
 export class AIMarketInsightsService {
@@ -216,7 +208,7 @@ export class AIMarketInsightsService {
       fearGreed.value <= 35 ? 0.1 : fearGreed.value >= 70 ? -0.1 : 0;
     const score = targetUpside + sentimentScore + fearGreedBias;
     const recommendation = toRecommendation(score);
-    const confidence = boundedConfidence(score);
+    const confidence = scoreToConfidence(score);
 
     const weakestRegion = [...worldMarkets].sort(
       (a, b) => a.changePercent - b.changePercent
@@ -283,71 +275,240 @@ export class AIMarketInsightsService {
       : heuristic;
   }
 
-  async getStockOfTheDay(llmConfig?: LLMConfig): Promise<StockOfTheDay> {
-    const [stocks, crypto] = await Promise.all([
-      marketDataService.getStockPerformance("1d"),
-      marketDataService.getCryptoPerformance("1d"),
+  async getStockOfTheDay(llmConfig?: LLMConfig): Promise<StockOfTheDayResult> {
+    const llm = llmConfig ?? getLLMConfigFromEnv();
+    if (!llm) {
+      throw new Error(
+        "An active AI provider is required for dynamic stock-of-the-day picks."
+      );
+    }
+
+    const generatedCandidates = await this.generateStockOfTheDayCandidates(llm);
+    return this.enrichStockOfTheDayCandidates(generatedCandidates);
+  }
+
+  async enrichStockOfTheDayCandidates(
+    generatedCandidates: StockOfTheDayCandidates
+  ): Promise<StockOfTheDayResult> {
+    const [buyCandidates, sellCandidates] = await Promise.all([
+      this.enrichStockCandidates(generatedCandidates.buyCandidates, "buy"),
+      this.enrichStockCandidates(generatedCandidates.sellCandidates, "sell"),
     ]);
 
-    const stockCandidates = stocks.slice(0, 20).map((item) => ({
-      symbol: item.symbol,
-      name: item.name,
-      assetType: "stock" as const,
-      score: this.scoreCandidate(
-        item.changePercent,
-        item.volume,
-        item.marketCap
-      ),
-    }));
+    const buy = buyCandidates.sort((a, b) => b.score - a.score)[0];
+    const sell = sellCandidates.sort((a, b) => b.score - a.score)[0];
 
-    const cryptoCandidates = crypto.slice(0, 10).map((item) => ({
-      symbol: item.symbol,
-      name: item.name,
-      assetType: "crypto" as const,
-      score: this.scoreCandidate(item.changePercent, undefined, item.marketCap),
-    }));
+    if (!buy || !sell) {
+      throw new Error(
+        "AI did not return enough valid public stock candidates today."
+      );
+    }
 
-    const allCandidates = [...stockCandidates, ...cryptoCandidates];
-    allCandidates.sort((a, b) => b.score - a.score);
-    const top = allCandidates[0];
-
-    const recommendation = toRecommendation(top?.score ?? 0);
-
-    const heuristic: StockOfTheDay = {
-      generatedAt: new Date(),
-      symbol: top?.symbol ?? "AAPL",
-      name: top?.name ?? "Apple Inc.",
-      assetType: top?.assetType ?? "stock",
-      recommendation,
-      confidence: boundedConfidence(top?.score ?? 0.1),
-      rationale: [
-        "Selected by momentum-quality ranking on top market movers.",
-        "Filters out extreme one-day spikes by applying capped score weighting.",
-        "Balances momentum with liquidity/size inputs to reduce noise.",
-      ],
+    const generatedAt = new Date();
+    return {
+      generatedAt,
+      buy: this.toStockOfTheDay("buy", buy, generatedAt),
+      sell: this.toStockOfTheDay("sell", sell, generatedAt),
     };
+  }
 
-    const enhanced = await this.maybeEnhanceStockOfTheDay(
-      {
-        symbol: heuristic.symbol,
-        name: heuristic.name,
-        assetType: heuristic.assetType,
-        recommendation,
-        confidence: heuristic.confidence,
-        score: top?.score ?? 0.1,
-        recommendationStance:
-          recommendation === "buy"
-            ? "bullish"
-            : recommendation === "sell"
-              ? "bearish"
-              : "neutral",
-      },
-      llmConfig
+  private async generateStockOfTheDayCandidates(llm: LLMConfig): Promise<{
+    buyCandidates: AIStockCandidate[];
+    sellCandidates: AIStockCandidate[];
+  }> {
+    const service = new AIIntegrationService();
+    await service.setAIProvider(llm.provider, {
+      provider: llm.provider,
+      apiKey: llm.apiKey,
+      model: llm.model,
+      settings: {},
+    });
+
+    const raw = await service.runRawPrompt(STOCK_OF_THE_DAY_CANDIDATES_PROMPT);
+    return parseStockOfTheDayCandidates(raw);
+  }
+
+  private async enrichStockCandidates(
+    candidates: AIStockCandidate[],
+    direction: "buy" | "sell"
+  ): Promise<EnrichedStockCandidate[]> {
+    const enriched = await Promise.all(
+      candidates.map(async (candidate) => {
+        try {
+          const [quote, indicators, forecast] = await Promise.all([
+            marketDataService.getSymbolData(candidate.symbol),
+            marketDataService.getTechnicalIndicators(candidate.symbol),
+            marketDataService.getForecastData(candidate.symbol),
+          ]);
+
+          const score = this.scoreStockOfTheDayCandidate({
+            direction,
+            price: quote.price,
+            changePercent: quote.changePercent,
+            volume: quote.volume,
+            marketCap: quote.marketCap,
+            fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
+            overallSentiment: indicators.overallSentiment,
+            averageTarget: forecast.priceTargets.average,
+            analystRatings: forecast.analystRatings,
+          });
+
+          return {
+            symbol: quote.symbol || candidate.symbol,
+            name: quote.name || candidate.name || candidate.symbol,
+            thesis:
+              candidate.thesis ||
+              (direction === "buy"
+                ? "AI surfaced this as an underfollowed asymmetric-growth candidate."
+                : "AI surfaced this as a structurally vulnerable candidate."),
+            score,
+            confidence: scoreToConfidence(score, 1.25),
+            rationale: this.buildStockOfTheDayRationale(direction, {
+              thesis: candidate.thesis,
+              changePercent: quote.changePercent,
+              marketCap: quote.marketCap,
+              overallSentiment: indicators.overallSentiment,
+              averageTarget: forecast.priceTargets.average,
+              price: quote.price,
+            }),
+          };
+        } catch (error) {
+          logger.warn("Failed to validate AI stock-of-the-day candidate", {
+            symbol: candidate.symbol,
+            direction,
+            error: error instanceof Error ? error.message : String(error),
+          });
+          return null;
+        }
+      })
     );
 
-    return enhanced
-      ? { ...heuristic, ...enhanced, generatedAt: new Date() }
-      : heuristic;
+    return enriched.filter(
+      (item): item is EnrichedStockCandidate => item !== null
+    );
+  }
+
+  private toStockOfTheDay(
+    recommendation: "buy" | "sell",
+    candidate: EnrichedStockCandidate,
+    generatedAt: Date
+  ): StockOfTheDay {
+    return {
+      generatedAt,
+      symbol: candidate.symbol,
+      name: candidate.name,
+      assetType: "stock",
+      recommendation,
+      confidence: candidate.confidence,
+      rationale: candidate.rationale,
+    };
+  }
+
+  private scoreStockOfTheDayCandidate(args: {
+    direction: "buy" | "sell";
+    price: number;
+    changePercent: number;
+    volume: number;
+    marketCap: number;
+    fiftyTwoWeekHigh: number;
+    fiftyTwoWeekLow: number;
+    overallSentiment: TechnicalIndicators["overallSentiment"];
+    averageTarget: number;
+    analystRatings: ForecastData["analystRatings"];
+  }): number {
+    const targetUpside =
+      args.price > 0 ? (args.averageTarget - args.price) / args.price : 0;
+    const sentiment =
+      args.overallSentiment === "underpriced"
+        ? 0.3
+        : args.overallSentiment === "overpriced"
+          ? -0.3
+          : 0;
+    const liquidity = Math.min(1, Math.log10(Math.max(1, args.volume)) / 8);
+    const marketCapBillions = args.marketCap / 1_000_000_000;
+    const smallCapRunway =
+      marketCapBillions <= 0
+        ? 0
+        : marketCapBillions <= 30
+          ? Math.max(0, 1 - marketCapBillions / 30)
+          : -0.25;
+    const nearHigh =
+      args.fiftyTwoWeekHigh > 0 ? args.price / args.fiftyTwoWeekHigh : 0.5;
+    const nearLow =
+      args.fiftyTwoWeekLow > 0 ? args.price / args.fiftyTwoWeekLow : 1.5;
+    const analystBias =
+      (args.analystRatings.strongBuy * 1.5 +
+        args.analystRatings.buy -
+        args.analystRatings.sell -
+        args.analystRatings.strongSell * 1.5) /
+      Math.max(
+        1,
+        args.analystRatings.strongBuy +
+          args.analystRatings.buy +
+          args.analystRatings.hold +
+          args.analystRatings.sell +
+          args.analystRatings.strongSell
+      );
+
+    if (args.direction === "buy") {
+      return (
+        targetUpside * 0.35 +
+        sentiment * 0.2 +
+        smallCapRunway * 0.2 +
+        Math.min(1, Math.max(-1, args.changePercent / 10)) * 0.1 +
+        liquidity * 0.05 +
+        (nearHigh >= 0.55 && nearHigh <= 0.95 ? 0.1 : -0.05) +
+        analystBias * 0.1
+      );
+    }
+
+    return (
+      -targetUpside * 0.3 +
+      -sentiment * 0.2 +
+      (marketCapBillions > 20 ? 0.1 : 0) +
+      Math.min(1, Math.max(-1, -args.changePercent / 10)) * 0.15 +
+      (nearLow <= 1.35 ? 0.15 : 0) +
+      -analystBias * 0.1 +
+      liquidity * 0.05
+    );
+  }
+
+  private buildStockOfTheDayRationale(
+    direction: "buy" | "sell",
+    args: {
+      thesis?: string;
+      changePercent: number;
+      marketCap: number;
+      overallSentiment: TechnicalIndicators["overallSentiment"];
+      averageTarget: number;
+      price: number;
+    }
+  ): string[] {
+    const targetMove =
+      args.price > 0
+        ? (((args.averageTarget - args.price) / args.price) * 100).toFixed(1)
+        : "0.0";
+    const marketCapText =
+      args.marketCap > 0
+        ? `$${(args.marketCap / 1_000_000_000).toFixed(1)}B market cap`
+        : "market cap unavailable";
+
+    if (direction === "buy") {
+      return [
+        args.thesis ||
+          "AI identified a differentiated growth narrative that is not a default mega-cap idea.",
+        `${marketCapText} leaves more upside runway than mature mega-cap leaders if execution improves.`,
+        `Live data check: ${args.changePercent.toFixed(2)}% daily move, ${args.overallSentiment} technical read, and ${targetMove}% average-target gap.`,
+      ];
+    }
+
+    return [
+      args.thesis ||
+        "AI identified a deteriorating narrative with weaker risk/reward than the market may be pricing.",
+      `${marketCapText} and current technicals point to a less attractive setup versus stronger alternatives.`,
+      `Live data check: ${args.changePercent.toFixed(2)}% daily move, ${args.overallSentiment} technical read, and ${targetMove}% average-target gap.`,
+    ];
   }
 
   private async maybeEnhancePrediction(
@@ -483,77 +644,6 @@ targetUpsidePercent: ${(args.targetUpside * 100).toFixed(1)}
       );
       return null;
     }
-  }
-
-  private async maybeEnhanceStockOfTheDay(
-    args: {
-      symbol: string;
-      name: string;
-      assetType: StockOfTheDay["assetType"];
-      recommendation: Recommendation;
-      confidence: number;
-      score: number;
-      recommendationStance: "bullish" | "bearish" | "neutral";
-    },
-    llmConfig?: LLMConfig
-  ): Promise<StockEnhancement | null> {
-    const llm = llmConfig ?? getLLMConfigFromEnv();
-    if (!llm) return null;
-
-    const prompt = `You are a financial analyst.
-Return ONLY valid JSON in this exact shape:
-{ "rationale": string[] }
-Rules:
-- rationale: exactly 3 short strings (no markdown, no commentary).
-- Do NOT use the words "buy" or "sell".
-
-Inputs:
-symbol: ${args.symbol}
-name: ${args.name}
-assetType: ${args.assetType}
-stance: ${args.recommendationStance}
-confidence: ${args.confidence}
-rankScore: ${args.score}
-`;
-
-    try {
-      const service = new AIIntegrationService();
-      await service.setAIProvider(llm.provider, {
-        provider: llm.provider,
-        apiKey: llm.apiKey,
-        model: llm.model,
-        settings: {},
-      });
-
-      const raw = await service.runRawPrompt(prompt);
-      const parsed = extractFirstJsonObject(raw);
-      const rationale = Array.isArray(parsed?.rationale)
-        ? parsed.rationale.filter((x): x is string => typeof x === "string")
-        : [];
-
-      if (rationale.length !== 3) return null;
-      return { rationale };
-    } catch (error) {
-      logger.warn(
-        "LLM stock-of-the-day enhancement failed; falling back to heuristic",
-        {
-          symbol: args.symbol,
-          error: error instanceof Error ? error.message : String(error),
-        }
-      );
-      return null;
-    }
-  }
-
-  private scoreCandidate(
-    changePercent: number,
-    volume?: number,
-    marketCap?: number
-  ): number {
-    const momentum = Math.max(-8, Math.min(8, changePercent)) / 8;
-    const liquidity = volume ? Math.log10(Math.max(1, volume)) / 10 : 0.35;
-    const size = marketCap ? Math.log10(Math.max(1, marketCap)) / 12 : 0.3;
-    return momentum * 0.6 + liquidity * 0.25 + size * 0.15;
   }
 }
 

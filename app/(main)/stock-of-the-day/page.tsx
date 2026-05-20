@@ -2,12 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { usePricingTier } from "@/lib/use-pricing-tier";
-import {
-  EXPLANATIONS_PROVIDER_CHANGED_EVENT,
-  getAIProviderHeaders,
-} from "@/lib/explanation-provider";
+import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
+import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
-import type { StockOfTheDay } from "@/types";
+import type { StockOfTheDayResult } from "@/types";
 
 export default function StockOfTheDayPage() {
   const pricingTier = usePricingTier();
@@ -20,7 +18,7 @@ export default function StockOfTheDayPage() {
     pricingTier === "HOSTED_AI";
   const hasAIAccess = hasTierAccess || serverBYOKAccess === true;
 
-  const [item, setItem] = useState<StockOfTheDay | null>(null);
+  const [item, setItem] = useState<StockOfTheDayResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [aiProviderVersion, setAiProviderVersion] = useState(0);
@@ -48,19 +46,8 @@ export default function StockOfTheDayPage() {
 
       setLoading(true);
       try {
-        const response = await fetch("/api/market/stock-of-the-day", {
-          headers: getAIProviderHeaders(),
-          credentials: "include",
-          cache: "no-store",
-        });
-        if (!response.ok) {
-          const body = (await response.json().catch(() => ({}))) as {
-            error?: string;
-          };
-          throw new Error(body.error ?? "Failed to load stock of the day");
-        }
-        const result = await response.json();
-        setItem(result.data ?? null);
+        const data = await fetchStockOfTheDayForCurrentProvider(pricingTier);
+        setItem(data);
         setLoadError(null);
       } catch (err) {
         setItem(null);
@@ -73,7 +60,7 @@ export default function StockOfTheDayPage() {
     };
 
     load();
-  }, [hasAIAccess, aiProviderVersion]);
+  }, [hasAIAccess, aiProviderVersion, pricingTier]);
 
   useEffect(() => {
     const loadBYOKAccess = async () => {
