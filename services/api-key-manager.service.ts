@@ -188,11 +188,21 @@ export class APIKeyManagerService {
         return { valid: true };
       }
 
+      const body = (await response.json().catch(() => ({}))) as {
+        error?: string;
+      };
+
       if (response.status === 401 || response.status === 403) {
         return {
           valid: false,
-          error: "API key rejected by provider. Please verify and try again.",
+          error:
+            body.error ??
+            "API key rejected by provider. Please verify and try again.",
         };
+      }
+
+      if (body.error) {
+        return { valid: false, error: body.error };
       }
 
       return {

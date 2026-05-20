@@ -1,12 +1,27 @@
-# Open Source Stock Application
+# The Open Stock — Free Stock Market Analysis Platform
 
-A free, open source stock market application for individual long-term investors. Track stocks, analyze technical indicators, view financial statements, forecasts, seasonal patterns, and economic calendars — all in one place.
+**Live app:** [https://theopenstock.com](https://theopenstock.com)
 
-Built with Next.js, TypeScript, and Tailwind CSS. Self-hostable on Vercel.
+The Open Stock is a free, open source stock market application for individual long-term investors. Search any ticker, study interactive charts and technical indicators, review financials and analyst forecasts, scan sectors and heatmaps, follow economic and earnings calendars, and optionally use AI (local Ollama, your own API keys, or hosted plans) for predictions and daily stock ideas.
 
-## Why This Stock App?
+Built with **Next.js**, **TypeScript**, and **Tailwind CSS**. Self-hostable on **Vercel**.
 
-Most stock market tools are either expensive, cluttered with ads, or locked behind paywalls. This open source stock application gives you:
+## What you get
+
+| Area                   | Features                                                                      |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| **Charts & quotes**    | Live prices, historical charts, key metrics, 52-week range                    |
+| **Technical analysis** | RSI, MACD, SMA/EMA, Bollinger Bands, sentiment labels                         |
+| **Fundamentals**       | Income statement, balance sheet, cash flow, valuation metrics                 |
+| **Forecasts**          | Analyst price targets and rating breakdowns                                   |
+| **Market tools**       | Sector hub, stock/ETF/crypto heatmaps, asset screener with presets            |
+| **Calendars**          | Economic events, earnings, dividends, IPOs                                    |
+| **Sentiment**          | CNN Fear & Greed Index, world markets overview                                |
+| **AI (optional)**      | Per-symbol AI prediction, daily stock-of-the-day buy/sell ideas, local Ollama |
+
+## Why this stock app?
+
+Most stock tools are expensive, ad-heavy, or locked behind paywalls. The Open Stock keeps core market data and charts free, with optional paid tiers for ads-free use and AI:
 
 - Real-time stock quotes and market data
 - Interactive charts with technical indicators (SMA, EMA, RSI, MACD, Bollinger Bands)
@@ -16,31 +31,32 @@ Most stock market tools are either expensive, cluttered with ads, or locked behi
 - Economic calendar with country flags and day-grouped events
 - Sector performance overview
 - World markets at a glance
-- Fear & Greed index
-- Dark mode support
-- Mobile-friendly responsive design
+- Fear & Greed Index
+- Stock screener with built-in and custom presets
+- AI stock-of-the-day (buy + sell) and symbol-level AI predictions
+- Dark mode and mobile-friendly layout
 
-No paywall for core features. No forced tracking. Just a clean stock analysis tool you can run yourself.
+No paywall for core features. No forced tracking. Run it yourself or use [theopenstock.com](https://theopenstock.com).
 
 ## Screenshots
 
 <!-- Add screenshots here -->
 
-## Tech Stack
+## Tech stack
 
-| Layer       | Technology                 |
-| ----------- | -------------------------- |
-| Framework   | Next.js 14+ (App Router)   |
-| Language    | TypeScript                 |
-| Runtime     | Bun (or Node.js 18+)       |
-| Styling     | Tailwind CSS               |
-| Auth        | Appwrite                   |
-| Database    | Appwrite                   |
-| Market Data | Yahoo Finance, FairEconomy |
-| Deployment  | Vercel                     |
-| Testing     | Vitest, Playwright         |
+| Layer       | Technology                          |
+| ----------- | ----------------------------------- |
+| Framework   | Next.js 15 (App Router)             |
+| Language    | TypeScript                          |
+| Runtime     | Bun (or Node.js 18+)                |
+| Styling     | Tailwind CSS                        |
+| Auth        | Appwrite                            |
+| Database    | Appwrite                            |
+| Market Data | Yahoo Finance, Finnhub, FairEconomy |
+| Deployment  | Vercel                              |
+| Testing     | Vitest, Playwright                  |
 
-## Getting Started
+## Getting started
 
 ### Prerequisites
 
@@ -50,31 +66,26 @@ No paywall for core features. No forced tracking. Just a clean stock analysis to
 ### Installation
 
 ```bash
-# Clone the repo
-git clone https://github.com/your-username/stock-exchange-app.git
-cd stock-exchange-app
+git clone https://github.com/Ditectrev/Open-Source-Stock-Application.git
+cd Open-Source-Stock-Application
 
-# Install dependencies
 bun install
 
-# Configure environment
 cp .env.example .env.local
-# Edit .env.local with your API keys
+# Edit .env.local — set NEXT_PUBLIC_SITE_URL for correct SEO canonical URLs
 
-# Start development server
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the application.
+Open [http://localhost:3000](http://localhost:3000).
 
-### Local Ollama From A Deployed Preview
+### Local Ollama from a deployed site
 
-The Local AI tier uses Ollama at `http://localhost:11434`. When you run this app locally, the Next.js server can call Ollama directly. When you open a deployed preview URL, such as Vercel, the browser must call the Ollama server running on the user's machine, so Ollama must allow that site origin.
+The Local AI tier uses Ollama at `http://localhost:11434`. When you run this app locally, the Next.js server can call Ollama directly. When you open a deployed URL, the browser must call Ollama on the user's machine, so Ollama must allow that site origin.
 
-Install Ollama from [webinstall.dev/ollama](https://webinstall.dev/ollama/). Set `OLLAMA_ORIGINS` to your site origin (for this deployment, `https://theopenstock.com`), then start Ollama with `ollama serve` so the variable is applied:
+Install Ollama from [webinstall.dev/ollama](https://webinstall.dev/ollama/). Set `OLLAMA_ORIGINS` to your site origin (for production, `https://theopenstock.com`), then start Ollama with `ollama serve`:
 
 ```bash
-# macOS/Linux shell when starting Ollama manually
 OLLAMA_ORIGINS="https://theopenstock.com" ollama serve
 ```
 
@@ -105,13 +116,13 @@ setx OLLAMA_ORIGINS "https://theopenstock.com"
 docker run -e OLLAMA_ORIGINS="https://theopenstock.com" -p 11434:11434 ollama/ollama
 ```
 
-Use the exact origin from your browser address bar (scheme + host, no trailing slash). For multiple sites or previews, use a comma-separated list if your Ollama version supports it.
+Use the exact origin from your browser address bar (scheme + host, no trailing slash).
 
-The app asks Ollama for the locally installed model list and uses the most recently modified model, so users do not need to install one hardcoded model. If no models are installed, install any compatible model first, for example `ollama pull llama3.2`.
+The app asks Ollama for the locally installed model list and uses the most recently modified model. If no models are installed, run e.g. `ollama pull llama3.2`.
 
-If `ollama serve` shows `127.0.0.1:11434: bind: address already in use`, Ollama is already running. Quit the existing Ollama process/app before starting it with `OLLAMA_ORIGINS`, or follow the workaround in [ollama/ollama#707](https://github.com/ollama/ollama/issues/707).
+If `ollama serve` shows `127.0.0.1:11434: bind: address already in use`, Ollama is already running. Quit the existing process or see [ollama/ollama#707](https://github.com/ollama/ollama/issues/707).
 
-## Environment Variables
+## Environment variables
 
 ### Required
 
@@ -126,18 +137,24 @@ If `ollama serve` shows `127.0.0.1:11434: bind: address already in use`, Ollama 
 
 Also required for trial features: `APPWRITE_COLLECTION_ID_TRIAL_SESSIONS`.
 
+### SEO & analytics (recommended for production)
+
+| Variable               | Description                                                                               |
+| ---------------------- | ----------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL` | Canonical site URL for sitemap, Open Graph, and JSON-LD (e.g. `https://theopenstock.com`) |
+| `NEXT_PUBLIC_GTM_ID`   | Google Tag Manager container ID (optional)                                                |
+
 ### Optional
 
 | Variable                             | Description                                                                     | Default                            |
 | ------------------------------------ | ------------------------------------------------------------------------------- | ---------------------------------- |
-| `FINNHUB_API_KEY`                    | Finnhub API key used for higher-quality live quotes/search/candles              | unset                              |
+| `FINNHUB_API_KEY`                    | Finnhub API key for higher-quality live quotes/search/candles                   | unset                              |
 | `FINNHUB_BASE_URL`                   | Finnhub API base URL                                                            | `https://finnhub.io/api/v1`        |
 | `YAHOO_FINANCE_API_URL`              | Yahoo Finance API base URL                                                      | `https://query1.finance.yahoo.com` |
 | `CACHE_TTL_SECONDS`                  | Cache TTL in seconds                                                            | `300`                              |
 | `RATE_LIMIT_MAX_REQUESTS`            | Max API requests per window                                                     | `100`                              |
 | `RATE_LIMIT_WINDOW_SECONDS`          | Rate limit window in seconds                                                    | `60`                               |
 | `LOG_LEVEL`                          | Logging level                                                                   | `info`                             |
-| `NEXT_PUBLIC_GTM_ID`                 | Google Tag Manager container ID (enables GTM when set, e.g. `GTM-XXXXXXX`)      | unset                              |
 | `DEV_OVERRIDE_PRICING_TIER`          | Temporary non-prod tier override (`FREE`,`ADS_FREE`,`LOCAL`,`BYOK`,`HOSTED_AI`) | unset                              |
 | `DEV_OVERRIDE_PRICING_TIER_USER_IDS` | Optional comma-separated user IDs for scoped override                           | unset                              |
 | `STRIPE_SECRET_KEY`                  | Stripe secret API key (`sk_*`)                                                  | unset                              |
@@ -149,55 +166,52 @@ Also required for trial features: `APPWRITE_COLLECTION_ID_TRIAL_SESSIONS`.
 
 See `.env.example` for the full list.
 
-### Appwrite AI Keys Database Setup
-
-After setting the required environment variables, run:
+### Appwrite AI keys database setup
 
 ```bash
 bun run setup:appwrite:ai-keys
-```
-
-This uses your existing `APPWRITE_DATABASE_ID` and creates (or reuses) the BYOK keys collection in that database.
-
-For subscriptions collection setup, run:
-
-```bash
 bun run setup:appwrite:subscriptions
 ```
 
-## Project Structure
+## Project structure
 
 ```text
-├── app/            # Next.js App Router pages and API routes
+├── app/            # Next.js App Router pages, metadata, sitemap, robots
 ├── components/     # React components
-├── lib/            # Utilities, caching, rate limiting
+├── lib/            # Utilities, SEO helpers, caching
 ├── services/       # API service layer
 ├── types/          # TypeScript types
 ├── e2e/            # Playwright end-to-end tests
 └── public/         # Static assets
 ```
 
-## Features in Detail
+## Features in detail
 
-### Stock Analysis
+### Stock analysis
 
-Search any stock symbol and get a multi-tab view: Overview, Financials, Technical Indicators, Forecasts, and Seasonal patterns.
+Search any symbol (e.g. `AAPL`, `MSFT`) for overview, financials, technicals, forecasts, and seasonals. URL format: `/?symbol=TICKER`.
 
-### Economic Calendar
+### Economic calendar
 
-Live economic events grouped by day with country flags, importance filters, and date range selection. Data sourced from FairEconomy (ForexFactory feed).
+Live economic events grouped by day with country flags and importance filters (FairEconomy / ForexFactory feed).
 
-### Technical Indicators
+### Technical indicators
 
-SMA, EMA, RSI, MACD, and Bollinger Bands overlaid on interactive price charts.
+SMA, EMA, RSI, MACD, and Bollinger Bands on interactive price charts.
 
-### Sector Performance
+### Sector performance & heatmaps
 
-Track all major market sectors with performance metrics and visual indicators.
+Sector returns and visual heatmaps for stocks, ETFs, and crypto.
 
-### World Markets
+### Stock screener
 
-Global market indices overview showing real-time performance across regions.
+Preset screens (growth, value, momentum, dividends) plus custom filters.
+
+### AI features
+
+- **AI prediction** on symbol pages (buy / sell / hold stance with context bullets)
+- **Stock of the day** — daily AI buy and sell ideas validated against market data
+- **Local AI** via [Ollama](https://ollama.com) on your machine
 
 ## Scripts
 
@@ -211,13 +225,28 @@ bun run test         # Unit tests (Vitest)
 bun run test:e2e     # E2E tests (Playwright)
 ```
 
+## SEO
+
+Production builds expose:
+
+- Page titles and meta descriptions (per route and per `/?symbol=` ticker)
+- Open Graph and Twitter Card tags
+- `robots.txt` and `sitemap.xml`
+- JSON-LD (`WebSite`, `Organization`, `WebApplication`)
+
+Set `NEXT_PUBLIC_SITE_URL=https://theopenstock.com` on Vercel so canonical URLs and the sitemap match your live domain.
+
+For **GitHub Actions → Vercel** (`.github/workflows/deploy.yml`), add the same value as a **repository variable** `NEXT_PUBLIC_SITE_URL` so the deploy job can sync it to Vercel (optional for Preview if you prefer `VERCEL_URL` at build time—leave the variable empty for that environment).
+
+**Naming:** This product is **The Open Stock** at **theopenstock.com**. It is not affiliated with other projects named `OpenStock.` Meta keywords and the default description include phrases such as `OpenStock alternative` so people comparing open-source stock tools can find this repo—always use honest wording on landing pages and docs.
+
 ## Contributing
 
 Contributions are welcome. Please open an issue first to discuss what you'd like to change.
 
 ## Keywords
 
-open source stock app, free stock market application, stock analysis tool, stock portfolio tracker, technical indicators, economic calendar, Next.js stock app, self-hosted stock platform, stock market dashboard, financial analysis tool
+The Open Stock, free stock app, stock market dashboard, stock charts, stock screener, technical analysis, RSI MACD Bollinger Bands, economic calendar, earnings calendar, sector heatmap, Fear and Greed Index, analyst forecasts, open source stock platform, AI stock prediction, Ollama investing, long term investing, self-hosted stock app, Next.js finance app, OpenStock alternative, OpenStock alternative free, openstock, free open source stock tracker, open source stock market app like OpenStock
 
 ## License
 

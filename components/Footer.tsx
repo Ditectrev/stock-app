@@ -22,12 +22,12 @@ export function Footer() {
       {/* GitHub Star */}
       <div className="flex items-center justify-center mb-3">
         <GitHubButton
-          href="https://github.com/Ditectrev/stock-app"
+          href="https://github.com/Ditectrev/Open-Source-Stock-Application"
           data-color-scheme="no-preference: dark; light: light; dark: dark;"
           data-icon="octicon-star"
           data-size="large"
           data-show-count="true"
-          aria-label="Star stock-app on GitHub"
+          aria-label="Star Open Source Stock Application on GitHub"
         >
           Star
         </GitHubButton>
