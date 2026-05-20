@@ -3,43 +3,8 @@
 import Link from "next/link";
 import type { PricingTier, StockOfTheDay, StockOfTheDayResult } from "@/types";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
+import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
-
-const CONFIDENCE_TOOLTIP =
-  "Not a probability of profit or a guarantee. AI suggests tickers; we score each one with live price, technicals, and analyst data, then pick the strongest buy and sell. This percentage shows how strongly today's data supported that pick versus other candidates (always shown between 55% and 95%).";
-
-function ConfidenceInfoTooltip() {
-  return (
-    <span className="group relative ml-1 inline-flex align-middle">
-      <button
-        type="button"
-        className="cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-full"
-        aria-label="What does confidence mean?"
-      >
-        <svg
-          className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
-          />
-        </svg>
-      </button>
-      <span
-        role="tooltip"
-        className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 rounded bg-gray-900 dark:bg-gray-700 px-3 py-2 text-left text-xs font-normal normal-case leading-snug text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
-      >
-        {CONFIDENCE_TOOLTIP}
-      </span>
-    </span>
-  );
-}
 
 interface StockOfTheDayPanelProps {
   item: StockOfTheDayResult | null;
@@ -80,7 +45,7 @@ export function StockOfTheDayPanel({
       </div>
       <p className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
         <span>Confidence {Math.round(pick.confidence * 100)}%</span>
-        <ConfidenceInfoTooltip />
+        <ConfidenceInfoTooltip variant="stockOfTheDay" />
       </p>
       <ul className="mt-3 space-y-1 text-sm text-gray-600 dark:text-gray-300">
         {pick.rationale.map((reason) => (

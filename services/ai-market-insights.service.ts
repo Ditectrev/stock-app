@@ -1,3 +1,4 @@
+import { scoreToConfidence } from "@/lib/ai-confidence";
 import { marketDataService } from "@/services/market-data.service";
 import { AIIntegrationService } from "@/services/ai-integration.service";
 import { logger } from "@/lib/logger";
@@ -57,14 +58,6 @@ function toRecommendation(score: number): Recommendation {
   if (score >= 0.2) return "buy";
   if (score <= -0.2) return "sell";
   return "hold";
-}
-
-function boundedConfidence(score: number): number {
-  const normalized = Math.min(
-    0.95,
-    Math.max(0.55, 0.65 + Math.abs(score) * 0.2)
-  );
-  return Number(normalized.toFixed(2));
 }
 
 function getLLMConfigFromEnv(): {
@@ -215,7 +208,7 @@ export class AIMarketInsightsService {
       fearGreed.value <= 35 ? 0.1 : fearGreed.value >= 70 ? -0.1 : 0;
     const score = targetUpside + sentimentScore + fearGreedBias;
     const recommendation = toRecommendation(score);
-    const confidence = boundedConfidence(score);
+    const confidence = scoreToConfidence(score);
 
     const weakestRegion = [...worldMarkets].sort(
       (a, b) => a.changePercent - b.changePercent
@@ -370,7 +363,7 @@ export class AIMarketInsightsService {
                 ? "AI surfaced this as an underfollowed asymmetric-growth candidate."
                 : "AI surfaced this as a structurally vulnerable candidate."),
             score,
-            confidence: boundedConfidence(score),
+            confidence: scoreToConfidence(score, 1.25),
             rationale: this.buildStockOfTheDayRationale(direction, {
               thesis: candidate.thesis,
               changePercent: quote.changePercent,
