@@ -123,12 +123,35 @@ export class APIKeyManagerService {
       return validationResult;
     }
 
+    const persist = await fetch("/api/ai/keys", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ provider, apiKey }),
+    });
+
+    if (!persist.ok) {
+      const body = (await persist.json().catch(() => ({}))) as {
+        error?: string;
+      };
+      return {
+        valid: false,
+        error:
+          body.error ??
+          "Could not store the API key on the server for BYOK. Try again or check your subscription tier.",
+      };
+    }
+
     await this.storeKey(provider, apiKey);
     return { valid: true };
   }
 
   async removeKey(provider: BYOKProvider): Promise<void> {
     localStorage.removeItem(this.getStorageKey(provider));
+    await fetch(`/api/ai/keys/${encodeURIComponent(provider)}`, {
+      method: "DELETE",
+      credentials: "include",
+    }).catch(() => {});
   }
 
   async getStoredKeyInfo(provider: BYOKProvider): Promise<StoredAPIKey | null> {

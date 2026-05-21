@@ -188,9 +188,6 @@ jobs:
             vercel env add FINNHUB_BASE_URL $ENV_TYPE "" --value "${{ vars.FINNHUB_BASE_URL }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
           fi
           vercel env add FINNHUB_API_KEY $ENV_TYPE "" --value "${{ secrets.FINNHUB_API_KEY }}" --yes --force --sensitive --token=${{ secrets.VERCEL_TOKEN }}
-          if [ -n "${{ vars.OLLAMA_MODEL }}" ]; then
-            vercel env add OLLAMA_MODEL $ENV_TYPE "" --value "${{ vars.OLLAMA_MODEL }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
-          fi
           if [ -n "${{ vars.YAHOO_FINANCE_API_URL }}" ]; then
             vercel env add YAHOO_FINANCE_API_URL $ENV_TYPE "" --value "${{ vars.YAHOO_FINANCE_API_URL }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
           fi
@@ -233,7 +230,6 @@ jobs:
           APPWRITE_COLLECTION_ID_SUBSCRIPTIONS: ${{ secrets.APPWRITE_COLLECTION_ID_SUBSCRIPTIONS }}
           FINNHUB_BASE_URL: ${{ vars.FINNHUB_BASE_URL }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
-          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL }}
           YAHOO_FINANCE_API_URL: ${{ vars.YAHOO_FINANCE_API_URL }}
           STRIPE_PRICE_ADS_FREE: ${{ vars.STRIPE_PRICE_ADS_FREE }}
           STRIPE_PRICE_LOCAL: ${{ vars.STRIPE_PRICE_LOCAL }}

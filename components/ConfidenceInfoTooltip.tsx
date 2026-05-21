@@ -12,10 +12,18 @@ const TOOLTIP_TEXT: Record<ConfidenceTooltipVariant, string> = {
 export function ConfidenceInfoTooltip({
   variant,
   className = "h-3.5 w-3.5",
+  placement = "below",
 }: {
   variant: ConfidenceTooltipVariant;
   className?: string;
+  /** Below avoids clipping when the trigger sits near the top of an overflow-hidden card. */
+  placement?: "above" | "below";
 }) {
+  const tooltipPosition =
+    placement === "above"
+      ? "bottom-full left-1/2 mb-2 -translate-x-1/2"
+      : "top-full right-0 mt-2 sm:left-1/2 sm:right-auto sm:-translate-x-1/2";
+
   return (
     <span className="group relative ml-1 inline-flex align-middle">
       <button
@@ -40,7 +48,7 @@ export function ConfidenceInfoTooltip({
       </button>
       <span
         role="tooltip"
-        className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-64 -translate-x-1/2 rounded bg-gray-900 dark:bg-gray-700 px-3 py-2 text-left text-xs font-normal normal-case leading-snug text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+        className={`pointer-events-none absolute z-50 w-64 max-w-[min(16rem,calc(100vw-2rem))] rounded bg-gray-900 px-3 py-2 text-left text-xs font-normal normal-case leading-snug text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 dark:bg-gray-700 ${tooltipPosition}`}
       >
         {TOOLTIP_TEXT[variant]}
       </span>

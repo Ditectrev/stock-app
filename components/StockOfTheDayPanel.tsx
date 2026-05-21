@@ -57,7 +57,7 @@ export function StockOfTheDayPanel({
 
   return (
     <section className="mt-6 sm:mt-8 lg:mt-10">
-      <div className="p-4 sm:p-6 rounded-lg shadow-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 relative overflow-hidden">
+      <div className="relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
         <div
           className={locked ? "blur-sm select-none pointer-events-none" : ""}
         >
@@ -119,7 +119,7 @@ export function StockOfTheDayPanel({
         </div>
 
         {locked && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/70 dark:bg-gray-900/70 px-6 text-center">
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-white/70 px-6 text-center dark:bg-gray-900/70">
             <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">
               {getAiSubscriptionGateMessage(pricingTier ?? undefined)}
             </p>
