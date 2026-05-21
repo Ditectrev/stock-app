@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Rate Limit Enforcement
- * Feature: stock-exchange-application, Property 5: Rate Limit Enforcement
+ * Feature: the-open-stock, Property 5: Rate Limit Enforcement
  *
  * Validates: Requirements 17.1, 17.4
  * "For any sequence of API requests within a time window, the number of
@@ -140,7 +140,7 @@ describe("Property 5: Rate Limit Enforcement", () => {
   });
 
   it("requests within the rate limit window do not exceed the configured maximum", async () => {
-    // Feature: stock-exchange-application, Property 5: Rate Limit Enforcement
+    // Feature: the-open-stock, Property 5: Rate Limit Enforcement
     // **Validates: Requirements 17.1, 17.4**
     await fc.assert(
       fc.asyncProperty(symbolArb, priceArb, async (symbol, price) => {
@@ -177,7 +177,7 @@ describe("Property 5: Rate Limit Enforcement", () => {
   });
 
   it("when rate limited, cached data is served instead of making API calls", async () => {
-    // Feature: stock-exchange-application, Property 5: Rate Limit Enforcement
+    // Feature: the-open-stock, Property 5: Rate Limit Enforcement
     // **Validates: Requirements 17.1, 17.4**
     await fc.assert(
       fc.asyncProperty(symbolArb, priceArb, async (symbol, price) => {
@@ -215,7 +215,7 @@ describe("Property 5: Rate Limit Enforcement", () => {
   });
 
   it("when rate limited with no cached data, an error is thrown", async () => {
-    // Feature: stock-exchange-application, Property 5: Rate Limit Enforcement
+    // Feature: the-open-stock, Property 5: Rate Limit Enforcement
     // **Validates: Requirements 17.1, 17.4**
     await fc.assert(
       fc.asyncProperty(symbolArb, priceArb, async (symbol, price) => {
@@ -244,7 +244,7 @@ describe("Property 5: Rate Limit Enforcement", () => {
   });
 
   it("rate limit resets after the time window expires", async () => {
-    // Feature: stock-exchange-application, Property 5: Rate Limit Enforcement
+    // Feature: the-open-stock, Property 5: Rate Limit Enforcement
     // **Validates: Requirements 17.1, 17.4**
     await fc.assert(
       fc.asyncProperty(symbolArb, async (symbol) => {
@@ -278,7 +278,7 @@ describe("Property 5: Rate Limit Enforcement", () => {
   });
 
   it("different endpoints have independent rate limits", async () => {
-    // Feature: stock-exchange-application, Property 5: Rate Limit Enforcement
+    // Feature: the-open-stock, Property 5: Rate Limit Enforcement
     // **Validates: Requirements 17.1, 17.4**
     await fc.assert(
       fc.asyncProperty(symbolArb, symbolArb, async (symbolA, symbolB) => {

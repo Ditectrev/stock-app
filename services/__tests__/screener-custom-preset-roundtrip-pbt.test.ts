@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Custom Preset Round Trip
- * Feature: stock-exchange-application, Property 20: Custom Preset Round Trip
+ * Feature: the-open-stock, Property 20: Custom Preset Round Trip
  *
  * Validates: Requirements 26.15
  * "For any custom screener preset saved by a user, retrieving the preset
@@ -186,7 +186,7 @@ function retrievePreset(preset: ScreenerPreset): ScreenerPreset {
 
 describe("Property 20: Custom Preset Round Trip", () => {
   it("saved preset filters are identical to the original filters", () => {
-    // Feature: stock-exchange-application, Property 20: Custom Preset Round Trip
+    // Feature: the-open-stock, Property 20: Custom Preset Round Trip
     fc.assert(
       fc.property(
         presetNameArb,
@@ -206,7 +206,7 @@ describe("Property 20: Custom Preset Round Trip", () => {
   });
 
   it("each filter field, operator, value, and label survive the round trip", () => {
-    // Feature: stock-exchange-application, Property 20: Custom Preset Round Trip
+    // Feature: the-open-stock, Property 20: Custom Preset Round Trip
     fc.assert(
       fc.property(
         presetNameArb,
@@ -229,7 +229,7 @@ describe("Property 20: Custom Preset Round Trip", () => {
   });
 
   it("preset metadata (name, description, isDefault) is preserved", () => {
-    // Feature: stock-exchange-application, Property 20: Custom Preset Round Trip
+    // Feature: the-open-stock, Property 20: Custom Preset Round Trip
     fc.assert(
       fc.property(
         presetNameArb,
@@ -252,7 +252,7 @@ describe("Property 20: Custom Preset Round Trip", () => {
   });
 
   it("applying a round-tripped preset produces the same filter results as the original filters", () => {
-    // Feature: stock-exchange-application, Property 20: Custom Preset Round Trip
+    // Feature: the-open-stock, Property 20: Custom Preset Round Trip
     fc.assert(
       fc.property(
         presetNameArb,
@@ -280,7 +280,7 @@ describe("Property 20: Custom Preset Round Trip", () => {
   });
 
   it("saving and retrieving twice yields the same preset", () => {
-    // Feature: stock-exchange-application, Property 20: Custom Preset Round Trip
+    // Feature: the-open-stock, Property 20: Custom Preset Round Trip
     fc.assert(
       fc.property(
         presetNameArb,
@@ -305,7 +305,7 @@ describe("Property 20: Custom Preset Round Trip", () => {
   });
 
   it("filter order is preserved through the round trip", () => {
-    // Feature: stock-exchange-application, Property 20: Custom Preset Round Trip
+    // Feature: the-open-stock, Property 20: Custom Preset Round Trip
     fc.assert(
       fc.property(
         presetNameArb,

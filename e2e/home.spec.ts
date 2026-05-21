@@ -8,7 +8,7 @@ test.describe("Home Page", () => {
   test("should render the main navigation bar", async ({ page }) => {
     const nav = page.locator("nav[aria-label='Main navigation']");
     await expect(nav).toBeVisible();
-    await expect(nav.getByText("Stock Exchange")).toBeVisible();
+    await expect(nav).toContainText(/The Open Stock|Open Stock/);
   });
 
   test("should display navigation links for all sections", async ({ page }) => {

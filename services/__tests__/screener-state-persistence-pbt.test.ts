@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Screener State Persistence
- * Feature: stock-exchange-application, Property 19: Screener State Persistence
+ * Feature: the-open-stock, Property 19: Screener State Persistence
  *
  * Validates: Requirements 26.23
  * "For any screener filter configuration, refreshing the page should restore
@@ -149,7 +149,7 @@ describe("Property 19: Screener State Persistence", () => {
   });
 
   it("persisted filters are identical after a storage round trip", () => {
-    // Feature: stock-exchange-application, Property 19: Screener State Persistence
+    // Feature: the-open-stock, Property 19: Screener State Persistence
     fc.assert(
       fc.property(filtersArb, (filters) => {
         persistFilters(storage, filters);
@@ -163,7 +163,7 @@ describe("Property 19: Screener State Persistence", () => {
   });
 
   it("each filter field, operator, value, and label survive persistence", () => {
-    // Feature: stock-exchange-application, Property 19: Screener State Persistence
+    // Feature: the-open-stock, Property 19: Screener State Persistence
     fc.assert(
       fc.property(filtersArb, (filters) => {
         persistFilters(storage, filters);
@@ -183,7 +183,7 @@ describe("Property 19: Screener State Persistence", () => {
   });
 
   it("filter order is preserved through persistence", () => {
-    // Feature: stock-exchange-application, Property 19: Screener State Persistence
+    // Feature: the-open-stock, Property 19: Screener State Persistence
     fc.assert(
       fc.property(filtersArb, (filters) => {
         persistFilters(storage, filters);
@@ -198,7 +198,7 @@ describe("Property 19: Screener State Persistence", () => {
   });
 
   it("persisting twice overwrites previous state correctly", () => {
-    // Feature: stock-exchange-application, Property 19: Screener State Persistence
+    // Feature: the-open-stock, Property 19: Screener State Persistence
     fc.assert(
       fc.property(filtersArb, filtersArb, (filtersA, filtersB) => {
         persistFilters(storage, filtersA);
@@ -212,7 +212,7 @@ describe("Property 19: Screener State Persistence", () => {
   });
 
   it("clearing filters removes persisted state", () => {
-    // Feature: stock-exchange-application, Property 19: Screener State Persistence
+    // Feature: the-open-stock, Property 19: Screener State Persistence
     fc.assert(
       fc.property(filtersArb, (filters) => {
         persistFilters(storage, filters);
@@ -227,7 +227,7 @@ describe("Property 19: Screener State Persistence", () => {
   });
 
   it("multiple round trips yield the same result (idempotent)", () => {
-    // Feature: stock-exchange-application, Property 19: Screener State Persistence
+    // Feature: the-open-stock, Property 19: Screener State Persistence
     fc.assert(
       fc.property(filtersArb, (filters) => {
         // First round trip
@@ -246,7 +246,7 @@ describe("Property 19: Screener State Persistence", () => {
   });
 
   it("between-filter tuple values survive JSON serialization", () => {
-    // Feature: stock-exchange-application, Property 19: Screener State Persistence
+    // Feature: the-open-stock, Property 19: Screener State Persistence
     fc.assert(
       fc.property(
         fc.array(betweenFilterArb, { minLength: 1, maxLength: 5 }),
@@ -268,7 +268,7 @@ describe("Property 19: Screener State Persistence", () => {
   });
 
   it("sector in-filter string arrays survive JSON serialization", () => {
-    // Feature: stock-exchange-application, Property 19: Screener State Persistence
+    // Feature: the-open-stock, Property 19: Screener State Persistence
     fc.assert(
       fc.property(
         fc.array(sectorFilterArb, { minLength: 1, maxLength: 3 }),

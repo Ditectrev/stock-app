@@ -3,8 +3,11 @@ import type { Metadata } from "next";
 /** Public marketing name (search results & social cards). */
 export const SITE_NAME = "The Open Stock";
 
-/** Short label used in the UI nav. */
+/** Short label used in the UI nav (desktop). */
 export const SITE_SHORT_NAME = "The Open Stock";
+
+/** Compact nav label on small screens. */
+export const SITE_NAV_MOBILE_LABEL = "Open Stock";
 
 export const SITE_TAGLINE =
   "Free stock charts, screeners, calendars & AI market analysis";

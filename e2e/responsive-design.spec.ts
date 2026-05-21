@@ -18,9 +18,8 @@ test.describe("Mobile viewport (375×667)", () => {
   });
 
   test("should render the page title", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText(
-      "Stock Exchange Application"
-    );
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    await expect(nav).toContainText(/The Open Stock|Open Stock/);
   });
 
   test("should render search bar at full width", async ({ page }) => {

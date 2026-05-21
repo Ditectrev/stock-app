@@ -1,8 +1,8 @@
-# Design Document: Stock Exchange Application
+# Design Document: The Open Stock
 
 ## Overview
 
-The Stock Exchange Application is a comprehensive web platform designed for individual long-term investors to access visualized market data, technical indicators, forecasts, and seasonal patterns with plain-language explanations. The system provides a 15-minute trial experience for unauthenticated users, followed by five distinct pricing tiers that cater to different user needs ranging from ad-supported free access to privacy-focused local AI and hosted AI solutions.
+The Open Stock is a comprehensive web platform designed for individual long-term investors to access visualized market data, technical indicators, forecasts, and seasonal patterns with plain-language explanations. The system provides a 15-minute trial experience for unauthenticated users, followed by five distinct pricing tiers that cater to different user needs ranging from ad-supported free access to privacy-focused local AI and hosted AI solutions.
 
 ### Key Features
 
@@ -1083,7 +1083,7 @@ describe("TrialTimer", () => {
 **Configuration**:
 
 - Minimum 100 iterations per property test
-- Each test tagged with: `Feature: stock-exchange-application, Property {number}: {property_text}`
+- Each test tagged with: `Feature: the-open-stock, Property {number}: {property_text}`
 
 **Coverage Areas**:
 
@@ -1101,7 +1101,7 @@ import fc from "fast-check";
 
 describe("Property Tests", () => {
   it("Property 3: Market Data Caching", () => {
-    // Feature: stock-exchange-application, Property 3: Market Data Caching
+    // Feature: the-open-stock, Property 3: Market Data Caching
     fc.assert(
       fc.asyncProperty(
         fc.string(), // symbol
@@ -1120,7 +1120,7 @@ describe("Property Tests", () => {
   });
 
   it("Property 7: Trial Session Creation", () => {
-    // Feature: stock-exchange-application, Property 7: Trial Session Creation
+    // Feature: the-open-stock, Property 7: Trial Session Creation
     fc.assert(
       fc.asyncProperty(
         fc.record({
@@ -1146,7 +1146,7 @@ describe("Property Tests", () => {
   });
 
   it("Property 17: Screener Filter Conjunction", () => {
-    // Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+    // Feature: the-open-stock, Property 17: Screener Filter Conjunction
     fc.assert(
       fc.asyncProperty(
         fc.array(

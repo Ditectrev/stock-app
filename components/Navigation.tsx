@@ -7,6 +7,11 @@ import { SearchBar } from "@/components/SearchBar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
 import { MAIN_NAV, pathnameToNavId } from "@/lib/nav-routes";
+import {
+  SITE_NAME,
+  SITE_NAV_MOBILE_LABEL,
+  SITE_SHORT_NAME,
+} from "@/lib/site-seo";
 
 export interface NavigationProps {
   /** Override active section (e.g. tests); default: derived from URL */
@@ -39,10 +44,10 @@ export function Navigation({
           <Link
             href="/"
             className="flex-shrink-0 text-lg font-bold text-gray-900 dark:text-gray-100"
-            aria-label="Stock Exchange Application home"
+            aria-label={`${SITE_NAME} home`}
           >
-            <span className="hidden sm:inline">Stock Exchange</span>
-            <span className="sm:hidden">SE</span>
+            <span className="hidden sm:inline">{SITE_SHORT_NAME}</span>
+            <span className="sm:hidden">{SITE_NAV_MOBILE_LABEL}</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-2">

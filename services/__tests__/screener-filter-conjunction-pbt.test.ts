@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Screener Filter Conjunction
- * Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+ * Feature: the-open-stock, Property 17: Screener Filter Conjunction
  *
  * Validates: Requirements 26.8
  * "For any set of screener filters applied, the results should include only
@@ -139,7 +139,7 @@ const filterArb: fc.Arbitrary<ScreenerFilter> = fc.oneof(
 
 describe("Property 17: Screener Filter Conjunction", () => {
   it("every returned result satisfies ALL filters (AND logic)", () => {
-    // Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+    // Feature: the-open-stock, Property 17: Screener Filter Conjunction
     fc.assert(
       fc.property(
         fc.array(resultArb, { minLength: 0, maxLength: 30 }),
@@ -157,7 +157,7 @@ describe("Property 17: Screener Filter Conjunction", () => {
   });
 
   it("no excluded result satisfies all filters", () => {
-    // Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+    // Feature: the-open-stock, Property 17: Screener Filter Conjunction
     fc.assert(
       fc.property(
         fc.array(resultArb, { minLength: 1, maxLength: 30 }),
@@ -196,7 +196,7 @@ describe("Property 17: Screener Filter Conjunction", () => {
   });
 
   it("result count equals the number of assets matching all criteria", () => {
-    // Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+    // Feature: the-open-stock, Property 17: Screener Filter Conjunction
     fc.assert(
       fc.property(
         fc.array(resultArb, { minLength: 0, maxLength: 30 }),
@@ -215,7 +215,7 @@ describe("Property 17: Screener Filter Conjunction", () => {
   });
 
   it("empty filters return all results unchanged", () => {
-    // Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+    // Feature: the-open-stock, Property 17: Screener Filter Conjunction
     fc.assert(
       fc.property(
         fc.array(resultArb, { minLength: 0, maxLength: 30 }),
@@ -229,7 +229,7 @@ describe("Property 17: Screener Filter Conjunction", () => {
   });
 
   it("adding a filter can only reduce or maintain result count (monotonicity)", () => {
-    // Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+    // Feature: the-open-stock, Property 17: Screener Filter Conjunction
     fc.assert(
       fc.property(
         fc.array(resultArb, { minLength: 1, maxLength: 30 }),
@@ -253,7 +253,7 @@ describe("Property 17: Screener Filter Conjunction", () => {
   });
 
   it("filter order does not affect results (commutativity)", () => {
-    // Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+    // Feature: the-open-stock, Property 17: Screener Filter Conjunction
     fc.assert(
       fc.property(
         fc.array(resultArb, { minLength: 1, maxLength: 20 }),
@@ -276,7 +276,7 @@ describe("Property 17: Screener Filter Conjunction", () => {
   });
 
   it("filtered results are a subset of the original results", () => {
-    // Feature: stock-exchange-application, Property 17: Screener Filter Conjunction
+    // Feature: the-open-stock, Property 17: Screener Filter Conjunction
     fc.assert(
       fc.property(
         fc.array(resultArb, { minLength: 0, maxLength: 30 }),

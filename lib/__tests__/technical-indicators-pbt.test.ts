@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Technical Indicator Color Coding
- * Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+ * Feature: the-open-stock, Property 16: Technical Indicator Color Coding
  *
  * Validates: Requirements 5.4
  * "For any technical indicator value, the color should be red when indicating overpriced,
@@ -26,7 +26,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
    */
   describe("RSI Signal", () => {
     it("should always return a valid signal for any RSI value in [0, 100]", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(fc.double({ min: 0, max: 100, noNaN: true }), (rsi) => {
           const signal = getRSISignal(rsi);
@@ -37,7 +37,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
     });
 
     it("should return 'overpriced' for any RSI > 70", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: 70.0001, max: 100, noNaN: true }),
@@ -50,7 +50,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
     });
 
     it("should return 'underpriced' for any RSI < 30", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(fc.double({ min: 0, max: 29.9999, noNaN: true }), (rsi) => {
           expect(getRSISignal(rsi)).toBe("underpriced");
@@ -60,7 +60,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
     });
 
     it("should return 'fair' for any RSI between 30 and 70 inclusive", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(fc.double({ min: 30, max: 70, noNaN: true }), (rsi) => {
           expect(getRSISignal(rsi)).toBe("fair");
@@ -76,7 +76,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
    */
   describe("MACD Signal", () => {
     it("should always return a valid signal for any histogram value", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: -1000, max: 1000, noNaN: true }),
@@ -90,7 +90,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
     });
 
     it("should map histogram values consistently with threshold", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: -1000, max: 1000, noNaN: true }),
@@ -117,7 +117,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
    */
   describe("Moving Average Signal", () => {
     it("should always return a valid signal for any price/MA combination", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: 0.01, max: 10000, noNaN: true }),
@@ -132,7 +132,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
     });
 
     it("should map price/MA relationship consistently", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: 0.01, max: 10000, noNaN: true }),
@@ -153,7 +153,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
     });
 
     it("should return 'fair' when MA is zero", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: 0.01, max: 10000, noNaN: true }),
@@ -173,7 +173,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
    */
   describe("Bollinger Bands Signal", () => {
     it("should always return a valid signal for any price/band combination", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: 0.01, max: 10000, noNaN: true }),
@@ -191,7 +191,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
     });
 
     it("should map price/band relationship consistently with 10% threshold", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: 1, max: 10000, noNaN: true }),
@@ -221,7 +221,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
     });
 
     it("should return 'fair' when upper equals lower", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: 0.01, max: 10000, noNaN: true }),
@@ -241,7 +241,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
    */
   describe("Signal Exhaustiveness", () => {
     it("all indicator functions should only produce valid Signal values", () => {
-      // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+      // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
       fc.assert(
         fc.property(
           fc.double({ min: 0, max: 100, noNaN: true }),

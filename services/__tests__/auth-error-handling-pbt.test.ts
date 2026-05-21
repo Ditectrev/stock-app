@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Authentication Error Handling
- * Feature: stock-exchange-application, Property 2: Authentication Error Handling
+ * Feature: the-open-stock, Property 2: Authentication Error Handling
  *
  * Validates: Requirements 1.6
  * "For any authentication failure (invalid credentials, network error, or
@@ -160,7 +160,7 @@ describe("Property 2: Authentication Error Handling", () => {
   });
 
   it("Apple SSO initiation failure throws AuthenticationError with descriptive message", async () => {
-    // Feature: stock-exchange-application, Property 2: Authentication Error Handling
+    // Feature: the-open-stock, Property 2: Authentication Error Handling
     await fc.assert(
       fc.asyncProperty(
         errorKindArb,
@@ -189,7 +189,7 @@ describe("Property 2: Authentication Error Handling", () => {
   });
 
   it("Google SSO initiation failure throws AuthenticationError with descriptive message", async () => {
-    // Feature: stock-exchange-application, Property 2: Authentication Error Handling
+    // Feature: the-open-stock, Property 2: Authentication Error Handling
     await fc.assert(
       fc.asyncProperty(
         errorKindArb,
@@ -216,7 +216,7 @@ describe("Property 2: Authentication Error Handling", () => {
   });
 
   it("Email OTP send failure throws AuthenticationError with descriptive message", async () => {
-    // Feature: stock-exchange-application, Property 2: Authentication Error Handling
+    // Feature: the-open-stock, Property 2: Authentication Error Handling
     await fc.assert(
       fc.asyncProperty(errorKindArb, emailArb, async (errorKind, email) => {
         vi.clearAllMocks();
@@ -238,7 +238,7 @@ describe("Property 2: Authentication Error Handling", () => {
   });
 
   it("Email OTP verification failure returns error result without creating a session", async () => {
-    // Feature: stock-exchange-application, Property 2: Authentication Error Handling
+    // Feature: the-open-stock, Property 2: Authentication Error Handling
     await fc.assert(
       fc.asyncProperty(
         errorKindArb,
@@ -268,7 +268,7 @@ describe("Property 2: Authentication Error Handling", () => {
   });
 
   it("OAuth session creation failure returns error result without creating a session", async () => {
-    // Feature: stock-exchange-application, Property 2: Authentication Error Handling
+    // Feature: the-open-stock, Property 2: Authentication Error Handling
     await fc.assert(
       fc.asyncProperty(
         errorKindArb,
@@ -298,7 +298,7 @@ describe("Property 2: Authentication Error Handling", () => {
   });
 
   it("no session exists after any authentication failure for any provider", async () => {
-    // Feature: stock-exchange-application, Property 2: Authentication Error Handling
+    // Feature: the-open-stock, Property 2: Authentication Error Handling
     await fc.assert(
       fc.asyncProperty(
         providerArb,
@@ -354,7 +354,7 @@ describe("Property 2: Authentication Error Handling", () => {
   });
 
   it("sign-out failure throws AuthenticationError with descriptive message", async () => {
-    // Feature: stock-exchange-application, Property 2: Authentication Error Handling
+    // Feature: the-open-stock, Property 2: Authentication Error Handling
     await fc.assert(
       fc.asyncProperty(errorKindArb, async (errorKind) => {
         vi.clearAllMocks();

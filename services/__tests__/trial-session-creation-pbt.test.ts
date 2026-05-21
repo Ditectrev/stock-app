@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Trial Session Creation
- * Feature: stock-exchange-application, Property 7: Trial Session Creation
+ * Feature: the-open-stock, Property 7: Trial Session Creation
  *
  * Validates: Requirements 21.1, 21.2, 21.3
  * "For any unauthenticated user accessing the application, a trial session
@@ -169,7 +169,7 @@ describe("Property 7: Trial Session Creation", () => {
   });
 
   it("startTrial creates a TrialSession with all required fields (start_time, end_time, is_active, device_fingerprint)", async () => {
-    // Feature: stock-exchange-application, Property 7: Trial Session Creation
+    // Feature: the-open-stock, Property 7: Trial Session Creation
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
         // Reset storage for each iteration so fingerprint is not "used"
@@ -199,7 +199,7 @@ describe("Property 7: Trial Session Creation", () => {
   });
 
   it("end_time is exactly 15 minutes after start_time", async () => {
-    // Feature: stock-exchange-application, Property 7: Trial Session Creation
+    // Feature: the-open-stock, Property 7: Trial Session Creation
     // **Validates: Requirements 21.2**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -226,7 +226,7 @@ describe("Property 7: Trial Session Creation", () => {
   });
 
   it("is_active is set to true on creation", async () => {
-    // Feature: stock-exchange-application, Property 7: Trial Session Creation
+    // Feature: the-open-stock, Property 7: Trial Session Creation
     // **Validates: Requirements 21.1**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -251,7 +251,7 @@ describe("Property 7: Trial Session Creation", () => {
   });
 
   it("device_fingerprint is generated and non-empty for any browser characteristics", async () => {
-    // Feature: stock-exchange-application, Property 7: Trial Session Creation
+    // Feature: the-open-stock, Property 7: Trial Session Creation
     // **Validates: Requirements 21.3**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -278,7 +278,7 @@ describe("Property 7: Trial Session Creation", () => {
   });
 
   it("session stores browser characteristics (userAgent, screenResolution, timezone)", async () => {
-    // Feature: stock-exchange-application, Property 7: Trial Session Creation
+    // Feature: the-open-stock, Property 7: Trial Session Creation
     // **Validates: Requirements 21.1, 21.3**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {

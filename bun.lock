@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "stock-exchange-app",
+      "name": "the-open-stock",
       "dependencies": {
         "appwrite": "^21.5.0",
         "lightweight-charts": "^5.1.0",

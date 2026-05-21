@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Market Data Caching
- * Feature: stock-exchange-application, Property 3: Market Data Caching
+ * Feature: the-open-stock, Property 3: Market Data Caching
  *
  * Validates: Requirements 3.4, 17.2
  * "For any market data request, if the data is cached and the TTL has not
@@ -138,7 +138,7 @@ describe("Property 3: Market Data Caching", () => {
   });
 
   it("cached symbol data is returned without additional API calls", async () => {
-    // Feature: stock-exchange-application, Property 3: Market Data Caching
+    // Feature: the-open-stock, Property 3: Market Data Caching
     // **Validates: Requirements 3.4, 17.2**
     await fc.assert(
       fc.asyncProperty(symbolArb, priceArb, async (symbol, price) => {
@@ -165,7 +165,7 @@ describe("Property 3: Market Data Caching", () => {
   });
 
   it("cached historical data is returned without additional API calls", async () => {
-    // Feature: stock-exchange-application, Property 3: Market Data Caching
+    // Feature: the-open-stock, Property 3: Market Data Caching
     // **Validates: Requirements 3.4, 17.2**
     await fc.assert(
       fc.asyncProperty(
@@ -198,7 +198,7 @@ describe("Property 3: Market Data Caching", () => {
   });
 
   it("different symbols produce independent cache entries", async () => {
-    // Feature: stock-exchange-application, Property 3: Market Data Caching
+    // Feature: the-open-stock, Property 3: Market Data Caching
     // **Validates: Requirements 3.4, 17.2**
     await fc.assert(
       fc.asyncProperty(
@@ -242,7 +242,7 @@ describe("Property 3: Market Data Caching", () => {
   });
 
   it("cache invalidation forces a fresh API call on next request", async () => {
-    // Feature: stock-exchange-application, Property 3: Market Data Caching
+    // Feature: the-open-stock, Property 3: Market Data Caching
     // **Validates: Requirements 3.4, 17.2**
     await fc.assert(
       fc.asyncProperty(
@@ -279,7 +279,7 @@ describe("Property 3: Market Data Caching", () => {
   });
 
   it("expired cache entries trigger a new API call", async () => {
-    // Feature: stock-exchange-application, Property 3: Market Data Caching
+    // Feature: the-open-stock, Property 3: Market Data Caching
     // **Validates: Requirements 3.4, 17.2**
     await fc.assert(
       fc.asyncProperty(

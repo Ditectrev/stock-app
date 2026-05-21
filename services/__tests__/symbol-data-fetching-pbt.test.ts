@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Symbol Data Fetching
- * Feature: stock-exchange-application, Property 22: Symbol Data Fetching
+ * Feature: the-open-stock, Property 22: Symbol Data Fetching
  *
  * Validates: Requirements 3.1
  * "For any valid stock symbol, requesting symbol data should either return
@@ -116,7 +116,7 @@ describe("Property 22: Symbol Data Fetching", () => {
   });
 
   it("fetching a valid symbol always returns well-formed SymbolData", async () => {
-    // Feature: stock-exchange-application, Property 22: Symbol Data Fetching
+    // Feature: the-open-stock, Property 22: Symbol Data Fetching
     // **Validates: Requirements 3.1**
     await fc.assert(
       fc.asyncProperty(symbolArb, priceArb, async (symbol, price) => {
@@ -146,7 +146,7 @@ describe("Property 22: Symbol Data Fetching", () => {
   });
 
   it("fetching symbol data never fails silently — errors always propagate", async () => {
-    // Feature: stock-exchange-application, Property 22: Symbol Data Fetching
+    // Feature: the-open-stock, Property 22: Symbol Data Fetching
     // **Validates: Requirements 3.1**
     await fc.assert(
       fc.asyncProperty(symbolArb, async (symbol) => {
@@ -165,7 +165,7 @@ describe("Property 22: Symbol Data Fetching", () => {
   });
 
   it("returns cached data when within TTL instead of calling API again", async () => {
-    // Feature: stock-exchange-application, Property 22: Symbol Data Fetching
+    // Feature: the-open-stock, Property 22: Symbol Data Fetching
     // **Validates: Requirements 3.1**
     await fc.assert(
       fc.asyncProperty(symbolArb, priceArb, async (symbol, price) => {
@@ -190,7 +190,7 @@ describe("Property 22: Symbol Data Fetching", () => {
   });
 
   it("returned data matches what the API provided — no silent data corruption", async () => {
-    // Feature: stock-exchange-application, Property 22: Symbol Data Fetching
+    // Feature: the-open-stock, Property 22: Symbol Data Fetching
     // **Validates: Requirements 3.1**
     await fc.assert(
       fc.asyncProperty(symbolArb, priceArb, async (symbol, price) => {
@@ -217,7 +217,7 @@ describe("Property 22: Symbol Data Fetching", () => {
   });
 
   it("rate-limited requests with no cache throw rather than fail silently", async () => {
-    // Feature: stock-exchange-application, Property 22: Symbol Data Fetching
+    // Feature: the-open-stock, Property 22: Symbol Data Fetching
     // **Validates: Requirements 3.1**
     await fc.assert(
       fc.asyncProperty(symbolArb, async (symbol) => {

@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Trial State Persistence
- * Feature: stock-exchange-application, Property 11: Trial State Persistence
+ * Feature: the-open-stock, Property 11: Trial State Persistence
  *
  * Validates: Requirements 21.18
  * "For any trial session, refreshing the page should preserve the trial state
@@ -166,7 +166,7 @@ describe("Property 11: Trial State Persistence", () => {
   }
 
   it("trial session state is persisted to browser storage after creation", async () => {
-    // Feature: stock-exchange-application, Property 11: Trial State Persistence
+    // Feature: the-open-stock, Property 11: Trial State Persistence
     // **Validates: Requirements 21.18**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -192,7 +192,7 @@ describe("Property 11: Trial State Persistence", () => {
   });
 
   it("a new service instance (simulating page refresh) restores trial state from storage", async () => {
-    // Feature: stock-exchange-application, Property 11: Trial State Persistence
+    // Feature: the-open-stock, Property 11: Trial State Persistence
     // **Validates: Requirements 21.18**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -220,7 +220,7 @@ describe("Property 11: Trial State Persistence", () => {
   });
 
   it("start_time and end_time are preserved exactly across simulated page refresh", async () => {
-    // Feature: stock-exchange-application, Property 11: Trial State Persistence
+    // Feature: the-open-stock, Property 11: Trial State Persistence
     // **Validates: Requirements 21.18**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -249,7 +249,7 @@ describe("Property 11: Trial State Persistence", () => {
   });
 
   it("is_active flag and device_fingerprint are preserved across simulated page refresh", async () => {
-    // Feature: stock-exchange-application, Property 11: Trial State Persistence
+    // Feature: the-open-stock, Property 11: Trial State Persistence
     // **Validates: Requirements 21.18**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -274,7 +274,7 @@ describe("Property 11: Trial State Persistence", () => {
   });
 
   it("remaining time is consistent after simulated page refresh", async () => {
-    // Feature: stock-exchange-application, Property 11: Trial State Persistence
+    // Feature: the-open-stock, Property 11: Trial State Persistence
     // **Validates: Requirements 21.18**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {

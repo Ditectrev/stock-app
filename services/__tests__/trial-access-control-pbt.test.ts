@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Trial Access Control
- * Feature: stock-exchange-application, Property 10: Trial Access Control
+ * Feature: the-open-stock, Property 10: Trial Access Control
  *
  * Validates: Requirements 21.11, 21.12
  * "For any trial session where is_active is true, all application features
@@ -157,7 +157,7 @@ describe("Property 10: Trial Access Control", () => {
   }
 
   it("while is_active is true, getTrialStatus reports active with remaining time > 0", async () => {
-    // Feature: stock-exchange-application, Property 10: Trial Access Control
+    // Feature: the-open-stock, Property 10: Trial Access Control
     // **Validates: Requirement 21.11**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -181,7 +181,7 @@ describe("Property 10: Trial Access Control", () => {
   });
 
   it("when trial expires, is_active becomes false", async () => {
-    // Feature: stock-exchange-application, Property 10: Trial Access Control
+    // Feature: the-open-stock, Property 10: Trial Access Control
     // **Validates: Requirement 21.12**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -208,7 +208,7 @@ describe("Property 10: Trial Access Control", () => {
   });
 
   it("endTrial sets is_active to false, denying further access", async () => {
-    // Feature: stock-exchange-application, Property 10: Trial Access Control
+    // Feature: the-open-stock, Property 10: Trial Access Control
     // **Validates: Requirements 21.11, 21.12**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -235,7 +235,7 @@ describe("Property 10: Trial Access Control", () => {
   });
 
   it("expired trial reports hasUsedTrial true, signaling auth prompt is needed", async () => {
-    // Feature: stock-exchange-application, Property 10: Trial Access Control
+    // Feature: the-open-stock, Property 10: Trial Access Control
     // **Validates: Requirement 21.12**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -262,7 +262,7 @@ describe("Property 10: Trial Access Control", () => {
   });
 
   it("no trial session means no access and no prior trial usage", () => {
-    // Feature: stock-exchange-application, Property 10: Trial Access Control
+    // Feature: the-open-stock, Property 10: Trial Access Control
     // **Validates: Requirements 21.11, 21.12**
     fc.assert(
       fc.property(browserCharacteristicsArb, (chars) => {

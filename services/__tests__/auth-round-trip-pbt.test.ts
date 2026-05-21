@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Authentication Round Trip
- * Feature: stock-exchange-application, Property 1: Authentication Round Trip
+ * Feature: the-open-stock, Property 1: Authentication Round Trip
  *
  * Validates: Requirements 1.2, 1.3, 1.4, 1.5
  * "For any valid authentication provider (Apple SSO, Google SSO, or Email OTP)
@@ -145,7 +145,7 @@ describe("Property 1: Authentication Round Trip", () => {
   });
 
   it("OAuth round trip: initiate + complete session yields user info (Apple & Google)", async () => {
-    // Feature: stock-exchange-application, Property 1: Authentication Round Trip
+    // Feature: the-open-stock, Property 1: Authentication Round Trip
     await fc.assert(
       fc.asyncProperty(
         fc.constantFrom("apple", "google") as fc.Arbitrary<"apple" | "google">,
@@ -193,7 +193,7 @@ describe("Property 1: Authentication Round Trip", () => {
   });
 
   it("Email OTP round trip: send token + verify yields user info", async () => {
-    // Feature: stock-exchange-application, Property 1: Authentication Round Trip
+    // Feature: the-open-stock, Property 1: Authentication Round Trip
     await fc.assert(
       fc.asyncProperty(
         userIdArb,
@@ -228,7 +228,7 @@ describe("Property 1: Authentication Round Trip", () => {
   });
 
   it("session contains authenticated user info for any provider", async () => {
-    // Feature: stock-exchange-application, Property 1: Authentication Round Trip
+    // Feature: the-open-stock, Property 1: Authentication Round Trip
     await fc.assert(
       fc.asyncProperty(
         providerArb,
@@ -275,7 +275,7 @@ describe("Property 1: Authentication Round Trip", () => {
   });
 
   it("user info is retrievable after successful authentication", () => {
-    // Feature: stock-exchange-application, Property 1: Authentication Round Trip
+    // Feature: the-open-stock, Property 1: Authentication Round Trip
     fc.assert(
       fc.asyncProperty(
         providerArb,
@@ -307,7 +307,7 @@ describe("Property 1: Authentication Round Trip", () => {
   });
 
   it("OAuth initiation returns a non-empty redirect URL for both providers", () => {
-    // Feature: stock-exchange-application, Property 1: Authentication Round Trip
+    // Feature: the-open-stock, Property 1: Authentication Round Trip
     fc.assert(
       fc.asyncProperty(
         fc.constantFrom("apple", "google") as fc.Arbitrary<"apple" | "google">,

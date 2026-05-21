@@ -143,7 +143,7 @@ export class YahooFinanceService {
   async getSymbolQuote(symbol: string): Promise<SymbolData> {
     return retryWithBackoff(async () => {
       try {
-        const ua = "Mozilla/5.0 (compatible; StockExchangeApp/1.0)";
+        const ua = "Mozilla/5.0 (compatible; TheOpenStock/1.0)";
         let response: Response | undefined;
         for (const base of this.yahooChartBases()) {
           response = await fetch(
@@ -203,7 +203,7 @@ export class YahooFinanceService {
       try {
         const { interval, period } = this.getTimeRangeParams(range);
 
-        const ua = "Mozilla/5.0 (compatible; StockExchangeApp/1.0)";
+        const ua = "Mozilla/5.0 (compatible; TheOpenStock/1.0)";
         let response: Response | undefined;
         for (const base of this.yahooChartBases()) {
           response = await fetch(
