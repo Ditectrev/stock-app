@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Technical Indicator Color Coding
- * Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+ * Feature: the-open-stock, Property 16: Technical Indicator Color Coding
  *
  * Validates: Requirements 5.4
  * "For any technical indicator value, the color should be red when indicating
@@ -33,7 +33,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   // ---- RSI Signal ----
 
   it("RSI above 70 is always 'overpriced' (red)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(70.01, 100), (rsi) => {
         expect(getRSISignal(rsi)).toBe("overpriced");
@@ -43,7 +43,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("RSI below 30 is always 'underpriced' (green)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(0, 29.99), (rsi) => {
         expect(getRSISignal(rsi)).toBe("underpriced");
@@ -53,7 +53,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("RSI between 30 and 70 is always 'fair' (gray)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(30, 70), (rsi) => {
         expect(getRSISignal(rsi)).toBe("fair");
@@ -63,7 +63,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("RSI signal is always one of the three valid signals", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(0, 100), (rsi) => {
         const signal = getRSISignal(rsi);
@@ -76,7 +76,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   // ---- MACD Signal ----
 
   it("positive MACD histogram (above threshold) is always 'underpriced' (green)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(0.02, 1000), (histogram) => {
         expect(getMACDSignal(histogram, 0.01)).toBe("underpriced");
@@ -86,7 +86,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("negative MACD histogram (below -threshold) is always 'overpriced' (red)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(-1000, -0.02), (histogram) => {
         expect(getMACDSignal(histogram, 0.01)).toBe("overpriced");
@@ -96,7 +96,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("MACD histogram near zero (within threshold) is always 'fair' (gray)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(-0.01, 0.01), (histogram) => {
         expect(getMACDSignal(histogram, 0.01)).toBe("fair");
@@ -108,7 +108,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   // ---- Moving Average Signal ----
 
   it("price above MA is always 'underpriced' (green)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(
         finiteDouble(1, 10000),
@@ -123,7 +123,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("price below MA is always 'overpriced' (red)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(
         finiteDouble(1, 10000),
@@ -138,7 +138,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("price equal to MA is always 'fair' (gray)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(0.01, 10000), (price) => {
         expect(getMASignal(price, price)).toBe("fair");
@@ -148,7 +148,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("MA of zero always returns 'fair' (gray)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(0, 10000), (price) => {
         expect(getMASignal(price, 0)).toBe("fair");
@@ -160,7 +160,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   // ---- Bollinger Bands Signal ----
 
   it("price near upper band is always 'overpriced' (red)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(
         finiteDouble(50, 500),
@@ -179,7 +179,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("price near lower band is always 'underpriced' (green)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(
         finiteDouble(50, 500),
@@ -198,7 +198,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("price in the middle of bands is always 'fair' (gray)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(
         finiteDouble(50, 500),
@@ -215,7 +215,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   });
 
   it("equal upper and lower bands always returns 'fair' (gray)", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     fc.assert(
       fc.property(finiteDouble(1, 10000), (band) => {
         expect(getBollingerSignal(band, band, band)).toBe("fair");
@@ -227,7 +227,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   // ---- Overall Sentiment ----
 
   it("overall sentiment follows majority vote of individual signals", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     const signalArb = fc.constantFrom<Signal>(
       "overpriced",
       "underpriced",
@@ -268,7 +268,7 @@ describe("Property 16: Technical Indicator Color Coding", () => {
   // ---- Cross-cutting: every signal function returns a valid Signal ----
 
   it("all signal functions always return a valid Signal value", () => {
-    // Feature: stock-exchange-application, Property 16: Technical Indicator Color Coding
+    // Feature: the-open-stock, Property 16: Technical Indicator Color Coding
     const validSignals: Signal[] = ["overpriced", "underpriced", "fair"];
 
     fc.assert(

@@ -1,6 +1,6 @@
 # Product Overview
 
-Stock Exchange Application — a free, open-source stock market platform for individual long-term investors.
+The Open Stock — a free, open-source stock market platform for individual long-term investors.
 
 ## Core Functionality
 

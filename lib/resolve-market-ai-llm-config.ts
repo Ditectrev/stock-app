@@ -14,6 +14,7 @@ function isBYOKCloudProvider(value: string): value is BYOKProvider {
 
 /**
  * Resolves LLM config for market AI routes (BYOK can use Ollama without a stored API key).
+ * Ollama model names are resolved at runtime via /api/tags when `model` is omitted.
  */
 export async function resolveMarketRouteLLMConfig(opts: {
   tier: string;
@@ -23,21 +24,16 @@ export async function resolveMarketRouteLLMConfig(opts: {
   | { ok: true; llmConfig: MarketRouteLLMConfig | undefined }
   | { ok: false; error: string }
 > {
-  const model = process.env.AI_MODEL;
-  const ollamaModel = process.env.OLLAMA_MODEL ?? model;
+  const model = process.env.AI_MODEL?.trim() || undefined;
 
   if (opts.tier === "LOCAL") {
     return {
       ok: true,
-      llmConfig: { provider: "OLLAMA", model: ollamaModel },
+      llmConfig: { provider: "OLLAMA" },
     };
   }
 
   if (opts.tier === "HOSTED_AI") {
-    const hostedModel =
-      process.env.AI_MODEL?.trim() ||
-      process.env.OLLAMA_MODEL?.trim() ||
-      undefined;
     const providerRaw = process.env.AI_PROVIDER?.trim().toUpperCase();
 
     if (!providerRaw) {
@@ -61,7 +57,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
         ok: true,
         llmConfig: {
           provider: "OLLAMA",
-          model: hostedModel ?? ollamaModel,
+          ...(model ? { model } : {}),
         },
       };
     }
@@ -79,7 +75,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
         llmConfig: {
           provider: providerRaw,
           apiKey,
-          model: hostedModel ?? model,
+          ...(model ? { model } : {}),
         },
       };
     }
@@ -95,7 +91,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
     if (header === "OLLAMA") {
       return {
         ok: true,
-        llmConfig: { provider: "OLLAMA", model: ollamaModel },
+        llmConfig: { provider: "OLLAMA" },
       };
     }
 
@@ -106,7 +102,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
     if (!provider) {
       return {
         ok: true,
-        llmConfig: { provider: "OLLAMA", model: ollamaModel },
+        llmConfig: { provider: "OLLAMA" },
       };
     }
 
@@ -121,7 +117,10 @@ export async function resolveMarketRouteLLMConfig(opts: {
       };
     }
 
-    return { ok: true, llmConfig: { provider, apiKey, model } };
+    return {
+      ok: true,
+      llmConfig: { provider, apiKey, ...(model ? { model } : {}) },
+    };
   }
 
   return { ok: true, llmConfig: undefined };

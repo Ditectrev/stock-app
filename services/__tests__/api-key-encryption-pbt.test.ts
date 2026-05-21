@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for API Key Encryption
- * Feature: stock-exchange-application, Property 12: API Key Encryption
+ * Feature: the-open-stock, Property 12: API Key Encryption
  *
  * Validates: Requirements 22.13
  * "For any API key stored by the API_Key_Manager, the stored value should be
@@ -152,7 +152,7 @@ describe("Property 12: API Key Encryption", () => {
   });
 
   it("encrypted value is never equal to the original plaintext key", async () => {
-    // Feature: stock-exchange-application, Property 12: API Key Encryption
+    // Feature: the-open-stock, Property 12: API Key Encryption
     // **Validates: Requirements 22.13**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -173,7 +173,7 @@ describe("Property 12: API Key Encryption", () => {
   });
 
   it("decryption of an encrypted key always yields the original plaintext", async () => {
-    // Feature: stock-exchange-application, Property 12: API Key Encryption
+    // Feature: the-open-stock, Property 12: API Key Encryption
     // **Validates: Requirements 22.13**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -191,7 +191,7 @@ describe("Property 12: API Key Encryption", () => {
   });
 
   it("two encryptions of the same key produce different ciphertexts (IV uniqueness)", async () => {
-    // Feature: stock-exchange-application, Property 12: API Key Encryption
+    // Feature: the-open-stock, Property 12: API Key Encryption
     // **Validates: Requirements 22.13**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -223,7 +223,7 @@ describe("Property 12: API Key Encryption", () => {
   });
 
   it("storeKey persists an encrypted (non-plaintext) value in localStorage", async () => {
-    // Feature: stock-exchange-application, Property 12: API Key Encryption
+    // Feature: the-open-stock, Property 12: API Key Encryption
     // **Validates: Requirements 22.13**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -250,7 +250,7 @@ describe("Property 12: API Key Encryption", () => {
   });
 
   it("getKey round-trips through storage and returns the original plaintext", async () => {
-    // Feature: stock-exchange-application, Property 12: API Key Encryption
+    // Feature: the-open-stock, Property 12: API Key Encryption
     // **Validates: Requirements 22.13**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -269,7 +269,7 @@ describe("Property 12: API Key Encryption", () => {
   });
 
   it("getKey returns null when no key has been stored for a provider", async () => {
-    // Feature: stock-exchange-application, Property 12: API Key Encryption
+    // Feature: the-open-stock, Property 12: API Key Encryption
     // **Validates: Requirements 22.13**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -286,7 +286,7 @@ describe("Property 12: API Key Encryption", () => {
   });
 
   it("removeKey clears the stored key so getKey returns null afterwards", async () => {
-    // Feature: stock-exchange-application, Property 12: API Key Encryption
+    // Feature: the-open-stock, Property 12: API Key Encryption
     // **Validates: Requirements 22.13**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");

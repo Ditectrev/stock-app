@@ -58,18 +58,26 @@ const BYOK_ENDPOINTS: Record<BYOKProvider, string> = {
 async function queryBYOK(
   provider: BYOKProvider,
   apiKey: string,
-  prompt: string
+  prompt: string,
+  maxTokens = 512
 ): Promise<string> {
   const endpoint = BYOK_ENDPOINTS[provider];
 
   if (provider === "GEMINI") {
     const url = `${endpoint}?key=${apiKey}`;
+    const geminiBody: {
+      contents: Array<{ parts: Array<{ text: string }> }>;
+      generationConfig?: { maxOutputTokens: number };
+    } = {
+      contents: [{ parts: [{ text: prompt }] }],
+    };
+    if (maxTokens > 512) {
+      geminiBody.generationConfig = { maxOutputTokens: maxTokens };
+    }
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-      }),
+      body: JSON.stringify(geminiBody),
       signal: AbortSignal.timeout(30000),
     });
     if (!res.ok) throw new Error(`Gemini error: HTTP ${res.status}`);
@@ -92,7 +100,7 @@ async function queryBYOK(
             ? "mistral-small-latest"
             : "deepseek-chat",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 512,
+      max_tokens: maxTokens,
     }),
     signal: AbortSignal.timeout(30000),
   });
@@ -265,7 +273,10 @@ Answer in 2-4 sentences. Do not use "buy" or "sell" language.`;
   // Internal routing
   // ---------------------------------------------------------------------------
 
-  private async runPrompt(prompt: string): Promise<string> {
+  private async runPrompt(
+    prompt: string,
+    options?: { maxOutputTokens?: number }
+  ): Promise<string> {
     if (!this.config) {
       throw new Error(
         "No AI provider configured. Please set up an AI provider first."
@@ -273,6 +284,7 @@ Answer in 2-4 sentences. Do not use "buy" or "sell" language.`;
     }
 
     const { provider } = this.config;
+    const maxTokens = options?.maxOutputTokens ?? 512;
 
     try {
       if (provider === "OLLAMA") {
@@ -306,7 +318,7 @@ Answer in 2-4 sentences. Do not use "buy" or "sell" language.`;
         );
       }
 
-      return await queryBYOK(byokProvider, apiKey, prompt);
+      return await queryBYOK(byokProvider, apiKey, prompt, maxTokens);
     } catch (error) {
       logger.error("AI prompt failed", error as Error, {
         provider: this.config.provider,
@@ -319,8 +331,11 @@ Answer in 2-4 sentences. Do not use "buy" or "sell" language.`;
    * Runs an arbitrary prompt and returns the raw model output text.
    * This is intended for backend features that need to parse structured output.
    */
-  async runRawPrompt(prompt: string): Promise<string> {
-    return await this.runPrompt(prompt);
+  async runRawPrompt(
+    prompt: string,
+    options?: { maxOutputTokens?: number }
+  ): Promise<string> {
+    return await this.runPrompt(prompt, options);
   }
 
   private getRelatedMetrics(metric: string): string[] {

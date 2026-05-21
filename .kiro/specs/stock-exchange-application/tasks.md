@@ -1,8 +1,8 @@
-# Implementation Plan: Stock Exchange Application
+# Implementation Plan: The Open Stock
 
 ## Overview
 
-This implementation plan breaks down the Stock Exchange Application into discrete, actionable coding tasks. The application is a comprehensive web platform built with Next.js 14+, deployed on Vercel, integrating with Appwrite for authentication and database, and connecting to CNN dataviz and Yahoo Finance APIs for market data.
+This implementation plan breaks down The Open Stock into discrete, actionable coding tasks. The application is a comprehensive web platform built with Next.js 14+, deployed on Vercel, integrating with Appwrite for authentication and database, and connecting to CNN dataviz and Yahoo Finance APIs for market data.
 
 The implementation follows an incremental approach, building core infrastructure first, then adding features progressively, with property-based tests integrated throughout to validate correctness properties.
 

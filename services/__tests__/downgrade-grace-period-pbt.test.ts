@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Downgrade Grace Period
- * Feature: stock-exchange-application, Property 15: Downgrade Grace Period
+ * Feature: the-open-stock, Property 15: Downgrade Grace Period
  *
  * Validates: Requirements 22.27
  * "For any downgrade from a paid tier, the user should retain access to the
@@ -79,7 +79,7 @@ describe("Property 15: Downgrade Grace Period", () => {
   });
 
   it("downgrade always succeeds and returns the requested lower tier", async () => {
-    // Feature: stock-exchange-application, Property 15: Downgrade Grace Period
+    // Feature: the-open-stock, Property 15: Downgrade Grace Period
     // **Validates: Requirements 22.27**
     await fc.assert(
       fc.asyncProperty(
@@ -99,7 +99,7 @@ describe("Property 15: Downgrade Grace Period", () => {
   });
 
   it("downgrade effective date is always deferred to the next billing cycle", async () => {
-    // Feature: stock-exchange-application, Property 15: Downgrade Grace Period
+    // Feature: the-open-stock, Property 15: Downgrade Grace Period
     // **Validates: Requirements 22.27**
     // The startDate of the returned subscription must be ~1 month in the future,
     // proving the lower tier does not take effect immediately.
@@ -127,7 +127,7 @@ describe("Property 15: Downgrade Grace Period", () => {
   });
 
   it("downgrade startDate is always strictly in the future (not now)", async () => {
-    // Feature: stock-exchange-application, Property 15: Downgrade Grace Period
+    // Feature: the-open-stock, Property 15: Downgrade Grace Period
     // **Validates: Requirements 22.27**
     // Contrast with upgrades: a downgrade must never take effect at the current moment.
     await fc.assert(
@@ -149,7 +149,7 @@ describe("Property 15: Downgrade Grace Period", () => {
   });
 
   it("downgrade subscription status is always active (not pending or cancelled)", async () => {
-    // Feature: stock-exchange-application, Property 15: Downgrade Grace Period
+    // Feature: the-open-stock, Property 15: Downgrade Grace Period
     // **Validates: Requirements 22.27**
     // The subscription record should be active — the user still has access
     // to the current (higher) tier during the grace period.
@@ -170,7 +170,7 @@ describe("Property 15: Downgrade Grace Period", () => {
   });
 
   it("downgrade to any lower tier always defers by the same billing period length", async () => {
-    // Feature: stock-exchange-application, Property 15: Downgrade Grace Period
+    // Feature: the-open-stock, Property 15: Downgrade Grace Period
     // **Validates: Requirements 22.27**
     // Regardless of which tier is being downgraded to, the grace period length
     // should be consistent (one billing month).

@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Trial Timer Accuracy
- * Feature: stock-exchange-application, Property 9: Trial Timer Accuracy
+ * Feature: the-open-stock, Property 9: Trial Timer Accuracy
  *
  * Validates: Requirements 21.9
  * "For any active trial session, the displayed remaining time should equal
@@ -135,7 +135,7 @@ describe("Property 9: Trial Timer Accuracy", () => {
   });
 
   it("remaining seconds equals floor((endTime - now) / 1000) for any active trial", async () => {
-    // Feature: stock-exchange-application, Property 9: Trial Timer Accuracy
+    // Feature: the-open-stock, Property 9: Trial Timer Accuracy
     // **Validates: Requirements 21.9**
     await fc.assert(
       fc.asyncProperty(
@@ -172,7 +172,7 @@ describe("Property 9: Trial Timer Accuracy", () => {
   });
 
   it("displayed time format matches remaining seconds for any active trial", async () => {
-    // Feature: stock-exchange-application, Property 9: Trial Timer Accuracy
+    // Feature: the-open-stock, Property 9: Trial Timer Accuracy
     // **Validates: Requirements 21.9**
     await fc.assert(
       fc.asyncProperty(
@@ -214,7 +214,7 @@ describe("Property 9: Trial Timer Accuracy", () => {
   });
 
   it("remaining time is zero when current time is at or past end_time", async () => {
-    // Feature: stock-exchange-application, Property 9: Trial Timer Accuracy
+    // Feature: the-open-stock, Property 9: Trial Timer Accuracy
     // **Validates: Requirements 21.9**
     await fc.assert(
       fc.asyncProperty(
@@ -244,7 +244,7 @@ describe("Property 9: Trial Timer Accuracy", () => {
   });
 
   it("remaining seconds decreases by exactly 1 for each second elapsed", async () => {
-    // Feature: stock-exchange-application, Property 9: Trial Timer Accuracy
+    // Feature: the-open-stock, Property 9: Trial Timer Accuracy
     // **Validates: Requirements 21.9**
     await fc.assert(
       fc.asyncProperty(

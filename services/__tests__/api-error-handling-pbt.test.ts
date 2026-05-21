@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for API Error Handling
- * Feature: stock-exchange-application, Property 4: API Error Handling
+ * Feature: the-open-stock, Property 4: API Error Handling
  *
  * Validates: Requirements 3.5, 14.2, 14.5
  * "For any API request failure (network error, rate limit, or service
@@ -138,7 +138,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("network errors always propagate as thrown errors — never silent failures", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(symbolArb, networkErrorArb, async (symbol, errorMsg) => {
@@ -156,7 +156,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("HTTP error responses always propagate as thrown errors", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(
@@ -178,7 +178,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("failed historical data requests always throw — never return undefined", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(
@@ -205,7 +205,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("failed financials requests always throw — never return undefined", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(symbolArb, networkErrorArb, async (symbol, errorMsg) => {
@@ -222,7 +222,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("failed forecast requests always throw — never return undefined", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(symbolArb, networkErrorArb, async (symbol, errorMsg) => {
@@ -239,7 +239,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("rate limit errors are retryable — error message indicates retry is possible", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 14.5**
     await fc.assert(
       fc.asyncProperty(symbolArb, async (symbol) => {
@@ -270,7 +270,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("cached data is served as fallback when API fails after cache is populated", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(
@@ -314,7 +314,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("service unavailability errors always produce a non-empty error message", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 14.2**
     await fc.assert(
       fc.asyncProperty(
@@ -350,7 +350,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("fear & greed index API failure throws a descriptive error when no cache exists", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(networkErrorArb, async (errorMsg) => {
@@ -367,7 +367,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("world markets falls back to Yahoo Finance when CNN fails", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(networkErrorArb, async (errorMsg) => {
@@ -387,7 +387,7 @@ describe("Property 4: API Error Handling", () => {
   });
 
   it("errors from concurrent requests for the same symbol are consistent", async () => {
-    // Feature: stock-exchange-application, Property 4: API Error Handling
+    // Feature: the-open-stock, Property 4: API Error Handling
     // **Validates: Requirements 3.5, 14.2**
     await fc.assert(
       fc.asyncProperty(symbolArb, networkErrorArb, async (symbol, errorMsg) => {

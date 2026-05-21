@@ -13,9 +13,8 @@ test.describe("SearchBar Component E2E Tests", () => {
   });
 
   test("should load the search test page successfully", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText(
-      "Stock Exchange Application"
-    );
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    await expect(nav).toContainText(/The Open Stock|Open Stock/);
   });
 
   test("should display search input with placeholder", async ({ page }) => {
@@ -27,9 +26,8 @@ test.describe("SearchBar Component E2E Tests", () => {
 
   test("should display features list", async ({ page }) => {
     // Features list is not on the main page anymore, just verify page loaded
-    await expect(page.locator("h1")).toContainText(
-      "Stock Exchange Application"
-    );
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    await expect(nav).toContainText(/The Open Stock|Open Stock/);
   });
 
   test("should show loading spinner while searching", async ({ page }) => {

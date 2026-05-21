@@ -45,7 +45,7 @@ export class OllamaService {
 
   constructor(
     baseUrl: string = "http://localhost:11434",
-    defaultModel: string = process.env.OLLAMA_MODEL ?? ""
+    defaultModel: string = ""
   ) {
     this.baseUrl = baseUrl;
     this.defaultModel = defaultModel;

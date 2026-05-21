@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Exponential Backoff
- * Feature: stock-exchange-application, Property 6: Exponential Backoff
+ * Feature: the-open-stock, Property 6: Exponential Backoff
  *
  * Validates: Requirements 17.5
  * "For any sequence of failed API requests, the delay between retry attempts
@@ -66,7 +66,7 @@ describe("Property 6: Exponential Backoff", () => {
   });
 
   it("delays between retries increase exponentially up to the max delay", async () => {
-    // Feature: stock-exchange-application, Property 6: Exponential Backoff
+    // Feature: the-open-stock, Property 6: Exponential Backoff
     // **Validates: Requirements 17.5**
     await fc.assert(
       fc.asyncProperty(
@@ -141,7 +141,7 @@ describe("Property 6: Exponential Backoff", () => {
   });
 
   it("successful retry after failures respects exponential delay pattern", async () => {
-    // Feature: stock-exchange-application, Property 6: Exponential Backoff
+    // Feature: the-open-stock, Property 6: Exponential Backoff
     // **Validates: Requirements 17.5**
     await fc.assert(
       fc.asyncProperty(
@@ -199,7 +199,7 @@ describe("Property 6: Exponential Backoff", () => {
   });
 
   it("delay never exceeds the configured maximum", async () => {
-    // Feature: stock-exchange-application, Property 6: Exponential Backoff
+    // Feature: the-open-stock, Property 6: Exponential Backoff
     // **Validates: Requirements 17.5**
     await fc.assert(
       fc.asyncProperty(
@@ -250,7 +250,7 @@ describe("Property 6: Exponential Backoff", () => {
   });
 
   it("total number of attempts equals maxAttempts when all fail", async () => {
-    // Feature: stock-exchange-application, Property 6: Exponential Backoff
+    // Feature: the-open-stock, Property 6: Exponential Backoff
     // **Validates: Requirements 17.5**
     await fc.assert(
       fc.asyncProperty(maxAttemptsArb, async (maxAttempts) => {
@@ -289,7 +289,7 @@ describe("Property 6: Exponential Backoff", () => {
   });
 
   it("jitter adds randomness but stays within bounds", async () => {
-    // Feature: stock-exchange-application, Property 6: Exponential Backoff
+    // Feature: the-open-stock, Property 6: Exponential Backoff
     // **Validates: Requirements 17.5**
     await fc.assert(
       fc.asyncProperty(jitterArb, async (jitterMs) => {

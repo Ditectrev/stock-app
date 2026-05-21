@@ -13,9 +13,8 @@ test.describe("Chart Component E2E Tests", () => {
   });
 
   test("should load the chart page successfully", async ({ page }) => {
-    await expect(page.locator("h1")).toContainText(
-      "Stock Exchange Application"
-    );
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    await expect(nav).toContainText(/The Open Stock|Open Stock/);
   });
 
   test("should display all chart type buttons", async ({ page }) => {
@@ -102,16 +101,14 @@ test.describe("Chart Component E2E Tests", () => {
 
   test("should display chart instructions", async ({ page }) => {
     // Chart instructions are not on the main page, skip this test
-    await expect(page.locator("h1")).toContainText(
-      "Stock Exchange Application"
-    );
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    await expect(nav).toContainText(/The Open Stock|Open Stock/);
   });
 
   test("should display test instructions", async ({ page }) => {
     // Test instructions are not on the main page, skip this test
-    await expect(page.locator("h1")).toContainText(
-      "Stock Exchange Application"
-    );
+    const nav = page.getByRole("navigation", { name: "Main navigation" });
+    await expect(nav).toContainText(/The Open Stock|Open Stock/);
   });
 
   test("should handle multiple chart type switches", async ({ page }) => {

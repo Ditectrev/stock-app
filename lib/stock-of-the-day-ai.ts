@@ -9,6 +9,9 @@ export type StockOfTheDayCandidates = {
   sellCandidates: AIStockCandidate[];
 };
 
+/** Default BYOK `max_tokens` (512) truncates this prompt's JSON output. */
+export const STOCK_OF_THE_DAY_MAX_OUTPUT_TOKENS = 4096;
+
 export const STOCK_OF_THE_DAY_CANDIDATES_PROMPT = `You are an equity research scout building a premium AI-only "stock of the day" feature.
 Return ONLY valid JSON, no markdown, in this exact shape:
 {

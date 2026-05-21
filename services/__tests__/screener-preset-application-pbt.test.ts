@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Screener Preset Application
- * Feature: stock-exchange-application, Property 18: Screener Preset Application
+ * Feature: the-open-stock, Property 18: Screener Preset Application
  *
  * Validates: Requirements 26.13
  * "For any screener preset selected, the applied filters should exactly match
@@ -135,7 +135,7 @@ const customPresetArb: fc.Arbitrary<ScreenerPreset> = fc
 
 describe("Property 18: Screener Preset Application", () => {
   it("applying a default preset uses exactly its defined filters", () => {
-    // Feature: stock-exchange-application, Property 18: Screener Preset Application
+    // Feature: the-open-stock, Property 18: Screener Preset Application
     fc.assert(
       fc.property(
         presetIndexArb,
@@ -163,7 +163,7 @@ describe("Property 18: Screener Preset Application", () => {
   });
 
   it("applying a custom preset uses exactly its defined filters", () => {
-    // Feature: stock-exchange-application, Property 18: Screener Preset Application
+    // Feature: the-open-stock, Property 18: Screener Preset Application
     fc.assert(
       fc.property(
         customPresetArb,
@@ -189,7 +189,7 @@ describe("Property 18: Screener Preset Application", () => {
   });
 
   it("preset filters are structurally preserved (field, operator, value, label)", () => {
-    // Feature: stock-exchange-application, Property 18: Screener Preset Application
+    // Feature: the-open-stock, Property 18: Screener Preset Application
     fc.assert(
       fc.property(presetIndexArb, (presetIdx) => {
         const preset = defaultPresets[presetIdx];
@@ -209,7 +209,7 @@ describe("Property 18: Screener Preset Application", () => {
   });
 
   it("applying the same preset twice yields identical results", () => {
-    // Feature: stock-exchange-application, Property 18: Screener Preset Application
+    // Feature: the-open-stock, Property 18: Screener Preset Application
     fc.assert(
       fc.property(
         presetIndexArb,
@@ -228,7 +228,7 @@ describe("Property 18: Screener Preset Application", () => {
   });
 
   it("switching presets replaces filters entirely (no bleed between presets)", () => {
-    // Feature: stock-exchange-application, Property 18: Screener Preset Application
+    // Feature: the-open-stock, Property 18: Screener Preset Application
     fc.assert(
       fc.property(
         presetIndexArb,
@@ -271,7 +271,7 @@ describe("Property 18: Screener Preset Application", () => {
   });
 
   it("every default preset has at least one filter defined", () => {
-    // Feature: stock-exchange-application, Property 18: Screener Preset Application
+    // Feature: the-open-stock, Property 18: Screener Preset Application
     for (const preset of defaultPresets) {
       expect(preset.filters.length).toBeGreaterThan(0);
       expect(preset.id).toBeTruthy();
@@ -280,7 +280,7 @@ describe("Property 18: Screener Preset Application", () => {
   });
 
   it("preset filter application produces results consistent with manual filter-by-filter check", () => {
-    // Feature: stock-exchange-application, Property 18: Screener Preset Application
+    // Feature: the-open-stock, Property 18: Screener Preset Application
     fc.assert(
       fc.property(
         presetIndexArb,

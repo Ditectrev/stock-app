@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Trial Enforcement
- * Feature: stock-exchange-application, Property 8: Trial Enforcement
+ * Feature: the-open-stock, Property 8: Trial Enforcement
  *
  * Validates: Requirements 21.4, 21.5, 21.19
  * "For any device fingerprint that has previously been used for a trial,
@@ -166,7 +166,7 @@ describe("Property 8: Trial Enforcement", () => {
   }
 
   it("a device fingerprint used for a trial is stored for tracking", async () => {
-    // Feature: stock-exchange-application, Property 8: Trial Enforcement
+    // Feature: the-open-stock, Property 8: Trial Enforcement
     // **Validates: Requirements 21.4**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -188,7 +188,7 @@ describe("Property 8: Trial Enforcement", () => {
   });
 
   it("subsequent trial attempts with the same fingerprint are denied", async () => {
-    // Feature: stock-exchange-application, Property 8: Trial Enforcement
+    // Feature: the-open-stock, Property 8: Trial Enforcement
     // **Validates: Requirements 21.5**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -216,7 +216,7 @@ describe("Property 8: Trial Enforcement", () => {
   });
 
   it("checkTrialEligibility returns false for a previously used fingerprint", async () => {
-    // Feature: stock-exchange-application, Property 8: Trial Enforcement
+    // Feature: the-open-stock, Property 8: Trial Enforcement
     // **Validates: Requirements 21.4, 21.5**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -244,7 +244,7 @@ describe("Property 8: Trial Enforcement", () => {
   });
 
   it("trial enforcement persists regardless of cleared cookies (simulated by clearing session but keeping fingerprints)", async () => {
-    // Feature: stock-exchange-application, Property 8: Trial Enforcement
+    // Feature: the-open-stock, Property 8: Trial Enforcement
     // **Validates: Requirements 21.19**
     await fc.assert(
       fc.asyncProperty(browserCharacteristicsArb, async (chars) => {
@@ -275,7 +275,7 @@ describe("Property 8: Trial Enforcement", () => {
   });
 
   it("different device fingerprints can each start independent trials", async () => {
-    // Feature: stock-exchange-application, Property 8: Trial Enforcement
+    // Feature: the-open-stock, Property 8: Trial Enforcement
     // **Validates: Requirements 21.4, 21.5**
     // Ensures enforcement is per-fingerprint, not global
     await fc.assert(

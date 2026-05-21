@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for API Key Validation
- * Feature: stock-exchange-application, Property 13: API Key Validation
+ * Feature: the-open-stock, Property 13: API Key Validation
  *
  * Validates: Requirements 22.14
  * "For any API key provided by a user, the system should validate it with the
@@ -177,7 +177,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("validateKey returns valid=true when provider responds with 200", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -201,7 +201,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("validateKey returns valid=true when provider rate-limits (429) — key is still valid", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -224,7 +224,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("validateKey returns valid=false with error message for 401/403 responses", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -251,7 +251,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("validateKey returns valid=false with error message when network is unreachable", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -277,7 +277,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("validateAndStore does NOT persist the key when validation fails (401/403)", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -307,7 +307,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("validateAndStore persists the key only after successful validation (200)", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -341,7 +341,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("validateAndStore does NOT persist the key when network is unreachable", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -369,7 +369,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("validation result is always a definitive boolean — never undefined or null", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");
@@ -406,7 +406,7 @@ describe("Property 13: API Key Validation", () => {
   });
 
   it("server errors (5xx) produce valid=false with a descriptive error message", async () => {
-    // Feature: stock-exchange-application, Property 13: API Key Validation
+    // Feature: the-open-stock, Property 13: API Key Validation
     // **Validates: Requirements 22.14**
     const { APIKeyManagerService } =
       await import("@/services/api-key-manager.service");

@@ -6,6 +6,7 @@ import {
   extractFirstJsonObject,
   parseStockOfTheDayCandidates,
   STOCK_OF_THE_DAY_CANDIDATES_PROMPT,
+  STOCK_OF_THE_DAY_MAX_OUTPUT_TOKENS,
   type AIStockCandidate,
   type StockOfTheDayCandidates,
 } from "@/lib/stock-of-the-day-ai";
@@ -80,10 +81,7 @@ function getLLMConfigFromEnv(): {
 
   if (!allowed.has(provider)) return null;
 
-  // Optional model override for any provider.
-  const model =
-    process.env.AI_MODEL ??
-    (provider === "OLLAMA" ? process.env.OLLAMA_MODEL : undefined);
+  const model = process.env.AI_MODEL;
 
   // Ollama doesn't require an API key.
   if (provider === "OLLAMA") {
@@ -324,7 +322,9 @@ export class AIMarketInsightsService {
       settings: {},
     });
 
-    const raw = await service.runRawPrompt(STOCK_OF_THE_DAY_CANDIDATES_PROMPT);
+    const raw = await service.runRawPrompt(STOCK_OF_THE_DAY_CANDIDATES_PROMPT, {
+      maxOutputTokens: STOCK_OF_THE_DAY_MAX_OUTPUT_TOKENS,
+    });
     return parseStockOfTheDayCandidates(raw);
   }
 

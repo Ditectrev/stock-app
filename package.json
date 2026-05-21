@@ -1,6 +1,6 @@
 {
-  "name": "stock-exchange-app",
-  "version": "0.60.0",
+  "name": "the-open-stock",
+  "version": "0.61.0",
   "private": true,
   "scripts": {
     "dev": "bun --bun next dev",

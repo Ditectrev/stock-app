@@ -2,11 +2,11 @@
 
 ## Introduction
 
-This document defines requirements for a stock exchange application designed for individual long-term investors. The application provides visualized market data, technical indicators, forecasts, and seasonal patterns with plain-language explanations to help users make informed investment decisions. The system integrates with existing Appwrite database infrastructure and authentication (Apple/Google/Email SSO), leverages Next.js for the frontend, and deploys on Vercel.
+This document defines requirements for The Open Stock, designed for individual long-term investors. The application provides visualized market data, technical indicators, forecasts, and seasonal patterns with plain-language explanations to help users make informed investment decisions. The system integrates with existing Appwrite database infrastructure and authentication (Apple/Google/Email SSO), leverages Next.js for the frontend, and deploys on Vercel.
 
 ## Glossary
 
-- **Stock_Exchange_App**: The complete web application system including frontend, backend, and integrations
+- **The_Open_Stock_App**: The complete web application system including frontend, backend, and integrations
 - **User**: An individual investor using the application to view market data and analysis
 - **Symbol**: A stock ticker identifier (e.g., TSLA, AAPL, NVDA)
 - **Market_Data_Service**: Backend service responsible for fetching and caching data from external APIs
@@ -72,10 +72,10 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL provide a search input for entering ticker symbols
-2. WHEN a user types in the search input, THE Stock_Exchange_App SHALL suggest matching symbols
-3. WHEN a user selects a symbol, THE Stock_Exchange_App SHALL navigate to that symbol's detail page
-4. THE Stock_Exchange_App SHALL display the symbol detail page with tabs for Overview, Financials, Technicals, Forecasts, and Seasonals
+1. THE The_Open_Stock_App SHALL provide a search input for entering ticker symbols
+2. WHEN a user types in the search input, THE The_Open_Stock_App SHALL suggest matching symbols
+3. WHEN a user selects a symbol, THE The_Open_Stock_App SHALL navigate to that symbol's detail page
+4. THE The_Open_Stock_App SHALL display the symbol detail page with tabs for Overview, Financials, Technicals, Forecasts, and Seasonals
 
 ### Requirement 3: Market Data Retrieval
 
@@ -96,11 +96,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL display a price chart showing historical performance
+1. THE The_Open_Stock_App SHALL display a price chart showing historical performance
 2. THE Chart_Component SHALL support time range selection (1D, 1W, 1M, 3M, 1Y, 5Y, Max)
-3. THE Stock_Exchange_App SHALL display current price, change amount, and change percentage
-4. THE Stock_Exchange_App SHALL display key metrics including market cap, volume, and 52-week range
-5. WHEN a user hovers over a metric, THE Stock_Exchange_App SHALL display a tooltip explaining the metric
+3. THE The_Open_Stock_App SHALL display current price, change amount, and change percentage
+4. THE The_Open_Stock_App SHALL display key metrics including market cap, volume, and 52-week range
+5. WHEN a user hovers over a metric, THE The_Open_Stock_App SHALL display a tooltip explaining the metric
 
 ### Requirement 5: Technical Indicators Display
 
@@ -108,12 +108,12 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL display technical indicators including RSI, MACD, Moving Averages, and Bollinger Bands
-2. THE Stock_Exchange_App SHALL calculate indicator values from price data
-3. WHEN a user hovers over an indicator name, THE Stock_Exchange_App SHALL display a tooltip explaining what the indicator measures
-4. THE Stock_Exchange_App SHALL color-code each indicator: red for overpriced, green for underpriced, gray for fairly priced
-5. THE Stock_Exchange_App SHALL display a summary gauge showing overall technical sentiment
-6. THE Stock_Exchange_App SHALL NOT use "Buy" or "Sell" language in indicator descriptions
+1. THE The_Open_Stock_App SHALL display technical indicators including RSI, MACD, Moving Averages, and Bollinger Bands
+2. THE The_Open_Stock_App SHALL calculate indicator values from price data
+3. WHEN a user hovers over an indicator name, THE The_Open_Stock_App SHALL display a tooltip explaining what the indicator measures
+4. THE The_Open_Stock_App SHALL color-code each indicator: red for overpriced, green for underpriced, gray for fairly priced
+5. THE The_Open_Stock_App SHALL display a summary gauge showing overall technical sentiment
+6. THE The_Open_Stock_App SHALL NOT use "Buy" or "Sell" language in indicator descriptions
 
 ### Requirement 6: Forecast Data Display
 
@@ -121,11 +121,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL display analyst price targets including low, average, and high estimates
-2. THE Stock_Exchange_App SHALL display analyst rating distribution (Strong Buy, Buy, Hold, Sell, Strong Sell)
-3. THE Stock_Exchange_App SHALL display EPS and revenue forecasts with actual vs estimate comparisons
-4. WHEN earnings data includes surprises, THE Stock_Exchange_App SHALL indicate whether the company beat or missed estimates
-5. WHEN a user hovers over forecast metrics, THE Stock_Exchange_App SHALL display tooltips explaining the metrics
+1. THE The_Open_Stock_App SHALL display analyst price targets including low, average, and high estimates
+2. THE The_Open_Stock_App SHALL display analyst rating distribution (Strong Buy, Buy, Hold, Sell, Strong Sell)
+3. THE The_Open_Stock_App SHALL display EPS and revenue forecasts with actual vs estimate comparisons
+4. WHEN earnings data includes surprises, THE The_Open_Stock_App SHALL indicate whether the company beat or missed estimates
+5. WHEN a user hovers over forecast metrics, THE The_Open_Stock_App SHALL display tooltips explaining the metrics
 
 ### Requirement 7: Seasonal Pattern Display
 
@@ -133,10 +133,10 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL display a heatmap showing cumulative returns by month across multiple years
-2. THE Stock_Exchange_App SHALL calculate seasonal patterns from historical price data
-3. THE Stock_Exchange_App SHALL display a disclaimer that past seasonality does not guarantee future performance
-4. WHEN a user hovers over a month cell, THE Stock_Exchange_App SHALL display the specific return percentage for that month and year
+1. THE The_Open_Stock_App SHALL display a heatmap showing cumulative returns by month across multiple years
+2. THE The_Open_Stock_App SHALL calculate seasonal patterns from historical price data
+3. THE The_Open_Stock_App SHALL display a disclaimer that past seasonality does not guarantee future performance
+4. WHEN a user hovers over a month cell, THE The_Open_Stock_App SHALL display the specific return percentage for that month and year
 
 ### Requirement 8: Financials Tab Display
 
@@ -144,12 +144,12 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL display key financial facts including revenue, net income, and profit margins
-2. THE Stock_Exchange_App SHALL display valuation metrics including P/E ratio, P/B ratio, and PEG ratio
-3. THE Stock_Exchange_App SHALL display growth metrics including revenue growth and earnings growth
-4. THE Stock_Exchange_App SHALL display profitability metrics including ROE, ROA, and operating margin
-5. WHEN a user hovers over financial metrics, THE Stock_Exchange_App SHALL display tooltips explaining the metrics
-6. THE Stock_Exchange_App SHALL color-code metrics to indicate favorable vs unfavorable values
+1. THE The_Open_Stock_App SHALL display key financial facts including revenue, net income, and profit margins
+2. THE The_Open_Stock_App SHALL display valuation metrics including P/E ratio, P/B ratio, and PEG ratio
+3. THE The_Open_Stock_App SHALL display growth metrics including revenue growth and earnings growth
+4. THE The_Open_Stock_App SHALL display profitability metrics including ROE, ROA, and operating margin
+5. WHEN a user hovers over financial metrics, THE The_Open_Stock_App SHALL display tooltips explaining the metrics
+6. THE The_Open_Stock_App SHALL color-code metrics to indicate favorable vs unfavorable values
 
 ### Requirement 9: Fear and Greed Index Display
 
@@ -157,11 +157,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL display the current Fear and Greed Index value from CNN
-2. THE Stock_Exchange_App SHALL display a gauge visualization showing the index on a 0-100 scale
-3. THE Stock_Exchange_App SHALL display a timeline showing historical Fear and Greed values
-4. THE Stock_Exchange_App SHALL label index ranges as Extreme Fear, Fear, Neutral, Greed, or Extreme Greed
-5. WHEN a user hovers over the gauge, THE Stock_Exchange_App SHALL display a tooltip explaining what the index measures
+1. THE The_Open_Stock_App SHALL display the current Fear and Greed Index value from CNN
+2. THE The_Open_Stock_App SHALL display a gauge visualization showing the index on a 0-100 scale
+3. THE The_Open_Stock_App SHALL display a timeline showing historical Fear and Greed values
+4. THE The_Open_Stock_App SHALL label index ranges as Extreme Fear, Fear, Neutral, Greed, or Extreme Greed
+5. WHEN a user hovers over the gauge, THE The_Open_Stock_App SHALL display a tooltip explaining what the index measures
 
 ### Requirement 10: World Markets Overview
 
@@ -169,11 +169,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL display major market indices by region (Americas, Asia-Pacific, Europe)
-2. THE Stock_Exchange_App SHALL display current values and percentage changes for each index
-3. THE Stock_Exchange_App SHALL color-code indices based on positive or negative performance
-4. THE Stock_Exchange_App SHALL fetch world market data from CNN dataviz endpoints
-5. THE Stock_Exchange_App SHALL update world market data at configurable intervals
+1. THE The_Open_Stock_App SHALL display major market indices by region (Americas, Asia-Pacific, Europe)
+2. THE The_Open_Stock_App SHALL display current values and percentage changes for each index
+3. THE The_Open_Stock_App SHALL color-code indices based on positive or negative performance
+4. THE The_Open_Stock_App SHALL fetch world market data from CNN dataviz endpoints
+5. THE The_Open_Stock_App SHALL update world market data at configurable intervals
 
 ### Requirement 11: Chart Library Integration
 
@@ -181,7 +181,7 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL integrate a charting library for rendering price charts
+1. THE The_Open_Stock_App SHALL integrate a charting library for rendering price charts
 2. THE Chart_Component SHALL support line charts, area charts, and candlestick charts
 3. THE Chart_Component SHALL support interactive features including zoom, pan, and crosshair
 4. THE Chart_Component SHALL support responsive sizing for mobile and desktop displays
@@ -205,11 +205,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL render correctly on mobile devices with screen widths from 320px to 768px
-2. THE Stock_Exchange_App SHALL render correctly on tablet devices with screen widths from 768px to 1024px
-3. THE Stock_Exchange_App SHALL render correctly on desktop devices with screen widths above 1024px
-4. THE Stock_Exchange_App SHALL adapt chart sizes and layouts based on screen size
-5. THE Stock_Exchange_App SHALL provide touch-friendly controls on mobile devices
+1. THE The_Open_Stock_App SHALL render correctly on mobile devices with screen widths from 320px to 768px
+2. THE The_Open_Stock_App SHALL render correctly on tablet devices with screen widths from 768px to 1024px
+3. THE The_Open_Stock_App SHALL render correctly on desktop devices with screen widths above 1024px
+4. THE The_Open_Stock_App SHALL adapt chart sizes and layouts based on screen size
+5. THE The_Open_Stock_App SHALL provide touch-friendly controls on mobile devices
 
 ### Requirement 14: Error Handling and Loading States
 
@@ -217,11 +217,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. WHEN data is loading, THE Stock_Exchange_App SHALL display loading indicators
-2. WHEN API requests fail, THE Stock_Exchange_App SHALL display user-friendly error messages
-3. WHEN a symbol is not found, THE Stock_Exchange_App SHALL display a "Symbol not found" message
-4. WHEN network connectivity is lost, THE Stock_Exchange_App SHALL display a connectivity error message
-5. THE Stock_Exchange_App SHALL allow users to retry failed operations
+1. WHEN data is loading, THE The_Open_Stock_App SHALL display loading indicators
+2. WHEN API requests fail, THE The_Open_Stock_App SHALL display user-friendly error messages
+3. WHEN a symbol is not found, THE The_Open_Stock_App SHALL display a "Symbol not found" message
+4. WHEN network connectivity is lost, THE The_Open_Stock_App SHALL display a connectivity error message
+5. THE The_Open_Stock_App SHALL allow users to retry failed operations
 
 ### Requirement 15: Performance Optimization
 
@@ -229,11 +229,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL achieve a Lighthouse performance score above 80
-2. THE Stock_Exchange_App SHALL implement code splitting for route-based lazy loading
-3. THE Stock_Exchange_App SHALL cache static assets with appropriate cache headers
-4. THE Stock_Exchange_App SHALL optimize images for web delivery
-5. THE Stock_Exchange_App SHALL minimize bundle size by removing unused dependencies
+1. THE The_Open_Stock_App SHALL achieve a Lighthouse performance score above 80
+2. THE The_Open_Stock_App SHALL implement code splitting for route-based lazy loading
+3. THE The_Open_Stock_App SHALL cache static assets with appropriate cache headers
+4. THE The_Open_Stock_App SHALL optimize images for web delivery
+5. THE The_Open_Stock_App SHALL minimize bundle size by removing unused dependencies
 
 ### Requirement 16: Deployment Configuration
 
@@ -241,11 +241,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL deploy to Vercel using the Next.js framework
-2. THE Stock_Exchange_App SHALL configure environment variables for API keys and database credentials
-3. THE Stock_Exchange_App SHALL use Vercel's edge network for optimal performance
-4. THE Stock_Exchange_App SHALL configure custom domain settings if provided
-5. THE Stock_Exchange_App SHALL enable automatic deployments from the main branch
+1. THE The_Open_Stock_App SHALL deploy to Vercel using the Next.js framework
+2. THE The_Open_Stock_App SHALL configure environment variables for API keys and database credentials
+3. THE The_Open_Stock_App SHALL use Vercel's edge network for optimal performance
+4. THE The_Open_Stock_App SHALL configure custom domain settings if provided
+5. THE The_Open_Stock_App SHALL enable automatic deployments from the main branch
 
 ### Requirement 17: API Rate Limiting and Caching
 
@@ -265,11 +265,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL provide alt text for all images and icons
-2. THE Stock_Exchange_App SHALL support keyboard navigation for all interactive elements
-3. THE Stock_Exchange_App SHALL maintain color contrast ratios of at least 4.5:1 for text
-4. THE Stock_Exchange_App SHALL provide ARIA labels for dynamic content and charts
-5. THE Stock_Exchange_App SHALL ensure screen readers can announce loading states and errors
+1. THE The_Open_Stock_App SHALL provide alt text for all images and icons
+2. THE The_Open_Stock_App SHALL support keyboard navigation for all interactive elements
+3. THE The_Open_Stock_App SHALL maintain color contrast ratios of at least 4.5:1 for text
+4. THE The_Open_Stock_App SHALL provide ARIA labels for dynamic content and charts
+5. THE The_Open_Stock_App SHALL ensure screen readers can announce loading states and errors
 
 ### Requirement 19: Configuration Management
 
@@ -277,11 +277,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL store configuration in environment variables
-2. THE Stock_Exchange_App SHALL support different configurations for development, staging, and production
-3. THE Stock_Exchange_App SHALL validate required environment variables on startup
-4. WHEN required configuration is missing, THE Stock_Exchange_App SHALL fail startup with a descriptive error
-5. THE Stock_Exchange_App SHALL document all configuration options in a README or configuration guide
+1. THE The_Open_Stock_App SHALL store configuration in environment variables
+2. THE The_Open_Stock_App SHALL support different configurations for development, staging, and production
+3. THE The_Open_Stock_App SHALL validate required environment variables on startup
+4. WHEN required configuration is missing, THE The_Open_Stock_App SHALL fail startup with a descriptive error
+5. THE The_Open_Stock_App SHALL document all configuration options in a README or configuration guide
 
 ### Requirement 20: Logging and Monitoring
 
@@ -289,11 +289,11 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL log API requests and responses with timestamps
-2. THE Stock_Exchange_App SHALL log errors with stack traces and context
-3. THE Stock_Exchange_App SHALL log user authentication events
-4. THE Stock_Exchange_App SHALL integrate with Vercel's logging infrastructure
-5. THE Stock_Exchange_App SHALL implement structured logging with consistent log levels (debug, info, warn, error)
+1. THE The_Open_Stock_App SHALL log API requests and responses with timestamps
+2. THE The_Open_Stock_App SHALL log errors with stack traces and context
+3. THE The_Open_Stock_App SHALL log user authentication events
+4. THE The_Open_Stock_App SHALL integrate with Vercel's logging infrastructure
+5. THE The_Open_Stock_App SHALL implement structured logging with consistent log levels (debug, info, warn, error)
 
 ### Requirement 21: 15-Minute Trial Access
 
@@ -301,24 +301,24 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. WHEN an unauthenticated user accesses the application, THE Stock_Exchange_App SHALL create a Trial_Session object containing start_time, end_time, is_active flag, and device_fingerprint
-2. THE Stock_Exchange_App SHALL set the Trial_Session end_time to 15 minutes after start_time
-3. THE Stock_Exchange_App SHALL generate a Device_Fingerprint from browser characteristics including user agent, screen resolution, timezone, and available plugins
-4. THE Stock_Exchange_App SHALL store the Device_Fingerprint to track whether a device has previously used a trial
-5. WHEN a device with an existing Device_Fingerprint attempts to start a new trial, THE Stock_Exchange_App SHALL prevent trial access and prompt for authentication
+1. WHEN an unauthenticated user accesses the application, THE The_Open_Stock_App SHALL create a Trial_Session object containing start_time, end_time, is_active flag, and device_fingerprint
+2. THE The_Open_Stock_App SHALL set the Trial_Session end_time to 15 minutes after start_time
+3. THE The_Open_Stock_App SHALL generate a Device_Fingerprint from browser characteristics including user agent, screen resolution, timezone, and available plugins
+4. THE The_Open_Stock_App SHALL store the Device_Fingerprint to track whether a device has previously used a trial
+5. WHEN a device with an existing Device_Fingerprint attempts to start a new trial, THE The_Open_Stock_App SHALL prevent trial access and prompt for authentication
 6. THE IP_Tracking SHALL attempt to retrieve the user's IP address from multiple IP service providers for reliability
 7. WHEN IP service providers are unavailable, THE IP_Tracking SHALL fall back to localStorage-based identification
 8. WHEN localStorage is unavailable, THE IP_Tracking SHALL use Device_Fingerprint combined with timestamp as identification
 9. THE Trial_Timer SHALL display remaining trial time in minutes and seconds
 10. THE Trial_Timer SHALL update the countdown display at least once per second
-11. WHILE the Trial_Session is_active flag is true, THE Stock_Exchange_App SHALL allow full access to all features
-12. WHEN the Trial_Session expires, THE Stock_Exchange_App SHALL set is_active to false and display an authentication prompt
-13. THE Stock_Exchange_App SHALL offer three authentication methods: Apple SSO, Google SSO, and Email OTP via Magic_URL
+11. WHILE the Trial_Session is_active flag is true, THE The_Open_Stock_App SHALL allow full access to all features
+12. WHEN the Trial_Session expires, THE The_Open_Stock_App SHALL set is_active to false and display an authentication prompt
+13. THE The_Open_Stock_App SHALL offer three authentication methods: Apple SSO, Google SSO, and Email OTP via Magic_URL
 14. WHEN a user selects Apple SSO, THE OAuth_Callback SHALL process the Apple authentication response
 15. WHEN a user selects Google SSO, THE OAuth_Callback SHALL process the Google authentication response
 16. WHEN a user selects Email OTP, THE Authentication_Service SHALL send a Magic_URL to the provided email address
-17. WHEN a user authenticates successfully during or after a Trial_Session, THE Stock_Exchange_App SHALL terminate the trial and grant full authenticated access
-18. THE Stock_Exchange_App SHALL persist Trial_Session state across page refreshes using browser storage
+17. WHEN a user authenticates successfully during or after a Trial_Session, THE The_Open_Stock_App SHALL terminate the trial and grant full authenticated access
+18. THE The_Open_Stock_App SHALL persist Trial_Session state across page refreshes using browser storage
 19. WHEN a user attempts to bypass trial limits using incognito mode, THE Trial_Enforcement SHALL detect the existing Device_Fingerprint and prevent trial access
 20. THE Trial_Enforcement SHALL prevent multiple trials from the same device regardless of browser mode or cleared cookies
 
@@ -338,7 +338,7 @@ This document defines requirements for a stock exchange application designed for
 8. WHEN a user selects the Ads-free tier, THE Subscription_Service SHALL process payment and activate the subscription
 9. THE Local tier SHALL integrate with Ollama_Integration to run AI features on the user's local machine
 10. WHEN a user activates the Local tier, THE Ollama_Integration SHALL verify that Ollama is installed and accessible on the user's device
-11. WHILE using the Local tier, THE Stock_Exchange_App SHALL NOT send user data to external AI services
+11. WHILE using the Local tier, THE The_Open_Stock_App SHALL NOT send user data to external AI services
 12. THE BYOK tier SHALL allow users to provide API keys for multiple AI_Provider options including OpenAI, Google Gemini, Mistral AI, and DeepSeek
 13. THE API_Key_Manager SHALL securely store user-provided API keys with encryption
 14. WHEN a user provides an API key, THE API_Key_Manager SHALL validate the key with the corresponding AI_Provider
@@ -349,10 +349,10 @@ This document defines requirements for a stock exchange application designed for
 19. WHEN AI provides an explanation, THE AI_Visual_Integration SHALL highlight or annotate the relevant chart, graph, or metric
 20. THE AI_Visual_Integration SHALL surface the appropriate visualization when responding to user queries
 21. THE AI_Visual_Integration SHALL tie explanations to specific data points on timelines and charts
-22. THE Stock_Exchange_App SHALL NOT limit AI features to text-based chat interfaces
-23. THE Stock_Exchange_App SHALL provide visual representations of AI insights including annotated charts and highlighted metrics
-24. WHEN a user changes Pricing_Tier, THE Stock_Exchange_App SHALL update feature access immediately
-25. THE Stock_Exchange_App SHALL display the user's current Pricing_Tier in account settings
+22. THE The_Open_Stock_App SHALL NOT limit AI features to text-based chat interfaces
+23. THE The_Open_Stock_App SHALL provide visual representations of AI insights including annotated charts and highlighted metrics
+24. WHEN a user changes Pricing_Tier, THE The_Open_Stock_App SHALL update feature access immediately
+25. THE The_Open_Stock_App SHALL display the user's current Pricing_Tier in account settings
 26. THE Subscription_Service SHALL support tier upgrades and downgrades
 27. WHEN a user downgrades from a paid tier, THE Subscription_Service SHALL maintain access until the end of the current billing period
 
@@ -370,7 +370,7 @@ This document defines requirements for a stock exchange application designed for
 6. WHEN a user selects sectors for comparison, THE Sector_Hub SHALL display relative performance metrics for the selected sectors
 7. THE Sector_Hub SHALL display sector performance over configurable time periods (1D, 1W, 1M, 3M, 1Y, YTD)
 8. WHEN a user hovers over a sector, THE Sector_Hub SHALL display a tooltip with detailed sector information
-9. WHEN a user clicks on a sector, THE Stock_Exchange_App SHALL navigate to a detailed sector view showing constituent stocks
+9. WHEN a user clicks on a sector, THE The_Open_Stock_App SHALL navigate to a detailed sector view showing constituent stocks
 10. THE Sector_Hub SHALL update sector data at configurable intervals
 11. THE Sector_Hub SHALL display a visual representation showing relative sector strength
 12. THE Sector_Hub SHALL sort sectors by performance when requested by the user
@@ -381,8 +381,8 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL provide four calendar types: Economic_Calendar, Earnings_Calendar, Dividend_Calendar, and IPO_Calendar
-2. THE Stock_Exchange_App SHALL display calendar navigation allowing users to switch between calendar types
+1. THE The_Open_Stock_App SHALL provide four calendar types: Economic_Calendar, Earnings_Calendar, Dividend_Calendar, and IPO_Calendar
+2. THE The_Open_Stock_App SHALL display calendar navigation allowing users to switch between calendar types
 3. THE Economic_Calendar SHALL fetch economic event data from CNN's economic-events endpoint
 4. THE Economic_Calendar SHALL display upcoming economic events with event name, date, time, and description
 5. THE Economic_Calendar SHALL provide filters for country selection
@@ -402,9 +402,9 @@ This document defines requirements for a stock exchange application designed for
 19. THE IPO_Calendar SHALL display upcoming initial public offerings with company name and expected listing date
 20. THE IPO_Calendar SHALL display IPO details including expected price range and number of shares when available
 21. THE IPO_Calendar SHALL display the exchange where the IPO will be listed
-22. FOR ALL calendar types, THE Stock_Exchange_App SHALL provide date range selection
-23. FOR ALL calendar types, THE Stock_Exchange_App SHALL highlight today's date
-24. WHEN a user clicks on a calendar entry with an associated symbol, THE Stock_Exchange_App SHALL navigate to that symbol's detail page
+22. FOR ALL calendar types, THE The_Open_Stock_App SHALL provide date range selection
+23. FOR ALL calendar types, THE The_Open_Stock_App SHALL highlight today's date
+24. WHEN a user clicks on a calendar entry with an associated symbol, THE The_Open_Stock_App SHALL navigate to that symbol's detail page
 
 ### Requirement 25: Heatmaps
 
@@ -412,8 +412,8 @@ This document defines requirements for a stock exchange application designed for
 
 #### Acceptance Criteria
 
-1. THE Stock_Exchange_App SHALL provide three heatmap types: ETF_Heatmap, Crypto_Heatmap, and Stock_Heatmap
-2. THE Stock_Exchange_App SHALL display heatmap navigation allowing users to switch between heatmap types
+1. THE The_Open_Stock_App SHALL provide three heatmap types: ETF_Heatmap, Crypto_Heatmap, and Stock_Heatmap
+2. THE The_Open_Stock_App SHALL display heatmap navigation allowing users to switch between heatmap types
 3. THE Heatmap_Component SHALL render data in a grid of tiles where each tile represents one asset
 4. THE Heatmap_Component SHALL color-code tiles based on performance with green for positive returns and red for negative returns
 5. THE Heatmap_Component SHALL vary color intensity based on the magnitude of performance change
@@ -426,7 +426,7 @@ This document defines requirements for a stock exchange application designed for
 12. THE Heatmap_Component SHALL provide time period selection (1D, 1W, 1M, 3M, 1Y)
 13. WHEN a user changes the time period, THE Heatmap_Component SHALL update colors and values to reflect the selected period
 14. WHEN a user hovers over a tile, THE Heatmap_Component SHALL display a tooltip with detailed asset information
-15. WHEN a user clicks on a tile, THE Stock_Exchange_App SHALL navigate to that asset's detail page
+15. WHEN a user clicks on a tile, THE The_Open_Stock_App SHALL navigate to that asset's detail page
 16. THE Heatmap_Component SHALL resize tiles responsively based on screen size
 17. THE Heatmap_Component SHALL provide filtering options to narrow down displayed assets
 18. THE Heatmap_Component SHALL provide sorting options (by performance, by market cap, by volume)
@@ -457,7 +457,7 @@ This document defines requirements for a stock exchange application designed for
 16. WHEN displaying results in table view, THE Asset_Screener SHALL show key metrics for each asset including price, change percentage, volume, and market cap
 17. WHEN displaying results in heatmap view, THE Asset_Screener SHALL integrate Chart_Component to show mini charts for each asset
 18. THE Asset_Screener SHALL color-code results based on Valuation_Context (red for overpriced, green for underpriced, gray for fairly priced)
-19. WHEN a user clicks on a screener result, THE Stock_Exchange_App SHALL navigate to that asset's detail page
+19. WHEN a user clicks on a screener result, THE The_Open_Stock_App SHALL navigate to that asset's detail page
 20. THE Asset_Screener SHALL support exporting filtered results to CSV format
 21. THE Asset_Screener SHALL allow sorting results by any displayed metric column
 22. THE Asset_Screener SHALL provide pagination when results exceed 50 assets

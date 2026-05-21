@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Ollama Verification
- * Feature: stock-exchange-application, Property 21: Ollama Verification
+ * Feature: the-open-stock, Property 21: Ollama Verification
  *
  * Validates: Requirements 22.10
  * "For any Local tier activation, the system should verify Ollama installation
@@ -117,7 +117,7 @@ describe("Property 21: Ollama Verification", () => {
   });
 
   it("verification returns available=true with version and models when Ollama is running", async () => {
-    // Feature: stock-exchange-application, Property 21: Ollama Verification
+    // Feature: the-open-stock, Property 21: Ollama Verification
     // **Validates: Requirements 22.10**
     await fc.assert(
       fc.asyncProperty(
@@ -142,7 +142,7 @@ describe("Property 21: Ollama Verification", () => {
   });
 
   it("verification returns available=false with error message when Ollama is not running", async () => {
-    // Feature: stock-exchange-application, Property 21: Ollama Verification
+    // Feature: the-open-stock, Property 21: Ollama Verification
     // **Validates: Requirements 22.10**
     await fc.assert(
       fc.asyncProperty(baseUrlArb, async (baseUrl) => {
@@ -163,7 +163,7 @@ describe("Property 21: Ollama Verification", () => {
   });
 
   it("verification returns available=false when Ollama returns a non-OK status", async () => {
-    // Feature: stock-exchange-application, Property 21: Ollama Verification
+    // Feature: the-open-stock, Property 21: Ollama Verification
     // **Validates: Requirements 22.10**
     await fc.assert(
       fc.asyncProperty(
@@ -184,7 +184,7 @@ describe("Property 21: Ollama Verification", () => {
   });
 
   it("model list from verification always matches the models returned by Ollama", async () => {
-    // Feature: stock-exchange-application, Property 21: Ollama Verification
+    // Feature: the-open-stock, Property 21: Ollama Verification
     // **Validates: Requirements 22.10**
     await fc.assert(
       fc.asyncProperty(
@@ -211,7 +211,7 @@ describe("Property 21: Ollama Verification", () => {
   });
 
   it("verification result is always one of two states: available or not available", async () => {
-    // Feature: stock-exchange-application, Property 21: Ollama Verification
+    // Feature: the-open-stock, Property 21: Ollama Verification
     // **Validates: Requirements 22.10**
     await fc.assert(
       fc.asyncProperty(

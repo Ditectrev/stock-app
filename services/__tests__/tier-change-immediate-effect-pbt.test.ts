@@ -1,6 +1,6 @@
 /**
  * Property-Based Tests for Tier Change Immediate Effect
- * Feature: stock-exchange-application, Property 14: Tier Change Immediate Effect
+ * Feature: the-open-stock, Property 14: Tier Change Immediate Effect
  *
  * Validates: Requirements 22.24, 22.26
  * "For any pricing tier change (upgrade or downgrade), the user's feature
@@ -71,7 +71,7 @@ describe("Property 14: Tier Change Immediate Effect", () => {
   });
 
   it("upgrade result always reflects the requested new tier immediately", async () => {
-    // Feature: stock-exchange-application, Property 14: Tier Change Immediate Effect
+    // Feature: the-open-stock, Property 14: Tier Change Immediate Effect
     // **Validates: Requirements 22.24, 22.26**
     await fc.assert(
       fc.asyncProperty(
@@ -104,7 +104,7 @@ describe("Property 14: Tier Change Immediate Effect", () => {
   });
 
   it("upgrade subscription startDate is never in the future (takes effect now)", async () => {
-    // Feature: stock-exchange-application, Property 14: Tier Change Immediate Effect
+    // Feature: the-open-stock, Property 14: Tier Change Immediate Effect
     // **Validates: Requirements 22.24**
     await fc.assert(
       fc.asyncProperty(userIdArb, paidTierArb, async (userId, toTier) => {
@@ -130,7 +130,7 @@ describe("Property 14: Tier Change Immediate Effect", () => {
   });
 
   it("subscribing to any tier always returns that exact tier in the result", async () => {
-    // Feature: stock-exchange-application, Property 14: Tier Change Immediate Effect
+    // Feature: the-open-stock, Property 14: Tier Change Immediate Effect
     // **Validates: Requirements 22.24, 22.26**
     await fc.assert(
       fc.asyncProperty(userIdArb, tierArb, async (userId, tier) => {
@@ -148,7 +148,7 @@ describe("Property 14: Tier Change Immediate Effect", () => {
   });
 
   it("tier change result never contains a different tier than requested", async () => {
-    // Feature: stock-exchange-application, Property 14: Tier Change Immediate Effect
+    // Feature: the-open-stock, Property 14: Tier Change Immediate Effect
     // **Validates: Requirements 22.24, 22.26**
     await fc.assert(
       fc.asyncProperty(
@@ -179,7 +179,7 @@ describe("Property 14: Tier Change Immediate Effect", () => {
   });
 
   it("paid tier upgrade always requires a payment method", async () => {
-    // Feature: stock-exchange-application, Property 14: Tier Change Immediate Effect
+    // Feature: the-open-stock, Property 14: Tier Change Immediate Effect
     // **Validates: Requirements 22.26**
     await fc.assert(
       fc.asyncProperty(userIdArb, paidTierArb, async (userId, paidTier) => {
@@ -196,7 +196,7 @@ describe("Property 14: Tier Change Immediate Effect", () => {
   });
 
   it("free tier subscription always succeeds without a payment method", async () => {
-    // Feature: stock-exchange-application, Property 14: Tier Change Immediate Effect
+    // Feature: the-open-stock, Property 14: Tier Change Immediate Effect
     // **Validates: Requirements 22.24**
     await fc.assert(
       fc.asyncProperty(userIdArb, async (userId) => {
