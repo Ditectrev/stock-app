@@ -59,9 +59,18 @@ export function UserProfileMenu() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("auth_success") === "true") {
-      void refreshAuthState();
-    }
+    if (params.get("auth_success") !== "true") return;
+
+    void refreshAuthState().then(() => {
+      window.dispatchEvent(new Event("auth-state-changed"));
+      params.delete("auth_success");
+      const query = params.toString();
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}${query ? `?${query}` : ""}`
+      );
+    });
   }, []);
 
   useEffect(() => {

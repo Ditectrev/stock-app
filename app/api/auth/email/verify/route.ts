@@ -7,6 +7,7 @@ import { AppwriteException } from "node-appwrite";
 import { createServerClient } from "@/lib/appwrite";
 import { getAppwriteServerEnv } from "@/lib/appwrite-server-env";
 import { logger } from "@/lib/logger";
+import { getSessionCookieOptions } from "@/lib/auth/session-cookie";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -52,13 +53,11 @@ export async function POST(request: NextRequest) {
     logger.info("Email OTP session created", { userId });
     const response = NextResponse.json({ ok: true });
     if (session.secret) {
-      response.cookies.set("appwrite_session", session.secret, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-      });
+      response.cookies.set(
+        "appwrite_session",
+        session.secret,
+        getSessionCookieOptions(request)
+      );
     }
     return response;
   } catch (err) {

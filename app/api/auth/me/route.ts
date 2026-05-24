@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSessionClient } from "@/lib/appwrite";
+import { getSessionCookieClearOptions } from "@/lib/auth/session-cookie";
 
 export async function GET(request: NextRequest) {
   const sessionSecret = request.cookies.get("appwrite_session")?.value;
@@ -23,13 +24,11 @@ export async function GET(request: NextRequest) {
       { authenticated: false },
       { status: 401 }
     );
-    response.cookies.set("appwrite_session", "", {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-      maxAge: 0,
-    });
+    response.cookies.set(
+      "appwrite_session",
+      "",
+      getSessionCookieClearOptions(request)
+    );
     return response;
   }
 }

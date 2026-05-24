@@ -13,14 +13,18 @@ export async function GET(request: NextRequest) {
   try {
     const auth = await getAuthenticatedUser(request);
     if (!auth) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Authentication required",
-          timestamp: new Date(),
+      // Anonymous visitors are FREE tier; 200 avoids noisy 401s in DevTools on every page load.
+      return NextResponse.json({
+        success: true,
+        data: {
+          tier: "FREE",
+          authenticated: false,
+          currentPeriodEnd: null,
+          cancelAtPeriodEnd: false,
+          status: null,
         },
-        { status: 401 }
-      );
+        timestamp: new Date(),
+      });
     }
 
     const tier = await subscriptionService.getCurrentTier(auth.id);
@@ -30,6 +34,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: {
         tier,
+        authenticated: true,
         currentPeriodEnd: record?.currentPeriodEnd ?? null,
         cancelAtPeriodEnd: record?.cancelAtPeriodEnd ?? false,
         status: record?.status ?? null,

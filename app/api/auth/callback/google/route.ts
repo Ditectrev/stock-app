@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticationService } from "@/services/authentication.service";
 import { logger } from "@/lib/logger";
+import { getSessionCookieOptions } from "@/lib/auth/session-cookie";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -55,13 +56,11 @@ export async function GET(request: NextRequest) {
       new URL("/?auth_success=true", request.url)
     );
     if (result.sessionSecret) {
-      response.cookies.set("appwrite_session", result.sessionSecret, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-      });
+      response.cookies.set(
+        "appwrite_session",
+        result.sessionSecret,
+        getSessionCookieOptions(request)
+      );
     }
     return response;
   } catch (err) {
