@@ -1,11 +1,11 @@
 /**
- * Apple OAuth is temporarily disabled until production launch.
+ * Apple Sign-In is not enabled yet (Appwrite + Apple developer setup).
  */
 
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   return NextResponse.redirect(
-    new URL("/?auth_error=sso_temporarily_disabled", request.url)
+    new URL("/?auth_error=apple_sign_in_unavailable", request.url)
   );
 }
