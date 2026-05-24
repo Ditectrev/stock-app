@@ -38,6 +38,14 @@ export async function GET(request: NextRequest) {
     );
     const isInvalidRedirect =
       err instanceof AppwriteException && /invalid redirect/i.test(err.message);
+    if (isInvalidRedirect) {
+      logger.warn("Google OAuth: redirect URLs not whitelisted in Appwrite", {
+        origin,
+        success,
+        failure,
+        hint: "Add this hostname under Appwrite → Auth → Platforms (Web).",
+      });
+    }
     return NextResponse.redirect(
       new URL(
         isInvalidRedirect

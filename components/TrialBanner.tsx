@@ -34,6 +34,15 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   const [authInfo, setAuthInfo] = useState<string | null>(null);
   const requiresAuthLock = !isActive && hasUsedTrial && !isAuthenticated;
 
+  const openAuthModal = useCallback((clearMessages = true) => {
+    if (clearMessages) {
+      setAuthError(null);
+      setAuthInfo(null);
+    }
+    setAuthLoading(false);
+    setShowAuth(true);
+  }, []);
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -70,7 +79,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   }, []);
 
   useEffect(() => {
-    const openAuth = () => setShowAuth(true);
+    const openAuth = () => openAuthModal(true);
     if (typeof window !== "undefined") {
       window.addEventListener("open-auth-prompt", openAuth);
     }
@@ -79,24 +88,27 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         window.removeEventListener("open-auth-prompt", openAuth);
       }
     };
-  }, []);
+  }, [openAuthModal]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     if (params.get("signin") === "1") {
-      setShowAuth(true);
+      openAuthModal(true);
     }
     const authErrorCode = params.get("auth_error");
     if (authErrorCode) {
-      setAuthError(describeAuthQueryError(authErrorCode));
+      setAuthError(
+        describeAuthQueryError(authErrorCode, window.location.hostname)
+      );
+      setAuthLoading(false);
       setShowAuth(true);
       params.delete("auth_error");
       const query = params.toString();
       const next = `${window.location.pathname}${query ? `?${query}` : ""}`;
       window.history.replaceState({}, "", next);
     }
-  }, []);
+  }, [openAuthModal]);
 
   useEffect(() => {
     const syncAuth = async () => {
@@ -141,16 +153,14 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
     prevShowAuthRef.current = showAuth;
     if (opening) {
       setAuthLoading(false);
-      setAuthError(null);
-      setAuthInfo(null);
     }
   }, [showAuth]);
 
   const handleExpired = useCallback(() => {
     setIsActive(false);
     void trialApiService.endTrial();
-    setShowAuth(true);
-  }, []);
+    openAuthModal(true);
+  }, [openAuthModal]);
 
   const handleAuthClose = useCallback(() => {
     if (requiresAuthLock) {
@@ -244,7 +254,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
             />
             <button
               type="button"
-              onClick={() => setShowAuth(true)}
+              onClick={() => openAuthModal(true)}
               className="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-700"
               data-testid="trial-sign-in-btn"
             >
@@ -264,7 +274,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
             Trial expired.{" "}
             <button
               type="button"
-              onClick={() => setShowAuth(true)}
+              onClick={() => openAuthModal(true)}
               className="font-medium underline hover:no-underline"
               data-testid="trial-expired-sign-in"
             >
