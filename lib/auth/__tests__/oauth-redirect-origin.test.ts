@@ -18,24 +18,32 @@ describe("oauth-redirect-origin", () => {
 
   it("getOAuthRedirectOrigin prefers configured site over request host", () => {
     process.env.NEXT_PUBLIC_SITE_URL = "https://theopenstock.com";
-    const request = new NextRequest("https://www.theopenstock.com/api/auth/oauth/google");
+    const request = new NextRequest(
+      "https://www.theopenstock.com/api/auth/oauth/google"
+    );
     expect(getOAuthRedirectOrigin(request)).toBe("https://theopenstock.com");
   });
 
   it("getOAuthRedirectOrigin falls back to request when unset", () => {
-    const request = new NextRequest("http://localhost:3000/api/auth/oauth/google");
+    const request = new NextRequest(
+      "http://localhost:3000/api/auth/oauth/google"
+    );
     expect(getOAuthRedirectOrigin(request)).toBe("http://localhost:3000");
   });
 
   it("getOAuthRedirectOrigin ignores NEXT_PUBLIC_SITE_URL on localhost", () => {
     process.env.NEXT_PUBLIC_SITE_URL = "https://theopenstock.com";
-    const request = new NextRequest("http://localhost:3000/api/auth/oauth/google");
+    const request = new NextRequest(
+      "http://localhost:3000/api/auth/oauth/google"
+    );
     expect(getOAuthRedirectOrigin(request)).toBe("http://localhost:3000");
   });
 
   it("getGoogleOAuthRedirectUrls builds callback paths", () => {
     process.env.NEXT_PUBLIC_SITE_URL = "https://theopenstock.com";
-    const request = new NextRequest("https://www.theopenstock.com/api/auth/oauth/google");
+    const request = new NextRequest(
+      "https://www.theopenstock.com/api/auth/oauth/google"
+    );
     const callback = "https://theopenstock.com/api/auth/callback/google";
     expect(getGoogleOAuthRedirectUrls(request)).toEqual({
       origin: "https://theopenstock.com",
