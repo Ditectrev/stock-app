@@ -51,7 +51,7 @@ export function AuthPrompt({
   open,
   onClose,
   dismissible = true,
-  onAppleSignIn,
+  onAppleSignIn: _onAppleSignIn,
   onGoogleSignIn,
   onEmailSubmit,
   onEmailVerify,
@@ -185,10 +185,6 @@ export function AuthPrompt({
     [otp, pendingUserId, onEmailVerify]
   );
 
-  if (!open) return null;
-
-  const displayError = error || oauthStartError || emailError;
-
   const handleGoogleSignIn = useCallback(() => {
     if (loading) return;
     setOauthStartError(null);
@@ -201,6 +197,10 @@ export function AuthPrompt({
       setOauthStartError(result.error);
     }
   }, [loading, onGoogleSignIn]);
+
+  if (!open) return null;
+
+  const displayError = error || oauthStartError || emailError;
 
   const isBusy = loading || localSubmitting;
 

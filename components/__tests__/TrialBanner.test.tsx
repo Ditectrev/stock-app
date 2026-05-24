@@ -245,7 +245,7 @@ describe("TrialBanner", () => {
     expect(screen.queryByTestId("auth-apple")).toBeNull();
   });
 
-  it("should show Google sign-in link", async () => {
+  it("should show Google sign-in button", async () => {
     mockGetTrialStatus.mockReturnValue({
       isActive: true,
       remainingSeconds: 600,
