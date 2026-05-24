@@ -198,7 +198,7 @@ describe("TrialBanner", () => {
     await renderBanner();
     fireEvent.click(screen.getByTestId("trial-sign-in-btn"));
 
-    expect(screen.getByTestId("auth-sso-disabled-note")).toBeDefined();
+    expect(screen.getByTestId("auth-google")).toBeDefined();
     expect(screen.getByTestId("auth-email-btn")).toBeDefined();
   });
 
@@ -232,7 +232,7 @@ describe("TrialBanner", () => {
 
   // --- onAuthenticated callback ---
 
-  it("should hide Apple OAuth when SSO is disabled", async () => {
+  it("should show disabled Apple sign-in with availability note", async () => {
     mockGetTrialStatus.mockReturnValue({
       isActive: true,
       remainingSeconds: 600,
@@ -241,10 +241,11 @@ describe("TrialBanner", () => {
 
     await renderBanner();
     fireEvent.click(screen.getByTestId("trial-sign-in-btn"));
+    expect(screen.getByTestId("auth-apple-disabled")).toBeDefined();
     expect(screen.queryByTestId("auth-apple")).toBeNull();
   });
 
-  it("should hide Google OAuth when SSO is disabled", async () => {
+  it("should show Google sign-in link", async () => {
     mockGetTrialStatus.mockReturnValue({
       isActive: true,
       remainingSeconds: 600,
@@ -253,7 +254,7 @@ describe("TrialBanner", () => {
 
     await renderBanner();
     fireEvent.click(screen.getByTestId("trial-sign-in-btn"));
-    expect(screen.queryByTestId("auth-google")).toBeNull();
+    expect(screen.getByTestId("auth-google")).toBeDefined();
   });
 
   it("should call onAuthenticated after the email verification code is submitted", async () => {

@@ -40,12 +40,16 @@ describe("AuthPrompt", () => {
 
   // --- Provider rendering ---
 
-  it("should hide social OAuth options when SSO is disabled", () => {
+  it("should show Google sign-in and note that Apple is unavailable", () => {
     renderAuthPrompt();
 
-    expect(screen.queryByTestId("auth-apple")).toBeNull();
-    expect(screen.queryByTestId("auth-google")).toBeNull();
-    expect(screen.getByTestId("auth-sso-disabled-note")).toBeDefined();
+    expect(screen.getByTestId("auth-google")).toBeDefined();
+    expect(screen.getByTestId("auth-google").getAttribute("href")).toBe(
+      "/api/auth/oauth/google"
+    );
+    expect(screen.getByTestId("auth-apple-disabled")).toBeDefined();
+    expect(screen.getByTestId("auth-apple-unavailable-note")).toBeDefined();
+    expect(screen.queryByTestId("auth-sso-disabled-note")).toBeNull();
   });
 
   it("should disable provider controls when loading", () => {
@@ -92,7 +96,7 @@ describe("AuthPrompt", () => {
     fireEvent.click(screen.getByTestId("auth-email-btn"));
     fireEvent.click(screen.getByTestId("auth-back"));
 
-    expect(screen.getByTestId("auth-sso-disabled-note")).toBeDefined();
+    expect(screen.getByTestId("auth-google")).toBeDefined();
   });
 
   // --- Email form validation ---

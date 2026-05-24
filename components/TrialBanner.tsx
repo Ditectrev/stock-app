@@ -15,6 +15,7 @@ import {
   postEmailOtpSend,
   postEmailOtpVerify,
 } from "@/lib/auth/trial-auth-navigation";
+import { describeAuthQueryError } from "@/lib/auth/auth-query-messages";
 
 export interface TrialBannerProps {
   /** Called when user successfully authenticates */
@@ -85,6 +86,15 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
     const params = new URLSearchParams(window.location.search);
     if (params.get("signin") === "1") {
       setShowAuth(true);
+    }
+    const authErrorCode = params.get("auth_error");
+    if (authErrorCode) {
+      setAuthError(describeAuthQueryError(authErrorCode));
+      setShowAuth(true);
+      params.delete("auth_error");
+      const query = params.toString();
+      const next = `${window.location.pathname}${query ? `?${query}` : ""}`;
+      window.history.replaceState({}, "", next);
     }
   }, []);
 

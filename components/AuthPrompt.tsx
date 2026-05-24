@@ -46,8 +46,6 @@ export interface AuthPromptProps {
   loading?: boolean;
 }
 
-const SOCIAL_SSO_ENABLED = false;
-
 export function AuthPrompt({
   open,
   onClose,
@@ -257,57 +255,44 @@ export function AuthPrompt({
 
         {view === "providers" ? (
           <div className="space-y-3">
-            {SOCIAL_SSO_ENABLED ? (
-              <>
-                {/* Apple SSO — real link so the browser always navigates (then server redirects to Appwrite) */}
-                <a
-                  href="/api/auth/oauth/apple"
-                  className={`${oauthLinkClass} bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 ${
-                    loading ? "pointer-events-none opacity-50" : ""
-                  }`}
-                  data-testid="auth-apple"
-                  aria-disabled={loading}
-                  onClick={(e) => {
-                    if (loading) {
-                      e.preventDefault();
-                      return;
-                    }
-                    onAppleSignIn?.();
-                  }}
-                >
-                  <AppleIcon />
-                  Continue with Apple
-                </a>
+            <a
+              href="/api/auth/oauth/google"
+              className={`${oauthLinkClass} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 ${
+                loading ? "pointer-events-none opacity-50" : ""
+              }`}
+              data-testid="auth-google"
+              aria-disabled={loading}
+              onClick={(e) => {
+                if (loading) {
+                  e.preventDefault();
+                  return;
+                }
+                onGoogleSignIn?.();
+              }}
+            >
+              <GoogleIcon />
+              Continue with Google
+            </a>
 
-                {/* Google SSO */}
-                <a
-                  href="/api/auth/oauth/google"
-                  className={`${oauthLinkClass} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 ${
-                    loading ? "pointer-events-none opacity-50" : ""
-                  }`}
-                  data-testid="auth-google"
-                  aria-disabled={loading}
-                  onClick={(e) => {
-                    if (loading) {
-                      e.preventDefault();
-                      return;
-                    }
-                    onGoogleSignIn?.();
-                  }}
-                >
-                  <GoogleIcon />
-                  Continue with Google
-                </a>
-              </>
-            ) : (
-              <div
-                className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                data-testid="auth-sso-disabled-note"
+            <div className="space-y-1">
+              <button
+                type="button"
+                disabled
+                className={`${oauthLinkClass} cursor-not-allowed bg-black/60 text-white opacity-60 dark:bg-white/20 dark:text-white`}
+                data-testid="auth-apple-disabled"
+                aria-describedby="auth-apple-unavailable-note"
               >
-                Apple/Google sign-in is temporarily disabled. Use email sign-in
-                for now.
-              </div>
-            )}
+                <AppleIcon />
+                Continue with Apple
+              </button>
+              <p
+                id="auth-apple-unavailable-note"
+                className="text-xs text-gray-500 dark:text-gray-400"
+                data-testid="auth-apple-unavailable-note"
+              >
+                Apple Sign-In is not available yet. Use Google or email below.
+              </p>
+            </div>
 
             {/* Divider */}
             <div className="flex items-center gap-3">
