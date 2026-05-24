@@ -4,6 +4,10 @@
  */
 
 import { ID, OAuthProvider } from "appwrite";
+import {
+  getBrowserOAuthRedirectOrigin,
+  getGoogleOAuthCallbackUrl,
+} from "@/lib/auth/oauth-redirect-origin";
 import { getBrowserAccount } from "./browser-config";
 
 function missingConfigError(): { ok: false; error: string } {
@@ -28,12 +32,18 @@ export function startGoogleOAuth():
   if (typeof window === "undefined") {
     return { ok: false, error: "OAuth must run in the browser." };
   }
-  const origin = window.location.origin;
-  account.createOAuth2Session({
-    provider: OAuthProvider.Google,
-    success: `${origin}/api/auth/callback/google`,
-    failure: `${origin}/?auth_error=google_oauth_failed`,
-  });
+  const origin = getBrowserOAuthRedirectOrigin();
+  if (!origin) {
+    return { ok: false, error: "OAuth must run in the browser." };
+  }
+  const callback = getGoogleOAuthCallbackUrl(origin);
+  try {
+    account.createOAuth2Session(OAuthProvider.Google, callback, callback);
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Failed to start Google sign-in.";
+    return { ok: false, error: message };
+  }
   return { ok: true };
 }
 

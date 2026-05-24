@@ -3,13 +3,14 @@
 /**
  * AuthPrompt Component
  * Modal dialog for user authentication with Apple SSO, Google SSO, and Email OTP.
- * OAuth uses real <a href> links so navigation works even if JS handlers fail.
+ * Google OAuth uses browser createOAuth2Session (same as Practice-Tests-Exams-Platform).
  * Rendered via portal to document.body with high z-index so nothing covers the modal.
  * Requirements: 1.6, 21.13
  */
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { startGoogleOAuth } from "@/lib/appwrite/browser-auth";
 
 export type AuthView = "providers" | "email";
 
@@ -22,7 +23,7 @@ export interface AuthPromptProps {
   dismissible?: boolean;
   /** Optional — Apple uses /api/auth/oauth/apple unless you override behavior */
   onAppleSignIn?: () => void;
-  /** Optional — Google uses /api/auth/oauth/google unless you override behavior */
+  /** Optional override for Google sign-in (default: browser OAuth via Appwrite SDK) */
   onGoogleSignIn?: () => void;
   /** Send OTP email; return userId on success so the user can enter the code */
   onEmailSubmit: (email: string) => Promise<{
@@ -66,6 +67,7 @@ export function AuthPrompt({
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
   const [otp, setOtp] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [oauthStartError, setOauthStartError] = useState<string | null>(null);
   const [localSubmitting, setLocalSubmitting] = useState(false);
   const prevOpenRef = useRef(open);
   const emailInputRef = useRef<HTMLInputElement | null>(null);
@@ -81,6 +83,7 @@ export function AuthPrompt({
       setPendingUserId(null);
       setOtp("");
       setEmailError(null);
+      setOauthStartError(null);
       setLocalSubmitting(false);
     }
   }, [open]);
@@ -184,7 +187,20 @@ export function AuthPrompt({
 
   if (!open) return null;
 
-  const displayError = error || emailError;
+  const displayError = error || oauthStartError || emailError;
+
+  const handleGoogleSignIn = useCallback(() => {
+    if (loading) return;
+    setOauthStartError(null);
+    if (onGoogleSignIn) {
+      onGoogleSignIn();
+      return;
+    }
+    const result = startGoogleOAuth();
+    if (!result.ok) {
+      setOauthStartError(result.error);
+    }
+  }, [loading, onGoogleSignIn]);
 
   const isBusy = loading || localSubmitting;
 
@@ -255,24 +271,18 @@ export function AuthPrompt({
 
         {view === "providers" ? (
           <div className="space-y-3">
-            <a
-              href="/api/auth/oauth/google"
+            <button
+              type="button"
               className={`${oauthLinkClass} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 ${
                 loading ? "pointer-events-none opacity-50" : ""
               }`}
               data-testid="auth-google"
-              aria-disabled={loading}
-              onClick={(e) => {
-                if (loading) {
-                  e.preventDefault();
-                  return;
-                }
-                onGoogleSignIn?.();
-              }}
+              disabled={loading}
+              onClick={handleGoogleSignIn}
             >
               <GoogleIcon />
               Continue with Google
-            </a>
+            </button>
 
             <div className="space-y-1">
               <button

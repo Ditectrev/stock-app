@@ -6,11 +6,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AppwriteException, OAuthProvider } from "node-appwrite";
 import { createServerClient } from "@/lib/appwrite";
+import { getGoogleOAuthRedirectUrls } from "@/lib/auth/oauth-redirect-origin";
 import { getAppwriteServerEnv } from "@/lib/appwrite-server-env";
 import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
-  const origin = new URL(request.url).origin;
+  const { origin, success, failure } = getGoogleOAuthRedirectUrls(request);
 
   const appwrite = getAppwriteServerEnv();
   if (!appwrite.endpoint || !appwrite.projectId || !appwrite.apiKey) {
@@ -19,9 +20,6 @@ export async function GET(request: NextRequest) {
       new URL("/?auth_error=appwrite_not_configured", request.url)
     );
   }
-
-  const success = `${origin}/api/auth/callback/google`;
-  const failure = `${origin}/?auth_error=google_oauth_failed`;
 
   try {
     const { account } = createServerClient();
@@ -43,6 +41,7 @@ export async function GET(request: NextRequest) {
         origin,
         success,
         failure,
+        projectId: appwrite.projectId,
         hint: "Add this hostname under Appwrite → Auth → Platforms (Web).",
       });
     }
