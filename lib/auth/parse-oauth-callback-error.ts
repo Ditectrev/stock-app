@@ -1,5 +1,7 @@
 /** Map Appwrite OAuth `error` query param (often JSON) to an auth_error code. */
-export function appwriteOAuthErrorToAuthCode(errorParam: string | null): string {
+export function appwriteOAuthErrorToAuthCode(
+  errorParam: string | null
+): string {
   if (!errorParam?.trim()) {
     return "google_oauth_failed";
   }
