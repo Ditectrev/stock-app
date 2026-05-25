@@ -44,7 +44,7 @@ describe("oauth-redirect-origin", () => {
     const request = new NextRequest(
       "https://www.theopenstock.com/api/auth/oauth/google"
     );
-    const callback = "https://theopenstock.com/api/auth/callback/google";
+    const callback = "https://theopenstock.com/auth/callback/google";
     expect(getGoogleOAuthRedirectUrls(request)).toEqual({
       origin: "https://theopenstock.com",
       success: callback,

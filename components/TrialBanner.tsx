@@ -108,7 +108,30 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
       const next = `${window.location.pathname}${query ? `?${query}` : ""}`;
       window.history.replaceState({}, "", next);
     }
-  }, [openAuthModal]);
+
+    if (params.get("auth_success") === "true") {
+      params.delete("auth_success");
+      const query = params.toString();
+      const next = `${window.location.pathname}${query ? `?${query}` : ""}`;
+      window.history.replaceState({}, "", next);
+      void (async () => {
+        try {
+          const res = await fetch("/api/auth/me", {
+            credentials: "include",
+          });
+          setIsAuthenticated(res.ok);
+          if (res.ok) {
+            setShowAuth(false);
+            setAuthError(null);
+            onAuthenticated?.();
+            window.dispatchEvent(new Event("auth-state-changed"));
+          }
+        } catch {
+          setIsAuthenticated(false);
+        }
+      })();
+    }
+  }, [openAuthModal, onAuthenticated]);
 
   useEffect(() => {
     const syncAuth = async () => {

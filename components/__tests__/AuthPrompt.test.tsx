@@ -43,9 +43,9 @@ describe("AuthPrompt", () => {
   it("should show Google sign-in and note that Apple is unavailable", () => {
     renderAuthPrompt();
 
-    const googleBtn = screen.getByTestId("auth-google");
-    expect(googleBtn).toBeDefined();
-    expect(googleBtn.tagName).toBe("BUTTON");
+    expect(screen.getByTestId("auth-google").getAttribute("href")).toBe(
+      "/api/auth/oauth/google"
+    );
     expect(screen.getByTestId("auth-apple-disabled")).toBeDefined();
     expect(screen.getByTestId("auth-apple-unavailable-note")).toBeDefined();
     expect(screen.queryByTestId("auth-sso-disabled-note")).toBeNull();

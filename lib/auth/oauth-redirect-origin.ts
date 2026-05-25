@@ -39,9 +39,9 @@ export function getOAuthRedirectOrigin(request: NextRequest): string {
   return getConfiguredSiteOrigin() ?? requestOrigin;
 }
 
-/** OAuth return URL (same for success and failure, like Practice-Tests-Exams-Platform). */
+/** OAuth return URL — client page reads query/hash and completes session on the server. */
 export function getGoogleOAuthCallbackUrl(origin: string): string {
-  return `${origin}/api/auth/callback/google`;
+  return `${origin}/auth/callback/google`;
 }
 
 export function getGoogleOAuthRedirectUrls(request: NextRequest): {
