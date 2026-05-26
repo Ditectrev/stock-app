@@ -27,8 +27,16 @@ export const AI_PREDICTION_SECTIONS: ReadonlyArray<{
   { id: "risks", label: "Key risks" },
 ];
 
-const MIN_BULLETS = 2;
+/** Prompt asks for 2+; parser accepts 1+ so smaller local models still work. */
+const MIN_BULLETS = 1;
 const MAX_BULLETS = 4;
+
+const LEGACY_FACTOR_KEYS: Record<string, AIPredictionFactorId> = {
+  politicalFactors: "macro",
+  financialTrendFactors: "valuation",
+  geopoliticalFactors: "globalMarkets",
+  riskFactors: "risks",
+};
 
 export type AIPredictionMarketSnapshot = {
   symbol: string;
@@ -105,8 +113,9 @@ Task:
 - Choose recommendation (buy/hold/sell) and confidence (0.0–1.0) from the market snapshot below.
 - confidence reflects conviction in the stance (not probability of profit).
 - summary: 2–3 sentences explaining the stance; you may use buy/hold/sell wording.
-- Each fixed factor array (technical, valuation, sentiment, macro, globalMarkets, risks): ${MIN_BULLETS}–${MAX_BULLETS} concise bullets grounded in the inputs. Do not invent precise prices or dates not implied by the data.
-- symbolSpecific: optional extra section only when there is a clear symbol-specific catalyst; otherwise null. If set, title is a short heading and bullets are 1–3 items.
+- Each fixed factor array (technical, valuation, sentiment, macro, globalMarkets, risks): exactly 2 concise bullets (max 30 words each), grounded in the inputs. All six arrays are required.
+- symbolSpecific: optional; use null unless there is a clear symbol-specific catalyst.
+- Output must be one complete JSON object. Do not wrap in markdown. Do not omit any required array.
 
 Factor taxonomy (fixed labels — you only fill bullets):
 - technical: price action, indicators, trend
@@ -142,6 +151,68 @@ Sentiment:
 
 Global markets:
 ${worldLines}`;
+}
+
+function extractPredictionJson(text: string): Record<string, unknown> | null {
+  const trimmed = text.trim();
+  const candidates: string[] = [];
+
+  const codeBlock = trimmed.match(/```json\s*([\s\S]*?)```/i)?.[1];
+  if (codeBlock) candidates.push(codeBlock.trim());
+
+  const braceMatch = trimmed.match(/\{[\s\S]*\}/)?.[0];
+  if (braceMatch) candidates.push(braceMatch);
+
+  if (trimmed.startsWith("{")) candidates.push(trimmed);
+
+  for (const candidate of candidates) {
+    const parsed = tryParseJsonObject(candidate);
+    if (parsed) return parsed;
+  }
+
+  return extractFirstJsonObject(text);
+}
+
+function tryParseJsonObject(candidate: string): Record<string, unknown> | null {
+  try {
+    return JSON.parse(candidate) as Record<string, unknown>;
+  } catch {
+    const openBraces = (candidate.match(/\{/g) ?? []).length;
+    const closeBraces = (candidate.match(/\}/g) ?? []).length;
+    const openBrackets = (candidate.match(/\[/g) ?? []).length;
+    const closeBrackets = (candidate.match(/\]/g) ?? []).length;
+    const repaired =
+      candidate +
+      "]".repeat(Math.max(0, openBrackets - closeBrackets)) +
+      "}".repeat(Math.max(0, openBraces - closeBraces));
+
+    try {
+      return JSON.parse(repaired) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+}
+
+function normalizePredictionRecord(
+  value: Record<string, unknown>
+): Record<string, unknown> {
+  const nested =
+    value.factors &&
+    typeof value.factors === "object" &&
+    !Array.isArray(value.factors)
+      ? (value.factors as Record<string, unknown>)
+      : null;
+
+  const merged: Record<string, unknown> = { ...value, ...(nested ?? {}) };
+
+  for (const [legacyKey, factorId] of Object.entries(LEGACY_FACTOR_KEYS)) {
+    if (merged[factorId] === undefined && merged[legacyKey] !== undefined) {
+      merged[factorId] = merged[legacyKey];
+    }
+  }
+
+  return merged;
 }
 
 function parseBulletArray(value: unknown): string[] | null {
@@ -181,8 +252,16 @@ function normalizeRecommendation(
 }
 
 function normalizeConfidence(value: unknown): number | null {
-  if (typeof value !== "number" || !Number.isFinite(value)) return null;
-  let confidence = value;
+  let numeric: number | null = null;
+  if (typeof value === "number" && Number.isFinite(value)) {
+    numeric = value;
+  } else if (typeof value === "string") {
+    const parsed = Number.parseFloat(value.trim());
+    if (Number.isFinite(parsed)) numeric = parsed;
+  }
+  if (numeric === null) return null;
+
+  let confidence = numeric;
   if (confidence > 1 && confidence <= 100) {
     confidence = confidence / 100;
   }
@@ -209,13 +288,13 @@ export function parseAIPredictionFromJson(
   "recommendation" | "confidence" | "summary" | "factors" | "symbolSpecific"
 > | null {
   if (!value || typeof value !== "object") return null;
-  const parsed = value as Record<string, unknown>;
+  const parsed = normalizePredictionRecord(value as Record<string, unknown>);
 
   const recommendation = normalizeRecommendation(parsed.recommendation);
   const confidence = normalizeConfidence(parsed.confidence);
   const summary =
     typeof parsed.summary === "string" ? parsed.summary.trim() : "";
-  if (!recommendation || confidence === null || summary.length < 20) {
+  if (!recommendation || confidence === null || summary.length < 12) {
     return null;
   }
 
@@ -240,7 +319,39 @@ export function parseAIPredictionFromJson(
 export function parseAIPredictionFromModelText(
   raw: string
 ): ReturnType<typeof parseAIPredictionFromJson> {
-  const json = extractFirstJsonObject(raw);
+  const json = extractPredictionJson(raw);
   if (!json) return null;
   return parseAIPredictionFromJson(json);
+}
+
+/** Human-readable hint when validation fails (for API error messages). */
+export function explainAIPredictionParseFailure(raw: string): string {
+  const json = extractPredictionJson(raw);
+  if (!json) {
+    return "The model response was not valid JSON. Try a model with stronger JSON output (e.g. llama3.2) or enable JSON mode in Ollama.";
+  }
+
+  const parsed = normalizePredictionRecord(json);
+  const missingFactors = AI_PREDICTION_FACTOR_IDS.filter(
+    (id) => parseBulletArray(parsed[id]) === null
+  );
+  if (missingFactors.length > 0) {
+    return `The model JSON is missing or has too few bullets for: ${missingFactors.join(", ")}. All six factor arrays are required.`;
+  }
+
+  if (!normalizeRecommendation(parsed.recommendation)) {
+    return 'The model JSON must include recommendation: "buy", "hold", or "sell".';
+  }
+
+  if (normalizeConfidence(parsed.confidence) === null) {
+    return "The model JSON must include confidence as a number between 0 and 1.";
+  }
+
+  const summary =
+    typeof parsed.summary === "string" ? parsed.summary.trim() : "";
+  if (summary.length < 12) {
+    return "The model JSON summary is missing or too short.";
+  }
+
+  return "The model JSON did not match the required prediction schema.";
 }

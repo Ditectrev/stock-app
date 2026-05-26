@@ -37,7 +37,7 @@ export function isAppOpenedOnLoopbackHost(): boolean {
 
 export async function generateWithBrowserLocalOllama(
   prompt: string,
-  options?: { timeoutMs?: number; numPredict?: number }
+  options?: { timeoutMs?: number; numPredict?: number; jsonFormat?: boolean }
 ): Promise<string> {
   const controller = new AbortController();
   const timeoutMs = options?.timeoutMs ?? 60000;
@@ -52,6 +52,7 @@ export async function generateWithBrowserLocalOllama(
         model,
         prompt,
         stream: false,
+        ...(options?.jsonFormat ? { format: "json" } : {}),
         ...(options?.numPredict
           ? { options: { num_predict: options.numPredict } }
           : {}),

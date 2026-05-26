@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   AI_PREDICTION_FACTOR_IDS,
   buildAIPredictionPrompt,
+  explainAIPredictionParseFailure,
   parseAIPredictionFromJson,
   parseAIPredictionFromModelText,
 } from "@/lib/ai-prediction";
@@ -62,12 +63,30 @@ describe("parseAIPredictionFromJson", () => {
     expect(parseAIPredictionFromJson(incomplete)).toBeNull();
   });
 
-  it("rejects too-few bullets per section", () => {
+  it("accepts a single bullet per section for smaller models", () => {
     const parsed = parseAIPredictionFromJson({
       ...validPayload(),
       technical: ["only one"],
     });
-    expect(parsed).toBeNull();
+    expect(parsed?.factors.technical).toEqual(["only one"]);
+  });
+
+  it("maps legacy factor keys to the hybrid taxonomy", () => {
+    const payload = validPayload();
+    const parsed = parseAIPredictionFromJson({
+      recommendation: payload.recommendation,
+      confidence: payload.confidence,
+      summary: payload.summary,
+      politicalFactors: ["policy risk", "rates"],
+      financialTrendFactors: ["target gap", "ratings mix"],
+      geopoliticalFactors: ["EU weak", "Asia mixed"],
+      riskFactors: ["headline risk", "liquidity"],
+      technical: payload.technical,
+      sentiment: payload.sentiment,
+      symbolSpecific: null,
+    });
+    expect(parsed?.factors.macro).toHaveLength(2);
+    expect(parsed?.factors.risks).toHaveLength(2);
   });
 });
 
@@ -75,6 +94,27 @@ describe("parseAIPredictionFromModelText", () => {
   it("extracts JSON from markdown fences", () => {
     const raw = "```json\n" + JSON.stringify(validPayload()) + "\n```";
     expect(parseAIPredictionFromModelText(raw)?.recommendation).toBe("buy");
+  });
+
+  it("repairs truncated JSON missing closing braces", () => {
+    const partial =
+      '{"recommendation":"hold","confidence":0.8,"summary":"Neutral stance with mixed signals.","technical":["RSI fair","MA trend flat"]';
+    expect(parseAIPredictionFromModelText(partial)).toBeNull();
+    expect(explainAIPredictionParseFailure(partial)).toContain("valuation");
+  });
+});
+
+describe("explainAIPredictionParseFailure", () => {
+  it("names missing factor arrays", () => {
+    const message = explainAIPredictionParseFailure(
+      JSON.stringify({
+        recommendation: "hold",
+        confidence: 0.8,
+        summary: "Neutral stance with mixed signals across factors.",
+        technical: ["a", "b"],
+      })
+    );
+    expect(message).toContain("valuation");
   });
 });
 

@@ -2,6 +2,7 @@ import { scoreToConfidence } from "@/lib/ai-confidence";
 import {
   AI_PREDICTION_MAX_OUTPUT_TOKENS,
   buildAIPredictionPrompt,
+  explainAIPredictionParseFailure,
   parseAIPredictionFromModelText,
   type AIPredictionMarketSnapshot,
 } from "@/lib/ai-prediction";
@@ -227,7 +228,8 @@ export class AIMarketInsightsService {
     const parsed = parseAIPredictionFromModelText(raw);
     if (!parsed) {
       throw new Error(
-        "AI returned an invalid prediction format. Try again or switch models."
+        explainAIPredictionParseFailure(raw) ||
+          "AI returned an invalid prediction format. Try again or switch models."
       );
     }
 

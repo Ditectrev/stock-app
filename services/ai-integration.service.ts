@@ -291,6 +291,8 @@ Answer in 2-4 sentences. Do not use "buy" or "sell" language.`;
         return await ollamaService.generate({
           model: this.config.model ?? ollamaService.getDefaultModel(),
           prompt,
+          ...(maxTokens > 512 ? { format: "json" as const } : {}),
+          options: { num_predict: maxTokens },
         });
       }
 

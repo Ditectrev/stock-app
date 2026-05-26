@@ -86,6 +86,7 @@ async function fetchAIPredictionWithBrowserLocalOllama(
   const raw = await generateWithBrowserLocalOllama(prompt, {
     timeoutMs: 120000,
     numPredict: AI_PREDICTION_MAX_OUTPUT_TOKENS,
+    jsonFormat: true,
   });
 
   const response = await fetch(`/api/market/ai-prediction/${symbol}`, {
