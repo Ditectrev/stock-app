@@ -1,9 +1,15 @@
 import { scoreToConfidence } from "@/lib/ai-confidence";
+import {
+  AI_PREDICTION_MAX_OUTPUT_TOKENS,
+  buildAIPredictionPrompt,
+  explainAIPredictionParseFailure,
+  parseAIPredictionFromModelText,
+  type AIPredictionMarketSnapshot,
+} from "@/lib/ai-prediction";
 import { marketDataService } from "@/services/market-data.service";
 import { AIIntegrationService } from "@/services/ai-integration.service";
 import { logger } from "@/lib/logger";
 import {
-  extractFirstJsonObject,
   parseStockOfTheDayCandidates,
   STOCK_OF_THE_DAY_CANDIDATES_PROMPT,
   STOCK_OF_THE_DAY_MAX_OUTPUT_TOKENS,
@@ -13,25 +19,13 @@ import {
 import type {
   AIPredictionReport,
   AIProvider,
-  FearGreedData,
   ForecastData,
-  MarketIndex,
   StockOfTheDay,
   StockOfTheDayResult,
   TechnicalIndicators,
 } from "@/types";
 
-type PredictionEnhancement = Pick<
-  AIPredictionReport,
-  | "summary"
-  | "politicalFactors"
-  | "financialTrendFactors"
-  | "geopoliticalFactors"
-  | "riskFactors"
->;
-
 type AssetType = AIPredictionReport["assetType"];
-type Recommendation = AIPredictionReport["recommendation"];
 type LLMConfig = {
   provider: AIProvider;
   apiKey?: string;
@@ -53,12 +47,6 @@ function detectAssetType(symbol: string): AssetType {
   if (symbol.endsWith("=X")) return "forex";
   if (symbol.includes("ETF")) return "etf";
   return "stock";
-}
-
-function toRecommendation(score: number): Recommendation {
-  if (score >= 0.2) return "buy";
-  if (score <= -0.2) return "sell";
-  return "hold";
 }
 
 function getLLMConfigFromEnv(): {
@@ -105,10 +93,9 @@ function getLLMConfigFromEnv(): {
 }
 
 export class AIMarketInsightsService {
-  async generatePrediction(
-    symbol: string,
-    llmConfig?: LLMConfig
-  ): Promise<AIPredictionReport> {
+  async gatherPredictionSnapshot(
+    symbol: string
+  ): Promise<AIPredictionMarketSnapshot> {
     const quote = await marketDataService
       .getSymbolData(symbol)
       .catch((error) => {
@@ -192,85 +179,86 @@ export class AIMarketInsightsService {
       }),
     ]);
 
-    const targetUpside =
-      quote.price > 0
-        ? (forecast.priceTargets.average - quote.price) / quote.price
-        : 0;
-    const sentimentScore =
-      indicators.overallSentiment === "underpriced"
-        ? 0.25
-        : indicators.overallSentiment === "overpriced"
-          ? -0.25
-          : 0;
-    const fearGreedBias =
-      fearGreed.value <= 35 ? 0.1 : fearGreed.value >= 70 ? -0.1 : 0;
-    const score = targetUpside + sentimentScore + fearGreedBias;
-    const recommendation = toRecommendation(score);
-    const confidence = scoreToConfidence(score);
-
-    const weakestRegion = [...worldMarkets].sort(
-      (a, b) => a.changePercent - b.changePercent
-    )[0];
-    const strongestRegion = [...worldMarkets].sort(
-      (a, b) => b.changePercent - a.changePercent
-    )[0];
-
     const assetType = detectAssetType(symbol);
-
-    // Keep deterministic output as the baseline; enhance text fields with the LLM when configured.
-    const heuristic: AIPredictionReport = {
-      symbol,
+    return {
+      symbol: symbol.toUpperCase(),
       assetType,
-      generatedAt: new Date(),
-      recommendation,
-      confidence,
-      summary: `AI signals for ${symbol} currently point to a ${recommendation.toUpperCase()} stance. The model combines analyst targets, technical momentum, and macro risk proxies to estimate near-term direction.`,
-      politicalFactors: [
-        "Election-cycle policy uncertainty can shift sector-specific capital flows.",
-        "Central bank communication remains a key catalyst for risk repricing.",
-        "Regulatory headlines can move sector sentiment quickly.",
-      ],
-      financialTrendFactors: [
-        `Average analyst target implies ${(targetUpside * 100).toFixed(1)}% relative upside from current price.`,
-        `Technical model flags current sentiment as "${indicators.overallSentiment}".`,
-        `Fear & Greed bias is ${fearGreed.value <= 35 ? "contrarian (slightly bullish)" : fearGreed.value >= 70 ? "cautious (slightly bearish)" : "neutral"} today.`,
-      ],
-      geopoliticalFactors: [
-        strongestRegion
-          ? `${strongestRegion.region} is currently the strongest major region (${strongestRegion.changePercent.toFixed(2)}%).`
-          : "No clear regional outperformance signal.",
-        weakestRegion
-          ? `${weakestRegion.region} is currently the weakest major region (${weakestRegion.changePercent.toFixed(2)}%), increasing volatility risk.`
-          : "No clear regional weakness signal.",
-        "Cross-region risk correlations can amplify moves during regime shifts.",
-      ],
-      riskFactors: [
-        "Unexpected macro headlines can invalidate short-horizon AI signals quickly.",
-        "Market regime changes can reduce model reliability without warning.",
-        "Liquidity conditions can change faster than model assumptions.",
-      ],
-    };
-
-    const enhanced = await this.maybeEnhancePrediction(
-      {
-        symbol,
-        assetType,
-        recommendation,
-        confidence,
-        quote,
-        indicators,
-        forecast,
-        fearGreed,
-        strongestRegion,
-        weakestRegion,
-        targetUpside,
+      quote: {
+        name: quote.name,
+        price: quote.price,
+        changePercent: quote.changePercent,
+        marketCap: quote.marketCap,
+        fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
+        fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
       },
-      llmConfig
-    );
+      indicators: {
+        rsi: indicators.rsi.value,
+        rsiSignal: indicators.rsi.signal,
+        macdHistogram: indicators.macd.histogram,
+        macdTrend: indicators.macd.trend,
+        overallSentiment: indicators.overallSentiment,
+        ma50: indicators.movingAverages.ma50,
+        ma200: indicators.movingAverages.ma200,
+      },
+      forecast: {
+        averageTarget: forecast.priceTargets.average,
+        lowTarget: forecast.priceTargets.low,
+        highTarget: forecast.priceTargets.high,
+        strongBuy: forecast.analystRatings.strongBuy,
+        buy: forecast.analystRatings.buy,
+        hold: forecast.analystRatings.hold,
+        sell: forecast.analystRatings.sell,
+        strongSell: forecast.analystRatings.strongSell,
+      },
+      fearGreed: {
+        value: fearGreed.value,
+        label: fearGreed.label,
+      },
+      worldMarkets: worldMarkets.map((m) => ({
+        region: m.region,
+        changePercent: m.changePercent,
+      })),
+    };
+  }
 
-    return enhanced
-      ? { ...heuristic, ...enhanced, generatedAt: new Date() }
-      : heuristic;
+  completePredictionFromModelText(
+    snapshot: AIPredictionMarketSnapshot,
+    raw: string
+  ): AIPredictionReport {
+    const parsed = parseAIPredictionFromModelText(raw);
+    if (!parsed) {
+      throw new Error(
+        explainAIPredictionParseFailure(raw) ||
+          "AI returned an invalid prediction format. Try again or switch models."
+      );
+    }
+
+    return {
+      symbol: snapshot.symbol,
+      assetType: snapshot.assetType,
+      generatedAt: new Date(),
+      ...parsed,
+    };
+  }
+
+  async generatePrediction(
+    symbol: string,
+    llmConfig: LLMConfig
+  ): Promise<AIPredictionReport> {
+    const snapshot = await this.gatherPredictionSnapshot(symbol);
+    const prompt = buildAIPredictionPrompt(snapshot);
+    const service = new AIIntegrationService();
+    await service.setAIProvider(llmConfig.provider, {
+      provider: llmConfig.provider,
+      apiKey: llmConfig.apiKey,
+      model: llmConfig.model,
+      settings: {},
+    });
+
+    const raw = await service.runRawPrompt(prompt, {
+      maxOutputTokens: AI_PREDICTION_MAX_OUTPUT_TOKENS,
+    });
+    return this.completePredictionFromModelText(snapshot, raw);
   }
 
   async getStockOfTheDay(llmConfig?: LLMConfig): Promise<StockOfTheDayResult> {
@@ -509,141 +497,6 @@ export class AIMarketInsightsService {
       `${marketCapText} and current technicals point to a less attractive setup versus stronger alternatives.`,
       `Live data check: ${args.changePercent.toFixed(2)}% daily move, ${args.overallSentiment} technical read, and ${targetMove}% average-target gap.`,
     ];
-  }
-
-  private async maybeEnhancePrediction(
-    args: {
-      symbol: string;
-      assetType: AssetType;
-      recommendation: Recommendation;
-      confidence: number;
-      quote: { price: number; changePercent: number };
-      indicators: TechnicalIndicators;
-      forecast: ForecastData;
-      fearGreed: FearGreedData;
-      strongestRegion?: MarketIndex;
-      weakestRegion?: MarketIndex;
-      targetUpside: number;
-    },
-    llmConfig?: LLMConfig
-  ): Promise<PredictionEnhancement | null> {
-    const llm = llmConfig ?? getLLMConfigFromEnv();
-    if (!llm) return null;
-
-    const stance =
-      args.recommendation === "buy"
-        ? "bullish"
-        : args.recommendation === "sell"
-          ? "bearish"
-          : "neutral";
-
-    const prompt = `You are a financial analyst.
-Return ONLY valid JSON (no markdown, no commentary) in this exact shape:
-{
-  "summary": string,
-  "politicalFactors": string[],
-  "financialTrendFactors": string[],
-  "geopoliticalFactors": string[],
-  "riskFactors": string[]
-}
-Rules:
-- summary: 1 short paragraph; do NOT use the words "buy" or "sell" (use "bullish"/"bearish"/"neutral" instead).
-- Each *_Factors array: exactly 3 short strings.
-
-Inputs:
-symbol: ${args.symbol}
-assetType: ${args.assetType}
-stance: ${stance}
-confidence: ${args.confidence}
-currentPrice: ${args.quote.price}
-priceChangePercent: ${args.quote.changePercent}
-
-Technical:
-- RSI: ${args.indicators.rsi.value.toFixed(1)} (${args.indicators.rsi.signal})
-- MACD histogram: ${args.indicators.macd.histogram.toFixed(4)} (trend: ${args.indicators.macd.trend})
-- Overall sentiment: ${args.indicators.overallSentiment}
-
-Forecast:
-- average target: ${args.forecast.priceTargets.average}
-- low/high targets: ${args.forecast.priceTargets.low}/${args.forecast.priceTargets.high}
-
-Fear & Greed:
-- value: ${args.fearGreed.value}
-
-World markets:
-${args.strongestRegion ? `Strongest: ${args.strongestRegion.region} (${args.strongestRegion.changePercent.toFixed(2)}%)` : "Strongest: N/A"}
-${args.weakestRegion ? `Weakest: ${args.weakestRegion.region} (${args.weakestRegion.changePercent.toFixed(2)}%)` : "Weakest: N/A"}
-targetUpsidePercent: ${(args.targetUpside * 100).toFixed(1)}
-`;
-
-    try {
-      const service = new AIIntegrationService();
-      await service.setAIProvider(llm.provider, {
-        provider: llm.provider,
-        apiKey: llm.apiKey,
-        model: llm.model,
-        settings: {},
-      });
-
-      const raw = await service.runRawPrompt(prompt);
-      const parsed = extractFirstJsonObject(raw);
-
-      if (!parsed) return null;
-
-      const summary =
-        typeof parsed.summary === "string" ? parsed.summary : null;
-      const politicalFactors = Array.isArray(parsed.politicalFactors)
-        ? parsed.politicalFactors.filter(
-            (x): x is string => typeof x === "string"
-          )
-        : [];
-      const financialTrendFactors = Array.isArray(parsed.financialTrendFactors)
-        ? parsed.financialTrendFactors.filter(
-            (x): x is string => typeof x === "string"
-          )
-        : [];
-      const geopoliticalFactors = Array.isArray(parsed.geopoliticalFactors)
-        ? parsed.geopoliticalFactors.filter(
-            (x): x is string => typeof x === "string"
-          )
-        : [];
-      const riskFactors = Array.isArray(parsed.riskFactors)
-        ? parsed.riskFactors.filter((x): x is string => typeof x === "string")
-        : [];
-
-      if (!summary) return null;
-      if (
-        politicalFactors.length !== 3 ||
-        financialTrendFactors.length !== 3 ||
-        geopoliticalFactors.length !== 3 ||
-        riskFactors.length !== 3
-      ) {
-        logger.warn(
-          "LLM prediction enhancement returned unexpected factor lengths",
-          {
-            symbol: args.symbol,
-          }
-        );
-        return null;
-      }
-
-      return {
-        summary,
-        politicalFactors,
-        financialTrendFactors,
-        geopoliticalFactors,
-        riskFactors,
-      };
-    } catch (error) {
-      logger.warn(
-        "LLM prediction enhancement failed; falling back to heuristic",
-        {
-          symbol: args.symbol,
-          error: error instanceof Error ? error.message : String(error),
-        }
-      );
-      return null;
-    }
   }
 }
 

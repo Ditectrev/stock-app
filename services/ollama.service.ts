@@ -18,10 +18,12 @@ export interface OllamaGenerateRequest {
   model?: string;
   prompt: string;
   stream?: boolean;
+  format?: "json";
   options?: {
     temperature?: number;
     top_p?: number;
-    max_tokens?: number;
+    /** Ollama native limit on generated tokens. */
+    num_predict?: number;
   };
 }
 
@@ -136,6 +138,7 @@ export class OllamaService {
         model,
         prompt: request.prompt,
         stream: false,
+        ...(request.format ? { format: request.format } : {}),
         options: request.options,
       }),
       signal: AbortSignal.timeout(60000),
