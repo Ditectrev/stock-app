@@ -22,7 +22,8 @@ export interface OllamaGenerateRequest {
   options?: {
     temperature?: number;
     top_p?: number;
-    max_tokens?: number;
+    /** Ollama native limit on generated tokens. */
+    num_predict?: number;
   };
 }
 
