@@ -89,3 +89,75 @@ export async function GET(
     );
   }
 }
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ symbol: string }> }
+) {
+  try {
+    const auth = await getAuthenticatedUser(request);
+    if (!auth) {
+      return NextResponse.json(
+        { success: false, error: "Authentication required" },
+        { status: 401 }
+      );
+    }
+
+    const tier = await subscriptionService.getCurrentTier(auth.id);
+    if (!["LOCAL", "BYOK"].includes(tier)) {
+      return NextResponse.json(
+        { success: false, error: "Local or BYOK AI tier required" },
+        { status: 403 }
+      );
+    }
+
+    const { symbol } = await params;
+    if (!symbol) {
+      return NextResponse.json(
+        { success: false, error: "Symbol parameter is required" },
+        { status: 400 }
+      );
+    }
+
+    const body = (await request.json().catch(() => null)) as {
+      raw?: unknown;
+    } | null;
+    const raw = typeof body?.raw === "string" ? body.raw.trim() : "";
+    if (!raw) {
+      return NextResponse.json(
+        { success: false, error: "AI prediction response text is required." },
+        { status: 400 }
+      );
+    }
+
+    const snapshot =
+      await aiMarketInsightsService.gatherPredictionSnapshot(symbol);
+    const data = aiMarketInsightsService.completePredictionFromModelText(
+      snapshot,
+      raw
+    );
+
+    return NextResponse.json({
+      success: true,
+      data,
+      timestamp: new Date(),
+    });
+  } catch (error) {
+    const { symbol } = await params;
+    logger.error("Failed to validate local AI prediction", error as Error, {
+      symbol,
+    });
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Failed to validate AI prediction",
+        timestamp: new Date(),
+      },
+      { status: 500 }
+    );
+  }
+}

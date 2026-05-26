@@ -92,10 +92,9 @@ function getLLMConfigFromEnv(): {
 }
 
 export class AIMarketInsightsService {
-  async generatePrediction(
-    symbol: string,
-    llmConfig: LLMConfig
-  ): Promise<AIPredictionReport> {
+  async gatherPredictionSnapshot(
+    symbol: string
+  ): Promise<AIPredictionMarketSnapshot> {
     const quote = await marketDataService
       .getSymbolData(symbol)
       .catch((error) => {
@@ -180,7 +179,7 @@ export class AIMarketInsightsService {
     ]);
 
     const assetType = detectAssetType(symbol);
-    const snapshot: AIPredictionMarketSnapshot = {
+    return {
       symbol: symbol.toUpperCase(),
       assetType,
       quote: {
@@ -219,7 +218,32 @@ export class AIMarketInsightsService {
         changePercent: m.changePercent,
       })),
     };
+  }
 
+  completePredictionFromModelText(
+    snapshot: AIPredictionMarketSnapshot,
+    raw: string
+  ): AIPredictionReport {
+    const parsed = parseAIPredictionFromModelText(raw);
+    if (!parsed) {
+      throw new Error(
+        "AI returned an invalid prediction format. Try again or switch models."
+      );
+    }
+
+    return {
+      symbol: snapshot.symbol,
+      assetType: snapshot.assetType,
+      generatedAt: new Date(),
+      ...parsed,
+    };
+  }
+
+  async generatePrediction(
+    symbol: string,
+    llmConfig: LLMConfig
+  ): Promise<AIPredictionReport> {
+    const snapshot = await this.gatherPredictionSnapshot(symbol);
     const prompt = buildAIPredictionPrompt(snapshot);
     const service = new AIIntegrationService();
     await service.setAIProvider(llmConfig.provider, {
@@ -232,19 +256,7 @@ export class AIMarketInsightsService {
     const raw = await service.runRawPrompt(prompt, {
       maxOutputTokens: AI_PREDICTION_MAX_OUTPUT_TOKENS,
     });
-    const parsed = parseAIPredictionFromModelText(raw);
-    if (!parsed) {
-      throw new Error(
-        "AI returned an invalid prediction format. Try again or switch models."
-      );
-    }
-
-    return {
-      symbol: symbol.toUpperCase(),
-      assetType,
-      generatedAt: new Date(),
-      ...parsed,
-    };
+    return this.completePredictionFromModelText(snapshot, raw);
   }
 
   async getStockOfTheDay(llmConfig?: LLMConfig): Promise<StockOfTheDayResult> {

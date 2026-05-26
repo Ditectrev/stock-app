@@ -19,10 +19,8 @@ import { SymbolHeader } from "@/components/SymbolHeader";
 import { TabNavigation } from "@/components/TabNavigation";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { usePricingTier } from "@/lib/use-pricing-tier";
-import {
-  EXPLANATIONS_PROVIDER_CHANGED_EVENT,
-  getAIProviderHeaders,
-} from "@/lib/explanation-provider";
+import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
+import { fetchAIPredictionForCurrentProvider } from "@/lib/local-ollama-ai-prediction";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
 import { AIPredictionPanel } from "@/components/AIPredictionPanel";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
@@ -408,19 +406,11 @@ export function HomePageClient() {
 
       setAIPredictionLoading(true);
       try {
-        const response = await fetch(
-          `/api/market/ai-prediction/${selectedSymbol}`,
-          { headers: getAIProviderHeaders(), credentials: "include" }
+        const data = await fetchAIPredictionForCurrentProvider(
+          selectedSymbol,
+          effectiveTier
         );
-        if (!response.ok) {
-          const body = (await response.json().catch(() => ({}))) as {
-            error?: string;
-          };
-          throw new Error(body.error ?? "Failed to fetch AI prediction");
-        }
-
-        const result = await response.json();
-        setAIPrediction(result.data ?? null);
+        setAIPrediction(data);
         setAIPredictionError(null);
       } catch (error) {
         setAIPrediction(null);
@@ -435,7 +425,7 @@ export function HomePageClient() {
     };
 
     fetchAIPrediction();
-  }, [selectedSymbol, hasAIAccess, aiProviderVersion]);
+  }, [selectedSymbol, hasAIAccess, aiProviderVersion, effectiveTier]);
 
   useEffect(() => {
     const fetchStockOfTheDay = async () => {
