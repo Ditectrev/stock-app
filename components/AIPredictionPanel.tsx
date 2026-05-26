@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { AIPredictionReport, PricingTier } from "@/types";
+import { AI_PREDICTION_SECTIONS } from "@/lib/ai-prediction";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
@@ -36,6 +37,34 @@ function RecommendationBadge({
   );
 }
 
+function FactorList({
+  title,
+  items,
+  variant = "default",
+}: {
+  title: string;
+  items: string[];
+  variant?: "default" | "risk";
+}) {
+  if (items.length === 0) return null;
+
+  const headingClass =
+    variant === "risk"
+      ? "font-medium text-amber-800 dark:text-amber-200 mb-1"
+      : "font-medium text-gray-900 dark:text-gray-100 mb-1";
+
+  return (
+    <div>
+      <h3 className={headingClass}>{title}</h3>
+      <ul className="space-y-1 text-gray-600 dark:text-gray-300">
+        {items.map((item, index) => (
+          <li key={`${title}-${index}`}>- {item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function AIPredictionPanel({
   prediction,
   loading,
@@ -43,9 +72,8 @@ export function AIPredictionPanel({
   error,
   pricingTier,
 }: AIPredictionPanelProps) {
-  const politicalFactors = prediction?.politicalFactors ?? [];
-  const financialTrendFactors = prediction?.financialTrendFactors ?? [];
-  const geopoliticalFactors = prediction?.geopoliticalFactors ?? [];
+  const factors = prediction?.factors;
+  const symbolSpecific = prediction?.symbolSpecific;
 
   return (
     <section className="mt-6">
@@ -84,38 +112,21 @@ export function AIPredictionPanel({
                 {prediction.summary}
               </p>
 
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-                  Political Context
-                </h3>
-                <ul className="space-y-1 text-gray-600 dark:text-gray-300">
-                  {politicalFactors.map((item) => (
-                    <li key={item}>- {item}</li>
-                  ))}
-                </ul>
-              </div>
+              {AI_PREDICTION_SECTIONS.map((section) => (
+                <FactorList
+                  key={section.id}
+                  title={section.label}
+                  items={factors?.[section.id] ?? []}
+                  variant={section.id === "risks" ? "risk" : "default"}
+                />
+              ))}
 
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-                  Financial Trends
-                </h3>
-                <ul className="space-y-1 text-gray-600 dark:text-gray-300">
-                  {financialTrendFactors.map((item) => (
-                    <li key={item}>- {item}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-                  Geopolitical Signals
-                </h3>
-                <ul className="space-y-1 text-gray-600 dark:text-gray-300">
-                  {geopoliticalFactors.map((item) => (
-                    <li key={item}>- {item}</li>
-                  ))}
-                </ul>
-              </div>
+              {symbolSpecific && symbolSpecific.bullets.length > 0 && (
+                <FactorList
+                  title={symbolSpecific.title}
+                  items={symbolSpecific.bullets}
+                />
+              )}
             </div>
           )}
 

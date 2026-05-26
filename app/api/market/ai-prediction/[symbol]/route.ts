@@ -44,18 +44,25 @@ export async function GET(
       requestedProviderRaw,
     });
     if (!resolved.ok) {
-      logger.warn("AI prediction: no LLM credentials; using heuristic only", {
-        userId: auth.id,
-        tier,
-        symbol,
-        detail: resolved.error,
-      });
+      return NextResponse.json(
+        { success: false, error: resolved.error },
+        { status: 503 }
+      );
     }
 
-    const llmConfig = resolved.ok ? resolved.llmConfig : undefined;
+    if (!resolved.llmConfig) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Configure an AI provider to generate predictions.",
+        },
+        { status: 503 }
+      );
+    }
+
     const data = await aiMarketInsightsService.generatePrediction(
       symbol,
-      llmConfig
+      resolved.llmConfig
     );
 
     return NextResponse.json({
