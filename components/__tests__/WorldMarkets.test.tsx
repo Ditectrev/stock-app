@@ -117,19 +117,19 @@ describe("WorldMarkets", () => {
 
     // Positive: SPX (+0.87%)
     const spxChange = screen.getByTestId("change-SPX");
-    expect(spxChange.className).toContain("text-green-500");
+    expect(spxChange.className).toContain("text-emerald-600");
 
     // Negative: DJI (-0.31%)
     const djiChange = screen.getByTestId("change-DJI");
-    expect(djiChange.className).toContain("text-red-500");
+    expect(djiChange.className).toContain("text-rose-600");
 
     // Negative: FTSE (-0.27%)
     const ftseChange = screen.getByTestId("change-FTSE");
-    expect(ftseChange.className).toContain("text-red-500");
+    expect(ftseChange.className).toContain("text-rose-600");
 
     // Positive: N225 (+0.81%)
     const n225Change = screen.getByTestId("change-N225");
-    expect(n225Change.className).toContain("text-green-500");
+    expect(n225Change.className).toContain("text-emerald-600");
   });
 
   it("should show loading state when fetching data", () => {
