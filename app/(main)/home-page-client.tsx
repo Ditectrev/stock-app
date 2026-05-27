@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -23,6 +22,7 @@ import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider"
 import { fetchAIPredictionForCurrentProvider } from "@/lib/local-ollama-ai-prediction";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
 import { AIPredictionPanel } from "@/components/AIPredictionPanel";
+import { HomeHub } from "@/components/HomeHub";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
 const OverviewTab = dynamic(
   () => import("@/components/OverviewTab").then((m) => m.OverviewTab),
@@ -97,97 +97,6 @@ type TabType =
   | "technicals"
   | "forecasts"
   | "seasonals";
-
-const QUICK_LINKS = [
-  {
-    id: "sectors",
-    label: "Sectors",
-    href: "/sectors",
-    description: "Compare sector performance",
-    icon: (
-      <svg
-        className="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.5}
-          d="M3 13h2v8H3zm6-4h2v12H9zm6-3h2v15h-2zm6-4h2v19h-2z"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: "heatmaps",
-    label: "Heatmaps",
-    href: "/heatmaps",
-    description: "Visual market overview",
-    icon: (
-      <svg
-        className="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.5}
-          d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: "screener",
-    label: "Screener",
-    href: "/screener",
-    description: "Filter and find assets",
-    icon: (
-      <svg
-        className="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.5}
-          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: "calendars",
-    label: "Calendars",
-    href: "/calendars",
-    description: "Earnings, dividends & IPOs",
-    icon: (
-      <svg
-        className="w-6 h-6"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.5}
-          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-        />
-      </svg>
-    ),
-  },
-] as const;
 
 export function HomePageClient() {
   const router = useRouter();
@@ -533,40 +442,25 @@ export function HomePageClient() {
       )}
 
       {!selectedSymbol && (
-        <div className="mt-6 sm:mt-8 md:mt-12 lg:mt-14">
-          <div id="section-home">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8 lg:mb-10">
-              {QUICK_LINKS.map((link) => (
-                <Link
-                  key={link.id}
-                  href={link.href}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md transition-all text-center group"
-                >
-                  <span className="text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                    {link.icon}
-                  </span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {link.label}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
-                    {link.description}
-                  </span>
-                </Link>
-              ))}
-            </div>
-
-            <FearGreedGauge />
-            <div className="mt-6 sm:mt-8 lg:mt-10">
-              <WorldMarkets />
-            </div>
-            <StockOfTheDayPanel
-              item={stockOfTheDay}
-              loading={stockOfTheDayLoading}
-              locked={!hasAIAccess}
-              error={stockOfTheDayError}
-              pricingTier={effectiveTier}
-            />
-          </div>
+        <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12">
+          <HomeHub
+            onSymbolSelect={(symbol) =>
+              router.push(`/?symbol=${encodeURIComponent(symbol)}`)
+            }
+            fearGreed={<FearGreedGauge />}
+            worldMarkets={<WorldMarkets />}
+            stockOfTheDay={
+              <StockOfTheDayPanel
+                embedded
+                showTitle={false}
+                item={stockOfTheDay}
+                loading={stockOfTheDayLoading}
+                locked={!hasAIAccess}
+                error={stockOfTheDayError}
+                pricingTier={effectiveTier}
+              />
+            }
+          />
         </div>
       )}
     </>

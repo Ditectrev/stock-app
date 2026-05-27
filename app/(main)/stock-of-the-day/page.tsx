@@ -89,10 +89,10 @@ export default function StockOfTheDayPage() {
 
   return (
     <div>
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
+      <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 sm:text-3xl">
         Stock of the day
       </h1>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+      <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
         AI-ranked daily opportunity across stocks and select liquid assets.
       </p>
 

@@ -10,13 +10,26 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useTheme } from "@/lib/theme-context";
 import { MarketIndex } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { HOME_INSTRUMENT_PANEL, HOME_PANEL_TITLE } from "@/lib/home-ui";
 
-const REGIONS = ["Americas", "Europe", "Asia-Pacific"] as const;
-type Region = (typeof REGIONS)[number];
+type Region = "Americas" | "Europe" | "Asia-Pacific";
+
+const REGIONS: ReadonlyArray<{
+  id: Region;
+  label: string;
+  gridClass: string;
+}> = [
+  { id: "Americas", label: "Americas", gridClass: "lg:col-span-6" },
+  { id: "Europe", label: "Europe", gridClass: "lg:col-span-3" },
+  {
+    id: "Asia-Pacific",
+    label: "Asia-Pacific",
+    gridClass: "lg:col-span-3",
+  },
+];
 
 const DEFAULT_REFRESH_INTERVAL = 60_000; // 60 seconds
 
@@ -48,9 +61,6 @@ export function WorldMarkets({
   data: externalData,
   refreshInterval = DEFAULT_REFRESH_INTERVAL,
 }: WorldMarketsProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const [data, setData] = useState<MarketIndex[] | null>(externalData ?? null);
   const [loading, setLoading] = useState(!externalData);
   const [error, setError] = useState<string | null>(null);
@@ -112,21 +122,17 @@ export function WorldMarkets({
   if (loading) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className={HOME_INSTRUMENT_PANEL}
         data-testid="world-markets-loading"
       >
-        <LoadingSpinner className="py-8" />
+        <LoadingSpinner className="py-8" message="Loading world markets..." />
       </div>
     );
   }
 
-  // --- Error state ---
   if (error) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="world-markets-error"
-      >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="world-markets-error">
         <ErrorMessage
           type="api"
           message={error}
@@ -143,76 +149,63 @@ export function WorldMarkets({
 
   return (
     <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className={HOME_INSTRUMENT_PANEL}
       data-testid="world-markets"
       role="region"
       aria-label="World Markets"
     >
-      <h3
-        className={`text-lg font-semibold mb-3 sm:mb-4 lg:mb-5 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        World Markets
-      </h3>
+      <h3 className={`mb-4 sm:mb-5 ${HOME_PANEL_TITLE}`}>World Markets</h3>
+      <p className="-mt-2 mb-4 text-sm text-stone-500 dark:text-stone-400">
+        Major indices by region — refreshed every minute.
+      </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-12 lg:gap-6">
         {REGIONS.map((region) => {
-          const indices = grouped[region];
+          const indices = grouped[region.id];
           if (indices.length === 0) return null;
 
           return (
             <div
-              key={region}
-              data-testid={`region-${region}`}
+              key={region.id}
+              className={region.gridClass}
+              data-testid={`region-${region.id}`}
               role="region"
-              aria-label={`${region} markets`}
+              aria-label={`${region.label} markets`}
             >
-              <h4
-                className={`text-sm font-semibold mb-3 pb-1 border-b ${
-                  isDark
-                    ? "text-gray-300 border-gray-700"
-                    : "text-gray-700 border-gray-200"
-                }`}
-              >
-                {region}
+              <h4 className="mb-3 border-b border-stone-200 pb-2 text-xs font-semibold uppercase tracking-[0.15em] text-stone-500 dark:border-stone-700 dark:text-stone-400">
+                {region.label}
+                {region.id === "Americas" && (
+                  <span className="ml-2 normal-case tracking-normal text-stone-400 dark:text-stone-500">
+                    · primary session
+                  </span>
+                )}
               </h4>
 
-              <ul className="space-y-2">
+              <ul className="space-y-1">
                 {indices.map((idx) => {
                   const isPositive = idx.changePercent >= 0;
                   const colorClass = isPositive
-                    ? "text-green-500"
-                    : "text-red-500";
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : "text-rose-600 dark:text-rose-400";
 
                   return (
                     <li
                       key={idx.symbol}
-                      className={`flex items-center justify-between py-2 sm:py-1.5 px-2 rounded min-h-[44px] ${
-                        isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"
-                      }`}
+                      className="flex min-h-[44px] items-center justify-between rounded-md px-2 py-2 transition-colors hover:bg-stone-100/80 dark:hover:bg-stone-900/50 sm:py-1.5"
                       data-testid={`index-${idx.symbol}`}
                     >
                       <div className="min-w-0 flex-1">
-                        <p
-                          className={`text-sm font-medium truncate ${
-                            isDark ? "text-gray-200" : "text-gray-900"
-                          }`}
-                        >
+                        <p className="truncate text-sm font-medium text-stone-900 dark:text-stone-100">
                           {idx.name}
                         </p>
-                        <p
-                          className={`text-xs ${
-                            isDark ? "text-gray-300" : "text-gray-500"
-                          }`}
-                        >
+                        <p className="text-xs text-stone-500 dark:text-stone-400">
                           {idx.symbol}
                         </p>
                       </div>
 
                       <div className="text-right ml-3 flex-shrink-0">
                         <p
-                          className={`text-sm font-medium ${
-                            isDark ? "text-gray-200" : "text-gray-900"
-                          }`}
+                          className="text-sm font-medium tabular-nums text-stone-900 dark:text-stone-100"
                           data-testid={`value-${idx.symbol}`}
                         >
                           {formatValue(idx.value)}

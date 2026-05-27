@@ -4,6 +4,11 @@ import Link from "next/link";
 import type { PricingTier, StockOfTheDay, StockOfTheDayResult } from "@/types";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_PANEL_TITLE,
+  HOME_PRIMARY_BUTTON,
+} from "@/lib/home-ui";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
 
 interface StockOfTheDayPanelProps {
@@ -11,8 +16,103 @@ interface StockOfTheDayPanelProps {
   loading: boolean;
   locked: boolean;
   error?: string | null;
-  /** When locked, used to explain which upgrade path applies. */
   pricingTier?: PricingTier | null;
+  /** When true, omits outer section spacing (used inside HomeHub). */
+  embedded?: boolean;
+  /** When false, skips the in-panel title (HomeHub provides "AI outlook"). */
+  showTitle?: boolean;
+}
+
+function LockedGate({
+  pricingTier,
+  compactTitle,
+}: {
+  pricingTier?: PricingTier | null;
+  compactTitle?: boolean;
+}) {
+  return (
+    <div className="flex min-h-[11rem] flex-col justify-center gap-4 py-2 sm:min-h-[12rem]">
+      {compactTitle && <p className={HOME_PANEL_TITLE}>Daily AI stock ideas</p>}
+      <p className="max-w-xl text-sm leading-relaxed text-stone-700 dark:text-stone-200 sm:text-base">
+        {getAiSubscriptionGateMessage(pricingTier ?? undefined)}
+      </p>
+      <div>
+        <Link href="/pricing" className={HOME_PRIMARY_BUTTON}>
+          View AI plans
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function StanceLabel({
+  recommendation,
+}: {
+  recommendation: StockOfTheDay["recommendation"];
+}) {
+  const isBuy = recommendation === "buy";
+  return (
+    <span
+      className={`text-[0.65rem] font-bold uppercase tracking-[0.16em] ${
+        isBuy
+          ? "text-emerald-700 dark:text-emerald-400"
+          : "text-rose-700 dark:text-rose-400"
+      }`}
+    >
+      {recommendation}
+    </span>
+  );
+}
+
+function PickCard({
+  title,
+  pick,
+  variant,
+}: {
+  title: string;
+  pick: StockOfTheDay;
+  variant: "buy" | "sell";
+}) {
+  const borderClass =
+    variant === "buy"
+      ? "border-l-emerald-600 dark:border-l-emerald-500"
+      : "border-l-rose-600 dark:border-l-rose-500";
+
+  return (
+    <article
+      className={`rounded-lg border border-stone-200/90 border-l-4 bg-stone-50/50 p-4 dark:border-stone-700 dark:bg-stone-900/40 ${borderClass}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-stone-500 dark:text-stone-400">
+            {title}
+          </p>
+          <p className="mt-1 font-semibold text-stone-900 dark:text-stone-100">
+            <span className="tabular-nums">{pick.symbol}</span>
+            <span className="font-normal text-stone-500 dark:text-stone-400">
+              {" "}
+              · {pick.name}
+            </span>
+          </p>
+        </div>
+        <StanceLabel recommendation={pick.recommendation} />
+      </div>
+      <p className="mt-2 flex items-center text-xs text-stone-500 dark:text-stone-400">
+        <span>Confidence {Math.round(pick.confidence * 100)}%</span>
+        <ConfidenceInfoTooltip variant="stockOfTheDay" />
+      </p>
+      <ol className="mt-3 space-y-2 text-sm text-stone-600 dark:text-stone-300">
+        {pick.rationale.map((reason, index) => (
+          <li key={reason} className="flex gap-2">
+            <span className="flex-shrink-0 tabular-nums text-stone-400 dark:text-stone-500">
+              {index + 1}.
+            </span>
+            <span>{reason}</span>
+          </li>
+        ))}
+      </ol>
+    </article>
+  );
 }
 
 export function StockOfTheDayPanel({
@@ -21,117 +121,112 @@ export function StockOfTheDayPanel({
   locked,
   error,
   pricingTier,
+  embedded = false,
+  showTitle = true,
 }: StockOfTheDayPanelProps) {
-  const renderPick = (title: string, pick: StockOfTheDay) => (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            {title}
-          </p>
-          <p className="mt-1 text-gray-900 dark:text-gray-100 font-medium">
-            {pick.symbol} - {pick.name}
-          </p>
-        </div>
-        <span
-          className={`rounded-full px-2 py-1 text-xs font-semibold uppercase ${
-            pick.recommendation === "buy"
-              ? "bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-300"
-              : "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-300"
-          }`}
-        >
-          {pick.recommendation}
-        </span>
-      </div>
-      <p className="mt-2 flex items-center text-xs text-gray-500 dark:text-gray-400">
-        <span>Confidence {Math.round(pick.confidence * 100)}%</span>
-        <ConfidenceInfoTooltip variant="stockOfTheDay" />
-      </p>
-      <ul className="mt-3 space-y-1 text-sm text-gray-600 dark:text-gray-300">
-        {pick.rationale.map((reason) => (
-          <li key={reason}>- {reason}</li>
-        ))}
-      </ul>
-    </div>
-  );
+  const showLockedOverlay = locked && Boolean(item);
+  const showLockedGateOnly = locked && !item && !loading;
 
-  return (
-    <section className="mt-6 sm:mt-8 lg:mt-10">
-      <div className="relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
-        <div
-          className={locked ? "blur-sm select-none pointer-events-none" : ""}
-        >
-          <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-              AI stock ideas of the day
-            </h2>
-            {item && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                Generated {new Date(item.generatedAt).toLocaleDateString()}
-              </span>
+  const shell = (
+    <div
+      className={`relative ${HOME_INSTRUMENT_PANEL} ${showLockedGateOnly ? "" : "min-h-[8rem]"}`}
+    >
+      {showLockedGateOnly ? (
+        <LockedGate pricingTier={pricingTier} compactTitle={!showTitle} />
+      ) : (
+        <>
+          <div
+            className={
+              showLockedOverlay ? "blur-sm select-none pointer-events-none" : ""
+            }
+          >
+            {(showTitle || item) && (
+              <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                {showTitle && (
+                  <div>
+                    <h2 className={HOME_PANEL_TITLE}>Daily AI stock ideas</h2>
+                    <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                      One buy and one sell candidate from your configured model.
+                    </p>
+                  </div>
+                )}
+                {item && (
+                  <p className="text-xs text-stone-500 dark:text-stone-400 sm:text-right">
+                    Generated {new Date(item.generatedAt).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {loading && (
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                Computing today&apos;s picks...
+              </p>
+            )}
+
+            {!loading && item && (
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+                <div className="lg:col-span-3">
+                  <PickCard title="Idea to buy" pick={item.buy} variant="buy" />
+                </div>
+                <div className="lg:col-span-2">
+                  <PickCard
+                    title="Idea to sell"
+                    pick={item.sell}
+                    variant="sell"
+                  />
+                </div>
+              </div>
+            )}
+
+            {!loading && !item && !locked && error && (
+              <div
+                className={`rounded-lg border px-3 py-3 text-sm ${
+                  isMissingByokApiKeyMessage(error)
+                    ? "border-stone-300 bg-stone-100 text-stone-900 dark:border-stone-600 dark:bg-stone-900/80 dark:text-stone-100"
+                    : "border-amber-300/80 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100"
+                }`}
+              >
+                <p className="font-medium">{error}</p>
+                {isMissingByokApiKeyMessage(error) && (
+                  <div className="mt-3 space-y-2">
+                    <p className="text-xs opacity-90">
+                      Add your API key on the Profile page under API keys, then
+                      pick the same provider as your explanation model.
+                    </p>
+                    <Link href="/profile" className={HOME_PRIMARY_BUTTON}>
+                      Open profile
+                    </Link>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!loading && !item && !locked && !error && (
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                No stock-of-the-day result yet. Refresh to try again.
+              </p>
             )}
           </div>
 
-          {loading && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Computing today&apos;s top pick...
-            </p>
-          )}
-
-          {!loading && item && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {renderPick("Stock of the day to buy", item.buy)}
-              {renderPick("Stock of the day to sell", item.sell)}
+          {showLockedOverlay && (
+            <div className="absolute inset-0 flex flex-col items-start justify-center rounded-xl bg-stone-100/90 px-6 py-8 dark:bg-stone-950/90 sm:items-center sm:text-center">
+              <p className="max-w-md text-sm font-medium leading-relaxed text-stone-900 dark:text-stone-50 sm:text-base">
+                {getAiSubscriptionGateMessage(pricingTier ?? undefined)}
+              </p>
+              <Link href="/pricing" className={`mt-4 ${HOME_PRIMARY_BUTTON}`}>
+                View AI plans
+              </Link>
             </div>
           )}
-
-          {!loading && !item && !locked && error && (
-            <div
-              className={`rounded-md border px-3 py-3 text-sm ${
-                isMissingByokApiKeyMessage(error)
-                  ? "border-blue-300 bg-blue-50 text-blue-900 dark:border-blue-600 dark:bg-blue-950/50 dark:text-blue-100"
-                  : "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
-              }`}
-            >
-              <p className="font-medium">{error}</p>
-              {isMissingByokApiKeyMessage(error) && (
-                <div className="mt-3 space-y-2">
-                  <p className="text-xs opacity-90">
-                    Add your API key on the Profile page under API keys, then
-                    pick the same provider as your explanation model.
-                  </p>
-                  <a
-                    href="/profile"
-                    className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
-                  >
-                    Open profile
-                  </a>
-                </div>
-              )}
-            </div>
-          )}
-
-          {!loading && !item && !locked && !error && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              No stock-of-the-day result yet. Refresh to try again.
-            </p>
-          )}
-        </div>
-
-        {locked && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-white/70 px-6 text-center dark:bg-gray-900/70">
-            <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">
-              {getAiSubscriptionGateMessage(pricingTier ?? undefined)}
-            </p>
-            <Link
-              href="/pricing"
-              className="mt-3 inline-flex items-center rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700"
-            >
-              View AI plans
-            </Link>
-          </div>
-        )}
-      </div>
-    </section>
+        </>
+      )}
+    </div>
   );
+
+  if (embedded) {
+    return shell;
+  }
+
+  return <section className="mt-6 sm:mt-8 lg:mt-10">{shell}</section>;
 }
