@@ -5,6 +5,11 @@ import type { PricingTier, StockOfTheDay, StockOfTheDayResult } from "@/types";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
 import {
+  InsightPanel,
+  InsightPanelGate,
+  InsightPanelHeader,
+} from "@/components/InsightPanel";
+import {
   HOME_INSTRUMENT_PANEL,
   HOME_PANEL_TITLE,
   HOME_PRIMARY_BUTTON,
@@ -21,28 +26,6 @@ interface StockOfTheDayPanelProps {
   embedded?: boolean;
   /** When false, skips the in-panel title (HomeHub provides "AI outlook"). */
   showTitle?: boolean;
-}
-
-function LockedGate({
-  pricingTier,
-  compactTitle,
-}: {
-  pricingTier?: PricingTier | null;
-  compactTitle?: boolean;
-}) {
-  return (
-    <div className="flex min-h-[11rem] flex-col justify-center gap-4 py-2 sm:min-h-[12rem]">
-      {compactTitle && <p className={HOME_PANEL_TITLE}>Daily AI stock ideas</p>}
-      <p className="max-w-xl text-sm leading-relaxed text-stone-700 dark:text-stone-200 sm:text-base">
-        {getAiSubscriptionGateMessage(pricingTier ?? undefined)}
-      </p>
-      <div>
-        <Link href="/pricing" className={HOME_PRIMARY_BUTTON}>
-          View AI plans
-        </Link>
-      </div>
-    </div>
-  );
 }
 
 function StanceLabel({
@@ -126,13 +109,20 @@ export function StockOfTheDayPanel({
 }: StockOfTheDayPanelProps) {
   const showLockedOverlay = locked && Boolean(item);
   const showLockedGateOnly = locked && !item && !loading;
+  const gateMessage = getAiSubscriptionGateMessage(pricingTier ?? undefined);
 
   const shell = (
     <div
       className={`relative ${HOME_INSTRUMENT_PANEL} ${showLockedGateOnly ? "" : "min-h-[8rem]"}`}
     >
       {showLockedGateOnly ? (
-        <LockedGate pricingTier={pricingTier} compactTitle={!showTitle} />
+        <InsightPanelGate
+          title={!showTitle ? "Daily AI stock ideas" : undefined}
+          message={gateMessage}
+          ctaHref="/pricing"
+          ctaLabel="View AI plans"
+          buttonClassName={HOME_PRIMARY_BUTTON}
+        />
       ) : (
         <>
           <div
@@ -141,20 +131,23 @@ export function StockOfTheDayPanel({
             }
           >
             {(showTitle || item) && (
-              <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-                {showTitle && (
-                  <div>
-                    <h2 className={HOME_PANEL_TITLE}>Daily AI stock ideas</h2>
-                    <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                      One buy and one sell candidate from your configured model.
-                    </p>
-                  </div>
-                )}
-                {item && (
-                  <p className="text-xs text-stone-500 dark:text-stone-400 sm:text-right">
-                    Generated {new Date(item.generatedAt).toLocaleDateString()}
-                  </p>
-                )}
+              <div className="text-stone-900 dark:text-stone-100">
+                <InsightPanelHeader
+                  title={showTitle ? "Daily AI stock ideas" : ""}
+                  subtitle={
+                    showTitle
+                      ? "One buy and one sell candidate from your configured model."
+                      : undefined
+                  }
+                  right={
+                    item ? (
+                      <p className="text-xs text-stone-500 dark:text-stone-400">
+                        Generated{" "}
+                        {new Date(item.generatedAt).toLocaleDateString()}
+                      </p>
+                    ) : undefined
+                  }
+                />
               </div>
             )}
 
@@ -210,13 +203,15 @@ export function StockOfTheDayPanel({
           </div>
 
           {showLockedOverlay && (
-            <div className="absolute inset-0 flex flex-col items-start justify-center rounded-xl bg-stone-100/90 px-6 py-8 dark:bg-stone-950/90 sm:items-center sm:text-center">
-              <p className="max-w-md text-sm font-medium leading-relaxed text-stone-900 dark:text-stone-50 sm:text-base">
-                {getAiSubscriptionGateMessage(pricingTier ?? undefined)}
-              </p>
-              <Link href="/pricing" className={`mt-4 ${HOME_PRIMARY_BUTTON}`}>
-                View AI plans
-              </Link>
+            <div className="absolute inset-0 rounded-xl bg-stone-100/90 text-stone-900 dark:bg-stone-950/90 dark:text-stone-50">
+              <InsightPanelGate
+                message={gateMessage}
+                ctaHref="/pricing"
+                ctaLabel="View AI plans"
+                align="center"
+                overlay
+                buttonClassName={HOME_PRIMARY_BUTTON}
+              />
             </div>
           )}
         </>
@@ -224,9 +219,5 @@ export function StockOfTheDayPanel({
     </div>
   );
 
-  if (embedded) {
-    return shell;
-  }
-
-  return <section className="mt-6 sm:mt-8 lg:mt-10">{shell}</section>;
+  return <InsightPanel embedded={embedded}>{shell}</InsightPanel>;
 }
