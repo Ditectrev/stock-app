@@ -143,7 +143,7 @@ export function HomeHub({
         </p>
         <div className="mt-6 max-w-md" role="search" aria-label="Symbol lookup">
           <SearchBar
-            placeholder="Look up a symbol — e.g. AAPL"
+            placeholder="Search stocks by symbol (e.g., AAPL, TSLA, MSFT)..."
             onSelect={onSymbolSelect}
             className="w-full"
           />

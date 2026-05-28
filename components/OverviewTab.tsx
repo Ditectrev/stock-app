@@ -40,14 +40,23 @@ export function OverviewTab({
     <div className="space-y-6" role="tabpanel" aria-label="Overview">
       {/* Current Price Card */}
       <div
-        className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${
-          isDark ? "bg-gray-800" : "bg-white"
+        className={`rounded-xl border p-4 sm:p-6 lg:p-8 ${
+          isDark
+            ? "border-stone-700 bg-stone-800/60"
+            : "border-stone-200/90 bg-white/90"
         }`}
         aria-label="Current price information"
       >
+        <p
+          className={`mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] ${
+            isDark ? "text-stone-400" : "text-stone-500"
+          }`}
+        >
+          Live pricing
+        </p>
         <h2
           className={`text-lg font-semibold mb-3 sm:mb-4 ${
-            isDark ? "text-white" : "text-gray-900"
+            isDark ? "text-stone-100" : "text-stone-900"
           }`}
         >
           Current Price
@@ -56,7 +65,7 @@ export function OverviewTab({
           <div>
             <div
               className={`text-3xl sm:text-4xl lg:text-5xl font-bold ${
-                isDark ? "text-white" : "text-gray-900"
+                isDark ? "text-stone-100" : "text-stone-900"
               }`}
             >
               ${symbolData.price.toFixed(2)}
@@ -80,13 +89,22 @@ export function OverviewTab({
 
       {/* Price Chart */}
       <div
-        className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${
-          isDark ? "bg-gray-800" : "bg-white"
+        className={`rounded-xl border p-4 sm:p-6 lg:p-8 ${
+          isDark
+            ? "border-stone-700 bg-stone-800/60"
+            : "border-stone-200/90 bg-white/90"
         }`}
       >
+        <p
+          className={`mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] ${
+            isDark ? "text-stone-400" : "text-stone-500"
+          }`}
+        >
+          Trend
+        </p>
         <h2
           className={`text-lg font-semibold mb-3 sm:mb-4 ${
-            isDark ? "text-white" : "text-gray-900"
+            isDark ? "text-stone-100" : "text-stone-900"
           }`}
         >
           Price Chart

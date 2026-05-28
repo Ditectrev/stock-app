@@ -5,9 +5,11 @@ import { Navigation } from "@/components/Navigation";
 
 const mockPush = vi.fn();
 let mockPathname = "/";
+let mockSearchParams = new URLSearchParams();
 
 vi.mock("next/navigation", () => ({
   usePathname: () => mockPathname,
+  useSearchParams: () => mockSearchParams,
   useRouter: () => ({ push: mockPush, replace: vi.fn() }),
 }));
 
@@ -36,6 +38,7 @@ describe("Navigation", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPathname = "/";
+    mockSearchParams = new URLSearchParams();
   });
 
   it("renders all nav links", () => {
@@ -74,6 +77,7 @@ describe("Navigation", () => {
   });
 
   it("calls router.push when a symbol is selected from search", () => {
+    mockPathname = "/sectors";
     render(<Navigation />);
     const search = screen.getAllByTestId("search-bar")[0];
     fireEvent.change(search, { target: { value: "AAPL" } });
@@ -81,7 +85,8 @@ describe("Navigation", () => {
     expect(mockPush).toHaveBeenCalledWith("/?symbol=AAPL");
   });
 
-  it("renders search bar", () => {
+  it("renders desktop search bar outside home dashboard", () => {
+    mockPathname = "/sectors";
     render(<Navigation />);
     expect(screen.getAllByTestId("search-bar").length).toBeGreaterThan(0);
   });

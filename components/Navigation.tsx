@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
@@ -23,9 +23,13 @@ export function Navigation({
 }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   const activeSection = activeSectionProp ?? pathnameToNavId(pathname ?? "/");
+  const selectedSymbol = searchParams.get("symbol")?.trim() ?? "";
+  const showDesktopSearch =
+    (pathname ?? "/") !== "/" || Boolean(selectedSymbol);
 
   const handleSymbolSelect = (symbol: string) => {
     router.push(`/?symbol=${encodeURIComponent(symbol)}`);
@@ -78,13 +82,17 @@ export function Navigation({
             ))}
           </div>
 
-          <div className="hidden max-w-sm flex-1 md:block">
-            <SearchBar
-              placeholder="Search symbols..."
-              onSelect={handleSymbolSelect}
-              className="w-full"
-            />
-          </div>
+          {showDesktopSearch ? (
+            <div className="hidden max-w-sm flex-1 md:block">
+              <SearchBar
+                placeholder="Search stocks by symbol (e.g., AAPL, TSLA, MSFT)..."
+                onSelect={handleSymbolSelect}
+                className="w-full"
+              />
+            </div>
+          ) : (
+            <div className="hidden flex-1 md:block" />
+          )}
 
           <div className="relative z-[10060] flex shrink-0 items-center gap-2">
             <UserProfileMenu />

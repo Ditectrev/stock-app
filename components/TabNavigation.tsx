@@ -67,11 +67,13 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
 
   return (
     <div className="mt-6">
-      <div
-        className={`border-b ${isDark ? "border-gray-700" : "border-gray-200"}`}
-      >
+      <div>
         <nav
-          className="-mb-px flex space-x-2 sm:space-x-8 overflow-x-auto scrollbar-hide"
+          className={`flex overflow-x-auto rounded-xl border p-1 scrollbar-hide ${
+            isDark
+              ? "border-stone-700 bg-stone-800/60"
+              : "border-stone-200/90 bg-white/90"
+          }`}
           role="tablist"
           aria-label="Symbol detail tabs"
         >
@@ -89,17 +91,19 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
                 aria-selected={isActive}
                 tabIndex={isActive ? 0 : -1}
                 className={`
-                  whitespace-nowrap py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-sm transition-colors min-h-[44px]
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1
+                  min-h-[44px] whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors
+                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1
                   ${
                     isActive
-                      ? `border-blue-500 ${
-                          isDark ? "text-blue-400" : "text-blue-600"
-                        }`
-                      : `border-transparent ${
+                      ? `${
                           isDark
-                            ? "text-gray-400 hover:text-gray-300 hover:border-gray-600"
-                            : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                            ? "bg-stone-100 text-stone-900"
+                            : "bg-stone-900 text-stone-100"
+                        }`
+                      : `${
+                          isDark
+                            ? "text-stone-300 hover:bg-stone-700 hover:text-stone-100"
+                            : "text-stone-600 hover:bg-stone-100 hover:text-stone-900"
                         }`
                   }
                 `}

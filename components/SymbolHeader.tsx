@@ -25,24 +25,33 @@ export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
 
   return (
     <div
-      className={`p-4 sm:p-6 rounded-lg shadow-sm ${
-        isDark ? "bg-gray-800" : "bg-white"
+      className={`rounded-xl border p-4 sm:p-6 ${
+        isDark
+          ? "border-stone-700 bg-stone-800/60"
+          : "border-stone-200/90 bg-white/90"
       }`}
       aria-label={`${symbolData.symbol} - ${symbolData.name}`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         {/* Symbol and Name */}
         <div>
+          <p
+            className={`text-[0.65rem] font-semibold uppercase tracking-[0.16em] ${
+              isDark ? "text-stone-400" : "text-stone-500"
+            }`}
+          >
+            Symbol snapshot
+          </p>
           <h1
             className={`text-2xl sm:text-3xl font-bold ${
-              isDark ? "text-white" : "text-gray-900"
+              isDark ? "text-stone-100" : "text-stone-900"
             }`}
           >
             {symbolData.symbol}
           </h1>
           <p
             className={`text-base sm:text-lg ${
-              isDark ? "text-gray-300" : "text-gray-600"
+              isDark ? "text-stone-300" : "text-stone-600"
             }`}
           >
             {symbolData.name}
@@ -57,7 +66,7 @@ export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
         >
           <div
             className={`text-2xl sm:text-3xl font-bold ${
-              isDark ? "text-white" : "text-gray-900"
+              isDark ? "text-stone-100" : "text-stone-900"
             }`}
             aria-label={`Current price: $${symbolData.price.toFixed(2)}`}
           >
@@ -72,7 +81,7 @@ export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
             {symbolData.changePercent.toFixed(2)}%)
           </div>
           <div
-            className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
+            className={`text-sm ${isDark ? "text-stone-400" : "text-stone-500"}`}
           >
             Last updated: {new Date(symbolData.lastUpdated).toLocaleString()}
           </div>
