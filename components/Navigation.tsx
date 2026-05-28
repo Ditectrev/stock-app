@@ -34,32 +34,42 @@ export function Navigation({
 
   return (
     <nav
-      className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 overflow-visible"
+      className="overflow-visible border-b border-stone-200 bg-white/95 backdrop-blur dark:border-stone-700 dark:bg-stone-900/95"
       aria-label="Main navigation"
       data-testid="navigation"
       data-active-section={activeSection}
     >
-      <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16 gap-4 overflow-visible">
+      <div className="mx-auto max-w-7xl px-4 xl:max-w-[1400px] sm:px-6">
+        <div className="flex h-16 items-center justify-between gap-4 overflow-visible">
           <Link
             href="/"
-            className="flex-shrink-0 text-lg font-bold text-gray-900 dark:text-gray-100"
+            className="flex shrink-0 items-center gap-3 text-stone-900 dark:text-stone-100"
             aria-label={`${SITE_NAME} home`}
           >
-            <span className="hidden sm:inline">{SITE_SHORT_NAME}</span>
-            <span className="sm:hidden">{SITE_NAV_MOBILE_LABEL}</span>
+            <span className="inline-block h-8 w-[2px] rounded-full bg-stone-900 dark:bg-stone-100" />
+            <span className="leading-tight">
+              <span className="hidden text-lg font-bold sm:inline">
+                {SITE_SHORT_NAME}
+              </span>
+              <span className="text-base font-bold sm:hidden">
+                {SITE_NAV_MOBILE_LABEL}
+              </span>
+              <span className="hidden text-[0.65rem] uppercase tracking-[0.16em] text-stone-500 dark:text-stone-400 sm:block">
+                Markets · AI
+              </span>
+            </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden items-center gap-1 rounded-xl border border-stone-200/80 bg-stone-50/70 p-1 dark:border-stone-700 dark:bg-stone-800/60 md:flex">
             {MAIN_NAV.map((link) => (
               <Link
                 key={link.id}
                 href={link.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
                   ${
                     activeSection === link.id
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                      ? "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900"
+                      : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-100"
                   }`}
                 aria-current={activeSection === link.id ? "page" : undefined}
               >
@@ -68,7 +78,7 @@ export function Navigation({
             ))}
           </div>
 
-          <div className="hidden md:block flex-1 max-w-sm">
+          <div className="hidden max-w-sm flex-1 md:block">
             <SearchBar
               placeholder="Search symbols..."
               onSelect={handleSymbolSelect}
@@ -76,13 +86,13 @@ export function Navigation({
             />
           </div>
 
-          <div className="relative z-[10060] flex items-center gap-2 flex-shrink-0">
+          <div className="relative z-[10060] flex shrink-0 items-center gap-2">
             <UserProfileMenu />
             <ThemeToggle />
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="rounded-md p-2 text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:text-stone-300 dark:hover:bg-stone-800 md:hidden"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-nav-menu"
               aria-label="Toggle navigation menu"
@@ -126,7 +136,7 @@ export function Navigation({
       {mobileMenuOpen && (
         <div
           id="mobile-nav-menu"
-          className="md:hidden border-t border-gray-200 dark:border-gray-700"
+          className="border-t border-stone-200 dark:border-stone-700 md:hidden"
         >
           <div className="px-4 py-3">
             <SearchBar
@@ -134,17 +144,17 @@ export function Navigation({
               onSelect={handleSymbolSelect}
             />
           </div>
-          <div className="px-2 pb-3 space-y-1">
+          <div className="space-y-1 px-2 pb-3">
             {MAIN_NAV.map((link) => (
               <Link
                 key={link.id}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors
+                className={`block w-full rounded-md px-3 py-2 text-left text-base font-medium transition-colors
                   ${
                     activeSection === link.id
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                      ? "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900"
+                      : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-stone-100"
                   }`}
                 aria-current={activeSection === link.id ? "page" : undefined}
               >
