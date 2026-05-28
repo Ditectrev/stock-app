@@ -22,14 +22,16 @@ export function InsightPanelHeader({
   subtitle,
   right,
 }: {
-  title: ReactNode;
+  title?: ReactNode;
   subtitle?: ReactNode;
   right?: ReactNode;
 }) {
   return (
     <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
       <div>
-        <h2 className="text-lg font-semibold sm:text-xl">{title}</h2>
+        {title ? (
+          <h2 className="text-lg font-semibold sm:text-xl">{title}</h2>
+        ) : null}
         {subtitle ? (
           <p className="mt-1 text-sm opacity-80">{subtitle}</p>
         ) : null}

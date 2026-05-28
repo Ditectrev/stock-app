@@ -133,7 +133,7 @@ export function StockOfTheDayPanel({
             {(showTitle || item) && (
               <div className="text-stone-900 dark:text-stone-100">
                 <InsightPanelHeader
-                  title={showTitle ? "Daily AI stock ideas" : ""}
+                  title={showTitle ? "Daily AI stock ideas" : undefined}
                   subtitle={
                     showTitle
                       ? "One buy and one sell candidate from your configured model."
