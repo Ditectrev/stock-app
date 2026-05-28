@@ -11,6 +11,11 @@ import { SymbolData, PriceData, TimeRange } from "@/types";
 import { ChartComponent } from "@/components/ChartComponent";
 import { KeyMetrics } from "@/components/KeyMetrics";
 import { useTheme } from "@/lib/theme-context";
+import {
+  SYMBOL_INSTRUMENT_PANEL,
+  SYMBOL_PANEL_TITLE,
+  SYMBOL_SECTION_LABEL,
+} from "@/lib/symbol-ui";
 
 export interface OverviewTabProps {
   symbolData: SymbolData;
@@ -40,27 +45,11 @@ export function OverviewTab({
     <div className="space-y-6" role="tabpanel" aria-label="Overview">
       {/* Current Price Card */}
       <div
-        className={`rounded-xl border p-4 sm:p-6 lg:p-8 ${
-          isDark
-            ? "border-stone-700 bg-stone-800/60"
-            : "border-stone-200/90 bg-white/90"
-        }`}
+        className={`${SYMBOL_INSTRUMENT_PANEL} lg:p-8`}
         aria-label="Current price information"
       >
-        <p
-          className={`mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] ${
-            isDark ? "text-stone-400" : "text-stone-500"
-          }`}
-        >
-          Live pricing
-        </p>
-        <h2
-          className={`text-lg font-semibold mb-3 sm:mb-4 ${
-            isDark ? "text-stone-100" : "text-stone-900"
-          }`}
-        >
-          Current Price
-        </h2>
+        <p className={`mb-2 ${SYMBOL_SECTION_LABEL}`}>Live pricing</p>
+        <h2 className={`mb-3 sm:mb-4 ${SYMBOL_PANEL_TITLE}`}>Current Price</h2>
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4">
           <div>
             <div
@@ -88,27 +77,9 @@ export function OverviewTab({
       </div>
 
       {/* Price Chart */}
-      <div
-        className={`rounded-xl border p-4 sm:p-6 lg:p-8 ${
-          isDark
-            ? "border-stone-700 bg-stone-800/60"
-            : "border-stone-200/90 bg-white/90"
-        }`}
-      >
-        <p
-          className={`mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] ${
-            isDark ? "text-stone-400" : "text-stone-500"
-          }`}
-        >
-          Trend
-        </p>
-        <h2
-          className={`text-lg font-semibold mb-3 sm:mb-4 ${
-            isDark ? "text-stone-100" : "text-stone-900"
-          }`}
-        >
-          Price Chart
-        </h2>
+      <div className={`${SYMBOL_INSTRUMENT_PANEL} lg:p-8`}>
+        <p className={`mb-2 ${SYMBOL_SECTION_LABEL}`}>Trend</p>
+        <h2 className={`mb-3 sm:mb-4 ${SYMBOL_PANEL_TITLE}`}>Price Chart</h2>
         <div className="h-[300px] md:h-[380px] lg:h-[420px] xl:h-[500px]">
           <ChartComponent
             data={historicalData}

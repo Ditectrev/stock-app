@@ -2,8 +2,7 @@
 
 /**
  * ForecastDisplay Component
- * Displays analyst price targets, rating distribution, EPS and revenue forecasts
- * with tooltips, color-coded earnings surprises, and visual indicators.
+ * Analyst desk layout: featured price band, ratings column, forecast tables.
  *
  * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
  */
@@ -11,6 +10,15 @@
 import { ForecastData } from "@/types";
 import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
+import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
+import {
+  SYMBOL_DIVIDER,
+  SYMBOL_HELP_BUTTON,
+  SYMBOL_MUTED_TEXT,
+  SYMBOL_PANEL_TITLE,
+  SYMBOL_SUBTLE_TEXT,
+  SYMBOL_TOOLTIP_SURFACE,
+} from "@/lib/symbol-ui";
 
 export interface ForecastDisplayProps {
   forecast: ForecastData | null | undefined;
@@ -19,7 +27,6 @@ export interface ForecastDisplayProps {
 interface TooltipTriggerProps {
   label: string;
   tooltip: string;
-  isDark: boolean;
 }
 
 const FORECAST_TOOLTIPS: Record<string, string> = {
@@ -50,30 +57,23 @@ const RATING_KEYS: Array<keyof ForecastData["analystRatings"]> = [
 function getRatingBarColor(index: number, isDark: boolean): string {
   const colors = [
     isDark ? "bg-green-500" : "bg-green-600",
-    isDark ? "bg-green-400" : "bg-green-400",
-    isDark ? "bg-yellow-400" : "bg-yellow-500",
-    isDark ? "bg-red-400" : "bg-red-400",
+    isDark ? "bg-green-400" : "bg-green-500",
+    isDark ? "bg-amber-400" : "bg-amber-500",
+    isDark ? "bg-red-400" : "bg-red-500",
     isDark ? "bg-red-500" : "bg-red-600",
   ];
   return colors[index];
 }
 
-function TooltipTrigger({ label, tooltip, isDark }: TooltipTriggerProps) {
+function SectionLabel({ label, tooltip }: TooltipTriggerProps) {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <div className="relative flex items-center gap-2">
-      <h3
-        className={`text-base font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        {label}
-      </h3>
+      <h3 className={`text-sm font-semibold ${SYMBOL_PANEL_TITLE}`}>{label}</h3>
       <button
         type="button"
-        className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs cursor-help
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-            isDark ? "bg-gray-600 text-gray-300" : "bg-gray-200 text-gray-600"
-          }`}
+        className={SYMBOL_HELP_BUTTON}
         aria-label={`More info about ${label}`}
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
@@ -85,11 +85,7 @@ function TooltipTrigger({ label, tooltip, isDark }: TooltipTriggerProps) {
       {showTooltip && (
         <div
           role="tooltip"
-          className={`absolute z-10 w-64 p-3 rounded-lg shadow-lg text-sm ${
-            isDark
-              ? "bg-gray-900 text-gray-200 border border-gray-700"
-              : "bg-white text-gray-700 border border-gray-200"
-          }`}
+          className={SYMBOL_TOOLTIP_SURFACE}
           style={{ top: "calc(100% + 6px)", left: 0 }}
         >
           {tooltip}
@@ -139,7 +135,7 @@ function SurpriseIndicator({
   return (
     <span
       data-testid={isBeat ? "earnings-beat" : "earnings-miss"}
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${colorClass} ${bgClass}`}
+      className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-medium ${colorClass} ${bgClass}`}
     >
       {icon} {label}
       {surprisePercent !== undefined &&
@@ -163,35 +159,30 @@ function PriceTargetRange({
   const avgPosition = range > 0 ? ((average - low) / range) * 100 : 50;
 
   return (
-    <div className="mt-3">
-      <div className="flex justify-between mb-1">
+    <div className="mt-4">
+      <div className="mb-1 flex justify-between text-xs">
+        <span className={SYMBOL_SUBTLE_TEXT}>Low: ${low.toFixed(2)}</span>
         <span
-          className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-        >
-          Low: ${low.toFixed(2)}
-        </span>
-        <span
-          className={`text-xs font-medium ${isDark ? "text-blue-400" : "text-blue-600"}`}
+          className={`font-medium ${isDark ? "text-stone-200" : "text-stone-800"}`}
         >
           Avg: ${average.toFixed(2)}
         </span>
-        <span
-          className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-        >
-          High: ${high.toFixed(2)}
-        </span>
+        <span className={SYMBOL_SUBTLE_TEXT}>High: ${high.toFixed(2)}</span>
       </div>
       <div
         data-testid="price-target-range"
-        className={`relative h-3 rounded-full ${isDark ? "bg-gray-600" : "bg-gray-200"}`}
+        className={`relative h-3 rounded-full ${isDark ? "bg-stone-700" : "bg-stone-200"}`}
       >
         <div
-          className={`absolute h-3 rounded-full ${isDark ? "bg-blue-700" : "bg-blue-200"}`}
-          style={{ left: "0%", width: "100%" }}
+          className={`absolute h-3 w-full rounded-full ${isDark ? "bg-stone-600" : "bg-stone-300"}`}
         />
         <div
           data-testid="price-target-marker"
-          className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-blue-500 border-2 border-white shadow"
+          className={`absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full border-2 shadow ${
+            isDark
+              ? "border-stone-800 bg-stone-100"
+              : "border-white bg-stone-900"
+          }`}
           style={{
             left: `${avgPosition}%`,
             transform: `translateX(-50%) translateY(-50%)`,
@@ -208,23 +199,13 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
 
   if (!forecast) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      <SymbolTabShell
+        eyebrow="Street view"
+        title="Forecast Data"
+        ariaLabel="Forecast Data"
       >
-        <h2
-          className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Forecast Data
-        </h2>
-        <div className="space-y-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className={`h-24 rounded-lg animate-pulse ${isDark ? "bg-gray-700" : "bg-gray-200"}`}
-            />
-          ))}
-        </div>
-      </div>
+        <SymbolTabSkeleton blocks={4} />
+      </SymbolTabShell>
     );
   }
 
@@ -234,89 +215,65 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
   );
 
   return (
-    <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-      role="region"
-      aria-label="Forecast Data"
+    <SymbolTabShell
+      eyebrow="Street view"
+      title="Forecast Data"
+      ariaLabel="Forecast Data"
     >
-      <h2
-        className={`text-lg font-semibold mb-4 sm:mb-6 ${isDark ? "text-white" : "text-gray-900"}`}
+      {/* Featured price target band */}
+      <section
+        className={`rounded-lg border p-4 sm:p-5 ${SYMBOL_DIVIDER} bg-stone-50/80 dark:bg-stone-900/40`}
       >
-        Forecast Data
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-        {/* Price Targets Card */}
-        <div
-          className={`p-4 rounded-lg border ${
-            isDark
-              ? "bg-gray-700/50 border-gray-600"
-              : "bg-gray-50 border-gray-200"
-          }`}
-        >
-          <TooltipTrigger
-            label="Price Targets"
-            tooltip={FORECAST_TOOLTIPS.priceTargets}
-            isDark={isDark}
-          />
-          <div className="mt-3 space-y-2">
-            <div className="flex justify-between">
-              <span
-                className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
-              >
-                Low
-              </span>
-              <span
-                className={`text-sm font-mono font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-              >
-                ${forecast.priceTargets.low.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span
-                className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
-              >
-                Average
-              </span>
-              <span
-                className={`text-sm font-mono font-semibold ${isDark ? "text-blue-400" : "text-blue-600"}`}
-              >
-                ${forecast.priceTargets.average.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span
-                className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
-              >
-                High
-              </span>
-              <span
-                className={`text-sm font-mono font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-              >
-                ${forecast.priceTargets.high.toFixed(2)}
-              </span>
-            </div>
+        <SectionLabel
+          label="Price Targets"
+          tooltip={FORECAST_TOOLTIPS.priceTargets}
+        />
+        <div className="mt-4 grid grid-cols-3 gap-4 text-center sm:gap-6">
+          <div>
+            <p className={`text-xs ${SYMBOL_SUBTLE_TEXT}`}>Low</p>
+            <p
+              className={`mt-1 font-mono text-lg font-semibold tabular-nums ${
+                isDark ? "text-stone-100" : "text-stone-900"
+              }`}
+            >
+              ${forecast.priceTargets.low.toFixed(2)}
+            </p>
           </div>
-          <PriceTargetRange
-            low={forecast.priceTargets.low}
-            average={forecast.priceTargets.average}
-            high={forecast.priceTargets.high}
-            isDark={isDark}
-          />
+          <div>
+            <p className={`text-xs ${SYMBOL_SUBTLE_TEXT}`}>Average</p>
+            <p
+              className={`mt-1 font-mono text-xl font-bold tabular-nums ${
+                isDark ? "text-stone-100" : "text-stone-900"
+              }`}
+            >
+              ${forecast.priceTargets.average.toFixed(2)}
+            </p>
+          </div>
+          <div>
+            <p className={`text-xs ${SYMBOL_SUBTLE_TEXT}`}>High</p>
+            <p
+              className={`mt-1 font-mono text-lg font-semibold tabular-nums ${
+                isDark ? "text-stone-100" : "text-stone-900"
+              }`}
+            >
+              ${forecast.priceTargets.high.toFixed(2)}
+            </p>
+          </div>
         </div>
+        <PriceTargetRange
+          low={forecast.priceTargets.low}
+          average={forecast.priceTargets.average}
+          high={forecast.priceTargets.high}
+          isDark={isDark}
+        />
+      </section>
 
-        {/* Analyst Ratings Card */}
-        <div
-          className={`p-4 rounded-lg border ${
-            isDark
-              ? "bg-gray-700/50 border-gray-600"
-              : "bg-gray-50 border-gray-200"
-          }`}
-        >
-          <TooltipTrigger
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+        {/* Ratings — narrow column */}
+        <section className="lg:col-span-4">
+          <SectionLabel
             label="Analyst Ratings"
             tooltip={FORECAST_TOOLTIPS.analystRatings}
-            isDark={isDark}
           />
           <div className="mt-3 space-y-2">
             {RATING_LABELS.map((label, index) => {
@@ -325,13 +282,13 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
               return (
                 <div key={label} className="flex items-center gap-2">
                   <span
-                    className={`text-xs w-20 shrink-0 ${isDark ? "text-gray-300" : "text-gray-500"}`}
+                    className={`w-20 shrink-0 text-xs ${SYMBOL_MUTED_TEXT}`}
                   >
                     {label}
                   </span>
                   <div
-                    className={`flex-1 h-4 rounded-full overflow-hidden ${
-                      isDark ? "bg-gray-600" : "bg-gray-200"
+                    className={`h-3 flex-1 overflow-hidden rounded-full ${
+                      isDark ? "bg-stone-700" : "bg-stone-200"
                     }`}
                   >
                     <div
@@ -340,7 +297,7 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                     />
                   </div>
                   <span
-                    className={`text-xs font-mono w-6 text-right ${isDark ? "text-gray-300" : "text-gray-700"}`}
+                    className={`w-6 text-right font-mono text-xs tabular-nums ${SYMBOL_MUTED_TEXT}`}
                   >
                     {count}
                   </span>
@@ -348,44 +305,34 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
               );
             })}
           </div>
-        </div>
+        </section>
 
-        {/* EPS Forecasts Card */}
-        <div
-          className={`p-4 rounded-lg border ${
-            isDark
-              ? "bg-gray-700/50 border-gray-600"
-              : "bg-gray-50 border-gray-200"
-          }`}
-        >
-          <TooltipTrigger
-            label="EPS Forecasts"
-            tooltip={FORECAST_TOOLTIPS.eps}
-            isDark={isDark}
-          />
-          <div className="mt-3 space-y-3">
-            {forecast.epsForecasts.map((eps) => (
+        {/* EPS — wider column, table rows */}
+        <section className="lg:col-span-8">
+          <SectionLabel label="EPS Forecasts" tooltip={FORECAST_TOOLTIPS.eps} />
+          <div
+            className={`mt-3 overflow-hidden rounded-lg border ${SYMBOL_DIVIDER}`}
+          >
+            {forecast.epsForecasts.map((eps, i) => (
               <div
                 key={eps.quarter}
-                className={`flex items-center justify-between py-1 border-b last:border-b-0 ${
-                  isDark ? "border-gray-600" : "border-gray-200"
+                className={`flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 sm:px-4 ${
+                  i > 0 ? `border-t ${SYMBOL_DIVIDER}` : ""
                 }`}
               >
-                <span
-                  className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}
-                >
+                <span className={`text-sm font-medium ${SYMBOL_MUTED_TEXT}`}>
                   {eps.quarter}
                 </span>
                 <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div
-                      className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-                    >
+                  <div className="text-right text-xs">
+                    <div className={SYMBOL_SUBTLE_TEXT}>
                       Est: ${eps.estimate.toFixed(2)}
                     </div>
                     {eps.actual !== undefined && (
                       <div
-                        className={`text-xs font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                        className={`font-semibold ${
+                          isDark ? "text-stone-100" : "text-stone-900"
+                        }`}
                       >
                         Act: ${eps.actual.toFixed(2)}
                       </div>
@@ -402,64 +349,55 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
               </div>
             ))}
           </div>
-        </div>
+        </section>
+      </div>
 
-        {/* Revenue Forecasts Card */}
+      {/* Revenue — full-width ledger */}
+      <section className="mt-6">
+        <SectionLabel
+          label="Revenue Forecasts"
+          tooltip={FORECAST_TOOLTIPS.revenue}
+        />
         <div
-          className={`p-4 rounded-lg border ${
-            isDark
-              ? "bg-gray-700/50 border-gray-600"
-              : "bg-gray-50 border-gray-200"
-          }`}
+          className={`mt-3 overflow-hidden rounded-lg border ${SYMBOL_DIVIDER}`}
         >
-          <TooltipTrigger
-            label="Revenue Forecasts"
-            tooltip={FORECAST_TOOLTIPS.revenue}
-            isDark={isDark}
-          />
-          <div className="mt-3 space-y-3">
-            {forecast.revenueForecasts.map((rev) => {
-              const hasActual = rev.actual !== undefined;
-              const surprise = hasActual
-                ? rev.actual! - rev.estimate
-                : undefined;
-              return (
-                <div
-                  key={rev.quarter}
-                  className={`flex items-center justify-between py-1 border-b last:border-b-0 ${
-                    isDark ? "border-gray-600" : "border-gray-200"
-                  }`}
-                >
-                  <span
-                    className={`text-sm ${isDark ? "text-gray-300" : "text-gray-700"}`}
-                  >
-                    {rev.quarter}
-                  </span>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <div
-                        className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-                      >
-                        Est: {formatCurrency(rev.estimate)}
-                      </div>
-                      {hasActual && (
-                        <div
-                          className={`text-xs font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-                        >
-                          Act: {formatCurrency(rev.actual!)}
-                        </div>
-                      )}
+          {forecast.revenueForecasts.map((rev, i) => {
+            const hasActual = rev.actual !== undefined;
+            const surprise = hasActual ? rev.actual! - rev.estimate : undefined;
+            return (
+              <div
+                key={rev.quarter}
+                className={`flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 sm:px-4 ${
+                  i > 0 ? `border-t ${SYMBOL_DIVIDER}` : ""
+                }`}
+              >
+                <span className={`text-sm font-medium ${SYMBOL_MUTED_TEXT}`}>
+                  {rev.quarter}
+                </span>
+                <div className="flex items-center gap-3">
+                  <div className="text-right text-xs">
+                    <div className={SYMBOL_SUBTLE_TEXT}>
+                      Est: {formatCurrency(rev.estimate)}
                     </div>
-                    {surprise !== undefined && surprise !== 0 && (
-                      <SurpriseIndicator surprise={surprise} isDark={isDark} />
+                    {hasActual && (
+                      <div
+                        className={`font-semibold ${
+                          isDark ? "text-stone-100" : "text-stone-900"
+                        }`}
+                      >
+                        Act: {formatCurrency(rev.actual!)}
+                      </div>
                     )}
                   </div>
+                  {surprise !== undefined && surprise !== 0 && (
+                    <SurpriseIndicator surprise={surprise} isDark={isDark} />
+                  )}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
         </div>
-      </div>
-    </div>
+      </section>
+    </SymbolTabShell>
   );
 }

@@ -151,7 +151,7 @@ describe("SeasonalHeatmap", () => {
     it("should apply gray for zero return", () => {
       renderWithTheme(mockSeasonalData);
       const cell = screen.getByText("0.0%");
-      expect(cell.closest("div")).toHaveClass("bg-gray-200");
+      expect(cell.closest("div")).toHaveClass("bg-stone-200");
     });
 
     it("should render a legend with color descriptions", () => {
@@ -223,7 +223,7 @@ describe("SeasonalHeatmap", () => {
       // The inner div should have ring-2 class when hovered
       const innerDiv = cell.closest("div.relative");
       expect(innerDiv).toHaveClass("ring-2");
-      expect(innerDiv).toHaveClass("ring-blue-400");
+      expect(innerDiv).toHaveClass("ring-stone-500");
     });
   });
 

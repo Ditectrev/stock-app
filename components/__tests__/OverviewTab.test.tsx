@@ -469,8 +469,7 @@ describe("OverviewTab", () => {
         const tooltipText = screen.getByText(
           /Market Capitalization is the total value/
         );
-        // The tooltip container is the parent of the text's parent (the "relative" div)
-        const tooltipContainer = tooltipText.parentElement?.parentElement;
+        const tooltipContainer = tooltipText.closest('[role="tooltip"]');
         expect(tooltipContainer).toHaveClass("absolute");
         expect(tooltipContainer).toHaveClass("z-10");
         expect(tooltipContainer).toHaveClass("rounded-lg");

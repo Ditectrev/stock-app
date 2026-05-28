@@ -2,8 +2,7 @@
 
 /**
  * TechnicalIndicatorsDisplay Component
- * Displays technical indicators with tooltips, color coding, and overall sentiment gauge.
- * Uses "overpriced", "underpriced", "fairly priced" language — never "Buy" or "Sell".
+ * Signal readout layout: sentiment strip + vertical indicator ledger.
  *
  * Requirements: 5.1, 5.3, 5.4, 5.5, 5.6
  */
@@ -11,6 +10,14 @@
 import { TechnicalIndicators } from "@/types";
 import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
+import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
+import {
+  SYMBOL_DIVIDER,
+  SYMBOL_HELP_BUTTON,
+  SYMBOL_MUTED_TEXT,
+  SYMBOL_PANEL_TITLE,
+  SYMBOL_TOOLTIP_SURFACE,
+} from "@/lib/symbol-ui";
 
 export interface TechnicalIndicatorsDisplayProps {
   indicators: TechnicalIndicators | null | undefined;
@@ -18,8 +25,9 @@ export interface TechnicalIndicatorsDisplayProps {
 
 type Signal = "overpriced" | "underpriced" | "fair";
 
-interface IndicatorCardData {
+interface IndicatorRowData {
   name: string;
+  shortName: string;
   tooltip: string;
   signal: Signal;
   values: { label: string; value: string }[];
@@ -37,42 +45,42 @@ const SENTIMENT_LABELS: Record<Signal, string> = {
   fair: "Overall: Appears Fairly Priced",
 };
 
-function getSignalColors(signal: Signal, isDark: boolean) {
+function getSignalAccent(signal: Signal, isDark: boolean) {
   switch (signal) {
     case "overpriced":
       return {
+        border: isDark ? "border-red-500/70" : "border-red-500",
         badge: isDark
-          ? "bg-red-900/60 text-red-300"
-          : "bg-red-100 text-red-700",
-        border: isDark ? "border-red-700" : "border-red-300",
-        dot: "bg-red-500",
+          ? "bg-red-950/50 text-red-300"
+          : "bg-red-50 text-red-700",
+        text: isDark ? "text-red-300" : "text-red-700",
       };
     case "underpriced":
       return {
+        border: isDark ? "border-green-500/70" : "border-green-600",
         badge: isDark
-          ? "bg-green-900/60 text-green-300"
-          : "bg-green-100 text-green-700",
-        border: isDark ? "border-green-700" : "border-green-300",
-        dot: "bg-green-500",
+          ? "bg-green-950/50 text-green-300"
+          : "bg-green-50 text-green-700",
+        text: isDark ? "text-green-300" : "text-green-700",
       };
-    case "fair":
     default:
       return {
+        border: isDark ? "border-stone-500" : "border-stone-400",
         badge: isDark
-          ? "bg-gray-700 text-gray-300"
-          : "bg-gray-100 text-gray-600",
-        border: isDark ? "border-gray-600" : "border-gray-300",
-        dot: "bg-gray-400",
+          ? "bg-stone-800 text-stone-300"
+          : "bg-stone-100 text-stone-700",
+        text: isDark ? "text-stone-300" : "text-stone-700",
       };
   }
 }
 
-function buildIndicatorCards(
+function buildIndicatorRows(
   indicators: TechnicalIndicators
-): IndicatorCardData[] {
+): IndicatorRowData[] {
   return [
     {
       name: "RSI (Relative Strength Index)",
+      shortName: "RSI",
       tooltip:
         "RSI measures the speed and magnitude of recent price changes on a scale of 0 to 100. Values above 70 may suggest the asset is overpriced, while values below 30 may suggest it is underpriced.",
       signal: indicators.rsi.signal,
@@ -80,6 +88,7 @@ function buildIndicatorCards(
     },
     {
       name: "MACD",
+      shortName: "MACD",
       tooltip:
         "Moving Average Convergence Divergence tracks the relationship between two moving averages of price. A positive histogram may suggest upward momentum, while a negative histogram may suggest downward momentum.",
       signal: indicators.macd.trend,
@@ -91,6 +100,7 @@ function buildIndicatorCards(
     },
     {
       name: "Moving Averages",
+      shortName: "Moving averages",
       tooltip:
         "Moving averages smooth out price data over a period. When the 50-day average is above the 200-day average, it may suggest an upward trend. When below, it may suggest a downward trend.",
       signal: indicators.movingAverages.signal,
@@ -101,6 +111,7 @@ function buildIndicatorCards(
     },
     {
       name: "Bollinger Bands",
+      shortName: "Bollinger",
       tooltip:
         "Bollinger Bands consist of a middle band (moving average) with upper and lower bands based on standard deviation. Prices near the upper band may indicate the asset is overpriced, while prices near the lower band may indicate it is underpriced.",
       signal: indicators.bollingerBands.signal,
@@ -121,108 +132,75 @@ export function TechnicalIndicatorsDisplay({
 
   if (!indicators) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      <SymbolTabShell
+        eyebrow="Market signals"
+        title="Technical Indicators"
+        ariaLabel="Technical Indicators"
       >
-        <h2
-          className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Technical Indicators
-        </h2>
-        <div className="space-y-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className={`h-24 rounded-lg animate-pulse ${isDark ? "bg-gray-700" : "bg-gray-200"}`}
-            />
-          ))}
-        </div>
-      </div>
+        <SymbolTabSkeleton blocks={4} />
+      </SymbolTabShell>
     );
   }
 
-  const cards = buildIndicatorCards(indicators);
-  const sentimentColors = getSignalColors(indicators.overallSentiment, isDark);
+  const rows = buildIndicatorRows(indicators);
+  const sentiment = getSignalAccent(indicators.overallSentiment, isDark);
 
   return (
-    <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-      role="region"
-      aria-label="Technical Indicators"
+    <SymbolTabShell
+      eyebrow="Market signals"
+      title="Technical Indicators"
+      ariaLabel="Technical Indicators"
     >
-      <h2
-        className={`text-lg font-semibold mb-3 sm:mb-4 lg:mb-5 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        Technical Indicators
-      </h2>
-
-      {/* Overall Sentiment Gauge */}
       <div
         data-testid="sentiment-gauge"
-        className={`mb-4 sm:mb-6 p-3 sm:p-4 lg:p-5 rounded-lg border-2 ${sentimentColors.border} ${
-          isDark ? "bg-gray-700/30" : "bg-gray-50"
-        }`}
+        className={`mb-6 flex flex-col gap-3 border-l-4 py-3 pl-4 sm:flex-row sm:items-center sm:justify-between ${sentiment.border}`}
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-          <div
-            className={`w-3 h-3 rounded-full flex-shrink-0 ${sentimentColors.dot}`}
-          />
-          <span
-            className={`text-sm sm:text-base font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-          >
-            {SENTIMENT_LABELS[indicators.overallSentiment]}
-          </span>
-          <span
-            className={`sm:ml-auto px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${sentimentColors.badge}`}
-          >
-            {SIGNAL_LABELS[indicators.overallSentiment]}
-          </span>
-        </div>
+        <p className={`text-sm font-semibold sm:text-base ${SYMBOL_PANEL_TITLE}`}>
+          {SENTIMENT_LABELS[indicators.overallSentiment]}
+        </p>
+        <span
+          className={`inline-flex w-fit rounded-md px-3 py-1 text-xs font-medium sm:text-sm ${sentiment.badge}`}
+        >
+          {SIGNAL_LABELS[indicators.overallSentiment]}
+        </span>
       </div>
 
-      {/* Indicator Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 lg:gap-5">
-        {cards.map((card) => (
-          <IndicatorCard key={card.name} card={card} isDark={isDark} />
+      <ul role="list">
+        {rows.map((row) => (
+          <IndicatorRow key={row.name} row={row} isDark={isDark} />
         ))}
-      </div>
-    </div>
+      </ul>
+    </SymbolTabShell>
   );
 }
 
-interface IndicatorCardProps {
-  card: IndicatorCardData;
+function IndicatorRow({
+  row,
+  isDark,
+}: {
+  row: IndicatorRowData;
   isDark: boolean;
-}
-
-function IndicatorCard({ card, isDark }: IndicatorCardProps) {
+}) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const colors = getSignalColors(card.signal, isDark);
+  const accent = getSignalAccent(row.signal, isDark);
 
   return (
-    <div
-      className={`relative p-4 rounded-lg border ${
-        isDark
-          ? "bg-gray-700/50 border-gray-600 hover:bg-gray-700"
-          : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-      } transition-colors`}
+    <li
+      className={`flex flex-col gap-3 border-stone-200 py-4 first:pt-0 last:pb-0 dark:border-stone-700 sm:flex-row sm:items-start sm:justify-between ${SYMBOL_DIVIDER} border-b last:border-b-0`}
     >
-      <div className="flex items-start justify-between mb-3">
+      <div className="min-w-0 flex-1">
         <div className="relative flex items-center gap-2">
           <span
-            className={`text-sm font-medium ${isDark ? "text-gray-200" : "text-gray-800"}`}
+            className={`text-sm font-medium ${
+              isDark ? "text-stone-100" : "text-stone-900"
+            }`}
           >
-            {card.name}
+            {row.name}
           </span>
           <button
             type="button"
-            className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs cursor-help
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                isDark
-                  ? "bg-gray-600 text-gray-300"
-                  : "bg-gray-200 text-gray-600"
-              }`}
-            aria-label={`More info about ${card.name}`}
+            className={SYMBOL_HELP_BUTTON}
+            aria-label={`More info about ${row.name}`}
             onMouseEnter={() => setShowTooltip(true)}
             onMouseLeave={() => setShowTooltip(false)}
             onFocus={() => setShowTooltip(true)}
@@ -230,45 +208,36 @@ function IndicatorCard({ card, isDark }: IndicatorCardProps) {
           >
             ?
           </button>
-
-          {/* Tooltip — positioned relative to the name row */}
           {showTooltip && (
             <div
               role="tooltip"
-              className={`absolute z-10 w-64 p-3 rounded-lg shadow-lg text-sm ${
-                isDark
-                  ? "bg-gray-900 text-gray-200 border border-gray-700"
-                  : "bg-white text-gray-700 border border-gray-200"
-              }`}
+              className={SYMBOL_TOOLTIP_SURFACE}
               style={{ top: "calc(100% + 6px)", left: 0 }}
             >
-              {card.tooltip}
+              {row.tooltip}
             </div>
           )}
         </div>
-        <span
-          className={`px-2 py-0.5 rounded-full text-xs font-medium ${colors.badge}`}
-        >
-          {SIGNAL_LABELS[card.signal]}
-        </span>
+        <dl className="mt-2 flex flex-wrap gap-x-6 gap-y-1">
+          {row.values.map((v) => (
+            <div key={v.label} className="flex items-baseline gap-2">
+              <dt className={`text-xs ${SYMBOL_MUTED_TEXT}`}>{v.label}</dt>
+              <dd
+                className={`font-mono text-sm font-semibold tabular-nums ${
+                  isDark ? "text-stone-100" : "text-stone-900"
+                }`}
+              >
+                {v.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
-
-      <div className="space-y-1">
-        {card.values.map((v) => (
-          <div key={v.label} className="flex justify-between items-center">
-            <span
-              className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
-            >
-              {v.label}
-            </span>
-            <span
-              className={`text-sm font-mono font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-            >
-              {v.value}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
+      <span
+        className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-medium ${accent.badge}`}
+      >
+        {SIGNAL_LABELS[row.signal]}
+      </span>
+    </li>
   );
 }

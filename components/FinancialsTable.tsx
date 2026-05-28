@@ -2,8 +2,7 @@
 
 /**
  * FinancialsTable Component
- * Displays financial facts, valuation, growth, and profitability metrics
- * with tooltips and color-coded favorable/unfavorable values.
+ * Ledger-style fundamentals view (dense rows, single instrument panel).
  *
  * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
@@ -11,6 +10,14 @@
 import { FinancialData } from "@/types";
 import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
+import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
+import {
+  SYMBOL_DIVIDER,
+  SYMBOL_HELP_BUTTON,
+  SYMBOL_MUTED_TEXT,
+  SYMBOL_SUBTLE_TEXT,
+  SYMBOL_TOOLTIP_SURFACE,
+} from "@/lib/symbol-ui";
 
 export interface FinancialsTableProps {
   financials: FinancialData | null | undefined;
@@ -34,27 +41,11 @@ interface MetricSection {
 function getFavorabilityColors(favorability: Favorability, isDark: boolean) {
   switch (favorability) {
     case "favorable":
-      return {
-        text: isDark ? "text-green-400" : "text-green-600",
-        badge: isDark
-          ? "bg-green-900/60 text-green-300"
-          : "bg-green-100 text-green-700",
-      };
+      return isDark ? "text-green-400" : "text-green-600";
     case "unfavorable":
-      return {
-        text: isDark ? "text-red-400" : "text-red-600",
-        badge: isDark
-          ? "bg-red-900/60 text-red-300"
-          : "bg-red-100 text-red-700",
-      };
-    case "neutral":
+      return isDark ? "text-red-400" : "text-red-600";
     default:
-      return {
-        text: isDark ? "text-gray-300" : "text-gray-700",
-        badge: isDark
-          ? "bg-gray-700 text-gray-300"
-          : "bg-gray-100 text-gray-600",
-      };
+      return isDark ? "text-gray-300" : "text-gray-700";
   }
 }
 
@@ -237,130 +228,176 @@ export function FinancialsTable({ financials }: FinancialsTableProps) {
 
   if (!financials) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      <SymbolTabShell
+        eyebrow="Fundamentals"
+        title="Financials"
+        ariaLabel="Financials"
       >
-        <h2
-          className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Financials
-        </h2>
-        <div className="space-y-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className={`h-24 rounded-lg animate-pulse ${isDark ? "bg-gray-700" : "bg-gray-200"}`}
-            />
-          ))}
-        </div>
-      </div>
+        <SymbolTabSkeleton blocks={4} />
+      </SymbolTabShell>
     );
   }
 
   const sections = buildSections(financials);
+  const [keyFacts, ...restSections] = sections;
 
   return (
-    <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-      role="region"
-      aria-label="Financial data"
+    <SymbolTabShell
+      eyebrow="Fundamentals"
+      title="Financials"
+      ariaLabel="Financial data"
     >
-      <h2
-        className={`text-lg font-semibold mb-4 sm:mb-6 ${isDark ? "text-white" : "text-gray-900"}`}
+      {/* Featured key facts strip */}
+      <section
+        className={`rounded-lg border p-4 sm:p-5 ${SYMBOL_DIVIDER} bg-stone-50/80 dark:bg-stone-900/40`}
+        aria-label={keyFacts.title}
       >
-        Financials
-      </h2>
+        <SectionHeading section={keyFacts} isDark={isDark} compact />
+        <dl className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+          {keyFacts.metrics.map((metric) => (
+            <MetricCell
+              key={metric.label}
+              metric={metric}
+              isDark={isDark}
+              withTooltip
+            />
+          ))}
+        </dl>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
-        {sections.map((section) => (
-          <SectionCard key={section.title} section={section} isDark={isDark} />
+      {/* Ledger columns for remaining sections */}
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+        {restSections.map((section) => (
+          <LedgerSection
+            key={section.title}
+            section={section}
+            isDark={isDark}
+          />
         ))}
       </div>
-    </div>
+    </SymbolTabShell>
   );
 }
 
-interface SectionCardProps {
+function SectionHeading({
+  section,
+  isDark,
+  compact = false,
+}: {
   section: MetricSection;
   isDark: boolean;
-}
-
-function SectionCard({ section, isDark }: SectionCardProps) {
+  compact?: boolean;
+}) {
   const [showSectionTooltip, setSectionTooltip] = useState(false);
 
   return (
     <div
-      className={`p-4 rounded-lg border ${
-        isDark ? "bg-gray-700/50 border-gray-600" : "bg-gray-50 border-gray-200"
-      }`}
+      className="relative flex cursor-help items-center gap-2"
+      onMouseEnter={() => setSectionTooltip(true)}
+      onMouseLeave={() => setSectionTooltip(false)}
     >
-      <div
-        className="relative flex items-center gap-2 cursor-help mb-3"
-        onMouseEnter={() => setSectionTooltip(true)}
-        onMouseLeave={() => setSectionTooltip(false)}
+      <h3
+        className={`font-semibold ${compact ? "text-sm" : "text-base"} ${
+          isDark ? "text-stone-100" : "text-stone-900"
+        }`}
       >
-        <h3
-          className={`text-base font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          {section.title}
-        </h3>
-        <span
-          className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs ${
-            isDark ? "bg-gray-600 text-gray-300" : "bg-gray-200 text-gray-600"
-          }`}
-        >
-          ?
-        </span>
-        {showSectionTooltip && (
-          <div
-            className={`absolute z-10 w-64 p-3 rounded-lg shadow-lg text-sm ${
-              isDark
-                ? "bg-gray-900 text-gray-200 border border-gray-700"
-                : "bg-white text-gray-700 border border-gray-200"
-            }`}
-            style={{ top: "calc(100% + 6px)", left: 0 }}
-          >
-            {section.tooltip}
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        {section.metrics.map((metric) => (
-          <MetricRow key={metric.label} metric={metric} isDark={isDark} />
-        ))}
-      </div>
+        {section.title}
+      </h3>
+      <span className={SYMBOL_HELP_BUTTON} aria-hidden>
+        ?
+      </span>
+      {showSectionTooltip && (
+        <div className={SYMBOL_TOOLTIP_SURFACE} style={{ top: "calc(100% + 6px)", left: 0 }}>
+          {section.tooltip}
+        </div>
+      )}
     </div>
   );
 }
 
-interface MetricRowProps {
-  metric: MetricItem;
+function LedgerSection({
+  section,
+  isDark,
+}: {
+  section: MetricSection;
   isDark: boolean;
+}) {
+  return (
+    <section
+      className={`border-t pt-5 lg:border-t-0 lg:pt-0 lg:border-l lg:pl-6 first:lg:border-l-0 first:lg:pl-0 ${SYMBOL_DIVIDER}`}
+      aria-label={section.title}
+    >
+      <SectionHeading section={section} isDark={isDark} />
+      <div className="mt-3 space-y-0">
+        {section.metrics.map((metric) => (
+          <MetricRow key={metric.label} metric={metric} isDark={isDark} />
+        ))}
+      </div>
+    </section>
+  );
 }
 
-function MetricRow({ metric, isDark }: MetricRowProps) {
+function MetricCell({
+  metric,
+  isDark,
+  withTooltip = false,
+}: {
+  metric: MetricItem;
+  isDark: boolean;
+  withTooltip?: boolean;
+}) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const colors = getFavorabilityColors(metric.favorability, isDark);
+
+  return (
+    <div>
+      <dt className={`flex items-center gap-2 text-xs font-medium ${SYMBOL_SUBTLE_TEXT}`}>
+        {metric.label}
+        {withTooltip && (
+          <>
+            <button
+              type="button"
+              className={`${SYMBOL_HELP_BUTTON} h-4 w-4 text-[10px]`}
+              aria-label={`More info about ${metric.label}`}
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+              onFocus={() => setShowTooltip(true)}
+              onBlur={() => setShowTooltip(false)}
+            >
+              ?
+            </button>
+            {showTooltip && (
+              <div
+                role="tooltip"
+                className={SYMBOL_TOOLTIP_SURFACE}
+                style={{ top: "calc(100% + 6px)", left: 0 }}
+              >
+                {metric.tooltip}
+              </div>
+            )}
+          </>
+        )}
+      </dt>
+      <dd className={`relative mt-1 font-mono text-lg font-semibold tabular-nums ${colors}`}>
+        {metric.value}
+      </dd>
+    </div>
+  );
+}
+
+function MetricRow({ metric, isDark }: { metric: MetricItem; isDark: boolean }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const colors = getFavorabilityColors(metric.favorability, isDark);
 
   return (
     <div
-      className={`flex items-center justify-between py-2 border-b last:border-b-0 ${
-        isDark ? "border-gray-600" : "border-gray-200"
-      }`}
+      className={`flex items-center justify-between gap-3 border-b py-2.5 last:border-b-0 ${SYMBOL_DIVIDER}`}
     >
-      <div className="relative flex items-center gap-2">
-        <span
-          className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}
-        >
-          {metric.label}
-        </span>
+      <div className="relative flex min-w-0 items-center gap-2">
+        <span className={`text-sm ${SYMBOL_MUTED_TEXT}`}>{metric.label}</span>
         <button
           type="button"
-          className={`flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] cursor-help
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-              isDark ? "bg-gray-600 text-gray-300" : "bg-gray-200 text-gray-600"
-            }`}
+          className={`${SYMBOL_HELP_BUTTON} h-4 w-4 text-[10px]`}
           aria-label={`More info about ${metric.label}`}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
@@ -372,18 +409,14 @@ function MetricRow({ metric, isDark }: MetricRowProps) {
         {showTooltip && (
           <div
             role="tooltip"
-            className={`absolute z-10 w-64 p-3 rounded-lg shadow-lg text-sm ${
-              isDark
-                ? "bg-gray-900 text-gray-200 border border-gray-700"
-                : "bg-white text-gray-700 border border-gray-200"
-            }`}
+            className={SYMBOL_TOOLTIP_SURFACE}
             style={{ top: "calc(100% + 6px)", left: 0 }}
           >
             {metric.tooltip}
           </div>
         )}
       </div>
-      <span className={`text-sm font-mono font-semibold ${colors.text}`}>
+      <span className={`shrink-0 font-mono text-sm font-semibold tabular-nums ${colors}`}>
         {metric.value}
       </span>
     </div>

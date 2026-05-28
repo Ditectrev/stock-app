@@ -2,9 +2,7 @@
 
 /**
  * SeasonalHeatmap Component
- * Displays a heatmap of monthly returns across years.
- * Months as columns, years as rows. Color-coded green/red by return magnitude.
- * Shows return percentage on hover and includes a past-performance disclaimer.
+ * Calendar-grid seasonality view inside instrument panel.
  *
  * Requirements: 7.1, 7.3, 7.4
  */
@@ -17,6 +15,11 @@ import {
   getReturnForCell,
   getMonthLabel,
 } from "@/lib/seasonal-utils";
+import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
+import {
+  SYMBOL_DIVIDER,
+  SYMBOL_SUBTLE_TEXT,
+} from "@/lib/symbol-ui";
 
 export interface SeasonalHeatmapProps {
   data: SeasonalData | null | undefined;
@@ -28,13 +31,9 @@ interface HoveredCell {
   value: number;
 }
 
-/**
- * Maps a return percentage to a background color class.
- * Green for positive, red for negative, intensity scales with magnitude.
- */
 function getCellColor(value: number | undefined, isDark: boolean): string {
   if (value === undefined) {
-    return isDark ? "bg-gray-700" : "bg-gray-100";
+    return isDark ? "bg-stone-700" : "bg-stone-100";
   }
 
   const abs = Math.abs(value);
@@ -51,16 +50,16 @@ function getCellColor(value: number | undefined, isDark: boolean): string {
     return isDark ? "bg-red-800" : "bg-red-200";
   }
 
-  return isDark ? "bg-gray-600" : "bg-gray-200";
+  return isDark ? "bg-stone-600" : "bg-stone-200";
 }
 
 function getCellTextColor(value: number | undefined, isDark: boolean): string {
   if (value === undefined) {
-    return isDark ? "text-gray-300" : "text-gray-500";
+    return isDark ? "text-stone-300" : "text-stone-500";
   }
   const abs = Math.abs(value);
   if (abs >= 2) return "text-white";
-  return isDark ? "text-gray-200" : "text-gray-800";
+  return isDark ? "text-stone-200" : "text-stone-800";
 }
 
 export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
@@ -71,78 +70,55 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
   const { monthlyReturns, averageByMonth, years } = aggregateSeasonalData(data);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
-  // Loading / empty state
   if (!data) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      <SymbolTabShell
+        eyebrow="Seasonality"
+        title="Seasonal Patterns"
+        ariaLabel="Seasonal Patterns"
       >
-        <h2
-          className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Seasonal Patterns
-        </h2>
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className={`h-10 rounded animate-pulse ${isDark ? "bg-gray-700" : "bg-gray-200"}`}
-            />
-          ))}
-        </div>
-      </div>
+        <SymbolTabSkeleton blocks={3} blockClassName="h-10" />
+      </SymbolTabShell>
     );
   }
 
   if (years.length === 0) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      <SymbolTabShell
+        eyebrow="Seasonality"
+        title="Seasonal Patterns"
+        ariaLabel="Seasonal Patterns"
       >
-        <h2
-          className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Seasonal Patterns
-        </h2>
-        <p className={`text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}>
+        <p className={`text-sm ${SYMBOL_SUBTLE_TEXT}`}>
           No seasonal data available.
         </p>
-      </div>
+      </SymbolTabShell>
     );
   }
 
   return (
-    <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+    <SymbolTabShell
+      eyebrow="Seasonality"
+      title="Seasonal Patterns"
+      ariaLabel="Seasonal returns heatmap by month and year"
     >
-      <h2
-        className={`text-lg font-semibold mb-3 sm:mb-4 lg:mb-5 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        Seasonal Patterns
-      </h2>
-
-      {/* Heatmap grid */}
-      <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+      <div className="-mx-2 overflow-x-auto px-2 sm:mx-0 sm:px-0">
         <table
-          className="w-full border-collapse text-xs md:text-sm lg:text-base"
+          className="w-full border-collapse text-xs md:text-sm"
           role="grid"
           aria-label="Seasonal returns heatmap by month and year"
         >
           <thead>
             <tr>
               <th
-                className={`px-2 py-2 text-left font-medium ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
+                className={`px-2 py-2 text-left text-[0.65rem] font-semibold uppercase tracking-wider ${SYMBOL_SUBTLE_TEXT}`}
               >
                 Year
               </th>
               {months.map((m) => (
                 <th
                   key={m}
-                  className={`px-2 py-2 text-center font-medium ${
-                    isDark ? "text-gray-300" : "text-gray-500"
-                  }`}
+                  className={`px-1 py-2 text-center text-[0.65rem] font-semibold uppercase tracking-wider ${SYMBOL_SUBTLE_TEXT}`}
                 >
                   {getMonthLabel(m)}
                 </th>
@@ -153,8 +129,8 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
             {years.map((year) => (
               <tr key={year}>
                 <td
-                  className={`px-2 py-1 font-medium ${
-                    isDark ? "text-gray-300" : "text-gray-700"
+                  className={`px-2 py-1 text-sm font-medium ${
+                    isDark ? "text-stone-300" : "text-stone-700"
                   }`}
                 >
                   {year}
@@ -176,22 +152,23 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
                       onMouseLeave={() => setHovered(null)}
                     >
                       <div
-                        className={`relative rounded px-2 py-1.5 text-center transition-all ${getCellColor(
+                        className={`relative rounded px-1.5 py-1.5 text-center transition-all sm:px-2 ${getCellColor(
                           value,
                           isDark
                         )} ${getCellTextColor(value, isDark)} ${
-                          isHovered ? "ring-2 ring-blue-400 z-10" : ""
+                          isHovered
+                            ? "ring-2 ring-stone-500 ring-offset-1 dark:ring-stone-400"
+                            : ""
                         }`}
                       >
                         {value !== undefined ? `${value.toFixed(1)}%` : "—"}
 
-                        {/* Tooltip on hover */}
                         {isHovered && value !== undefined && (
                           <div
-                            className={`absolute z-20 w-40 p-2 rounded shadow-lg text-xs ${
+                            className={`absolute z-20 w-40 rounded-lg border p-2 text-xs shadow-lg ${
                               isDark
-                                ? "bg-gray-900 text-gray-200 border border-gray-700"
-                                : "bg-white text-gray-700 border border-gray-200"
+                                ? "border-stone-600 bg-stone-900 text-stone-200"
+                                : "border-stone-200 bg-white text-stone-700"
                             }`}
                             style={{
                               bottom: "calc(100% + 4px)",
@@ -228,13 +205,10 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
               </tr>
             ))}
 
-            {/* Average row */}
-            <tr
-              className={`border-t-2 ${isDark ? "border-gray-600" : "border-gray-300"}`}
-            >
+            <tr className={`border-t-2 ${SYMBOL_DIVIDER}`}>
               <td
-                className={`px-2 py-1 font-semibold ${
-                  isDark ? "text-gray-200" : "text-gray-800"
+                className={`px-2 py-1 text-sm font-semibold ${
+                  isDark ? "text-stone-200" : "text-stone-800"
                 }`}
               >
                 Avg
@@ -244,7 +218,7 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
                 return (
                   <td key={month} className="px-0.5 py-0.5">
                     <div
-                      className={`rounded px-2 py-1.5 text-center font-semibold ${getCellColor(
+                      className={`rounded px-1.5 py-1.5 text-center text-sm font-semibold sm:px-2 ${getCellColor(
                         avg,
                         isDark
                       )} ${getCellTextColor(avg, isDark)}`}
@@ -259,53 +233,37 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
         </table>
       </div>
 
-      {/* Legend */}
-      <div className="mt-3 sm:mt-4 flex items-center gap-2 sm:gap-4 text-xs flex-wrap">
-        <span className={isDark ? "text-gray-300" : "text-gray-500"}>
-          Legend:
-        </span>
+      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs sm:gap-4">
+        <span className={SYMBOL_SUBTLE_TEXT}>Legend:</span>
         <div className="flex items-center gap-1">
           <div
-            className={`w-4 h-4 rounded ${isDark ? "bg-green-600" : "bg-green-500"}`}
+            className={`h-3.5 w-3.5 rounded ${isDark ? "bg-green-600" : "bg-green-500"}`}
           />
-          <span className={isDark ? "text-gray-300" : "text-gray-500"}>
-            Strong positive
-          </span>
+          <span className={SYMBOL_SUBTLE_TEXT}>Strong positive</span>
         </div>
         <div className="flex items-center gap-1">
           <div
-            className={`w-4 h-4 rounded ${isDark ? "bg-green-800" : "bg-green-200"}`}
+            className={`h-3.5 w-3.5 rounded ${isDark ? "bg-green-800" : "bg-green-200"}`}
           />
-          <span className={isDark ? "text-gray-300" : "text-gray-500"}>
-            Mild positive
-          </span>
+          <span className={SYMBOL_SUBTLE_TEXT}>Mild positive</span>
         </div>
         <div className="flex items-center gap-1">
           <div
-            className={`w-4 h-4 rounded ${isDark ? "bg-red-800" : "bg-red-200"}`}
+            className={`h-3.5 w-3.5 rounded ${isDark ? "bg-red-800" : "bg-red-200"}`}
           />
-          <span className={isDark ? "text-gray-300" : "text-gray-500"}>
-            Mild negative
-          </span>
+          <span className={SYMBOL_SUBTLE_TEXT}>Mild negative</span>
         </div>
         <div className="flex items-center gap-1">
           <div
-            className={`w-4 h-4 rounded ${isDark ? "bg-red-600" : "bg-red-500"}`}
+            className={`h-3.5 w-3.5 rounded ${isDark ? "bg-red-600" : "bg-red-500"}`}
           />
-          <span className={isDark ? "text-gray-300" : "text-gray-500"}>
-            Strong negative
-          </span>
+          <span className={SYMBOL_SUBTLE_TEXT}>Strong negative</span>
         </div>
       </div>
 
-      {/* Disclaimer - Requirement 7.3 */}
-      <p
-        className={`mt-4 text-xs italic ${
-          isDark ? "text-gray-300" : "text-gray-500"
-        }`}
-      >
+      <p className={`mt-4 text-xs italic ${SYMBOL_SUBTLE_TEXT}`}>
         Past seasonality does not guarantee future performance
       </p>
-    </div>
+    </SymbolTabShell>
   );
 }
