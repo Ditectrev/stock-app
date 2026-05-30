@@ -9,10 +9,7 @@ import {
   InsightPanelGate,
   InsightPanelHeader,
 } from "@/components/InsightPanel";
-import {
-  HOME_INSTRUMENT_PANEL,
-  HOME_PRIMARY_BUTTON,
-} from "@/lib/home-ui";
+import { HOME_INSTRUMENT_PANEL, HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
 
 interface StockOfTheDayPanelProps {
