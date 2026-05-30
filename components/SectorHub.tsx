@@ -13,6 +13,15 @@ import { useTheme } from "@/lib/theme-context";
 import { SectorData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import {
+  HOME_CHIP,
+  HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
+  HOME_PANEL_TITLE,
+  HOME_SECTION_LABEL,
+  HOME_SUBTLE_TEXT,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 type TimePeriod = "1D" | "1W" | "1M" | "3M" | "1Y" | "5Y" | "YTD" | "Max";
 type SortField = "sector" | "changePercent";
@@ -135,10 +144,7 @@ export function SectorHub({
   // --- Loading ---
   if (loading) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="sector-hub-loading"
-      >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="sector-hub-loading">
         <LoadingSpinner className="py-8" />
       </div>
     );
@@ -147,10 +153,7 @@ export function SectorHub({
   // --- Error ---
   if (error) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="sector-hub-error"
-      >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="sector-hub-error">
         <ErrorMessage
           type="api"
           message={error}
@@ -172,29 +175,20 @@ export function SectorHub({
 
   return (
     <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className={HOME_INSTRUMENT_PANEL}
       data-testid="sector-hub"
       role="region"
       aria-label="Sectors Hub"
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-3">
-        <h3
-          className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Sectors Hub
-        </h3>
+      <header className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className={HOME_SECTION_LABEL}>Market structure</p>
+          <h2 className={`mt-1 ${HOME_PANEL_TITLE}`}>Sectors</h2>
+        </div>
         <div className="flex items-center gap-2">
-          {/* Sort toggle */}
           <button
             onClick={() => handleSort("changePercent")}
-            className={`text-xs px-3 py-2 rounded min-h-[36px] ${
-              sortField === "changePercent"
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300"
-                  : "bg-gray-100 text-gray-600"
-            }`}
+            className={`text-xs px-3 py-2 rounded min-h-[36px] ${homeChipClasses(sortField === "changePercent")}`}
             data-testid="sort-performance"
             aria-label={`Sort by performance ${sortDirection === "asc" ? "ascending" : "descending"}`}
           >
@@ -207,13 +201,7 @@ export function SectorHub({
           </button>
           <button
             onClick={() => handleSort("sector")}
-            className={`text-xs px-3 py-2 rounded min-h-[36px] ${
-              sortField === "sector"
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300"
-                  : "bg-gray-100 text-gray-600"
-            }`}
+            className={`text-xs px-3 py-2 rounded min-h-[36px] ${homeChipClasses(sortField === "sector")}`}
             data-testid="sort-name"
             aria-label={`Sort by name ${sortDirection === "asc" ? "ascending" : "descending"}`}
           >
@@ -225,7 +213,7 @@ export function SectorHub({
               : ""}
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Time period selector */}
       <div
@@ -238,13 +226,7 @@ export function SectorHub({
           <button
             key={period}
             onClick={() => setTimePeriod(period)}
-            className={`text-xs px-2.5 py-2 rounded min-h-[36px] min-w-[36px] flex items-center justify-center ${
-              timePeriod === period
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            className={`${HOME_CHIP} ${homeChipClasses(timePeriod === period)}`}
             data-testid={`period-${period}`}
           >
             {period}
@@ -271,14 +253,10 @@ export function SectorHub({
           return (
             <div
               key={sector.sector}
-              className={`relative p-3 sm:p-3 rounded-lg cursor-pointer transition-all min-h-[44px] ${
+              className={`relative min-h-[44px] cursor-pointer rounded-lg p-3 transition-all ${
                 isSelected
-                  ? isDark
-                    ? "ring-2 ring-blue-500 bg-gray-700"
-                    : "ring-2 ring-blue-500 bg-blue-50"
-                  : isDark
-                    ? "bg-gray-700/50 hover:bg-gray-700"
-                    : "bg-gray-50 hover:bg-gray-100"
+                  ? "bg-stone-100 ring-2 ring-stone-500 dark:bg-stone-700"
+                  : "bg-stone-50 hover:bg-stone-100 dark:bg-stone-900/40 dark:hover:bg-stone-800/60"
               }`}
               data-testid={`sector-${sector.sector.replace(/\s+/g, "-")}`}
               onClick={() => toggleSectorComparison(sector.sector)}
@@ -340,7 +318,7 @@ export function SectorHub({
             </h4>
             <button
               onClick={() => setSelectedSectors([])}
-              className="text-xs text-blue-500 hover:underline"
+              className={`text-xs text-stone-600 hover:underline dark:text-stone-300`}
               data-testid="clear-comparison"
             >
               Clear

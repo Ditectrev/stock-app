@@ -13,6 +13,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import {
+  HOME_CHIP,
+  HOME_MUTED_TEXT,
+  HOME_SUBTLE_TEXT,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 export type HeatmapTimePeriod =
   | "1D"
@@ -184,10 +190,7 @@ export function HeatmapComponent({
   // --- Loading state ---
   if (loading) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="heatmap-loading"
-      >
+      <div className="py-8" data-testid="heatmap-loading">
         <LoadingSpinner className="py-8" />
       </div>
     );
@@ -196,13 +199,8 @@ export function HeatmapComponent({
   // --- Empty state ---
   if (!data || data.length === 0) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="heatmap-empty"
-      >
-        <p
-          className={`text-center ${isDark ? "text-gray-300" : "text-gray-500"}`}
-        >
+      <div className="py-8" data-testid="heatmap-empty">
+        <p className={`text-center ${HOME_SUBTLE_TEXT}`}>
           No heatmap data available.
         </p>
       </div>
@@ -211,7 +209,7 @@ export function HeatmapComponent({
 
   return (
     <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className="border-t border-stone-200 pt-4 sm:pt-6 dark:border-stone-700"
       data-testid="heatmap"
       role="region"
       aria-label="Market heatmap"
@@ -227,13 +225,7 @@ export function HeatmapComponent({
           <button
             key={period}
             data-testid={`heatmap-period-${period}`}
-            className={`px-3 py-2 text-xs font-medium rounded transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
-              timePeriod === period
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-            }`}
+            className={`${HOME_CHIP} ${homeChipClasses(timePeriod === period)}`}
             aria-pressed={timePeriod === period}
             onClick={() => onTimePeriodChange?.(period)}
           >
@@ -260,13 +252,7 @@ export function HeatmapComponent({
             <button
               key={field}
               data-testid={`heatmap-sort-${field}`}
-              className={`px-3 py-2 text-xs font-medium rounded transition-colors min-h-[36px] ${
-                sortField === field
-                  ? "bg-blue-600 text-white"
-                  : isDark
-                    ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-              }`}
+              className={`${HOME_CHIP} ${homeChipClasses(sortField === field)}`}
               aria-pressed={sortField === field}
               onClick={() => handleSortClick(field)}
             >
@@ -278,10 +264,8 @@ export function HeatmapComponent({
 
         <select
           data-testid="heatmap-sector-filter"
-          className={`px-3 py-2 text-xs font-medium rounded transition-colors min-h-[36px] ${
-            isDark
-              ? "bg-gray-700 text-gray-300 border-gray-600"
-              : "bg-gray-200 text-gray-600 border-gray-300"
+          className={`${HOME_CHIP} border ${homeChipClasses(false)} ${
+            isDark ? "border-stone-600" : "border-stone-200"
           }`}
           value={sectorFilter ?? ""}
           onChange={(e) => onSectorFilterChange?.(e.target.value)}

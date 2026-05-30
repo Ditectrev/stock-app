@@ -165,14 +165,14 @@ describe("ETFHeatmap", () => {
     render(<ETFHeatmap />);
     const allBtn = screen.getByTestId("etf-category-all");
     expect(allBtn.getAttribute("aria-pressed")).toBe("true");
-    expect(allBtn.className).toContain("bg-blue-600");
+    expect(allBtn.className).toContain("bg-stone-900");
 
     fireEvent.click(screen.getByTestId("etf-category-technology"));
 
     await waitFor(() => {
       const techBtn = screen.getByTestId("etf-category-technology");
       expect(techBtn.getAttribute("aria-pressed")).toBe("true");
-      expect(techBtn.className).toContain("bg-blue-600");
+      expect(techBtn.className).toContain("bg-stone-900");
     });
 
     expect(

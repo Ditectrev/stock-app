@@ -11,6 +11,14 @@ import {
 } from "@/components/InsightPanel";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
+import {
+  HOME_CALLOUT,
+  HOME_FACTOR_GROUP,
+  HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 interface AIPredictionPanelProps {
   prediction: AIPredictionReport | null;
@@ -31,12 +39,10 @@ function RecommendationBadge({
       ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
       : recommendationValue === "sell"
         ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
-        : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300";
+        : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300";
 
   return (
-    <span
-      className={`rounded-full px-2.5 py-1 text-xs font-semibold ${styles}`}
-    >
+    <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${styles}`}>
       {recommendationValue.toUpperCase()}
     </span>
   );
@@ -80,12 +86,12 @@ function FactorGroup({
   const shellClass =
     tone === "risk"
       ? "rounded-lg border border-amber-200/80 bg-amber-50/70 p-3 dark:border-amber-900/80 dark:bg-amber-950/30"
-      : "rounded-lg border border-gray-200 bg-gray-50/70 p-3 dark:border-gray-700 dark:bg-gray-900/30";
+      : HOME_FACTOR_GROUP;
 
   const headingClass =
     tone === "risk"
       ? "mb-2 text-sm font-semibold text-amber-900 dark:text-amber-200"
-      : "mb-2 text-sm font-semibold text-gray-900 dark:text-gray-100";
+      : `mb-2 text-sm font-semibold text-stone-900 dark:text-stone-100`;
 
   return (
     <div className={shellClass}>
@@ -94,10 +100,12 @@ function FactorGroup({
       <div className="space-y-3">
         {entries.map(({ section, items }) => (
           <div key={section!.id}>
-            <p className="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            <p
+              className={`text-xs font-medium uppercase tracking-wide ${HOME_SUBTLE_TEXT}`}
+            >
               {section!.label}
             </p>
-            <ul className="mt-1 space-y-1 text-sm text-gray-700 dark:text-gray-300">
+            <ul className={`mt-1 space-y-1 text-sm ${HOME_MUTED_TEXT}`}>
               {items.map((item, index) => (
                 <li key={`${section!.id}-${index}`} className="flex gap-2">
                   <span aria-hidden="true" className="mt-1 text-xs">
@@ -121,7 +129,7 @@ function LockedGate({ pricingTier }: { pricingTier?: PricingTier | null }) {
       message={getAiSubscriptionGateMessage(pricingTier ?? undefined)}
       ctaHref="/pricing"
       ctaLabel="Upgrade to unlock"
-      buttonClassName="inline-flex items-center rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300"
+      buttonClassName={HOME_PRIMARY_BUTTON}
     />
   );
 }
@@ -141,7 +149,7 @@ export function AIPredictionPanel({
 
   return (
     <InsightPanel>
-      <div className="relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
+      <div className={`relative ${HOME_INSTRUMENT_PANEL}`}>
         {showLockedGateOnly ? (
           <LockedGate pricingTier={pricingTier} />
         ) : (
@@ -161,7 +169,9 @@ export function AIPredictionPanel({
                       <RecommendationBadge
                         recommendation={prediction.recommendation}
                       />
-                      <span className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                      <span
+                        className={`flex items-center text-xs ${HOME_SUBTLE_TEXT}`}
+                      >
                         <span>
                           Confidence {Math.round(prediction.confidence * 100)}%
                         </span>
@@ -173,14 +183,14 @@ export function AIPredictionPanel({
               />
 
               {loading && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
                   Generating AI prediction...
                 </p>
               )}
 
               {!loading && prediction && (
                 <div className="space-y-4">
-                  <div className="rounded-lg border border-gray-200 bg-gray-50/70 p-3 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-900/30 dark:text-gray-200">
+                  <div className={`${HOME_CALLOUT} text-sm`}>
                     {prediction.summary}
                   </div>
 
@@ -197,11 +207,11 @@ export function AIPredictionPanel({
                   </div>
 
                   {symbolSpecific && symbolSpecific.bullets.length > 0 && (
-                    <div className="rounded-lg border border-indigo-200 bg-indigo-50/70 p-3 dark:border-indigo-900/80 dark:bg-indigo-950/30">
-                      <p className="mb-1 text-sm font-semibold text-indigo-900 dark:text-indigo-200">
+                    <div className="rounded-lg border border-stone-200/90 bg-stone-50/70 p-3 dark:border-stone-700 dark:bg-stone-900/30">
+                      <p className="mb-1 text-sm font-semibold text-stone-900 dark:text-stone-100">
                         {symbolSpecific.title}
                       </p>
-                      <ul className="space-y-1 text-sm text-indigo-900/90 dark:text-indigo-200/90">
+                      <ul className={`space-y-1 text-sm ${HOME_MUTED_TEXT}`}>
                         {symbolSpecific.bullets.map((item, index) => (
                           <li
                             key={`${symbolSpecific.title}-${index}`}
@@ -219,9 +229,9 @@ export function AIPredictionPanel({
 
               {!loading && !prediction && !locked && error && (
                 <div
-                  className={`rounded-md border px-3 py-3 text-sm ${
+                  className={`rounded-lg border px-3 py-3 text-sm ${
                     isMissingByokApiKeyMessage(error)
-                      ? "border-blue-300 bg-blue-50 text-blue-900 dark:border-blue-600 dark:bg-blue-950/50 dark:text-blue-100"
+                      ? "border-stone-300 bg-stone-50 text-stone-900 dark:border-stone-600 dark:bg-stone-900/40 dark:text-stone-100"
                       : "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
                   }`}
                 >
@@ -232,10 +242,7 @@ export function AIPredictionPanel({
                         Add your API key on the Profile page under API keys,
                         then pick the same provider as your explanation model.
                       </p>
-                      <Link
-                        href="/profile"
-                        className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
-                      >
+                      <Link href="/profile" className={HOME_PRIMARY_BUTTON}>
                         Open profile
                       </Link>
                     </div>
@@ -244,21 +251,21 @@ export function AIPredictionPanel({
               )}
 
               {!loading && !prediction && !locked && !error && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
                   No AI prediction returned yet. Try another symbol or refresh.
                 </p>
               )}
             </div>
 
             {showLockedOverlay && (
-              <div className="absolute inset-0 rounded-lg bg-white/75 text-gray-900 dark:bg-gray-900/80 dark:text-gray-100">
+              <div className="absolute inset-0 rounded-xl bg-white/75 text-stone-900 backdrop-blur-[1px] dark:bg-stone-950/80 dark:text-stone-100">
                 <InsightPanelGate
                   message={gateMessage}
                   ctaHref="/pricing"
                   ctaLabel="Upgrade to unlock"
                   align="center"
                   overlay
-                  buttonClassName="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                  buttonClassName={HOME_PRIMARY_BUTTON}
                 />
               </div>
             )}

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { Navigation } from "@/components/Navigation";
+import { HOME_PAGE_BACKGROUND } from "@/lib/home-ui";
 
 const Footer = dynamic(
   () => import("@/components/Footer").then((m) => m.Footer),
@@ -26,7 +27,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen ${HOME_PAGE_BACKGROUND}`}>
       <Suspense fallback={<NavigationFallback />}>
         <Navigation />
       </Suspense>

@@ -10,6 +10,15 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import {
+  HOME_INPUT,
+  HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+  HOME_SECTION_LABEL,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 export type AuthView = "providers" | "email";
 
@@ -188,24 +197,23 @@ export function AuthPrompt({
 
   const isBusy = loading || localSubmitting;
 
-  const oauthLinkClass =
-    "flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors no-underline";
+  const oauthLinkClass = `${HOME_SECONDARY_BUTTON} w-full justify-center gap-2 py-3 no-underline`;
 
   const modal = (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-[10000] flex items-start justify-center bg-stone-950/50 p-4 pt-[12vh] sm:items-center sm:pt-4"
       role="dialog"
       aria-modal="true"
       aria-label="Sign in"
       data-testid="auth-prompt"
     >
-      <div className="relative w-full max-w-sm rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
+      <div className={`relative w-full max-w-sm ${HOME_INSTRUMENT_PANEL}`}>
         {/* Close button */}
         {dismissible && (
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 rounded-md p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            className="absolute right-3 top-3 rounded-md p-1 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
             aria-label="Close"
             data-testid="auth-close"
           >
@@ -226,7 +234,8 @@ export function AuthPrompt({
           </button>
         )}
 
-        <h2 className="mb-4 text-center text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <p className={HOME_SECTION_LABEL}>Account</p>
+        <h2 className="mb-4 text-xl font-semibold text-stone-900 dark:text-stone-100">
           Sign in to continue
         </h2>
 
@@ -257,7 +266,7 @@ export function AuthPrompt({
           <div className="space-y-3">
             <a
               href="/api/auth/oauth/google"
-              className={`${oauthLinkClass} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 ${
+              className={`${oauthLinkClass} ${
                 loading ? "pointer-events-none opacity-50" : ""
               }`}
               data-testid="auth-google"
@@ -287,7 +296,7 @@ export function AuthPrompt({
               </button>
               <p
                 id="auth-apple-unavailable-note"
-                className="text-xs text-gray-500 dark:text-gray-400"
+                className="text-xs text-stone-500 dark:text-stone-400"
                 data-testid="auth-apple-unavailable-note"
               >
                 Apple Sign-In is not available yet. Use Google or email below.
@@ -296,11 +305,9 @@ export function AuthPrompt({
 
             {/* Divider */}
             <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-600" />
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                or
-              </span>
-              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-600" />
+              <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
+              <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>or</span>
+              <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
             </div>
 
             {/* Email OTP */}
@@ -308,7 +315,7 @@ export function AuthPrompt({
               type="button"
               onClick={() => setView("email")}
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              className={`${HOME_SECONDARY_BUTTON} w-full justify-center gap-2 py-3 disabled:opacity-50`}
               data-testid="auth-email-btn"
             >
               <EmailIcon />
@@ -328,7 +335,7 @@ export function AuthPrompt({
                 setView("providers");
                 setEmailError(null);
               }}
-              className="mb-2 text-sm text-blue-600 hover:underline dark:text-blue-400"
+              className={`mb-2 text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 dark:hover:text-stone-100`}
               data-testid="auth-back"
             >
               ← Back
@@ -336,7 +343,7 @@ export function AuthPrompt({
 
             <label
               htmlFor="auth-email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-stone-700 dark:text-stone-300"
             >
               Email address
             </label>
@@ -349,7 +356,7 @@ export function AuthPrompt({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+              className={HOME_INPUT}
               data-testid="auth-email-input"
             />
 
@@ -359,7 +366,7 @@ export function AuthPrompt({
                 void submitEmailRequest();
               }}
               disabled={isBusy}
-              className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+              className={`${HOME_PRIMARY_BUTTON} w-full justify-center py-2.5 disabled:opacity-50`}
               data-testid="auth-email-submit"
             >
               {isBusy ? "Sending…" : "Send verification code"}
@@ -374,15 +381,15 @@ export function AuthPrompt({
                 setPendingUserId(null);
                 setOtp("");
               }}
-              className="mb-2 text-sm text-blue-600 hover:underline dark:text-blue-400"
+              className={`mb-2 text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 dark:hover:text-stone-100`}
               data-testid="auth-verify-back"
             >
               ← Change email
             </button>
 
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className={`text-sm ${HOME_MUTED_TEXT}`}>
               Enter the 6-digit code sent to{" "}
-              <span className="font-medium text-gray-900 dark:text-gray-100">
+              <span className="font-medium text-stone-900 dark:text-stone-100">
                 {email}
               </span>
               .
@@ -390,7 +397,7 @@ export function AuthPrompt({
 
             <label
               htmlFor="auth-otp"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-stone-700 dark:text-stone-300"
             >
               Verification code
             </label>
@@ -404,14 +411,14 @@ export function AuthPrompt({
               value={otp}
               onChange={(e) => setOtp(e.target.value.replace(/[^\d\s]/g, ""))}
               placeholder="e.g. 512646"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-center font-mono text-lg tracking-widest text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+              className={`${HOME_INPUT} text-center font-mono text-lg tracking-widest`}
               data-testid="auth-otp-input"
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+              className={`${HOME_PRIMARY_BUTTON} w-full justify-center py-2.5 disabled:opacity-50`}
               data-testid="auth-verify-submit"
             >
               {loading ? "Verifying…" : "Verify and sign in"}
@@ -439,7 +446,7 @@ export function AuthPrompt({
                   );
                 }
               }}
-              className="w-full text-sm text-blue-600 hover:underline disabled:opacity-50 dark:text-blue-400"
+              className={`w-full text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 disabled:opacity-50 dark:hover:text-stone-100`}
               data-testid="auth-resend-code"
             >
               Resend code
@@ -449,7 +456,7 @@ export function AuthPrompt({
 
         {loading && (
           <p
-            className="mt-3 text-center text-xs text-gray-500 dark:text-gray-400"
+            className={`mt-3 text-center text-xs ${HOME_SUBTLE_TEXT}`}
             aria-live="polite"
           >
             Please wait…

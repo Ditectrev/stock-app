@@ -12,6 +12,10 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import { ScreenerHub } from "../ScreenerHub";
 import type { ScreenerFilter, ScreenerResult } from "@/types";
 
+vi.mock("@/lib/theme-context", () => ({
+  useTheme: () => ({ resolvedTheme: "light" }),
+}));
+
 // ---------------------------------------------------------------------------
 // Capture callbacks from AssetScreener so we can simulate filter/result flow.
 // ---------------------------------------------------------------------------

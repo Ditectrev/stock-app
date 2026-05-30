@@ -60,7 +60,7 @@ describe("ChartComponent", () => {
       render(<ChartWithTheme data={mockData} type="line" />);
 
       const lineButton = screen.getByText("Line");
-      expect(lineButton).toHaveClass("bg-blue-600");
+      expect(lineButton).toHaveClass("bg-stone-900");
     });
 
     it("should switch to area chart when Area button is clicked", async () => {
@@ -70,7 +70,7 @@ describe("ChartComponent", () => {
       fireEvent.click(areaButton);
 
       await waitFor(() => {
-        expect(areaButton).toHaveClass("bg-blue-600");
+        expect(areaButton).toHaveClass("bg-stone-900");
       });
     });
 
@@ -81,7 +81,7 @@ describe("ChartComponent", () => {
       fireEvent.click(candlesButton);
 
       await waitFor(() => {
-        expect(candlesButton).toHaveClass("bg-blue-600");
+        expect(candlesButton).toHaveClass("bg-stone-900");
       });
     });
 
@@ -92,23 +92,23 @@ describe("ChartComponent", () => {
       fireEvent.click(areaButton);
 
       await waitFor(() => {
-        expect(areaButton).toHaveClass("bg-blue-600");
-        expect(screen.getByText("Line")).not.toHaveClass("bg-blue-600");
+        expect(areaButton).toHaveClass("bg-stone-900");
+        expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
       });
     });
 
     it("should render with area chart as initial type", () => {
       render(<ChartWithTheme data={mockData} type="area" />);
 
-      expect(screen.getByText("Area")).toHaveClass("bg-blue-600");
-      expect(screen.getByText("Line")).not.toHaveClass("bg-blue-600");
+      expect(screen.getByText("Area")).toHaveClass("bg-stone-900");
+      expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
     });
 
     it("should render with candlestick chart as initial type", () => {
       render(<ChartWithTheme data={mockData} type="candlestick" />);
 
-      expect(screen.getByText("Candles")).toHaveClass("bg-blue-600");
-      expect(screen.getByText("Line")).not.toHaveClass("bg-blue-600");
+      expect(screen.getByText("Candles")).toHaveClass("bg-stone-900");
+      expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
     });
   });
 
@@ -117,7 +117,7 @@ describe("ChartComponent", () => {
       render(<ChartWithTheme data={mockData} initialTimeRange="1M" />);
 
       const oneMonthButton = screen.getByText("1M");
-      expect(oneMonthButton).toHaveClass("bg-blue-600");
+      expect(oneMonthButton).toHaveClass("bg-stone-900");
     });
 
     it("should switch time range when button is clicked", async () => {
@@ -134,7 +134,7 @@ describe("ChartComponent", () => {
       fireEvent.click(oneWeekButton);
 
       await waitFor(() => {
-        expect(oneWeekButton).toHaveClass("bg-blue-600");
+        expect(oneWeekButton).toHaveClass("bg-stone-900");
         expect(onTimeRangeChange).toHaveBeenCalledWith("1W");
       });
     });

@@ -56,7 +56,7 @@ describe("AssetScreener", () => {
 
   it("should render the screener heading", () => {
     render(<AssetScreener />);
-    expect(screen.getByText("Asset Screener")).toBeDefined();
+    expect(screen.getByText("Valuation Metrics")).toBeDefined();
   });
 
   // --- Filter sections present (Req 26.1) ---

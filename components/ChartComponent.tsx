@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback } from "react";
 import { ChartWrapper, IChartApi } from "./ChartWrapper";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
+import { homeChipClasses } from "@/lib/home-ui";
 import {
   calculateRSI,
   calculateMACD,
@@ -536,8 +537,8 @@ function TimeRangeSelector({
           onClick={() => onRangeChange(range)}
           className={`px-3 py-2 text-sm rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
             selectedRange === range
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              ? homeChipClasses(true)
+              : homeChipClasses(false)
           }`}
         >
           {range}
@@ -573,8 +574,8 @@ function ChartTypeSelector({
           onClick={() => onTypeChange(type.value)}
           className={`px-3 py-2 text-sm rounded transition-colors min-h-[44px] flex items-center justify-center ${
             selectedType === type.value
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              ? homeChipClasses(true)
+              : homeChipClasses(false)
           }`}
         >
           {type.label}

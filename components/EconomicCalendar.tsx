@@ -13,6 +13,7 @@ import { EconomicEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { HOME_PANEL_TITLE, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
 
 const COUNTRIES = [
   "All",
@@ -184,7 +185,7 @@ export function EconomicCalendar({
   if (loading) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className="border-t border-stone-200 pt-4 dark:border-stone-700"
         data-testid="economic-calendar-loading"
       >
         <LoadingSpinner className="py-8" />
@@ -196,7 +197,7 @@ export function EconomicCalendar({
   if (error) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className="border-t border-stone-200 pt-4 dark:border-stone-700"
         data-testid="economic-calendar-error"
       >
         <ErrorMessage
@@ -213,16 +214,12 @@ export function EconomicCalendar({
 
   return (
     <div
-      className={`p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className="border-t border-stone-200 pt-4 sm:pt-6 dark:border-stone-700"
       data-testid="economic-calendar"
       role="region"
       aria-label="Economic Calendar"
     >
-      <h3
-        className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        Economic Calendar
-      </h3>
+      <h3 className={`mb-4 ${HOME_PANEL_TITLE}`}>Economic Calendar</h3>
 
       {/* Filters */}
       <div

@@ -16,6 +16,7 @@ import {
 } from "@/types";
 import { SymbolHeader } from "@/components/SymbolHeader";
 import { TabNavigation } from "@/components/TabNavigation";
+import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { usePricingTier } from "@/lib/use-pricing-tier";
 import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
@@ -388,10 +389,7 @@ export function HomePageClient() {
                   Error Loading Symbol
                 </h2>
                 <p className="mb-4">{error}</p>
-                <button
-                  onClick={clearSymbol}
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                >
+                <button onClick={clearSymbol} className={HOME_PRIMARY_BUTTON}>
                   Clear Selection
                 </button>
               </div>

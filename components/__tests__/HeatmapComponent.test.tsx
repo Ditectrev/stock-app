@@ -185,7 +185,7 @@ describe("HeatmapComponent", () => {
   it("should highlight the active time period", () => {
     render(<HeatmapComponent data={mockData} timePeriod="1M" />);
     const btn = screen.getByTestId("heatmap-period-1M");
-    expect(btn.className).toContain("bg-blue-600");
+    expect(btn.className).toContain("bg-stone-900");
     expect(btn.getAttribute("aria-pressed")).toBe("true");
 
     const other = screen.getByTestId("heatmap-period-1D");
@@ -213,7 +213,7 @@ describe("HeatmapComponent", () => {
   it("should highlight the active sort button", () => {
     render(<HeatmapComponent data={mockData} sortField="changePercent" />);
     const btn = screen.getByTestId("heatmap-sort-changePercent");
-    expect(btn.className).toContain("bg-blue-600");
+    expect(btn.className).toContain("bg-stone-900");
     expect(btn.getAttribute("aria-pressed")).toBe("true");
   });
 

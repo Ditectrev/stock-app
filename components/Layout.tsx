@@ -2,6 +2,7 @@
 
 import { Navigation, NavigationProps } from "@/components/Navigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { HOME_PAGE_BACKGROUND } from "@/lib/home-ui";
 
 export interface LayoutProps {
   children: React.ReactNode;
@@ -17,7 +18,7 @@ export function Layout({
   trialBanner,
 }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className={`min-h-screen flex flex-col ${HOME_PAGE_BACKGROUND}`}>
       <Navigation {...navigationProps} />
       {trialBanner && (
         <div role="status" aria-live="polite">

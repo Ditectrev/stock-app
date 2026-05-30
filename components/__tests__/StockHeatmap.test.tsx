@@ -169,14 +169,14 @@ describe("StockHeatmap", () => {
     render(<StockHeatmap />);
     const allBtn = screen.getByTestId("stock-sector-all");
     expect(allBtn.getAttribute("aria-pressed")).toBe("true");
-    expect(allBtn.className).toContain("bg-blue-600");
+    expect(allBtn.className).toContain("bg-stone-900");
 
     fireEvent.click(screen.getByTestId("stock-sector-financial"));
 
     await waitFor(() => {
       const finBtn = screen.getByTestId("stock-sector-financial");
       expect(finBtn.getAttribute("aria-pressed")).toBe("true");
-      expect(finBtn.className).toContain("bg-blue-600");
+      expect(finBtn.className).toContain("bg-stone-900");
     });
 
     expect(

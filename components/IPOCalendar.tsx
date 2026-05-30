@@ -122,7 +122,7 @@ export function IPOCalendar({
   if (loading) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className="border-t border-stone-200 pt-4 dark:border-stone-700"
         data-testid="ipo-calendar-loading"
       >
         <LoadingSpinner className="py-8" />
@@ -133,7 +133,7 @@ export function IPOCalendar({
   if (error) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className="border-t border-stone-200 pt-4 dark:border-stone-700"
         data-testid="ipo-calendar-error"
       >
         <ErrorMessage
@@ -150,7 +150,7 @@ export function IPOCalendar({
 
   return (
     <div
-      className={`p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className="border-t border-stone-200 pt-4 sm:pt-6 dark:border-stone-700"
       data-testid="ipo-calendar"
       role="region"
       aria-label="IPO Calendar"

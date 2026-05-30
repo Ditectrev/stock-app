@@ -171,14 +171,14 @@ describe("CryptoHeatmap", () => {
     render(<CryptoHeatmap />);
     const allBtn = screen.getByTestId("crypto-category-all");
     expect(allBtn.getAttribute("aria-pressed")).toBe("true");
-    expect(allBtn.className).toContain("bg-blue-600");
+    expect(allBtn.className).toContain("bg-stone-900");
 
     fireEvent.click(screen.getByTestId("crypto-category-defi"));
 
     await waitFor(() => {
       const defiBtn = screen.getByTestId("crypto-category-defi");
       expect(defiBtn.getAttribute("aria-pressed")).toBe("true");
-      expect(defiBtn.className).toContain("bg-blue-600");
+      expect(defiBtn.className).toContain("bg-stone-900");
     });
 
     expect(

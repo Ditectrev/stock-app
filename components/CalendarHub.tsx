@@ -3,13 +3,11 @@
 /**
  * CalendarHub Component
  * Wraps CalendarNavigation with the active calendar panel.
- * Provides unified calendar switching experience.
  *
  * Requirements: 24.2
  */
 
 import { useState } from "react";
-import { useTheme } from "@/lib/theme-context";
 import {
   CalendarNavigation,
   CalendarType,
@@ -18,6 +16,11 @@ import { EconomicCalendar } from "@/components/EconomicCalendar";
 import { EarningsCalendar } from "@/components/EarningsCalendar";
 import { DividendCalendar } from "@/components/DividendCalendar";
 import { IPOCalendar } from "@/components/IPOCalendar";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_PANEL_TITLE,
+  HOME_SECTION_LABEL,
+} from "@/lib/home-ui";
 
 export interface CalendarHubProps {
   defaultCalendar?: CalendarType;
@@ -28,18 +31,15 @@ export function CalendarHub({
   defaultCalendar = "economic",
   onSymbolClick,
 }: CalendarHubProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   const [activeCalendar, setActiveCalendar] =
     useState<CalendarType>(defaultCalendar);
 
   return (
-    <div data-testid="calendar-hub">
-      <h2
-        className={`text-xl font-semibold mb-3 md:mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        Calendars
-      </h2>
+    <div className={HOME_INSTRUMENT_PANEL} data-testid="calendar-hub">
+      <header className="mb-4 sm:mb-6">
+        <p className={HOME_SECTION_LABEL}>Events</p>
+        <h2 className={`mt-1 ${HOME_PANEL_TITLE}`}>Calendars</h2>
+      </header>
       <CalendarNavigation
         activeCalendar={activeCalendar}
         onCalendarChange={setActiveCalendar}

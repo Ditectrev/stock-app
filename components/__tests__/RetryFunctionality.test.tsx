@@ -276,7 +276,7 @@ describe("Retry Functionality (Req 14.5)", () => {
     fireEvent.click(screen.getByTestId("sort-name"));
 
     // Verify the period button is active
-    expect(screen.getByTestId("period-1M").className).toContain("bg-blue-600");
+    expect(screen.getByTestId("period-1M").className).toContain("bg-stone-900");
 
     unmount();
 

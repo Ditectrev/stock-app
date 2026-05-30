@@ -11,6 +11,12 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type { ScreenerFilter, ScreenerResult } from "@/types";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import {
+  HOME_INPUT_SM,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -284,7 +290,7 @@ function RangeInput({
           aria-label={`${label} minimum`}
           value={value.min}
           onChange={(e) => onChange({ ...value, min: e.target.value })}
-          className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className={HOME_INPUT_SM}
         />
         <span className="text-gray-400 dark:text-gray-300 text-xs">–</span>
         <input
@@ -293,7 +299,7 @@ function RangeInput({
           aria-label={`${label} maximum`}
           value={value.max}
           onChange={(e) => onChange({ ...value, max: e.target.value })}
-          className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className={HOME_INPUT_SM}
         />
       </div>
     </div>
@@ -457,11 +463,7 @@ export function AssetScreener({
   // ------ render ------
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 sm:p-6 lg:p-8 shadow-sm">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 lg:mb-5">
-        Asset Screener
-      </h2>
-
+    <div className="border-t border-stone-200 pt-4 dark:border-stone-700">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {/* ---- Valuation Metrics ---- */}
         <fieldset className="space-y-3">
@@ -541,11 +543,7 @@ export function AssetScreener({
                   type="button"
                   onClick={() => toggleSector(sector)}
                   aria-pressed={selected}
-                  className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                    selected
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  }`}
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${homeChipClasses(selected)}`}
                 >
                   {sector}
                 </button>
@@ -569,11 +567,7 @@ export function AssetScreener({
                   type="button"
                   onClick={() => toggleMarketCap(opt.value)}
                   aria-pressed={selected}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                    selected
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  }`}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${homeChipClasses(selected)}`}
                 >
                   {opt.label}
                 </button>
@@ -601,7 +595,7 @@ export function AssetScreener({
                   minVolume: e.target.value,
                 }))
               }
-              className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className={HOME_INPUT_SM}
             />
           </div>
         </fieldset>
@@ -613,14 +607,14 @@ export function AssetScreener({
           type="button"
           onClick={handleApply}
           disabled={loading}
-          className="rounded bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors min-h-[44px]"
+          className={`${HOME_PRIMARY_BUTTON} min-h-[44px] disabled:opacity-50`}
         >
           {loading ? "Searching…" : "Apply Filters"}
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors min-h-[44px]"
+          className={`${HOME_SECONDARY_BUTTON} min-h-[44px]`}
         >
           Clear All
         </button>

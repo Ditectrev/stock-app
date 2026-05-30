@@ -10,8 +10,12 @@
 
 import { useCallback, useMemo, useState } from "react";
 import useSWR from "swr";
-import { useTheme } from "@/lib/theme-context";
 import { HeatmapData, CryptoData } from "@/types";
+import {
+  HOME_CHIP_SM,
+  HOME_INSTRUMENT_PANEL,
+  homeChipClasses,
+} from "@/lib/home-ui";
 import {
   HeatmapComponent,
   HeatmapTimePeriod,
@@ -57,9 +61,6 @@ export function CryptoHeatmap({
   refreshInterval = 0,
   onCryptoClick,
 }: CryptoHeatmapProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const [timePeriod, setTimePeriod] = useState<HeatmapTimePeriod>("1D");
   const [sortField, setSortField] = useState<HeatmapSortField>("changePercent");
   const [sortDirection, setSortDirection] =
@@ -113,13 +114,8 @@ export function CryptoHeatmap({
 
   if (error && !response) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="crypto-heatmap-error"
-      >
-        <p
-          className={`text-center ${isDark ? "text-red-400" : "text-red-600"}`}
-        >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="crypto-heatmap-error">
+        <p className="text-center text-red-600 dark:text-red-400">
           Failed to load crypto data. Please try again later.
         </p>
       </div>
@@ -137,13 +133,7 @@ export function CryptoHeatmap({
           aria-label="Crypto category filter"
         >
           <button
-            className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-              categoryFilter === ""
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-            }`}
+            className={`${HOME_CHIP_SM} ${homeChipClasses(categoryFilter === "")}`}
             aria-pressed={categoryFilter === ""}
             onClick={() => setCategoryFilter("")}
             data-testid="crypto-category-all"
@@ -153,13 +143,7 @@ export function CryptoHeatmap({
           {categories.map((cat) => (
             <button
               key={cat}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                categoryFilter === cat
-                  ? "bg-blue-600 text-white"
-                  : isDark
-                    ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-              }`}
+              className={`${HOME_CHIP_SM} ${homeChipClasses(categoryFilter === cat)}`}
               aria-pressed={categoryFilter === cat}
               onClick={() => setCategoryFilter(cat)}
               data-testid={`crypto-category-${cat.toLowerCase().replace(/\s+/g, "-")}`}

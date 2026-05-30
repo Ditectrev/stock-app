@@ -10,8 +10,12 @@
 
 import { useCallback, useMemo, useState } from "react";
 import useSWR from "swr";
-import { useTheme } from "@/lib/theme-context";
 import { HeatmapData, StockData } from "@/types";
+import {
+  HOME_CHIP_SM,
+  HOME_INSTRUMENT_PANEL,
+  homeChipClasses,
+} from "@/lib/home-ui";
 import {
   HeatmapComponent,
   HeatmapTimePeriod,
@@ -55,9 +59,6 @@ export function StockHeatmap({
   refreshInterval = 0,
   onStockClick,
 }: StockHeatmapProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const [timePeriod, setTimePeriod] = useState<HeatmapTimePeriod>("1D");
   const [sortField, setSortField] = useState<HeatmapSortField>("changePercent");
   const [sortDirection, setSortDirection] =
@@ -111,13 +112,8 @@ export function StockHeatmap({
 
   if (error && !response) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="stock-heatmap-error"
-      >
-        <p
-          className={`text-center ${isDark ? "text-red-400" : "text-red-600"}`}
-        >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="stock-heatmap-error">
+        <p className="text-center text-red-600 dark:text-red-400">
           Failed to load stock data. Please try again later.
         </p>
       </div>
@@ -135,13 +131,7 @@ export function StockHeatmap({
           aria-label="Stock sector filter"
         >
           <button
-            className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-              sectorFilter === ""
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-            }`}
+            className={`${HOME_CHIP_SM} ${homeChipClasses(sectorFilter === "")}`}
             aria-pressed={sectorFilter === ""}
             onClick={() => setSectorFilter("")}
             data-testid="stock-sector-all"
@@ -151,13 +141,7 @@ export function StockHeatmap({
           {sectors.map((sector) => (
             <button
               key={sector}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                sectorFilter === sector
-                  ? "bg-blue-600 text-white"
-                  : isDark
-                    ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-              }`}
+              className={`${HOME_CHIP_SM} ${homeChipClasses(sectorFilter === sector)}`}
               aria-pressed={sectorFilter === sector}
               onClick={() => setSectorFilter(sector)}
               data-testid={`stock-sector-${sector.toLowerCase().replace(/\s+/g, "-")}`}
