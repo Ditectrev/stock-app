@@ -207,7 +207,7 @@ export function AIPredictionPanel({
                   </div>
 
                   {symbolSpecific && symbolSpecific.bullets.length > 0 && (
-                    <div className="rounded-lg border border-stone-200/90 bg-stone-50/70 p-3 dark:border-stone-700 dark:bg-stone-900/30">
+                    <div className="rounded-lg border border-stone-200 bg-stone-100 p-3 dark:border-stone-700 dark:bg-stone-800">
                       <p className="mb-1 text-sm font-semibold text-stone-900 dark:text-stone-100">
                         {symbolSpecific.title}
                       </p>

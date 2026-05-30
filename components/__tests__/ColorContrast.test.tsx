@@ -117,14 +117,13 @@ describe("Color Contrast Compliance (Req 18.3)", () => {
   });
 
   describe("Footer", () => {
-    it("uses text-gray-300 (not text-gray-400) on bg-gray-900 in dark mode", () => {
+    it("uses readable stone text on dark background in dark mode", () => {
       const { container } = render(<Footer />);
       const footer = container.querySelector("footer");
       expect(footer).not.toBeNull();
       const cls = footer!.className;
-      // Footer in dark mode should use text-gray-300 for 9.4:1 contrast
-      expect(cls).toContain("text-gray-300");
-      expect(cls).not.toContain("text-gray-400");
+      expect(cls).toContain("dark:text-stone-200");
+      expect(cls).not.toContain("dark:text-stone-400");
     });
   });
 

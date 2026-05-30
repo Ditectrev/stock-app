@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { HOME_MUTED_TEXT } from "@/lib/home-ui";
 
 export function InsightPanel({
   children,
@@ -33,7 +34,7 @@ export function InsightPanelHeader({
           <h2 className="text-lg font-semibold sm:text-xl">{title}</h2>
         ) : null}
         {subtitle ? (
-          <p className="mt-1 text-sm opacity-80">{subtitle}</p>
+          <p className={`mt-1 text-sm ${HOME_MUTED_TEXT}`}>{subtitle}</p>
         ) : null}
       </div>
       {right ? <div className="sm:text-right">{right}</div> : null}

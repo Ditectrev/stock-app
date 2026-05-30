@@ -256,7 +256,7 @@ export function SectorHub({
               className={`relative min-h-[44px] cursor-pointer rounded-lg p-3 transition-all ${
                 isSelected
                   ? "bg-stone-100 ring-2 ring-stone-500 dark:bg-stone-700"
-                  : "bg-stone-50 hover:bg-stone-100 dark:bg-stone-900/40 dark:hover:bg-stone-800/60"
+                  : "bg-stone-50 hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-700"
               }`}
               data-testid={`sector-${sector.sector.replace(/\s+/g, "-")}`}
               onClick={() => toggleSectorComparison(sector.sector)}

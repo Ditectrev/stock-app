@@ -13,7 +13,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { MarketIndex } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { HOME_INSTRUMENT_PANEL, HOME_PANEL_TITLE } from "@/lib/home-ui";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
+  HOME_PANEL_TITLE,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 type Region = "Americas" | "Europe" | "Asia-Pacific";
 
@@ -155,7 +160,7 @@ export function WorldMarkets({
       aria-label="World Markets"
     >
       <h3 className={`mb-4 sm:mb-5 ${HOME_PANEL_TITLE}`}>World Markets</h3>
-      <p className="-mt-2 mb-4 text-sm text-stone-500 dark:text-stone-400">
+      <p className={`-mt-2 mb-4 text-sm ${HOME_MUTED_TEXT}`}>
         Major indices by region — refreshed every minute.
       </p>
 
@@ -172,10 +177,14 @@ export function WorldMarkets({
               role="region"
               aria-label={`${region.label} markets`}
             >
-              <h4 className="mb-3 border-b border-stone-200 pb-2 text-xs font-semibold uppercase tracking-[0.15em] text-stone-500 dark:border-stone-700 dark:text-stone-400">
+              <h4
+                className={`mb-3 border-b border-stone-200 pb-2 text-xs font-semibold uppercase tracking-[0.15em] dark:border-stone-700 ${HOME_SUBTLE_TEXT}`}
+              >
                 {region.label}
                 {region.id === "Americas" && (
-                  <span className="ml-2 normal-case tracking-normal text-stone-400 dark:text-stone-500">
+                  <span
+                    className={`ml-2 normal-case tracking-normal ${HOME_MUTED_TEXT}`}
+                  >
                     · primary session
                   </span>
                 )}
@@ -191,14 +200,14 @@ export function WorldMarkets({
                   return (
                     <li
                       key={idx.symbol}
-                      className="flex min-h-[44px] items-center justify-between rounded-md px-2 py-2 transition-colors hover:bg-stone-100/80 dark:hover:bg-stone-900/50 sm:py-1.5"
+                      className="flex min-h-[44px] items-center justify-between rounded-md px-2 py-2 transition-colors hover:bg-stone-100 dark:hover:bg-stone-800 sm:py-1.5"
                       data-testid={`index-${idx.symbol}`}
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-medium text-stone-900 dark:text-stone-100">
                           {idx.name}
                         </p>
-                        <p className="text-xs text-stone-500 dark:text-stone-400">
+                        <p className={`text-xs ${HOME_SUBTLE_TEXT}`}>
                           {idx.symbol}
                         </p>
                       </div>

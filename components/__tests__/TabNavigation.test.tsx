@@ -29,7 +29,7 @@ describe("TabNavigation", () => {
 
     const overviewTab = screen.getByText("Overview");
     expect(overviewTab).toHaveClass("bg-stone-900");
-    expect(overviewTab).toHaveClass("text-stone-100");
+    expect(overviewTab).toHaveClass("text-stone-50");
   });
 
   it("should call onTabChange when tab is clicked", () => {
@@ -48,10 +48,10 @@ describe("TabNavigation", () => {
 
     const technicalsTab = screen.getByText("Technicals");
     expect(technicalsTab).toHaveClass("bg-stone-900");
-    expect(technicalsTab).toHaveClass("text-stone-100");
+    expect(technicalsTab).toHaveClass("text-stone-50");
 
     const overviewTab = screen.getByText("Overview");
-    expect(overviewTab).toHaveClass("text-stone-600");
+    expect(overviewTab).toHaveClass("text-stone-700");
     expect(overviewTab).not.toHaveClass("bg-stone-900");
   });
 

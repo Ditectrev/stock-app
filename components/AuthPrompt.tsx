@@ -213,7 +213,7 @@ export function AuthPrompt({
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 rounded-md p-1 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+            className={`absolute right-3 top-3 rounded-md p-1 ${HOME_SUBTLE_TEXT} hover:text-stone-900 dark:hover:text-stone-50`}
             aria-label="Close"
             data-testid="auth-close"
           >
@@ -296,7 +296,7 @@ export function AuthPrompt({
               </button>
               <p
                 id="auth-apple-unavailable-note"
-                className="text-xs text-stone-500 dark:text-stone-400"
+                className={`text-xs ${HOME_SUBTLE_TEXT}`}
                 data-testid="auth-apple-unavailable-note"
               >
                 Apple Sign-In is not available yet. Use Google or email below.

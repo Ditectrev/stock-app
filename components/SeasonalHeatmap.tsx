@@ -52,7 +52,7 @@ function getCellColor(value: number | undefined, isDark: boolean): string {
 
 function getCellTextColor(value: number | undefined, isDark: boolean): string {
   if (value === undefined) {
-    return isDark ? "text-stone-300" : "text-stone-500";
+    return isDark ? "text-stone-300" : "text-stone-600";
   }
   const abs = Math.abs(value);
   if (abs >= 2) return "text-white";

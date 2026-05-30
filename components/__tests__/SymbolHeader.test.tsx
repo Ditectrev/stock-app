@@ -44,7 +44,7 @@ describe("SymbolHeader", () => {
 
     const changeElement = screen.getByText(/\+2\.50/);
     expect(changeElement).toBeInTheDocument();
-    expect(changeElement).toHaveClass("text-green-600");
+    expect(changeElement).toHaveClass("text-green-700");
   });
 
   it("should display negative change with red color", () => {
@@ -58,7 +58,7 @@ describe("SymbolHeader", () => {
 
     const changeElement = screen.getByText(/-2\.50/);
     expect(changeElement).toBeInTheDocument();
-    expect(changeElement).toHaveClass("text-red-600");
+    expect(changeElement).toHaveClass("text-red-700");
   });
 
   it("should display change percentage", () => {

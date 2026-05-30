@@ -3,24 +3,17 @@
 import React from "react";
 import GitHubButton from "react-github-btn";
 import packageJson from "../package.json";
-import { useTheme } from "@/lib/theme-context";
+import { HOME_MUTED_TEXT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
 
   return (
     <footer
-      className={`py-4 sm:py-6 mt-8 sm:mt-12 border-t ${
-        isDark
-          ? "border-gray-700 bg-gray-900 text-gray-300"
-          : "border-gray-200 bg-gray-50 text-gray-500"
-      }`}
+      className={`mt-8 border-t border-stone-200 bg-stone-100 py-4 sm:mt-12 sm:py-6 dark:border-stone-800 dark:bg-stone-950 ${HOME_MUTED_TEXT}`}
       aria-label="Site footer"
     >
-      {/* GitHub Star */}
-      <div className="flex items-center justify-center mb-3">
+      <div className="mb-3 flex items-center justify-center">
         <GitHubButton
           href="https://github.com/Ditectrev/Open-Source-Stock-Application"
           data-color-scheme="no-preference: dark; light: light; dark: dark;"
@@ -33,12 +26,12 @@ export function Footer() {
         </GitHubButton>
       </div>
 
-      {/* Version */}
-      <p className="text-xs text-center mb-2">v{packageJson.version}</p>
+      <p className={`mb-2 text-center text-xs ${HOME_SUBTLE_TEXT}`}>
+        v{packageJson.version}
+      </p>
 
-      {/* Copyright */}
-      <p className="text-sm text-center">
-        &copy; {currentYear} Ditectrev and our contributors
+      <p className="text-center text-sm">
+        © {currentYear} Ditectrev and our contributors
       </p>
     </footer>
   );

@@ -15,9 +15,11 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import {
   HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
   HOME_PANEL_TITLE,
   HOME_RANGE_BUTTON_ACTIVE,
   HOME_RANGE_BUTTON_IDLE,
+  HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
 
 export interface FearGreedGaugeProps {
@@ -166,7 +168,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-5">
         <div>
           <h3 className={HOME_PANEL_TITLE}>Fear &amp; Greed Index</h3>
-          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <p className={`mt-1 text-sm ${HOME_MUTED_TEXT}`}>
             CNN sentiment gauge — 0 is extreme fear, 100 is extreme greed.
           </p>
         </div>
@@ -178,7 +180,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
           <button
             type="button"
             aria-label="What is the Fear and Greed Index?"
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-xs font-semibold text-stone-600 transition-colors hover:border-stone-500 dark:border-stone-600 dark:text-stone-300 dark:hover:border-stone-400"
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-xs font-semibold text-stone-700 transition-colors hover:border-stone-500 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400"
           >
             ?
           </button>
@@ -261,7 +263,9 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
           </div>
 
           <div className="text-left pb-1">
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-stone-500 dark:text-stone-400">
+            <p
+              className={`text-[0.65rem] font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
+            >
               Today
             </p>
             <span
@@ -287,7 +291,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
               ].map((rangeItem) => (
                 <span
                   key={rangeItem.label}
-                  className="inline-flex items-center gap-1 text-[0.65rem] text-stone-500 dark:text-stone-400"
+                  className={`inline-flex items-center gap-1 text-[0.65rem] ${HOME_SUBTLE_TEXT}`}
                 >
                   <span
                     className="inline-block h-1.5 w-1.5 rounded-full"
@@ -421,19 +425,15 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
               )}
 
               <div className="pointer-events-none absolute left-0 top-0 flex h-full flex-col justify-between">
-                <span className="text-[10px] text-stone-500 dark:text-stone-400">
-                  100
-                </span>
-                <span className="text-[10px] text-stone-500 dark:text-stone-400">
-                  0
-                </span>
+                <span className={`text-[10px] ${HOME_SUBTLE_TEXT}`}>100</span>
+                <span className={`text-[10px] ${HOME_SUBTLE_TEXT}`}>0</span>
               </div>
             </div>
             <div className="mt-1 flex justify-between">
-              <span className="text-[10px] text-stone-500 dark:text-stone-400">
+              <span className={`text-[10px] ${HOME_SUBTLE_TEXT}`}>
                 {new Date(data.history[0].date).toLocaleDateString()}
               </span>
-              <span className="text-[10px] text-stone-500 dark:text-stone-400">
+              <span className={`text-[10px] ${HOME_SUBTLE_TEXT}`}>
                 {new Date(
                   data.history[data.history.length - 1].date
                 ).toLocaleDateString()}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { HOME_INPUT, HOME_MUTED_TEXT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
 
 interface SearchResult {
   symbol: string;
@@ -184,11 +185,7 @@ export function SearchBar({
             }
           }}
           placeholder={placeholder}
-          className="w-full px-4 py-3 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
-                     text-base sm:text-sm
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                     placeholder-gray-500 dark:placeholder-gray-400"
+          className={`${HOME_INPUT} py-3 pr-10 text-base sm:text-sm`}
           role="combobox"
           aria-label="Search stocks"
           aria-autocomplete="list"
@@ -199,14 +196,14 @@ export function SearchBar({
         {/* Loading Spinner */}
         {isLoading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-stone-600 border-t-transparent dark:border-stone-300" />
           </div>
         )}
 
         {/* Search Icon */}
         {!isLoading && (
           <div
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+            className={`absolute right-3 top-1/2 -translate-y-1/2 ${HOME_SUBTLE_TEXT}`}
             aria-hidden="true"
           >
             <svg
@@ -231,8 +228,7 @@ export function SearchBar({
         <div
           id="search-results"
           role="listbox"
-          className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
-                     rounded-lg shadow-lg max-h-96 overflow-y-auto"
+          className="absolute z-50 mt-2 max-h-96 w-full overflow-y-auto rounded-lg border border-stone-200 bg-white shadow-lg dark:border-stone-700 dark:bg-stone-900"
         >
           {error && (
             <div className="px-4 py-3 text-sm text-red-600 dark:text-red-400">
@@ -241,7 +237,7 @@ export function SearchBar({
           )}
 
           {!error && results.length === 0 && !isLoading && (
-            <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">
+            <div className={`px-4 py-3 text-sm ${HOME_MUTED_TEXT}`}>
               No results found
             </div>
           )}
@@ -253,26 +249,27 @@ export function SearchBar({
                   key={`${result.symbol}-${result.exchange}`}
                   role="option"
                   aria-selected={index === selectedIndex}
-                  className={`px-4 py-3 cursor-pointer transition-colors min-h-[44px]
-                    ${
-                      index === selectedIndex
-                        ? "bg-blue-50 dark:bg-blue-900/20"
-                        : "hover:bg-gray-50 dark:hover:bg-gray-700"
-                    }`}
+                  className={`min-h-[44px] cursor-pointer px-4 py-3 transition-colors ${
+                    index === selectedIndex
+                      ? "bg-stone-100 dark:bg-stone-800"
+                      : "hover:bg-stone-50 dark:hover:bg-stone-800"
+                  }`}
                   onClick={() => handleSelect(result.symbol)}
                   onMouseEnter={() => setSelectedIndex(index)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-gray-900 dark:text-gray-100">
+                      <div className="font-semibold text-stone-900 dark:text-stone-50">
                         {result.symbol}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300 truncate">
+                      <div className={`truncate text-sm ${HOME_MUTED_TEXT}`}>
                         {result.name}
                       </div>
                     </div>
                     <div className="ml-4 flex-shrink-0">
-                      <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                      <span
+                        className={`rounded px-2 py-1 text-xs ${HOME_SUBTLE_TEXT} bg-stone-100 dark:bg-stone-800`}
+                      >
                         {result.exchange}
                       </span>
                     </div>

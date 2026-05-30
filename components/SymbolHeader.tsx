@@ -8,66 +8,46 @@
  */
 
 import { SymbolData } from "@/types";
-import { useTheme } from "@/lib/theme-context";
+import {
+  SYMBOL_INSTRUMENT_PANEL,
+  SYMBOL_MUTED_TEXT,
+  SYMBOL_SECTION_LABEL,
+  SYMBOL_SUBTLE_TEXT,
+} from "@/lib/symbol-ui";
 
 export interface SymbolHeaderProps {
   symbolData: SymbolData;
 }
 
 export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const isPositive = symbolData.change >= 0;
   const changeColor = isPositive
-    ? "text-green-600 dark:text-green-400"
-    : "text-red-600 dark:text-red-400";
+    ? "text-green-700 dark:text-green-400"
+    : "text-red-700 dark:text-red-400";
 
   return (
     <div
-      className={`rounded-xl border p-4 sm:p-6 ${
-        isDark
-          ? "border-stone-700 bg-stone-800/60"
-          : "border-stone-200/90 bg-white/90"
-      }`}
+      className={SYMBOL_INSTRUMENT_PANEL}
       aria-label={`${symbolData.symbol} - ${symbolData.name}`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        {/* Symbol and Name */}
         <div>
-          <p
-            className={`text-[0.65rem] font-semibold uppercase tracking-[0.16em] ${
-              isDark ? "text-stone-400" : "text-stone-500"
-            }`}
-          >
-            Symbol snapshot
-          </p>
-          <h1
-            className={`text-2xl sm:text-3xl font-bold ${
-              isDark ? "text-stone-100" : "text-stone-900"
-            }`}
-          >
+          <p className={SYMBOL_SECTION_LABEL}>Symbol snapshot</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-50">
             {symbolData.symbol}
           </h1>
-          <p
-            className={`text-base sm:text-lg ${
-              isDark ? "text-stone-300" : "text-stone-600"
-            }`}
-          >
+          <p className={`text-base sm:text-lg ${SYMBOL_MUTED_TEXT}`}>
             {symbolData.name}
           </p>
         </div>
 
-        {/* Price and Change */}
         <div
           className="text-left sm:text-right"
           aria-live="polite"
           aria-atomic="true"
         >
           <div
-            className={`text-2xl sm:text-3xl font-bold ${
-              isDark ? "text-stone-100" : "text-stone-900"
-            }`}
+            className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-50"
             aria-label={`Current price: $${symbolData.price.toFixed(2)}`}
           >
             ${symbolData.price.toFixed(2)}
@@ -80,9 +60,7 @@ export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
             {symbolData.change.toFixed(2)} ({isPositive ? "+" : ""}
             {symbolData.changePercent.toFixed(2)}%)
           </div>
-          <div
-            className={`text-sm ${isDark ? "text-stone-400" : "text-stone-500"}`}
-          >
+          <div className={`text-sm ${SYMBOL_SUBTLE_TEXT}`}>
             Last updated: {new Date(symbolData.lastUpdated).toLocaleString()}
           </div>
         </div>

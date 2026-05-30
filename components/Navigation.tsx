@@ -12,6 +12,7 @@ import {
   SITE_NAV_MOBILE_LABEL,
   SITE_SHORT_NAME,
 } from "@/lib/site-seo";
+import { HOME_NAV_BAR, HOME_SEGMENTED_NAV } from "@/lib/home-ui";
 
 export interface NavigationProps {
   /** Override active section (e.g. tests); default: derived from URL */
@@ -38,7 +39,7 @@ export function Navigation({
 
   return (
     <nav
-      className="overflow-visible border-b border-stone-200 bg-white/95 backdrop-blur dark:border-stone-700 dark:bg-stone-900/95"
+      className={`overflow-visible backdrop-blur ${HOME_NAV_BAR}`}
       aria-label="Main navigation"
       data-testid="navigation"
       data-active-section={activeSection}
@@ -58,13 +59,15 @@ export function Navigation({
               <span className="text-base font-bold sm:hidden">
                 {SITE_NAV_MOBILE_LABEL}
               </span>
-              <span className="hidden text-[0.65rem] uppercase tracking-[0.16em] text-stone-500 dark:text-stone-400 sm:block">
+              <span className="hidden text-[0.65rem] uppercase tracking-[0.16em] text-stone-600 dark:text-stone-300 sm:block">
                 Markets · AI
               </span>
             </span>
           </Link>
 
-          <div className="hidden items-center gap-1 rounded-xl border border-stone-200/80 bg-stone-50/70 p-1 dark:border-stone-700 dark:bg-stone-800/60 md:flex">
+          <div
+            className={`hidden items-center gap-1 md:flex ${HOME_SEGMENTED_NAV}`}
+          >
             {MAIN_NAV.map((link) => (
               <Link
                 key={link.id}
@@ -73,7 +76,7 @@ export function Navigation({
                   ${
                     activeSection === link.id
                       ? "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900"
-                      : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-700 dark:hover:text-stone-100"
+                      : "text-stone-700 hover:bg-white hover:text-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-stone-50"
                   }`}
                 aria-current={activeSection === link.id ? "page" : undefined}
               >
@@ -100,7 +103,7 @@ export function Navigation({
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-md p-2 text-stone-600 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-stone-500 dark:text-stone-300 dark:hover:bg-stone-800 md:hidden"
+              className="rounded-md p-2 text-stone-700 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-stone-600 dark:text-stone-200 dark:hover:bg-stone-800 md:hidden"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-nav-menu"
               aria-label="Toggle navigation menu"
@@ -162,7 +165,7 @@ export function Navigation({
                   ${
                     activeSection === link.id
                       ? "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900"
-                      : "text-stone-600 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-stone-100"
+                      : "text-stone-700 hover:bg-white hover:text-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-stone-50"
                   }`}
                 aria-current={activeSection === link.id ? "page" : undefined}
               >

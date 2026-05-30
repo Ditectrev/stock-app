@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { HOME_SECTION_LABEL } from "@/lib/home-ui";
+import { HOME_MUTED_TEXT, HOME_SECTION_LABEL } from "@/lib/home-ui";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site-seo";
 
 const EXPLORE_LINKS = [
@@ -180,7 +180,7 @@ export function HomeHub({
             <Link
               key={link.id}
               href={link.href}
-              className="group flex items-start gap-3 rounded-xl border border-stone-200/90 bg-white/90 p-4 transition-colors hover:border-stone-400 dark:border-stone-700 dark:bg-stone-800/60 dark:hover:border-stone-500"
+              className="group flex items-start gap-3 rounded-xl border border-stone-200 bg-white p-4 transition-colors hover:border-stone-400 dark:border-stone-700 dark:bg-stone-900 dark:hover:border-stone-500"
             >
               <span className="mt-0.5 flex-shrink-0 rounded-md bg-stone-100 p-2 text-stone-700 dark:bg-stone-900 dark:text-stone-200">
                 {link.icon}
@@ -190,9 +190,9 @@ export function HomeHub({
                   <span className="font-semibold text-stone-900 dark:text-stone-100">
                     {link.label}
                   </span>
-                  <ExploreArrow className="text-sm text-stone-400" />
+                  <ExploreArrow className="text-sm text-stone-500 dark:text-stone-400" />
                 </span>
-                <span className="mt-0.5 block text-sm text-stone-500 dark:text-stone-400">
+                <span className={`mt-0.5 block text-sm ${HOME_MUTED_TEXT}`}>
                   {link.description}
                 </span>
               </span>
