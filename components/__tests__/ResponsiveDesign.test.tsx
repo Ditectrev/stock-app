@@ -181,21 +181,22 @@ describe("Responsive Design", () => {
       expect(grid!.classList.contains("sm:grid-cols-2")).toBe(true);
     });
 
-    it("should render KeyMetrics with 3-column grid at md breakpoint", () => {
+    it("should render KeyMetrics as a horizontal strip at lg breakpoint", () => {
       const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
       const grid = container.querySelector(".grid");
       expect(grid).not.toBeNull();
-      expect(grid!.classList.contains("md:grid-cols-3")).toBe(true);
+      expect(grid!.classList.contains("lg:flex")).toBe(true);
     });
 
-    it("should render TabNavigation with wider spacing at sm+", () => {
+    it("should render TabNavigation as a segmented control", () => {
       const onTabChange = vi.fn();
       const { container } = render(
         <TabNavigation activeTab="overview" onTabChange={onTabChange} />
       );
       const nav = container.querySelector("nav");
       expect(nav).not.toBeNull();
-      expect(nav!.className).toContain("sm:space-x-8");
+      expect(nav!.className).toContain("rounded-xl");
+      expect(nav!.className).toContain("p-1");
     });
 
     it("should render SymbolHeader price aligned right at sm+", () => {
@@ -225,31 +226,26 @@ describe("Responsive Design", () => {
       mockMatchMedia(1280);
     });
 
-    it("should render KeyMetrics with 4-column grid at lg breakpoint", () => {
+    it("should render KeyMetrics strip items with desktop padding", () => {
       const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
-      const grid = container.querySelector(".grid");
-      expect(grid).not.toBeNull();
-      expect(grid!.classList.contains("lg:grid-cols-4")).toBe(true);
+      const items = container.querySelectorAll("li");
+      expect(items.length).toBe(5);
+      items.forEach((item) => {
+        expect(item.className).toContain("lg:px-5");
+      });
     });
 
-    it("should render KeyMetrics with 5-column grid at xl breakpoint", () => {
-      const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
-      const grid = container.querySelector(".grid");
-      expect(grid).not.toBeNull();
-      expect(grid!.classList.contains("xl:grid-cols-5")).toBe(true);
-    });
-
-    it("should render KeyMetrics with larger padding at lg+", () => {
+    it("should render KeyMetrics with instrument panel padding at sm+", () => {
       const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
       const wrapper = container.firstElementChild as HTMLElement;
-      expect(wrapper.className).toContain("lg:p-8");
+      expect(wrapper.className).toContain("sm:p-6");
     });
 
-    it("should render KeyMetrics with larger gap at lg+", () => {
+    it("should render KeyMetrics with horizontal dividers at lg+", () => {
       const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
       const grid = container.querySelector(".grid");
       expect(grid).not.toBeNull();
-      expect(grid!.className).toContain("lg:gap-5");
+      expect(grid!.className).toContain("lg:divide-x");
     });
 
     it("should render SymbolHeader heading at sm:text-3xl for desktop", () => {
@@ -331,13 +327,12 @@ describe("Responsive Design", () => {
       expect(input.className).toContain("px-4");
     });
 
-    it("should render metric cards with adequate padding for touch", () => {
+    it("should render metric strip items with adequate padding for touch", () => {
       const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
-      // Metric cards have p-3 base padding (touch-friendly)
-      const cards = container.querySelectorAll(".rounded-lg.border");
-      expect(cards.length).toBeGreaterThan(0);
-      cards.forEach((card) => {
-        expect(card.className).toContain("p-3");
+      const items = container.querySelectorAll("li");
+      expect(items.length).toBeGreaterThan(0);
+      items.forEach((item) => {
+        expect(item.className).toContain("py-3");
       });
     });
 
@@ -348,8 +343,7 @@ describe("Responsive Design", () => {
       );
       const buttons = container.querySelectorAll("button");
       buttons.forEach((button) => {
-        // py-3 base padding for touch targets
-        expect(button.className).toContain("py-3");
+        expect(button.className).toContain("min-h-[44px]");
       });
     });
 

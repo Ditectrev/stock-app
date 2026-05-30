@@ -16,10 +16,7 @@ import {
   getMonthLabel,
 } from "@/lib/seasonal-utils";
 import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
-import {
-  SYMBOL_DIVIDER,
-  SYMBOL_SUBTLE_TEXT,
-} from "@/lib/symbol-ui";
+import { SYMBOL_DIVIDER, SYMBOL_SUBTLE_TEXT } from "@/lib/symbol-ui";
 
 export interface SeasonalHeatmapProps {
   data: SeasonalData | null | undefined;

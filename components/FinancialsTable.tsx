@@ -307,7 +307,10 @@ function SectionHeading({
         ?
       </span>
       {showSectionTooltip && (
-        <div className={SYMBOL_TOOLTIP_SURFACE} style={{ top: "calc(100% + 6px)", left: 0 }}>
+        <div
+          className={SYMBOL_TOOLTIP_SURFACE}
+          style={{ top: "calc(100% + 6px)", left: 0 }}
+        >
           {section.tooltip}
         </div>
       )}
@@ -351,7 +354,9 @@ function MetricCell({
 
   return (
     <div>
-      <dt className={`flex items-center gap-2 text-xs font-medium ${SYMBOL_SUBTLE_TEXT}`}>
+      <dt
+        className={`flex items-center gap-2 text-xs font-medium ${SYMBOL_SUBTLE_TEXT}`}
+      >
         {metric.label}
         {withTooltip && (
           <>
@@ -378,14 +383,22 @@ function MetricCell({
           </>
         )}
       </dt>
-      <dd className={`relative mt-1 font-mono text-lg font-semibold tabular-nums ${colors}`}>
+      <dd
+        className={`relative mt-1 font-mono text-lg font-semibold tabular-nums ${colors}`}
+      >
         {metric.value}
       </dd>
     </div>
   );
 }
 
-function MetricRow({ metric, isDark }: { metric: MetricItem; isDark: boolean }) {
+function MetricRow({
+  metric,
+  isDark,
+}: {
+  metric: MetricItem;
+  isDark: boolean;
+}) {
   const [showTooltip, setShowTooltip] = useState(false);
   const colors = getFavorabilityColors(metric.favorability, isDark);
 
@@ -416,7 +429,9 @@ function MetricRow({ metric, isDark }: { metric: MetricItem; isDark: boolean }) 
           </div>
         )}
       </div>
-      <span className={`shrink-0 font-mono text-sm font-semibold tabular-nums ${colors}`}>
+      <span
+        className={`shrink-0 font-mono text-sm font-semibold tabular-nums ${colors}`}
+      >
         {metric.value}
       </span>
     </div>

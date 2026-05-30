@@ -8,8 +8,7 @@ export const SYMBOL_SECTION_LABEL =
 export const SYMBOL_PANEL_TITLE =
   "text-lg font-semibold tracking-tight text-stone-900 dark:text-stone-100";
 
-export const SYMBOL_DIVIDER =
-  "border-stone-200 dark:border-stone-700";
+export const SYMBOL_DIVIDER = "border-stone-200 dark:border-stone-700";
 
 export const SYMBOL_MUTED_TEXT = "text-stone-600 dark:text-stone-300";
 

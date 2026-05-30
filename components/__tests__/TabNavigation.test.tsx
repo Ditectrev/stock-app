@@ -28,7 +28,8 @@ describe("TabNavigation", () => {
     render(<TabNavigation activeTab="overview" onTabChange={onTabChange} />);
 
     const overviewTab = screen.getByText("Overview");
-    expect(overviewTab).toHaveClass("border-blue-500");
+    expect(overviewTab).toHaveClass("bg-stone-900");
+    expect(overviewTab).toHaveClass("text-stone-100");
   });
 
   it("should call onTabChange when tab is clicked", () => {
@@ -46,10 +47,12 @@ describe("TabNavigation", () => {
     render(<TabNavigation activeTab="technicals" onTabChange={onTabChange} />);
 
     const technicalsTab = screen.getByText("Technicals");
-    expect(technicalsTab).toHaveClass("border-blue-500");
+    expect(technicalsTab).toHaveClass("bg-stone-900");
+    expect(technicalsTab).toHaveClass("text-stone-100");
 
     const overviewTab = screen.getByText("Overview");
-    expect(overviewTab).toHaveClass("border-transparent");
+    expect(overviewTab).toHaveClass("text-stone-600");
+    expect(overviewTab).not.toHaveClass("bg-stone-900");
   });
 
   it("should set aria-selected on active tab", () => {

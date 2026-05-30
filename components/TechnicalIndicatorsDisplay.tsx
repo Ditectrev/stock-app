@@ -50,9 +50,7 @@ function getSignalAccent(signal: Signal, isDark: boolean) {
     case "overpriced":
       return {
         border: isDark ? "border-red-500/70" : "border-red-500",
-        badge: isDark
-          ? "bg-red-950/50 text-red-300"
-          : "bg-red-50 text-red-700",
+        badge: isDark ? "bg-red-950/50 text-red-300" : "bg-red-50 text-red-700",
         text: isDark ? "text-red-300" : "text-red-700",
       };
     case "underpriced":
@@ -155,7 +153,9 @@ export function TechnicalIndicatorsDisplay({
         data-testid="sentiment-gauge"
         className={`mb-6 flex flex-col gap-3 border-l-4 py-3 pl-4 sm:flex-row sm:items-center sm:justify-between ${sentiment.border}`}
       >
-        <p className={`text-sm font-semibold sm:text-base ${SYMBOL_PANEL_TITLE}`}>
+        <p
+          className={`text-sm font-semibold sm:text-base ${SYMBOL_PANEL_TITLE}`}
+        >
           {SENTIMENT_LABELS[indicators.overallSentiment]}
         </p>
         <span
