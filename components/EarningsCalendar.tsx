@@ -13,6 +13,12 @@ import { EarningsEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import {
+  CALENDAR_DAY_HEADER,
+  CALENDAR_TODAY_BADGE,
+  CALENDAR_TODAY_HEADER,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 export interface EarningsCalendarProps {
   data?: EarningsEvent[];
@@ -200,31 +206,21 @@ export function EarningsCalendar({
               <div key={dateKey} data-testid={`day-group-${dateKey}`}>
                 {/* Day header */}
                 <div
-                  className={`sticky top-0 z-10 px-3 py-2 rounded-t-lg text-sm font-semibold ${
-                    isToday
-                      ? isDark
-                        ? "bg-blue-900/40 text-blue-300 border-b border-blue-500/30"
-                        : "bg-blue-50 text-blue-800 border-b border-blue-200"
-                      : isDark
-                        ? "bg-gray-700 text-gray-200 border-b border-gray-600"
-                        : "bg-gray-100 text-gray-800 border-b border-gray-200"
+                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 text-sm font-semibold ${
+                    isToday ? CALENDAR_TODAY_HEADER : CALENDAR_DAY_HEADER
                   }`}
                   data-testid={`day-header-${dateKey}`}
                 >
                   {formatDayHeader(dateKey)}
                   {isToday && (
                     <span
-                      className={`ml-2 text-xs font-normal px-1.5 py-0.5 rounded ${
-                        isDark
-                          ? "bg-blue-800 text-blue-200"
-                          : "bg-blue-200 text-blue-700"
-                      }`}
+                      className={`ml-2 rounded px-1.5 py-0.5 text-xs font-normal ${CALENDAR_TODAY_BADGE}`}
                     >
                       Today
                     </span>
                   )}
                   <span
-                    className={`ml-2 text-xs font-normal ${isDark ? "text-gray-300" : "text-gray-500"}`}
+                    className={`ml-2 text-xs font-normal ${HOME_SUBTLE_TEXT}`}
                   >
                     ({events.length} event{events.length !== 1 ? "s" : ""})
                   </span>
@@ -258,10 +254,10 @@ export function EarningsCalendar({
                         {/* Symbol badge */}
                         <button
                           onClick={() => onSymbolClick?.(event.symbol)}
-                          className={`text-xs font-semibold px-2 py-0.5 rounded shrink-0 w-16 text-center inline-block cursor-pointer transition-colors ${
+                          className={`inline-block w-16 shrink-0 cursor-pointer rounded px-2 py-0.5 text-center text-xs font-semibold transition-colors ${
                             isDark
-                              ? "bg-blue-900/40 text-blue-300 hover:bg-blue-800/60"
-                              : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                              ? "bg-stone-800 text-stone-100 hover:bg-stone-700"
+                              : "bg-stone-100 text-stone-800 hover:bg-stone-200"
                           }`}
                           data-testid={`symbol-${event.id}`}
                           aria-label={`View details for ${event.symbol}`}

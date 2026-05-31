@@ -8,11 +8,11 @@
  * Requirements: 4.2, 11.2, 11.3, 11.4, 11.5
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { ChartWrapper, IChartApi } from "./ChartWrapper";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
-import { homeChipClasses } from "@/lib/home-ui";
+import { homeChipClasses, HOME_CALLOUT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
 import {
   calculateRSI,
   calculateMACD,
@@ -469,11 +469,7 @@ export function ChartComponent({
 
       {/* Hovered Point Info */}
       {hoveredPoint && (
-        <div
-          className={`mb-2 p-2 rounded text-xs sm:text-sm ${
-            isDark ? "bg-gray-800 text-gray-200" : "bg-gray-50 text-gray-900"
-          }`}
-        >
+        <div className={`mb-2 rounded p-2 text-xs sm:text-sm ${HOME_CALLOUT}`}>
           <span className="font-semibold">
             {new Date(hoveredPoint.timestamp).toLocaleDateString()}
           </span>
@@ -503,9 +499,7 @@ export function ChartComponent({
       </ChartWrapper>
 
       {/* Chart Instructions */}
-      <div
-        className={`mt-2 text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-      >
+      <div className={`mt-2 text-xs ${HOME_SUBTLE_TEXT}`}>
         <p className="hidden sm:block">
           💡 Use mouse wheel to zoom, drag to pan, hover for details
         </p>

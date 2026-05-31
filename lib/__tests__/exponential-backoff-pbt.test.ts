@@ -18,7 +18,7 @@ vi.mock("@/lib/logger", () => ({
   },
 }));
 
-import { retryWithBackoff, isRetryableError } from "@/lib/retry";
+import { retryWithBackoff } from "@/lib/retry";
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -6,7 +6,7 @@
  * Validates: Requirements 18.1, 18.2, 18.3, 18.4, 18.5
  */
 
-import { describe, it, expect, vi, beforeAll } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import { configureAxe } from "vitest-axe";
 import * as matchers from "vitest-axe/matchers";

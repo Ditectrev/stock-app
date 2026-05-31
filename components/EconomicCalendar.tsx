@@ -13,7 +13,13 @@ import { EconomicEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { HOME_PANEL_TITLE, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
+import {
+  CALENDAR_DAY_HEADER,
+  CALENDAR_TODAY_BADGE,
+  CALENDAR_TODAY_HEADER,
+  HOME_PANEL_TITLE,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 const COUNTRIES = [
   "All",
@@ -310,31 +316,21 @@ export function EconomicCalendar({
               <div key={dateKey} data-testid={`day-group-${dateKey}`}>
                 {/* Day header */}
                 <div
-                  className={`sticky top-0 z-10 px-3 py-2 rounded-t-lg text-sm font-semibold ${
-                    isToday
-                      ? isDark
-                        ? "bg-blue-900/40 text-blue-300 border-b border-blue-500/30"
-                        : "bg-blue-50 text-blue-800 border-b border-blue-200"
-                      : isDark
-                        ? "bg-gray-700 text-gray-200 border-b border-gray-600"
-                        : "bg-gray-100 text-gray-800 border-b border-gray-200"
+                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 text-sm font-semibold ${
+                    isToday ? CALENDAR_TODAY_HEADER : CALENDAR_DAY_HEADER
                   }`}
                   data-testid={`day-header-${dateKey}`}
                 >
                   {formatDayHeader(dateKey)}
                   {isToday && (
                     <span
-                      className={`ml-2 text-xs font-normal px-1.5 py-0.5 rounded ${
-                        isDark
-                          ? "bg-blue-800 text-blue-200"
-                          : "bg-blue-200 text-blue-700"
-                      }`}
+                      className={`ml-2 rounded px-1.5 py-0.5 text-xs font-normal ${CALENDAR_TODAY_BADGE}`}
                     >
                       Today
                     </span>
                   )}
                   <span
-                    className={`ml-2 text-xs font-normal ${isDark ? "text-gray-300" : "text-gray-500"}`}
+                    className={`ml-2 text-xs font-normal ${HOME_SUBTLE_TEXT}`}
                   >
                     ({events.length} event{events.length !== 1 ? "s" : ""})
                   </span>

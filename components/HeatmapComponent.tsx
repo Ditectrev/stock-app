@@ -13,12 +13,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import {
-  HOME_CHIP,
-  HOME_MUTED_TEXT,
-  HOME_SUBTLE_TEXT,
-  homeChipClasses,
-} from "@/lib/home-ui";
+import { HOME_CHIP, HOME_SUBTLE_TEXT, homeChipClasses } from "@/lib/home-ui";
 
 export type HeatmapTimePeriod =
   | "1D"

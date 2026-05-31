@@ -11,10 +11,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import type { ScreenerFilter, ScreenerPreset } from "@/types";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+import {
+  HOME_INPUT_SM,
+  HOME_MUTED_TEXT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 export interface ScreenerPresetsProps {
   currentFilters: ScreenerFilter[];
@@ -105,7 +108,7 @@ export function ScreenerPresets({
   if (loading) {
     return (
       <div
-        className="text-sm text-gray-500 dark:text-gray-300"
+        className={`text-sm ${HOME_SUBTLE_TEXT}`}
         data-testid="presets-loading"
       >
         Loading presets…
@@ -117,7 +120,7 @@ export function ScreenerPresets({
     <div data-testid="screener-presets" className="space-y-3">
       {/* Preset row */}
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
+        <span className={`shrink-0 text-sm font-medium ${HOME_MUTED_TEXT}`}>
           Presets:
         </span>
         <div
@@ -130,10 +133,10 @@ export function ScreenerPresets({
               type="button"
               onClick={() => handlePresetClick(preset)}
               data-testid={`preset-${preset.id}`}
-              className={`relative shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+              className={`relative shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-600 ${
                 selectedPresetId === preset.id
-                  ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-300"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700"
+                  ? "border-stone-600 bg-stone-900 text-stone-50 dark:border-stone-400 dark:bg-stone-100 dark:text-stone-900"
+                  : "border-stone-200 bg-white text-stone-700 hover:border-stone-400 hover:bg-stone-50 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-stone-500 dark:hover:bg-stone-700"
               }`}
               aria-pressed={selectedPresetId === preset.id}
               title={preset.description}
@@ -159,7 +162,7 @@ export function ScreenerPresets({
             type="button"
             onClick={() => setShowSaveForm(true)}
             disabled={currentFilters.length === 0}
-            className="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+            className={`${HOME_SECONDARY_BUTTON} px-3 py-1.5 text-xs disabled:opacity-50`}
             data-testid="save-preset-btn"
           >
             Save Current Filters
@@ -172,7 +175,7 @@ export function ScreenerPresets({
             <div className="space-y-1">
               <label
                 htmlFor="preset-name"
-                className="text-xs font-medium text-gray-600 dark:text-gray-300"
+                className={`text-xs font-medium ${HOME_SUBTLE_TEXT}`}
               >
                 Name
               </label>
@@ -182,14 +185,14 @@ export function ScreenerPresets({
                 value={saveName}
                 onChange={(e) => setSaveName(e.target.value)}
                 placeholder="My preset"
-                className="rounded border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className={HOME_INPUT_SM}
                 data-testid="preset-name-input"
               />
             </div>
             <div className="space-y-1">
               <label
                 htmlFor="preset-description"
-                className="text-xs font-medium text-gray-600 dark:text-gray-300"
+                className={`text-xs font-medium ${HOME_SUBTLE_TEXT}`}
               >
                 Description
               </label>
@@ -199,7 +202,7 @@ export function ScreenerPresets({
                 value={saveDescription}
                 onChange={(e) => setSaveDescription(e.target.value)}
                 placeholder="Optional description"
-                className="rounded border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className={HOME_INPUT_SM}
                 data-testid="preset-description-input"
               />
             </div>
@@ -207,7 +210,7 @@ export function ScreenerPresets({
               type="button"
               onClick={handleSave}
               disabled={saving || !saveName.trim()}
-              className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className={`${HOME_PRIMARY_BUTTON} px-3 py-1.5 text-xs disabled:opacity-50`}
               data-testid="save-preset-confirm"
             >
               {saving ? "Saving…" : "Save"}
@@ -219,7 +222,7 @@ export function ScreenerPresets({
                 setSaveName("");
                 setSaveDescription("");
               }}
-              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+              className={`${HOME_SECONDARY_BUTTON} px-3 py-1.5 text-xs`}
               data-testid="save-preset-cancel"
             >
               Cancel

@@ -16,10 +16,8 @@ import { ErrorMessage } from "@/components/ErrorMessage";
 import {
   HOME_CHIP,
   HOME_INSTRUMENT_PANEL,
-  HOME_MUTED_TEXT,
   HOME_PANEL_TITLE,
   HOME_SECTION_LABEL,
-  HOME_SUBTLE_TEXT,
   homeChipClasses,
 } from "@/lib/home-ui";
 
@@ -280,7 +278,7 @@ export function SectorHub({
 
               <div className="flex items-center justify-between">
                 <p
-                  className={`text-sm font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}
+                  className={`text-sm font-medium ${isDark ? "text-stone-100" : "text-stone-900"}`}
                 >
                   {sector.sector}
                 </p>
@@ -295,7 +293,7 @@ export function SectorHub({
               {/* Tooltip on hover */}
               {isHovered && SECTOR_DESCRIPTIONS[sector.sector] && (
                 <div
-                  className={`mt-2 text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
+                  className={`mt-2 text-xs ${isDark ? "text-stone-300" : "text-stone-600"}`}
                   role="tooltip"
                   data-testid={`tooltip-${sector.sector.replace(/\s+/g, "-")}`}
                 >
@@ -312,7 +310,7 @@ export function SectorHub({
         <div className="mt-6" data-testid="comparison-view">
           <div className="flex items-center justify-between mb-3">
             <h4
-              className={`text-sm font-semibold ${isDark ? "text-gray-300" : "text-gray-700"}`}
+              className={`text-sm font-semibold ${isDark ? "text-stone-200" : "text-stone-700"}`}
             >
               Sector Comparison
             </h4>
@@ -334,12 +332,12 @@ export function SectorHub({
               return (
                 <div key={sector.sector} className="flex items-center gap-3">
                   <span
-                    className={`text-xs w-40 truncate ${isDark ? "text-gray-300" : "text-gray-700"}`}
+                    className={`w-40 truncate text-xs ${isDark ? "text-stone-300" : "text-stone-700"}`}
                   >
                     {sector.sector}
                   </span>
                   <div
-                    className={`flex-1 h-4 rounded ${isDark ? "bg-gray-700" : "bg-gray-100"}`}
+                    className={`h-4 flex-1 rounded ${isDark ? "bg-stone-700" : "bg-stone-100"}`}
                   >
                     <div
                       className={`h-full rounded ${isPositive ? "bg-green-500" : "bg-red-500"}`}

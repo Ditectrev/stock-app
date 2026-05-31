@@ -12,6 +12,14 @@ import {
   apiKeyManagerService,
   type BYOKProvider,
 } from "@/services/api-key-manager.service";
+import {
+  HOME_INPUT,
+  HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
+  HOME_PRIMARY_BUTTON,
+  HOME_RANGE_BUTTON_ACTIVE,
+  HOME_RANGE_BUTTON_IDLE,
+} from "@/lib/home-ui";
 
 const PROVIDERS: Array<{
   id: BYOKProvider;
@@ -159,10 +167,10 @@ export default function APIKeyManager({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+        <h3 className={`text-base ${HOME_MUTED_TEXT} font-semibold`}>
           AI Provider API Keys
         </h3>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+        <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
           Keys are encrypted and stored in your Appwrite account scope for
           server-side BYOK usage.
         </p>
@@ -176,15 +184,15 @@ export default function APIKeyManager({
           return (
             <div
               key={provider.id}
-              className={`rounded-lg border p-4 transition-colors ${
-                isSelected
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
-                  : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+              className={`${HOME_INSTRUMENT_PANEL} !p-4 transition-colors ${
+                isSelected ? "ring-1 ring-stone-600 dark:ring-stone-400" : ""
               }`}
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                  <span
+                    className={`text-sm font-medium text-stone-900 dark:text-stone-50`}
+                  >
                     {provider.name}
                   </span>
                   {row.isStored && (
@@ -210,10 +218,10 @@ export default function APIKeyManager({
                   {row.isStored && onProviderSelect && (
                     <button
                       onClick={() => onProviderSelect(provider.id)}
-                      className={`text-xs px-2 py-1 rounded transition-colors ${
+                      className={`rounded px-2 py-1 text-xs transition-colors ${
                         isSelected
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                          ? HOME_RANGE_BUTTON_ACTIVE
+                          : HOME_RANGE_BUTTON_IDLE
                       }`}
                       aria-pressed={isSelected}
                     >
@@ -224,7 +232,7 @@ export default function APIKeyManager({
                     href={provider.docsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-500 hover:underline"
+                    className={`text-xs ${HOME_MUTED_TEXT} underline-offset-2 hover:underline`}
                     aria-label={`Get ${provider.name} API key`}
                   >
                     Get key
@@ -238,12 +246,12 @@ export default function APIKeyManager({
                     type="text"
                     value={row.inputValue}
                     readOnly
-                    className="flex-1 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded px-3 py-1.5 text-gray-500 dark:text-gray-400 font-mono"
+                    className={`flex-1 font-mono text-sm ${HOME_INPUT} bg-stone-50 dark:bg-stone-950`}
                     aria-label={`${provider.name} API key (stored)`}
                   />
                   <button
                     onClick={() => handleEdit(provider.id)}
-                    className="text-xs text-blue-500 hover:underline"
+                    className={`text-xs ${HOME_MUTED_TEXT} underline-offset-2 hover:underline`}
                     aria-label={`Edit ${provider.name} API key`}
                   >
                     Edit
@@ -270,7 +278,7 @@ export default function APIKeyManager({
                           })
                         }
                         placeholder={provider.placeholder}
-                        className="w-full text-sm border border-gray-200 dark:border-gray-600 rounded px-3 py-1.5 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-mono pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={`w-full font-mono ${HOME_INPUT} pr-10`}
                         aria-label={`${provider.name} API key input`}
                         aria-describedby={
                           row.validationError
@@ -286,7 +294,7 @@ export default function APIKeyManager({
                         onClick={() =>
                           updateRow(provider.id, { showKey: !row.showKey })
                         }
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 ${HOME_SUBTLE_TEXT} hover:text-stone-900 dark:hover:text-stone-50`}
                         aria-label={row.showKey ? "Hide key" : "Show key"}
                       >
                         {row.showKey ? (
@@ -331,7 +339,7 @@ export default function APIKeyManager({
                     <button
                       onClick={() => handleSave(provider.id)}
                       disabled={row.isValidating || !row.inputValue.trim()}
-                      className="text-sm px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className={`${HOME_PRIMARY_BUTTON} px-3 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-50`}
                       aria-label={`Save ${provider.name} API key`}
                     >
                       {row.isValidating ? "Validating…" : "Save"}

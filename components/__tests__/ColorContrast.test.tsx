@@ -84,15 +84,14 @@ describe("Color Contrast Compliance (Req 18.3)", () => {
   });
 
   describe("LoadingSpinner", () => {
-    it("uses text-gray-300 (not text-gray-400) for message text in dark mode", () => {
+    it("uses readable stone text (not text-gray-400) for message text in dark mode", () => {
       const { container } = render(
         <LoadingSpinner message="Loading data..." />
       );
       const messageEl = container.querySelector("p");
       expect(messageEl).not.toBeNull();
       const cls = messageEl!.className;
-      // Should use gray-300 in dark mode for sufficient contrast
-      expect(cls).toContain("dark:text-gray-300");
+      expect(cls).toContain("dark:text-stone-200");
       expect(cls).not.toContain("dark:text-gray-400");
     });
   });

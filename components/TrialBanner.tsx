@@ -16,6 +16,7 @@ import {
   postEmailOtpVerify,
 } from "@/lib/auth/trial-auth-navigation";
 import { describeAuthQueryError } from "@/lib/auth/auth-query-messages";
+import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 /** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
 const TRIAL_STATUS_SYNC_MS = 30_000;
@@ -304,7 +305,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
             <button
               type="button"
               onClick={() => openAuthModal(true)}
-              className="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-700"
+              className={`${HOME_PRIMARY_BUTTON} px-3 py-1 text-xs`}
               data-testid="trial-sign-in-btn"
             >
               Sign in

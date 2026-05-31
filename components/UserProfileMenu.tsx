@@ -2,6 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  HOME_MUTED_TEXT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 type AuthUser = {
   id: string;
@@ -82,7 +87,6 @@ export function UserProfileMenu() {
       }
     }
 
-    // Register after the opening click finishes so we do not close immediately.
     const timer = window.setTimeout(() => {
       document.addEventListener("click", handleClickOutside);
     }, 0);
@@ -107,16 +111,14 @@ export function UserProfileMenu() {
   }
 
   if (loading) {
-    return (
-      <span className="text-xs text-gray-500 dark:text-gray-400 px-1">…</span>
-    );
+    return <span className={`px-1 text-xs ${HOME_SUBTLE_TEXT}`}>…</span>;
   }
 
   if (!user) {
     return (
       <Link
         href="/pricing?signin=1"
-        className="rounded-md px-2 py-1.5 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+        className={`rounded-lg px-2 py-1.5 text-sm ${HOME_MUTED_TEXT} hover:bg-stone-100 dark:hover:bg-stone-800`}
       >
         Sign in
       </Link>
@@ -131,20 +133,22 @@ export function UserProfileMenu() {
           event.stopPropagation();
           setOpen((prev) => !prev);
         }}
-        className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1.5 text-left hover:bg-gray-100 dark:hover:bg-gray-800"
+        className="flex items-center gap-2 rounded-lg border border-stone-200 px-2 py-1.5 text-left hover:bg-stone-100 dark:border-stone-700 dark:hover:bg-stone-800"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={`Account menu, signed in as ${user.email}`}
         data-testid="user-profile-menu-trigger"
       >
-        <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
+        <span
+          className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-sm font-semibold ${HOME_PRIMARY_BUTTON}`}
+        >
           {initials}
         </span>
-        <span className="hidden truncate max-w-[9rem] text-sm font-medium text-gray-900 dark:text-gray-100 sm:inline">
+        <span className="hidden max-w-[9rem] truncate text-sm font-medium text-stone-900 dark:text-stone-50 sm:inline">
           {label}
         </span>
         <svg
-          className={`h-4 w-4 flex-shrink-0 text-gray-500 transition-transform dark:text-gray-400 ${
+          className={`h-4 w-4 flex-shrink-0 text-stone-500 transition-transform dark:text-stone-400 ${
             open ? "rotate-180" : ""
           }`}
           viewBox="0 0 20 20"
@@ -163,14 +167,12 @@ export function UserProfileMenu() {
         <div
           role="menu"
           data-testid="user-profile-dropdown"
-          className="absolute right-0 top-[calc(100%+0.5rem)] w-72 rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-900"
+          className="absolute right-0 top-[calc(100%+0.5rem)] w-72 rounded-lg border border-stone-200 bg-white shadow-xl dark:border-stone-700 dark:bg-stone-900"
           onClick={(event) => event.stopPropagation()}
         >
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Signed in as
-            </p>
-            <p className="mt-0.5 text-sm font-medium text-gray-900 dark:text-gray-100 break-all">
+          <div className="border-b border-stone-200 px-4 py-3 dark:border-stone-700">
+            <p className={`text-xs ${HOME_SUBTLE_TEXT}`}>Signed in as</p>
+            <p className="mt-0.5 break-all text-sm font-medium text-stone-900 dark:text-stone-50">
               {user.email}
             </p>
           </div>
@@ -179,7 +181,7 @@ export function UserProfileMenu() {
               href="/profile"
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+              className={`block px-4 py-2.5 text-sm ${HOME_MUTED_TEXT} hover:bg-stone-100 dark:hover:bg-stone-800`}
             >
               User Profile
             </Link>
@@ -187,7 +189,7 @@ export function UserProfileMenu() {
               type="button"
               role="menuitem"
               onClick={() => void handleSignOut()}
-              className="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+              className={`block w-full px-4 py-2.5 text-left text-sm ${HOME_MUTED_TEXT} hover:bg-stone-100 dark:hover:bg-stone-800`}
             >
               Sign Out
             </button>

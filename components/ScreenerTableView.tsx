@@ -9,6 +9,11 @@
 
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { ScreenerResult } from "@/types";
+import {
+  HOME_MUTED_TEXT,
+  HOME_SECONDARY_BUTTON,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -147,25 +152,27 @@ export function ScreenerTableView({
 
   if (results.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 text-center text-gray-500 dark:text-gray-300">
+      <div
+        className={`rounded-xl border border-stone-200 bg-white p-8 text-center dark:border-stone-700 dark:bg-stone-900 ${HOME_SUBTLE_TEXT}`}
+      >
         No results
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
+    <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-700 dark:bg-stone-900">
       <div className="overflow-x-auto -mx-0">
         <table
           className="w-full text-sm md:text-sm lg:text-base"
           aria-label="Screener results"
         >
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <tr className="border-b border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-950">
               {COLUMNS.map((col) => (
                 <th
                   key={col.field}
-                  className="px-3 md:px-4 lg:px-5 py-2 md:py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className={`cursor-pointer select-none px-3 py-2 text-left font-medium transition-colors hover:bg-stone-200 dark:hover:bg-stone-800 md:px-4 md:py-3 lg:px-5 ${HOME_MUTED_TEXT}`}
                   onClick={() => handleSort(col.field)}
                   aria-sort={
                     sort.field === col.field
@@ -199,17 +206,19 @@ export function ScreenerTableView({
               return (
                 <tr
                   key={row.symbol}
-                  className={`border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${rowBg}`}
+                  className={`cursor-pointer border-b border-stone-100 transition-colors hover:bg-stone-50 dark:border-stone-800 dark:hover:bg-stone-800/80 ${rowBg}`}
                   onClick={() => onSymbolClick?.(row.symbol)}
                   data-testid={`row-${row.symbol}`}
                 >
-                  <td className="px-3 py-2 font-medium text-gray-900 dark:text-gray-100">
+                  <td className="px-3 py-2 font-medium text-stone-900 dark:text-stone-50">
                     {row.symbol}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300 max-w-[200px] truncate">
+                  <td
+                    className={`max-w-[200px] truncate px-3 py-2 ${HOME_MUTED_TEXT}`}
+                  >
                     {row.name}
                   </td>
-                  <td className="px-3 py-2 text-gray-900 dark:text-gray-100 tabular-nums">
+                  <td className="px-3 py-2 tabular-nums text-stone-900 dark:text-stone-50">
                     {formatPrice(row.price)}
                   </td>
                   <td
@@ -218,21 +227,21 @@ export function ScreenerTableView({
                         ? "text-green-600 dark:text-green-400"
                         : row.changePercent < 0
                           ? "text-red-600 dark:text-red-400"
-                          : "text-gray-600 dark:text-gray-300"
+                          : HOME_MUTED_TEXT
                     }`}
                   >
                     {formatChangePercent(row.changePercent)}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300 tabular-nums">
+                  <td className={`px-3 py-2 tabular-nums ${HOME_MUTED_TEXT}`}>
                     {formatVolume(row.volume)}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300 tabular-nums">
+                  <td className={`px-3 py-2 tabular-nums ${HOME_MUTED_TEXT}`}>
                     {formatMarketCap(row.marketCap)}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300 tabular-nums">
+                  <td className={`px-3 py-2 tabular-nums ${HOME_MUTED_TEXT}`}>
                     {row.peRatio != null ? row.peRatio.toFixed(1) : "—"}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300">
+                  <td className={`px-3 py-2 ${HOME_MUTED_TEXT}`}>
                     {row.sector}
                   </td>
                   <td className="px-3 py-2">
@@ -242,7 +251,7 @@ export function ScreenerTableView({
                           ? "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
                           : row.valuationContext === "underpriced"
                             ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300"
-                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                            : "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-200"
                       }`}
                     >
                       {row.valuationContext}
@@ -257,23 +266,23 @@ export function ScreenerTableView({
 
       {/* Pagination */}
       {sorted.length > PAGE_SIZE && (
-        <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-3">
+        <div className="flex items-center justify-between border-t border-stone-200 px-3 py-3 sm:px-4 dark:border-stone-700">
           <button
             type="button"
             disabled={page === 0}
             onClick={() => setPage((p) => p - 1)}
-            className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+            className={`${HOME_SECONDARY_BUTTON} min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50`}
           >
             Previous
           </button>
-          <span className="text-sm text-gray-600 dark:text-gray-300">
+          <span className={`text-sm ${HOME_MUTED_TEXT}`}>
             Page {page + 1} of {totalPages}
           </span>
           <button
             type="button"
             disabled={page >= totalPages - 1}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+            className={`${HOME_SECONDARY_BUTTON} min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50`}
           >
             Next
           </button>

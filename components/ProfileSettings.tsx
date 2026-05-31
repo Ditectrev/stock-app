@@ -4,6 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import APIKeyManager from "@/components/APIKeyManager";
 import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
+  HOME_PANEL_TITLE,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
+import {
   EXPLANATIONS_PROVIDER_STORAGE_KEY,
   getDefaultProviderForTier,
   isProviderAllowedForTier,
@@ -31,7 +39,7 @@ function StatusNotice({ message }: { message: StatusMessage }) {
           ? "text-red-600 dark:text-red-400"
           : message.tone === "success"
             ? "text-green-700 dark:text-green-400"
-            : "text-gray-600 dark:text-gray-300"
+            : HOME_MUTED_TEXT
       }`}
       role="status"
     >
@@ -260,26 +268,17 @@ export function ProfileSettings() {
   }
 
   if (loading) {
-    return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        Loading profile…
-      </p>
-    );
+    return <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>Loading profile…</p>;
   }
 
   if (!user) {
     return (
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 space-y-4">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          User Profile
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+      <div className={`${HOME_INSTRUMENT_PANEL} space-y-4`}>
+        <h1 className={HOME_PANEL_TITLE}>User Profile</h1>
+        <p className={`text-sm ${HOME_MUTED_TEXT}`}>
           Sign in to manage your subscription, AI providers, and API keys.
         </p>
-        <Link
-          href="/pricing?signin=1"
-          className="inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
+        <Link href="/pricing?signin=1" className={HOME_PRIMARY_BUTTON}>
           Sign in
         </Link>
       </div>
@@ -289,31 +288,23 @@ export function ProfileSettings() {
   return (
     <div className="space-y-8 max-w-3xl">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-          User Profile
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300">{user.email}</p>
+        <h1 className={`text-2xl ${HOME_PANEL_TITLE}`}>User Profile</h1>
+        <p className={`text-sm ${HOME_MUTED_TEXT}`}>{user.email}</p>
         {user.name && (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {user.name}
-          </p>
+          <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>{user.name}</p>
         )}
       </header>
 
-      <section className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-3">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-          Subscription
-        </h2>
+      <section className={`${HOME_INSTRUMENT_PANEL} space-y-3 !p-5`}>
+        <h2 className={`text-lg ${HOME_PANEL_TITLE}`}>Subscription</h2>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
           <div>
-            <dt className="text-gray-500 dark:text-gray-400">Current plan</dt>
-            <dd className="font-medium text-blue-600 dark:text-blue-400">
-              {tier}
-            </dd>
+            <dt className={HOME_SUBTLE_TEXT}>Current plan</dt>
+            <dd className={`font-medium ${HOME_MUTED_TEXT}`}>{tier}</dd>
           </div>
           <div>
-            <dt className="text-gray-500 dark:text-gray-400">Active until</dt>
-            <dd className="font-medium text-gray-900 dark:text-gray-100">
+            <dt className={HOME_SUBTLE_TEXT}>Active until</dt>
+            <dd className="font-medium text-stone-900 dark:text-stone-50">
               {subscription.activeUntil
                 ? new Date(subscription.activeUntil).toLocaleDateString()
                 : hasPaidPlan
@@ -329,10 +320,7 @@ export function ProfileSettings() {
           </p>
         )}
         <div className="flex flex-wrap gap-2 pt-1">
-          <Link
-            href="/pricing"
-            className="inline-flex items-center rounded-md border border-blue-500 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-          >
+          <Link href="/pricing" className={HOME_SECONDARY_BUTTON}>
             Change plan
           </Link>
           {hasPaidPlan && (
@@ -341,7 +329,7 @@ export function ProfileSettings() {
                 type="button"
                 onClick={() => void handleOpenBillingPortal()}
                 disabled={openingBilling}
-                className="inline-flex items-center rounded-md border border-blue-500 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-50"
+                className={`${HOME_SECONDARY_BUTTON} disabled:opacity-50`}
               >
                 {openingBilling ? "Opening…" : "Manage billing"}
               </button>
@@ -363,12 +351,12 @@ export function ProfileSettings() {
         )}
       </section>
 
-      <section className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-4">
+      <section className={`${HOME_INSTRUMENT_PANEL} space-y-4 !p-5`}>
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className={`text-lg ${HOME_PANEL_TITLE}`}>
             Explanations provider
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
             Choose which AI powers metric explanations and chart analysis, then
             click Save to apply your choice across the app.
           </p>
@@ -392,23 +380,25 @@ export function ProfileSettings() {
                 onClick={() => handleSelectProvider(provider.id)}
                 className={`rounded-lg border p-4 text-left transition-colors ${
                   isPending
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30 ring-1 ring-blue-500"
-                    : "border-gray-200 dark:border-gray-700"
+                    ? "border-stone-600 bg-stone-100 ring-1 ring-stone-600 dark:border-stone-400 dark:bg-stone-800 dark:ring-stone-400"
+                    : "border-stone-200 dark:border-stone-700"
                 } ${
                   !allowed
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:border-blue-400"
+                    ? "cursor-not-allowed opacity-50"
+                    : "hover:border-stone-400 dark:hover:border-stone-500"
                 }`}
               >
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <p className="text-sm font-semibold text-stone-900 dark:text-stone-50">
                   {provider.name}
                   {isActive && (
-                    <span className="ml-2 text-xs font-normal text-blue-600 dark:text-blue-400">
+                    <span
+                      className={`ml-2 text-xs font-normal ${HOME_SUBTLE_TEXT}`}
+                    >
                       Active
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
                   {provider.subtitle}
                 </p>
               </button>
@@ -421,12 +411,12 @@ export function ProfileSettings() {
               type="button"
               onClick={handleSaveExplanationProvider}
               disabled={!hasUnsavedProvider}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`${HOME_PRIMARY_BUTTON} disabled:cursor-not-allowed disabled:opacity-50`}
             >
               Save explanations provider
             </button>
             {hasUnsavedProvider && (
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className={`text-xs ${HOME_SUBTLE_TEXT}`}>
                 You have unsaved changes.
               </p>
             )}
@@ -437,17 +427,15 @@ export function ProfileSettings() {
         )}
       </section>
 
-      <section className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-          API keys
-        </h2>
+      <section className={`${HOME_INSTRUMENT_PANEL} !p-5`}>
+        <h2 className={`mb-3 text-lg ${HOME_PANEL_TITLE}`}>API keys</h2>
         {canManageApiKeys ? (
           <APIKeyManager
             selectedProvider={selectedProvider}
             onProviderSelect={setSelectedProvider}
           />
         ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
             API key management is available on the BYOK plan.
           </p>
         )}

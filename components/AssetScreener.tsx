@@ -226,7 +226,7 @@ function Tooltip({ text }: { text: string }) {
     <span className="group relative ml-1 inline-flex">
       <button
         type="button"
-        className="cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-full"
+        className="cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-stone-400 dark:focus-visible:ring-offset-stone-900"
         aria-label="More info"
       >
         <svg

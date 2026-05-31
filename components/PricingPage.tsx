@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { PricingTier, PricingTierInfo } from "@/types";
+import { HOME_MUTED_TEXT } from "@/lib/home-ui";
 
 const CHECK_ICON = (
   <svg
@@ -236,7 +237,7 @@ export function PricingPage({
       {/* Confirmation feedback */}
       {selectedTier && selectedTier !== currentTier && (
         <p
-          className="mt-8 text-center text-sm text-blue-600 dark:text-blue-400"
+          className={`mt-8 text-center text-sm ${HOME_MUTED_TEXT}`}
           role="status"
           aria-live="polite"
         >

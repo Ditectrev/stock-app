@@ -57,6 +57,19 @@ export const HOME_FACTOR_GROUP =
 export const HOME_NAV_BAR =
   "border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950";
 
+/** Calendar “today” highlights — stone accent, not blue. */
+export const CALENDAR_TODAY_HEADER =
+  "border-b border-stone-400 bg-stone-200 text-stone-900 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100";
+
+export const CALENDAR_TODAY_BADGE =
+  "bg-stone-300 text-stone-900 dark:bg-stone-600 dark:text-stone-100";
+
+export const CALENDAR_TODAY_CELL =
+  "bg-stone-100 hover:bg-stone-200 dark:bg-stone-800/80 dark:hover:bg-stone-700/80";
+
+export const CALENDAR_DAY_HEADER =
+  "border-b border-stone-200 bg-stone-100 text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100";
+
 export function homeChipClasses(active: boolean): string {
   return active ? HOME_RANGE_BUTTON_ACTIVE : HOME_RANGE_BUTTON_IDLE;
 }

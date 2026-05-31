@@ -189,7 +189,9 @@ export function MatrixHeatmap({
                     <td
                       key={col.key}
                       className={`px-3 py-2 text-center text-xs font-medium cursor-pointer transition-transform ${textColor} ${
-                        isHovered ? "ring-2 ring-blue-400" : ""
+                        isHovered
+                          ? "ring-2 ring-stone-500 dark:ring-stone-400"
+                          : ""
                       }`}
                       style={{ backgroundColor: bgColor }}
                       data-testid={`matrix-cell-${row.key}-${col.key}`}

@@ -10,7 +10,14 @@
 
 import { useState, useCallback } from "react";
 import { ChartIndicator, PriceData } from "@/types";
-import { useTheme } from "@/lib/theme-context";
+import {
+  HOME_CALLOUT,
+  HOME_INPUT_SM,
+  HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
+  HOME_RANGE_BUTTON_ACTIVE,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 export interface TechnicalIndicatorOverlayProps {
   onIndicatorsChange: (indicators: ChartIndicator[]) => void;
@@ -68,8 +75,6 @@ export function TechnicalIndicatorOverlay({
   const [indicators, setIndicators] =
     useState<ChartIndicator[]>(initialIndicators);
   const [isExpanded, setIsExpanded] = useState(false);
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
 
   // Toggle indicator visibility
   const toggleIndicator = useCallback(
@@ -139,39 +144,27 @@ export function TechnicalIndicatorOverlay({
 
   return (
     <div
-      className={`technical-indicator-overlay border rounded-lg shadow-sm ${
-        isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-      }`}
+      className={`technical-indicator-overlay shadow-sm ${HOME_INSTRUMENT_PANEL}`}
     >
       {/* Header */}
       <div
-        className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${
-          isDark ? "hover:bg-gray-700" : "hover:bg-gray-50"
-        }`}
+        className="flex cursor-pointer items-center justify-between p-3 transition-colors hover:bg-stone-100 dark:hover:bg-stone-800"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-2">
-          <span
-            className={`font-semibold ${isDark ? "text-gray-100" : "text-gray-800"}`}
-          >
+          <span className={`font-semibold ${HOME_MUTED_TEXT}`}>
             Technical Indicators
           </span>
           {activeCount > 0 && (
             <span
-              className={`px-2 py-0.5 text-xs rounded-full ${
-                isDark
-                  ? "bg-blue-900 text-blue-200"
-                  : "bg-blue-100 text-blue-700"
-              }`}
+              className={`rounded-full px-2 py-0.5 text-xs ${HOME_RANGE_BUTTON_ACTIVE}`}
             >
               {activeCount} active
             </span>
           )}
         </div>
         <svg
-          className={`w-5 h-5 transition-transform ${
-            isExpanded ? "rotate-180" : ""
-          } ${isDark ? "text-gray-300" : "text-gray-500"}`}
+          className={`h-5 w-5 transition-transform ${isExpanded ? "rotate-180" : ""} ${HOME_SUBTLE_TEXT}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -187,50 +180,35 @@ export function TechnicalIndicatorOverlay({
 
       {/* Indicator List */}
       {isExpanded && (
-        <div
-          className={`border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}
-        >
-          <div className="p-3 space-y-3">
+        <div className="border-t border-stone-200 dark:border-stone-700">
+          <div className="space-y-3 p-3">
             {indicators.map((indicator, index) => (
               <div key={index} className="flex items-start gap-3">
-                {/* Toggle Checkbox */}
-                <label className="flex items-start gap-2 flex-1 cursor-pointer group">
+                <label className="group flex flex-1 cursor-pointer items-start gap-2">
                   <input
                     type="checkbox"
                     checked={indicator.visible}
                     onChange={() => toggleIndicator(index)}
-                    className="mt-1 w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    className="mt-1 h-4 w-4 rounded border-stone-300 text-stone-800 focus:ring-2 focus:ring-stone-600 dark:border-stone-600 dark:bg-stone-800 dark:focus:ring-stone-400"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`font-medium transition-colors ${
-                          isDark
-                            ? "text-gray-200 group-hover:text-blue-400"
-                            : "text-gray-800 group-hover:text-blue-600"
-                        }`}
+                        className={`font-medium transition-colors ${HOME_MUTED_TEXT} group-hover:text-stone-900 dark:group-hover:text-stone-50`}
                       >
                         {getIndicatorName(indicator)}
                       </span>
-                      {/* Color indicator */}
                       <span
-                        className={`w-3 h-3 rounded-full border ${
-                          isDark ? "border-gray-600" : "border-gray-300"
-                        }`}
+                        className="h-3 w-3 rounded-full border border-stone-300 dark:border-stone-600"
                         style={{ backgroundColor: indicator.color }}
                       />
                     </div>
-                    <p
-                      className={`text-xs mt-0.5 ${
-                        isDark ? "text-gray-300" : "text-gray-500"
-                      }`}
-                    >
+                    <p className={`mt-0.5 text-xs ${HOME_SUBTLE_TEXT}`}>
                       {getIndicatorDescription(indicator)}
                     </p>
                   </div>
                 </label>
 
-                {/* Period Input (for indicators that support it) */}
                 {indicator.period && indicator.visible && (
                   <input
                     type="number"
@@ -240,25 +218,14 @@ export function TechnicalIndicatorOverlay({
                     }
                     min="1"
                     max="200"
-                    className={`w-16 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-blue-500 ${
-                      isDark
-                        ? "bg-gray-700 border-gray-600 text-gray-200 focus:border-blue-500"
-                        : "bg-white border-gray-300 text-gray-900 focus:border-blue-500"
-                    }`}
+                    className={`w-16 ${HOME_INPUT_SM}`}
                   />
                 )}
               </div>
             ))}
           </div>
 
-          {/* Info Footer */}
-          <div
-            className={`px-3 py-2 border-t text-xs ${
-              isDark
-                ? "bg-gray-900 border-gray-700 text-gray-300"
-                : "bg-gray-50 border-gray-200 text-gray-600"
-            }`}
-          >
+          <div className={`border-t px-3 py-2 text-xs ${HOME_CALLOUT}`}>
             <p className="mb-2">
               💡 <strong>Quick Guide:</strong>
             </p>

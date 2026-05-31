@@ -13,7 +13,7 @@ const Footer = dynamic(
 function NavigationFallback() {
   return (
     <nav
-      className="border-b border-stone-200 bg-white/95 dark:border-stone-700 dark:bg-stone-900/95"
+      className="border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950"
       aria-hidden
     >
       <div className="mx-auto h-16 max-w-7xl px-4 xl:max-w-[1400px] sm:px-6" />
