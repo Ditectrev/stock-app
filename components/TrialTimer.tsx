@@ -7,7 +7,7 @@
  * Requirements: 21.9, 21.10, 21.12
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export interface TrialTimerProps {
   /** Remaining seconds when the component mounts */
@@ -24,37 +24,37 @@ function formatTime(totalSeconds: number): string {
 
 export function TrialTimer({ remainingSeconds, onExpired }: TrialTimerProps) {
   const [seconds, setSeconds] = useState(Math.max(0, remainingSeconds));
+  const expiredRef = useRef(false);
 
   const handleExpiry = useCallback(() => {
+    if (expiredRef.current) return;
+    expiredRef.current = true;
     onExpired();
   }, [onExpired]);
 
   useEffect(() => {
-    setSeconds(Math.max(0, remainingSeconds));
+    const initial = Math.max(0, remainingSeconds);
+    setSeconds(initial);
+    if (initial > 0) {
+      expiredRef.current = false;
+    }
   }, [remainingSeconds]);
 
-  const isExpired = seconds <= 0;
-
   useEffect(() => {
-    if (isExpired) {
-      handleExpiry();
-      return;
-    }
+    if (seconds <= 0) return;
 
     const interval = setInterval(() => {
-      setSeconds((prev) => {
-        const next = prev - 1;
-        if (next <= 0) {
-          clearInterval(interval);
-          handleExpiry();
-          return 0;
-        }
-        return next;
-      });
+      setSeconds((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isExpired, handleExpiry]);
+  }, [remainingSeconds, seconds > 0]);
+
+  useEffect(() => {
+    if (seconds <= 0) {
+      handleExpiry();
+    }
+  }, [seconds, handleExpiry]);
 
   const isLow = seconds <= 60;
 

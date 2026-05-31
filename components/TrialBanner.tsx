@@ -17,6 +17,9 @@ import {
 } from "@/lib/auth/trial-auth-navigation";
 import { describeAuthQueryError } from "@/lib/auth/auth-query-messages";
 
+/** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
+const TRIAL_STATUS_SYNC_MS = 30_000;
+
 export interface TrialBannerProps {
   /** Called when user successfully authenticates */
   onAuthenticated?: () => void;
@@ -77,6 +80,29 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
 
     init();
   }, []);
+
+  useEffect(() => {
+    if (!isActive || isAuthenticated) return;
+
+    const syncStatus = async () => {
+      try {
+        const status = await trialApiService.getTrialStatus();
+        setRemainingSeconds(status.remainingSeconds);
+        setIsActive(status.isActive);
+        setHasUsedTrial(status.hasUsedTrial);
+      } catch (err) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[trial] periodic status sync failed:", err);
+        }
+      }
+    };
+
+    const interval = setInterval(() => {
+      void syncStatus();
+    }, TRIAL_STATUS_SYNC_MS);
+
+    return () => clearInterval(interval);
+  }, [isActive, isAuthenticated]);
 
   useEffect(() => {
     const openAuth = () => openAuthModal(true);

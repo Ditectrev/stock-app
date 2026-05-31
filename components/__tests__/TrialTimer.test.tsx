@@ -114,8 +114,8 @@ describe("TrialTimer", () => {
     });
 
     expect(screen.getByTestId("trial-timer-display").textContent).toBe("0:00");
-    // onExpired called once from the countdown reaching 0, and should not keep firing
-    expect(onExpired.mock.calls.length).toBeGreaterThanOrEqual(1);
+    // onExpired called once when countdown reaches 0
+    expect(onExpired).toHaveBeenCalledTimes(1);
   });
 
   // --- Low time styling ---

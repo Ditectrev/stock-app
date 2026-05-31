@@ -1,6 +1,6 @@
 /**
  * POST /api/trial/start
- * Starts a new 15-minute trial session.
+ * Starts a new trial session.
  * Requirements: 21.1, 21.12
  */
 
