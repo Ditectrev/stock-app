@@ -106,7 +106,7 @@ export class YahooFinanceService {
     symbol: string,
     modules: string
   ): Promise<any> {
-    const { crumb, cookie } = await getCrumbSafe(this);
+    const { crumb, cookie } = await this.getCrumb();
 
     const url = crumb
       ? `${this.baseUrl}/v10/finance/quoteSummary/${symbol}?modules=${modules}&crumb=${encodeURIComponent(crumb)}`
@@ -454,7 +454,7 @@ export class YahooFinanceService {
         // For other periods, compute change from historical data
         const interval = period === "5d" ? "1d" : "1d";
         const url = `${this.baseUrl}/v8/finance/chart/${etf.symbol}?range=${period}&interval=${interval}`;
-        const { crumb, cookie } = await getCrumbSafe(this);
+        const { crumb, cookie } = await this.getCrumb();
 
         const headers: Record<string, string> = {
           Accept: "application/json",
@@ -1057,7 +1057,7 @@ export class YahooFinanceService {
         }
 
         const url = `${this.baseUrl}/v8/finance/chart/${etf.symbol}?range=${period}&interval=1d`;
-        const { crumb, cookie } = await getCrumbSafe(this);
+        const { crumb, cookie } = await this.getCrumb();
 
         const headers: Record<string, string> = {
           Accept: "application/json",
@@ -1163,7 +1163,7 @@ export class YahooFinanceService {
 
         // For other periods, compute change from historical data
         const url = `${this.baseUrl}/v8/finance/chart/${crypto.symbol}?range=${period}&interval=1d`;
-        const { crumb, cookie } = await getCrumbSafe(this);
+        const { crumb, cookie } = await this.getCrumb();
 
         const headers: Record<string, string> = {
           Accept: "application/json",
@@ -1308,7 +1308,7 @@ export class YahooFinanceService {
         }
 
         const url = `${this.baseUrl}/v8/finance/chart/${stock.symbol}?range=${period}&interval=1d`;
-        const { crumb, cookie } = await getCrumbSafe(this);
+        const { crumb, cookie } = await this.getCrumb();
 
         const headers: Record<string, string> = {
           Accept: "application/json",
@@ -1556,17 +1556,6 @@ export class YahooFinanceService {
         return { interval: "1d", period: "1y" };
     }
   }
-}
-
-// Helper to access private getCrumb from fetchQuoteSummary
-async function getCrumbSafe(
-  service: YahooFinanceService
-): Promise<{ crumb: string; cookie: string }> {
-  return (
-    service as YahooFinanceService & {
-      getCrumb(): Promise<{ crumb: string; cookie: string }>;
-    }
-  ).getCrumb();
 }
 
 // Export singleton instance
