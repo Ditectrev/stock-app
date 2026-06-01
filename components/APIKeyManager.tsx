@@ -19,6 +19,7 @@ import {
   HOME_PRIMARY_BUTTON,
   HOME_RANGE_BUTTON_ACTIVE,
   HOME_RANGE_BUTTON_IDLE,
+  HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
 
 const PROVIDERS: Array<{
