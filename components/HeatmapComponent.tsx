@@ -14,10 +14,14 @@ import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import {
+  getHeatmapFillColor,
+  getHeatmapNeutralLegendColor,
+  getHeatmapTextClass,
+} from "@/lib/heatmap-colors";
+import {
   HOME_CHIP,
   HOME_LEGEND_DIVIDER,
   HOME_LEGEND_TEXT,
-  HOME_MUTED_TEXT,
   HOME_SUBTLE_TEXT,
   homeChipClasses,
 } from "@/lib/home-ui";
@@ -73,24 +77,6 @@ export interface HeatmapComponentProps {
   refreshInterval?: number;
   /** Callback invoked at each refresh interval for the parent to re-fetch data */
   onRefresh?: () => void;
-}
-
-/**
- * Returns a background color string based on changePercent.
- * Green for positive, red for negative, intensity scales with magnitude.
- */
-function getTileColor(changePercent: number, isDark: boolean): string {
-  const clamped = Math.min(Math.abs(changePercent), 10);
-  // Intensity from 0.15 (near zero) to 0.9 (at ±10% or beyond)
-  const intensity = 0.15 + (clamped / 10) * 0.75;
-
-  if (changePercent === 0) {
-    return isDark ? "rgba(107,114,128,0.3)" : "rgba(156,163,175,0.3)";
-  }
-  if (changePercent > 0) {
-    return `rgba(34,197,94,${intensity})`;
-  }
-  return `rgba(239,68,68,${intensity})`;
 }
 
 function formatPercent(pct: number): string {
@@ -288,9 +274,8 @@ export function HeatmapComponent({
         data-testid="heatmap-grid"
       >
         {processedData.map((item) => {
-          const bgColor = getTileColor(item.changePercent, isDark);
-          const textColor =
-            item.changePercent === 0 ? HOME_MUTED_TEXT : "text-white";
+          const bgColor = getHeatmapFillColor(item.changePercent, isDark);
+          const textColor = getHeatmapTextClass(item.changePercent, isDark);
 
           return (
             <div
@@ -355,7 +340,7 @@ export function HeatmapComponent({
               "rgba(239,68,68,0.9)",
               "rgba(239,68,68,0.6)",
               "rgba(239,68,68,0.3)",
-              isDark ? "rgba(120,113,108,0.35)" : "rgba(168,162,158,0.35)",
+              getHeatmapNeutralLegendColor(isDark),
               "rgba(34,197,94,0.3)",
               "rgba(34,197,94,0.6)",
               "rgba(34,197,94,0.9)",

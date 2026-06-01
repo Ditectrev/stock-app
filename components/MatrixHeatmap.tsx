@@ -14,6 +14,11 @@ import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import {
+  getHeatmapFillColor,
+  getHeatmapNeutralLegendColor,
+  getHeatmapTextClass,
+} from "@/lib/heatmap-colors";
+import {
   HOME_INSTRUMENT_PANEL,
   HOME_LEGEND_DIVIDER,
   HOME_LEGEND_TEXT,
@@ -59,24 +64,6 @@ export interface MatrixHeatmapProps {
   onCellClick?: (cell: MatrixCellData) => void;
   /** Optional HeatmapData array for compatibility with base HeatmapComponent patterns */
   data?: HeatmapData[];
-}
-
-/**
- * Returns a background color string based on a numeric value.
- * Green for positive, red for negative, intensity scales with magnitude.
- * Requirement 25.11: color-code cells based on return values or metric values.
- */
-function getCellColor(value: number, isDark: boolean): string {
-  const clamped = Math.min(Math.abs(value), 10);
-  const intensity = 0.15 + (clamped / 10) * 0.75;
-
-  if (value === 0) {
-    return isDark ? "rgba(120,113,108,0.35)" : "rgba(168,162,158,0.35)";
-  }
-  if (value > 0) {
-    return `rgba(34,197,94,${intensity})`;
-  }
-  return `rgba(239,68,68,${intensity})`;
 }
 
 function formatCellValue(value: number): string {
@@ -172,10 +159,9 @@ export function MatrixHeatmap({
                   const cellKey = `${row.key}:${col.key}`;
                   const cell = cellMap.get(cellKey);
                   const value = cell?.value ?? 0;
-                  const bgColor = getCellColor(value, isDark);
+                  const bgColor = getHeatmapFillColor(value, isDark);
                   const isHovered = hoveredCell === cellKey;
-                  const textColor =
-                    value === 0 ? HOME_MUTED_TEXT : "text-white";
+                  const textColor = getHeatmapTextClass(value, isDark);
 
                   return (
                     <td
@@ -225,7 +211,7 @@ export function MatrixHeatmap({
               "rgba(239,68,68,0.9)",
               "rgba(239,68,68,0.6)",
               "rgba(239,68,68,0.3)",
-              isDark ? "rgba(120,113,108,0.35)" : "rgba(168,162,158,0.35)",
+              getHeatmapNeutralLegendColor(isDark),
               "rgba(34,197,94,0.3)",
               "rgba(34,197,94,0.6)",
               "rgba(34,197,94,0.9)",

@@ -125,22 +125,28 @@ describe("HeatmapComponent", () => {
   it("should apply green background for positive change", () => {
     render(<HeatmapComponent data={mockData} />);
     const tile = screen.getByTestId("heatmap-tile-AAPL");
-    // Positive → green rgba(34,197,94,...)
-    expect(tile.style.backgroundColor).toContain("34, 197, 94");
+    // Positive → green (light mode: green-600 base)
+    expect(tile.style.backgroundColor).toContain("22, 163, 74");
   });
 
   it("should apply red background for negative change", () => {
     render(<HeatmapComponent data={mockData} />);
     const tile = screen.getByTestId("heatmap-tile-MSFT");
-    // Negative → red rgba(239,68,68,...)
-    expect(tile.style.backgroundColor).toContain("239, 68, 68");
+    // Negative → red (light mode: red-600 base)
+    expect(tile.style.backgroundColor).toContain("220, 38, 38");
   });
 
   it("should apply neutral background for zero change", () => {
     render(<HeatmapComponent data={mockData} />);
     const tile = screen.getByTestId("heatmap-tile-JNJ");
-    // Zero → gray
-    expect(tile.style.backgroundColor).toContain("156, 163, 175");
+    // Zero → solid stone-200
+    expect(tile.style.backgroundColor).toMatch(/231,\s*229,\s*228/);
+  });
+
+  it("should use dark text on small moves in light mode", () => {
+    render(<HeatmapComponent data={mockData} />);
+    const tile = screen.getByTestId("heatmap-tile-JPM");
+    expect(tile.className).toContain("text-stone-900");
   });
 
   it("should vary color intensity based on magnitude", () => {

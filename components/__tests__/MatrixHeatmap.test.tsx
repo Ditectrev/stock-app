@@ -134,8 +134,8 @@ describe("MatrixHeatmap", () => {
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-AAPL-1D");
-    // Positive → green rgba(34,197,94,...)
-    expect(cell.style.backgroundColor).toContain("34, 197, 94");
+    // Positive → green (light mode: green-600 base)
+    expect(cell.style.backgroundColor).toContain("22, 163, 74");
   });
 
   it("should apply red background for negative values", () => {
@@ -143,8 +143,8 @@ describe("MatrixHeatmap", () => {
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-MSFT-1D");
-    // Negative → red rgba(239,68,68,...)
-    expect(cell.style.backgroundColor).toContain("239, 68, 68");
+    // Negative → red (light mode: red-600 base)
+    expect(cell.style.backgroundColor).toContain("220, 38, 38");
   });
 
   it("should apply neutral background for zero values", () => {
@@ -152,8 +152,8 @@ describe("MatrixHeatmap", () => {
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-MSFT-1W");
-    // Zero → neutral stone
-    expect(cell.style.backgroundColor).toContain("168, 162, 158");
+    // Zero → solid stone-200 in light mode
+    expect(cell.style.backgroundColor).toMatch(/231,\s*229,\s*228/);
   });
 
   it("should vary color intensity based on magnitude", () => {
@@ -287,6 +287,6 @@ describe("MatrixHeatmap", () => {
     const cell = screen.getByTestId("matrix-cell-AAPL-1D");
     expect(cell.textContent).toBe("+0.00%");
     // Should get neutral stone color
-    expect(cell.style.backgroundColor).toContain("168, 162, 158");
+    expect(cell.style.backgroundColor).toMatch(/231,\s*229,\s*228/);
   });
 });
