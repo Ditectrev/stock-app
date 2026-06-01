@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { SYMBOL_TOOLTIP_SURFACE } from "@/lib/symbol-ui";
 
 export interface TooltipProps {
   /** The content to display inside the tooltip */
@@ -67,10 +68,7 @@ export function Tooltip({
         <span
           id={tooltipId}
           role="tooltip"
-          className={`absolute z-50 max-w-xs px-3 py-2 text-sm rounded-lg shadow-lg
-            bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900
-            pointer-events-none whitespace-normal
-            ${positionClasses[position]}`}
+          className={`${SYMBOL_TOOLTIP_SURFACE} max-w-xs pointer-events-none whitespace-normal ${positionClasses[position]}`}
         >
           {content}
         </span>

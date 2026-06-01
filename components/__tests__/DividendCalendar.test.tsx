@@ -326,13 +326,13 @@ describe("DividendCalendar", () => {
   // --- Loading / Error / Empty states ---
 
   it("should show loading state when fetching data", () => {
-    (global.fetch as any).mockImplementation(() => new Promise(() => {}));
+    vi.mocked(global.fetch).mockImplementation(() => new Promise(() => {}));
     render(<DividendCalendar />);
     expect(screen.getByTestId("dividend-calendar-loading")).toBeDefined();
   });
 
   it("should show error state on fetch failure with retry button", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: async () => ({ success: false, error: "API error" }),
     });
@@ -346,7 +346,7 @@ describe("DividendCalendar", () => {
   });
 
   it("should fetch data from API when no data prop is provided", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockEvents }),
     });

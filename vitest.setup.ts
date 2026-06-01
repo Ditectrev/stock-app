@@ -29,7 +29,7 @@ const localStorageMock = {
   removeItem: () => {},
   clear: () => {},
 };
-global.localStorage = localStorageMock as any;
+global.localStorage = localStorageMock as Storage;
 
 // Mock HTMLCanvasElement and CanvasRenderingContext2D
 HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
@@ -57,7 +57,7 @@ HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
   transform: vi.fn(),
   rect: vi.fn(),
   clip: vi.fn(),
-})) as any;
+})) as unknown as CanvasRenderingContext2D;
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({

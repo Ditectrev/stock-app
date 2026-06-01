@@ -106,7 +106,7 @@ describe("EconomicCalendar", () => {
 
     const lowBadge = screen.getByTestId("badge-4");
     expect(lowBadge.textContent).toBe("low");
-    expect(lowBadge.className).toContain("bg-gray-100");
+    expect(lowBadge.className).toContain("bg-stone-100");
   });
 
   it("should display previous, forecast, and actual values when available", () => {
@@ -199,13 +199,13 @@ describe("EconomicCalendar", () => {
   });
 
   it("should show loading state when fetching data", () => {
-    (global.fetch as any).mockImplementation(() => new Promise(() => {}));
+    vi.mocked(global.fetch).mockImplementation(() => new Promise(() => {}));
     render(<EconomicCalendar />);
     expect(screen.getByTestId("economic-calendar-loading")).toBeDefined();
   });
 
   it("should show error state on fetch failure with retry button", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: async () => ({ success: false, error: "API error" }),
     });
@@ -219,7 +219,7 @@ describe("EconomicCalendar", () => {
   });
 
   it("should fetch data from API when no data prop is provided", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockEvents }),
     });

@@ -240,7 +240,7 @@ describe("FinancialsTable", () => {
       // revenueGrowth = 0.08 → 8.00% → between 0 and 0.1 → neutral
       renderWithTheme(mockFinancials);
       const value = screen.getByText("8.00%");
-      expect(value).toHaveClass("text-gray-700");
+      expect(value).toHaveClass("text-stone-700");
     });
 
     it("should apply green for favorable earnings growth (>10%)", () => {

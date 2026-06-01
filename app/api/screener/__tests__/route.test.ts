@@ -104,7 +104,7 @@ describe("POST /api/screener/search", () => {
   });
 
   it("should return results for valid filters", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue(mockResults);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(mockResults);
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/search",
@@ -133,8 +133,8 @@ describe("POST /api/screener/search", () => {
   });
 
   it("should use preset filters when preset is specified", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue(mockResults);
-    (screenerService.getDefaultPresets as any).mockReturnValue(mockPresets);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(mockResults);
+    vi.mocked(screenerService.getDefaultPresets).mockReturnValue(mockPresets);
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/search",
@@ -155,8 +155,8 @@ describe("POST /api/screener/search", () => {
   });
 
   it("should use provided filters when preset is not found", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue([]);
-    (screenerService.getDefaultPresets as any).mockReturnValue(mockPresets);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue([]);
+    vi.mocked(screenerService.getDefaultPresets).mockReturnValue(mockPresets);
 
     const filters = [
       { field: "price", operator: "lt", value: 5, label: "Price < $5" },
@@ -176,7 +176,7 @@ describe("POST /api/screener/search", () => {
   });
 
   it("should default to empty filters when none provided", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue(mockResults);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(mockResults);
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/search",
@@ -195,7 +195,7 @@ describe("POST /api/screener/search", () => {
   });
 
   it("should pass multiple filters to service for AND logic (Req 26.8)", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue([
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue([
       mockResults[0],
     ]);
 
@@ -231,8 +231,8 @@ describe("POST /api/screener/search", () => {
   });
 
   it("should prefer preset filters over provided filters", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue(mockResults);
-    (screenerService.getDefaultPresets as any).mockReturnValue(mockPresets);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(mockResults);
+    vi.mocked(screenerService.getDefaultPresets).mockReturnValue(mockPresets);
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/search",
@@ -255,7 +255,7 @@ describe("POST /api/screener/search", () => {
   });
 
   it("should return 500 on service error", async () => {
-    (screenerService.fetchScreenerData as any).mockRejectedValue(
+    vi.mocked(screenerService.fetchScreenerData).mockRejectedValue(
       new Error("Service unavailable")
     );
 
@@ -276,7 +276,7 @@ describe("POST /api/screener/search", () => {
   });
 
   it("should return 500 with generic message for non-Error throws", async () => {
-    (screenerService.fetchScreenerData as any).mockRejectedValue("unknown");
+    vi.mocked(screenerService.fetchScreenerData).mockRejectedValue("unknown");
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/search",
@@ -304,7 +304,7 @@ describe("GET /api/screener/presets", () => {
   });
 
   it("should return default presets", async () => {
-    (screenerService.getDefaultPresets as any).mockReturnValue(mockPresets);
+    vi.mocked(screenerService.getDefaultPresets).mockReturnValue(mockPresets);
 
     const response = await GET();
     const data = await response.json();
@@ -316,7 +316,7 @@ describe("GET /api/screener/presets", () => {
   });
 
   it("should return presets with required structure (Req 26.12)", async () => {
-    (screenerService.getDefaultPresets as any).mockReturnValue(mockPresets);
+    vi.mocked(screenerService.getDefaultPresets).mockReturnValue(mockPresets);
 
     const response = await GET();
     const data = await response.json();
@@ -333,7 +333,7 @@ describe("GET /api/screener/presets", () => {
   });
 
   it("should return empty array when no presets exist", async () => {
-    (screenerService.getDefaultPresets as any).mockReturnValue([]);
+    vi.mocked(screenerService.getDefaultPresets).mockReturnValue([]);
 
     const response = await GET();
     const data = await response.json();
@@ -344,7 +344,7 @@ describe("GET /api/screener/presets", () => {
   });
 
   it("should return 500 on service error", async () => {
-    (screenerService.getDefaultPresets as any).mockImplementation(() => {
+    vi.mocked(screenerService.getDefaultPresets).mockImplementation(() => {
       throw new Error("Preset error");
     });
 
@@ -533,7 +533,7 @@ describe("GET /api/screener/export", () => {
   });
 
   it("should return CSV with correct headers", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue(mockResults);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(mockResults);
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/export"
@@ -556,7 +556,7 @@ describe("GET /api/screener/export", () => {
   });
 
   it("should include result data in CSV rows", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue(mockResults);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(mockResults);
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/export"
@@ -572,7 +572,7 @@ describe("GET /api/screener/export", () => {
   });
 
   it("should apply filters from query params", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue([]);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue([]);
 
     const filters = JSON.stringify([
       { field: "price", operator: "gt", value: 100, label: "Price > $100" },
@@ -603,7 +603,7 @@ describe("GET /api/screener/export", () => {
   });
 
   it("should return 500 on service error", async () => {
-    (screenerService.fetchScreenerData as any).mockRejectedValue(
+    vi.mocked(screenerService.fetchScreenerData).mockRejectedValue(
       new Error("Export failed")
     );
 
@@ -620,7 +620,7 @@ describe("GET /api/screener/export", () => {
   });
 
   it("should return header-only CSV when no results match", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue([]);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue([]);
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/export"
@@ -649,7 +649,7 @@ describe("GET /api/screener/export", () => {
         matchScore: 0,
       },
     ];
-    (screenerService.fetchScreenerData as any).mockResolvedValue(
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(
       resultWithoutOptionals
     );
 
@@ -685,7 +685,7 @@ describe("GET /api/screener/export", () => {
         matchScore: 0,
       },
     ];
-    (screenerService.fetchScreenerData as any).mockResolvedValue(
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(
       resultWithQuotes
     );
 
@@ -700,7 +700,7 @@ describe("GET /api/screener/export", () => {
   });
 
   it("should export with no filters when param is absent", async () => {
-    (screenerService.fetchScreenerData as any).mockResolvedValue(mockResults);
+    vi.mocked(screenerService.fetchScreenerData).mockResolvedValue(mockResults);
 
     const request = new NextRequest(
       "http://localhost:3000/api/screener/export"

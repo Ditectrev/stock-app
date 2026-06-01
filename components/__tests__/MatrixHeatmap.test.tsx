@@ -152,8 +152,8 @@ describe("MatrixHeatmap", () => {
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-MSFT-1W");
-    // Zero → gray
-    expect(cell.style.backgroundColor).toContain("156, 163, 175");
+    // Zero → neutral stone
+    expect(cell.style.backgroundColor).toContain("168, 162, 158");
   });
 
   it("should vary color intensity based on magnitude", () => {
@@ -286,7 +286,7 @@ describe("MatrixHeatmap", () => {
     render(<MatrixHeatmap rows={mockRows} columns={mockColumns} cells={[]} />);
     const cell = screen.getByTestId("matrix-cell-AAPL-1D");
     expect(cell.textContent).toBe("+0.00%");
-    // Should get neutral color
-    expect(cell.style.backgroundColor).toContain("156, 163, 175");
+    // Should get neutral stone color
+    expect(cell.style.backgroundColor).toContain("168, 162, 158");
   });
 });

@@ -8,7 +8,12 @@
 
 import { useState } from "react";
 import { PricingTier, PricingTierInfo } from "@/types";
-import { HOME_MUTED_TEXT } from "@/lib/home-ui";
+import {
+  HOME_DISABLED_BUTTON,
+  HOME_MUTED_TEXT,
+  HOME_PANEL_TITLE,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 const CHECK_ICON = (
   <svg
@@ -72,16 +77,14 @@ function PricingCard({
           className={`h-[3.5rem] text-lg font-bold ${
             featured
               ? "text-stone-100 dark:text-stone-900"
-              : "text-gray-900 dark:text-gray-100"
+              : "text-stone-900 dark:text-stone-50"
           }`}
         >
           {tier.name}
         </h3>
         <p
           className={`mt-1 h-[5.5rem] overflow-hidden text-sm ${
-            featured
-              ? "text-stone-300 dark:text-stone-600"
-              : "text-gray-500 dark:text-gray-400"
+            featured ? "text-stone-300 dark:text-stone-600" : HOME_SUBTLE_TEXT
           }`}
         >
           {tier.description}
@@ -95,7 +98,7 @@ function PricingCard({
             className={`text-4xl font-extrabold ${
               featured
                 ? "text-stone-100 dark:text-stone-900"
-                : "text-gray-900 dark:text-gray-100"
+                : "text-stone-900 dark:text-stone-50"
             }`}
           >
             Free
@@ -106,7 +109,7 @@ function PricingCard({
               className={`text-4xl font-extrabold ${
                 featured
                   ? "text-stone-100 dark:text-stone-900"
-                  : "text-gray-900 dark:text-gray-100"
+                  : "text-stone-900 dark:text-stone-50"
               }`}
             >
               €{tier.price}
@@ -115,7 +118,7 @@ function PricingCard({
               className={`mb-1 text-sm ${
                 featured
                   ? "text-stone-300 dark:text-stone-600"
-                  : "text-gray-500 dark:text-gray-400"
+                  : HOME_SUBTLE_TEXT
               }`}
             >
               / mo
@@ -131,7 +134,7 @@ function PricingCard({
         className={`mb-6 w-full whitespace-nowrap rounded-lg px-4 py-2.5 text-center text-sm font-semibold leading-none tracking-normal transition-colors
           ${
             isCurrentTier
-              ? "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 cursor-default"
+              ? HOME_DISABLED_BUTTON
               : featured
                 ? "bg-stone-100 text-stone-900 hover:bg-stone-200 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
                 : "bg-stone-900 hover:bg-stone-700 text-stone-100 dark:bg-stone-100 dark:hover:bg-stone-300 dark:text-stone-900"
@@ -154,7 +157,7 @@ function PricingCard({
               className={`text-sm ${
                 featured
                   ? "text-stone-200 dark:text-stone-700"
-                  : "text-gray-600 dark:text-gray-300"
+                  : HOME_MUTED_TEXT
               }`}
             >
               {feature}
@@ -198,11 +201,11 @@ export function PricingPage({
         </p>
         <h2
           id="pricing-heading"
-          className="mt-2 text-3xl font-extrabold text-gray-900 dark:text-gray-100 sm:text-4xl"
+          className={`mt-2 text-3xl font-extrabold sm:text-4xl ${HOME_PANEL_TITLE}`}
         >
           Simple, transparent pricing
         </h2>
-        <p className="mt-3 max-w-2xl text-lg text-gray-500 dark:text-gray-400">
+        <p className={`mt-3 max-w-2xl text-lg ${HOME_SUBTLE_TEXT}`}>
           Start free. Upgrade when you need AI features or an ad-free
           experience.
         </p>

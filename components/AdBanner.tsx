@@ -15,6 +15,6 @@ export interface AdBannerProps {
   className?: string;
 }
 
-export function AdBanner(_props: AdBannerProps) {
+export function AdBanner(_: AdBannerProps) {
   return null;
 }

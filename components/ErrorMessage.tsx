@@ -72,10 +72,10 @@ export function ErrorMessage({
       <span className="text-3xl" aria-hidden="true">
         {config.icon}
       </span>
-      <h3 className="mt-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <h3 className="mt-3 text-lg font-semibold text-stone-900 dark:text-stone-50">
         {config.title}
       </h3>
-      <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+      <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
         {message ?? config.description}
       </p>
       {onRetry && (

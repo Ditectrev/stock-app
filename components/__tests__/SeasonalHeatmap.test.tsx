@@ -114,7 +114,7 @@ describe("SeasonalHeatmap", () => {
 
   describe("Color Coding", () => {
     it("should apply green color classes for positive returns", () => {
-      const { container } = renderWithTheme(mockSeasonalData);
+      renderWithTheme(mockSeasonalData);
       // Strong positive (>=5): bg-green-500 in light mode
       const cell6 = screen.getByText("6.0%");
       expect(cell6.closest("div")).toHaveClass("bg-green-500");

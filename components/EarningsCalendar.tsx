@@ -15,6 +15,14 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import {
   CALENDAR_DAY_HEADER,
+  CALENDAR_EMPTY_TEXT,
+  CALENDAR_EVENT_LIST,
+  CALENDAR_EVENT_ROW,
+  CALENDAR_EVENT_META,
+  CALENDAR_EVENT_TITLE,
+  CALENDAR_NEUTRAL_TEXT,
+  CALENDAR_PAGE_TITLE,
+  CALENDAR_TIME_BADGE,
   CALENDAR_TODAY_BADGE,
   CALENDAR_TODAY_HEADER,
   HOME_SUBTLE_TEXT,
@@ -164,11 +172,7 @@ export function EarningsCalendar({
       role="region"
       aria-label="Earnings Calendar"
     >
-      <h3
-        className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        Earnings Calendar
-      </h3>
+      <h3 className={CALENDAR_PAGE_TITLE}>Earnings Calendar</h3>
 
       {/* Filters */}
       <div
@@ -186,10 +190,7 @@ export function EarningsCalendar({
 
       {/* Events grouped by day */}
       {filteredEvents.length === 0 ? (
-        <p
-          className={`text-center py-4 text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          data-testid="no-events"
-        >
+        <p className={CALENDAR_EMPTY_TEXT} data-testid="no-events">
           No earnings events match the selected filters.
           {!externalData && (
             <span className="block mt-1 text-xs">
@@ -227,9 +228,7 @@ export function EarningsCalendar({
                 </div>
 
                 {/* Events for this day */}
-                <div
-                  className={`divide-y ${isDark ? "divide-gray-700" : "divide-gray-100"}`}
-                >
+                <div className={CALENDAR_EVENT_LIST}>
                   {events.map((event) => {
                     const hasSurprise =
                       event.epsSurprise !== undefined &&
@@ -241,14 +240,12 @@ export function EarningsCalendar({
                       ? "text-green-600 dark:text-green-400"
                       : isMiss
                         ? "text-red-600 dark:text-red-400"
-                        : "text-gray-500 dark:text-gray-300";
+                        : CALENDAR_NEUTRAL_TEXT;
 
                     return (
                       <div
                         key={event.id}
-                        className={`flex items-start gap-3 px-3 py-2 ${
-                          isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"
-                        }`}
+                        className={CALENDAR_EVENT_ROW}
                         data-testid={`event-${event.id}`}
                       >
                         {/* Symbol badge */}
@@ -268,18 +265,12 @@ export function EarningsCalendar({
                         {/* Company details */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span
-                              className={`text-sm font-medium truncate ${isDark ? "text-gray-200" : "text-gray-900"}`}
-                            >
+                            <span className={CALENDAR_EVENT_TITLE}>
                               {event.companyName}
                             </span>
                             {event.time && (
                               <span
-                                className={`text-xs px-1.5 py-0.5 rounded ${
-                                  isDark
-                                    ? "bg-gray-700 text-gray-400"
-                                    : "bg-gray-100 text-gray-500"
-                                }`}
+                                className={CALENDAR_TIME_BADGE}
                                 data-testid={`time-${event.id}`}
                               >
                                 {event.time}
@@ -288,9 +279,7 @@ export function EarningsCalendar({
                           </div>
 
                           {/* EPS row */}
-                          <div
-                            className={`flex flex-wrap gap-3 mt-1 text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-                          >
+                          <div className={CALENDAR_EVENT_META}>
                             <span data-testid={`eps-estimate-${event.id}`}>
                               Est: {formatEps(event.epsEstimate)}
                             </span>

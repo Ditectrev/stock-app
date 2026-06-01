@@ -15,6 +15,7 @@
 import { useCallback, useMemo } from "react";
 import type { ScreenerResult } from "@/types";
 import type { HeatmapData } from "@/types";
+import { HOME_INSTRUMENT_PANEL, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
 import { HeatmapComponent } from "./HeatmapComponent";
 
 // ---------------------------------------------------------------------------
@@ -61,7 +62,7 @@ export function ScreenerHeatmapView({
   if (results.length === 0) {
     return (
       <div
-        className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 text-center text-gray-500 dark:text-gray-300"
+        className={`${HOME_INSTRUMENT_PANEL} p-8 text-center ${HOME_SUBTLE_TEXT}`}
         data-testid="screener-heatmap-empty"
       >
         No results

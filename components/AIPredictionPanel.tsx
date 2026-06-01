@@ -231,7 +231,7 @@ export function AIPredictionPanel({
                 <div
                   className={`rounded-lg border px-3 py-3 text-sm ${
                     isMissingByokApiKeyMessage(error)
-                      ? "border-stone-300 bg-stone-50 text-stone-900 dark:border-stone-600 dark:bg-stone-900/40 dark:text-stone-100"
+                      ? "border-stone-300 bg-stone-100 text-stone-900 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100"
                       : "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
                   }`}
                 >
@@ -258,7 +258,7 @@ export function AIPredictionPanel({
             </div>
 
             {showLockedOverlay && (
-              <div className="absolute inset-0 rounded-xl bg-white/75 text-stone-900 backdrop-blur-[1px] dark:bg-stone-950/80 dark:text-stone-100">
+              <div className="absolute inset-0 rounded-xl bg-white text-stone-900 dark:bg-stone-950 dark:text-stone-100">
                 <InsightPanelGate
                   message={gateMessage}
                   ctaHref="/pricing"

@@ -82,7 +82,7 @@ export default function GoogleOAuthCallbackPage() {
 
   return (
     <div className="flex min-h-[40vh] items-center justify-center p-8">
-      <p className="text-sm text-gray-600 dark:text-gray-300">{message}</p>
+      <p className="text-sm text-stone-600 dark:text-stone-300">{message}</p>
     </div>
   );
 }

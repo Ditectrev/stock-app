@@ -170,7 +170,7 @@ describe("OverviewTab", () => {
 
     it("should apply green background to positive change badge", () => {
       const onTimeRangeChange = vi.fn();
-      const { container } = render(
+      render(
         <OverviewTab
           symbolData={mockSymbolData}
           historicalData={mockHistoricalData}
@@ -339,12 +339,9 @@ describe("OverviewTab", () => {
     });
 
     it("should display help icon for each metric", () => {
-      const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
+      render(<KeyMetrics symbolData={mockSymbolData} />);
 
       // Each metric card should have a "?" icon
-      const helpIcons = container.querySelectorAll(
-        'div:has(> div:contains("?"))'
-      );
       expect(screen.getAllByText("?")).toHaveLength(5); // 5 metrics
     });
   });
@@ -460,7 +457,7 @@ describe("OverviewTab", () => {
 
     it("should display tooltip with proper styling", async () => {
       const user = userEvent.setup();
-      const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
+      render(<KeyMetrics symbolData={mockSymbolData} />);
 
       const marketCapCard = screen.getByText("Market Cap").closest("div");
       await user.hover(marketCapCard!);

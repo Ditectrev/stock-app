@@ -34,7 +34,6 @@ export function ChartWithIndicators({
   height = 400,
 }: ChartWithIndicatorsProps) {
   const [indicators, setIndicators] = useState<ChartIndicator[]>([]);
-  const [hoveredPoint, setHoveredPoint] = useState<PriceData | null>(null);
 
   // Handle indicator changes from overlay
   const handleIndicatorsChange = useCallback(
@@ -43,11 +42,6 @@ export function ChartWithIndicators({
     },
     []
   );
-
-  // Handle data point hover
-  const handleDataPointHover = useCallback((point: PriceData | null) => {
-    setHoveredPoint(point);
-  }, []);
 
   return (
     <div
@@ -65,7 +59,6 @@ export function ChartWithIndicators({
         initialTimeRange={initialTimeRange}
         indicators={indicators}
         onTimeRangeChange={onTimeRangeChange}
-        onDataPointHover={handleDataPointHover}
         responsive={responsive}
         height={height}
       />

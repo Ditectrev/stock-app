@@ -187,7 +187,7 @@ describe("Property 13: API Key Validation", () => {
         providerArb,
         validApiKeyArb,
         async (provider, apiKey) => {
-          global.fetch = mockFetchWithStatus(200) as any;
+          global.fetch = mockFetchWithStatus(200) as typeof fetch;
 
           const service = new APIKeyManagerService();
           const result = await service.validateKey(provider, apiKey);
@@ -211,7 +211,7 @@ describe("Property 13: API Key Validation", () => {
         providerArb,
         validApiKeyArb,
         async (provider, apiKey) => {
-          global.fetch = mockFetchWithStatus(429) as any;
+          global.fetch = mockFetchWithStatus(429) as typeof fetch;
 
           const service = new APIKeyManagerService();
           const result = await service.validateKey(provider, apiKey);
@@ -235,7 +235,7 @@ describe("Property 13: API Key Validation", () => {
         validApiKeyArb,
         invalidKeyStatusArb,
         async (provider, apiKey, status) => {
-          global.fetch = mockFetchWithStatus(status) as any;
+          global.fetch = mockFetchWithStatus(status) as typeof fetch;
 
           const service = new APIKeyManagerService();
           const result = await service.validateKey(provider, apiKey);
@@ -262,7 +262,7 @@ describe("Property 13: API Key Validation", () => {
         validApiKeyArb,
         fc.string({ minLength: 5, maxLength: 50 }),
         async (provider, apiKey, errorMessage) => {
-          global.fetch = mockFetchNetworkError(errorMessage) as any;
+          global.fetch = mockFetchNetworkError(errorMessage) as typeof fetch;
 
           const service = new APIKeyManagerService();
           const result = await service.validateKey(provider, apiKey);
@@ -289,7 +289,7 @@ describe("Property 13: API Key Validation", () => {
         invalidKeyStatusArb,
         async (provider, apiKey, status) => {
           localStorageMock.clear();
-          global.fetch = mockFetchWithStatus(status) as any;
+          global.fetch = mockFetchWithStatus(status) as typeof fetch;
 
           const service = new APIKeyManagerService();
           const result = await service.validateAndStore(provider, apiKey);
@@ -318,7 +318,7 @@ describe("Property 13: API Key Validation", () => {
         validApiKeyArb,
         async (provider, apiKey) => {
           localStorageMock.clear();
-          global.fetch = mockFetchWithStatus(200) as any;
+          global.fetch = mockFetchWithStatus(200) as typeof fetch;
 
           const service = new APIKeyManagerService();
           const result = await service.validateAndStore(provider, apiKey);
@@ -352,7 +352,7 @@ describe("Property 13: API Key Validation", () => {
         validApiKeyArb,
         async (provider, apiKey) => {
           localStorageMock.clear();
-          global.fetch = mockFetchNetworkError() as any;
+          global.fetch = mockFetchNetworkError() as typeof fetch;
 
           const service = new APIKeyManagerService();
           const result = await service.validateAndStore(provider, apiKey);
@@ -382,9 +382,9 @@ describe("Property 13: API Key Validation", () => {
         fc.integer({ min: 200, max: 503 }),
         async (provider, apiKey, networkFail, status) => {
           if (networkFail) {
-            global.fetch = mockFetchNetworkError() as any;
+            global.fetch = mockFetchNetworkError() as typeof fetch;
           } else {
-            global.fetch = mockFetchWithStatus(status) as any;
+            global.fetch = mockFetchWithStatus(status) as typeof fetch;
           }
 
           const service = new APIKeyManagerService();
@@ -417,7 +417,7 @@ describe("Property 13: API Key Validation", () => {
         validApiKeyArb,
         serverErrorStatusArb,
         async (provider, apiKey, status) => {
-          global.fetch = mockFetchWithStatus(status) as any;
+          global.fetch = mockFetchWithStatus(status) as typeof fetch;
 
           const service = new APIKeyManagerService();
           const result = await service.validateKey(provider, apiKey);

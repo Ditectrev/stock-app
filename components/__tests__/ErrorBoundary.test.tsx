@@ -76,7 +76,7 @@ describe("ErrorBoundary", () => {
       return <div>All good</div>;
     }
 
-    const { rerender } = render(
+    render(
       <ErrorBoundary>
         <Wrapper />
       </ErrorBoundary>

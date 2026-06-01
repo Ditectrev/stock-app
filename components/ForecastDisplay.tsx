@@ -222,7 +222,7 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
     >
       {/* Featured price target band */}
       <section
-        className={`rounded-lg border p-4 sm:p-5 ${SYMBOL_DIVIDER} bg-stone-50/80 dark:bg-stone-900/40`}
+        className={`rounded-lg border p-4 sm:p-5 ${SYMBOL_DIVIDER} bg-stone-100 dark:bg-stone-800`}
       >
         <SectionLabel
           label="Price Targets"

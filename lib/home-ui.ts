@@ -70,6 +70,61 @@ export const CALENDAR_TODAY_CELL =
 export const CALENDAR_DAY_HEADER =
   "border-b border-stone-200 bg-stone-100 text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100";
 
+export const CALENDAR_PAGE_TITLE =
+  "text-lg font-semibold mb-4 text-stone-900 dark:text-stone-50";
+
+export const CALENDAR_EMPTY_TEXT =
+  "text-center py-4 text-sm text-stone-600 dark:text-stone-300";
+
+export const CALENDAR_EVENT_LIST =
+  "divide-y divide-stone-200 dark:divide-stone-700";
+
+export const CALENDAR_EVENT_ROW =
+  "flex items-start gap-3 px-3 py-2 hover:bg-stone-50 dark:hover:bg-stone-800";
+
+export const CALENDAR_EVENT_TITLE =
+  "text-sm font-medium truncate text-stone-900 dark:text-stone-100";
+
+export const CALENDAR_EVENT_META =
+  "flex flex-wrap gap-3 mt-1 text-xs text-stone-600 dark:text-stone-300";
+
+export const CALENDAR_TIME_BADGE =
+  "text-xs px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300";
+
+export const CALENDAR_NEUTRAL_TEXT = "text-stone-600 dark:text-stone-300";
+
+export const CALENDAR_IMPORTANCE_LOW =
+  "bg-stone-100 text-stone-700 dark:bg-stone-700 dark:text-stone-300";
+
+export const CALENDAR_FILTER_LABEL =
+  "text-sm text-stone-700 dark:text-stone-200";
+
+export const CALENDAR_SELECT =
+  "rounded-lg border text-sm focus:outline-none focus:ring-1 focus:ring-stone-600 dark:focus:ring-stone-400 border-stone-300 bg-white text-stone-800 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100";
+
+export const CALENDAR_CHIP_IDLE =
+  "rounded px-2 py-0.5 text-xs bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300";
+
+export const CALENDAR_SYMBOL_CHIP =
+  "inline-block shrink-0 cursor-pointer rounded px-2 py-0.5 text-center text-xs font-semibold transition-colors bg-stone-100 text-stone-800 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700";
+
+export const HOME_TOOLTIP_POPOVER =
+  "pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-56 -translate-x-1/2 rounded-lg border border-stone-700 bg-stone-900 px-3 py-2 text-xs text-stone-50 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100";
+
+export const HOME_ERROR_TITLE =
+  "mt-3 text-lg font-semibold text-stone-900 dark:text-stone-50";
+
+export const HOME_ERROR_BODY =
+  "mt-1 text-sm text-stone-600 dark:text-stone-300";
+
+export const HOME_LEGEND_DIVIDER =
+  "mt-4 pt-3 border-t border-stone-200 dark:border-stone-700";
+
+export const HOME_LEGEND_TEXT = "text-xs text-stone-600 dark:text-stone-300";
+
+export const HOME_DISABLED_BUTTON =
+  "bg-stone-100 text-stone-400 dark:bg-stone-800 dark:text-stone-500 cursor-default";
+
 export function homeChipClasses(active: boolean): string {
   return active ? HOME_RANGE_BUTTON_ACTIVE : HOME_RANGE_BUTTON_IDLE;
 }

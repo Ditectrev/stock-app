@@ -162,7 +162,7 @@ describe("EarningsCalendar", () => {
   it("should color-code zero surprise in gray (Req 24.13)", () => {
     render(<EarningsCalendar data={mockEvents} />);
     const surprise = screen.getByTestId("eps-surprise-4");
-    expect(surprise.className).toContain("text-gray-500");
+    expect(surprise.className).toContain("text-stone-600");
   });
 
   it("should not display surprise when not available", () => {
@@ -192,13 +192,13 @@ describe("EarningsCalendar", () => {
   // --- Loading / Error / Empty states ---
 
   it("should show loading state when fetching data", () => {
-    (global.fetch as any).mockImplementation(() => new Promise(() => {}));
+    vi.mocked(global.fetch).mockImplementation(() => new Promise(() => {}));
     render(<EarningsCalendar />);
     expect(screen.getByTestId("earnings-calendar-loading")).toBeDefined();
   });
 
   it("should show error state on fetch failure with retry button", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: async () => ({ success: false, error: "API error" }),
     });
@@ -212,7 +212,7 @@ describe("EarningsCalendar", () => {
   });
 
   it("should fetch data from API when no data prop is provided", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockEvents }),
     });

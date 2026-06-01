@@ -13,7 +13,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { HOME_CHIP, HOME_SUBTLE_TEXT, homeChipClasses } from "@/lib/home-ui";
+import {
+  HOME_CHIP,
+  HOME_LEGEND_DIVIDER,
+  HOME_LEGEND_TEXT,
+  HOME_MUTED_TEXT,
+  HOME_SUBTLE_TEXT,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 export type HeatmapTimePeriod =
   | "1D"
@@ -283,11 +290,7 @@ export function HeatmapComponent({
         {processedData.map((item) => {
           const bgColor = getTileColor(item.changePercent, isDark);
           const textColor =
-            item.changePercent === 0
-              ? isDark
-                ? "text-gray-300"
-                : "text-gray-700"
-              : "text-white";
+            item.changePercent === 0 ? HOME_MUTED_TEXT : "text-white";
 
           return (
             <div
@@ -322,11 +325,7 @@ export function HeatmapComponent({
               </span>
               {hoveredSymbol === item.symbol && (
                 <div
-                  className={`mt-1 px-2 py-1 rounded text-xs w-full text-center ${
-                    isDark
-                      ? "bg-black/50 text-gray-200"
-                      : "bg-white/50 text-gray-800"
-                  }`}
+                  className="mt-1 w-full rounded border border-stone-600 bg-stone-900 px-2 py-1 text-center text-xs text-stone-100 dark:border-stone-500 dark:bg-stone-800 dark:text-stone-100"
                   data-testid={`heatmap-tooltip-${item.symbol}`}
                 >
                   <div className="font-medium truncate">{item.name}</div>
@@ -344,23 +343,19 @@ export function HeatmapComponent({
 
       {/* Legend */}
       <div
-        className={`mt-4 pt-3 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}
+        className={HOME_LEGEND_DIVIDER}
         data-testid="heatmap-legend"
         aria-label="Heatmap color legend"
       >
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          <span
-            className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          >
-            Strong decline
-          </span>
+          <span className={HOME_LEGEND_TEXT}>Strong decline</span>
           {/* Gradient swatches from deep red → neutral → deep green */}
           <div className="flex gap-0.5">
             {[
               "rgba(239,68,68,0.9)",
               "rgba(239,68,68,0.6)",
               "rgba(239,68,68,0.3)",
-              isDark ? "rgba(107,114,128,0.3)" : "rgba(156,163,175,0.3)",
+              isDark ? "rgba(120,113,108,0.35)" : "rgba(168,162,158,0.35)",
               "rgba(34,197,94,0.3)",
               "rgba(34,197,94,0.6)",
               "rgba(34,197,94,0.9)",
@@ -372,11 +367,7 @@ export function HeatmapComponent({
               />
             ))}
           </div>
-          <span
-            className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          >
-            Strong gain
-          </span>
+          <span className={HOME_LEGEND_TEXT}>Strong gain</span>
         </div>
       </div>
     </div>

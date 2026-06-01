@@ -45,7 +45,7 @@ function getFavorabilityColors(favorability: Favorability, isDark: boolean) {
     case "unfavorable":
       return isDark ? "text-red-400" : "text-red-600";
     default:
-      return isDark ? "text-gray-300" : "text-gray-700";
+      return isDark ? "text-stone-300" : "text-stone-700";
   }
 }
 
@@ -249,7 +249,7 @@ export function FinancialsTable({ financials }: FinancialsTableProps) {
     >
       {/* Featured key facts strip */}
       <section
-        className={`rounded-lg border p-4 sm:p-5 ${SYMBOL_DIVIDER} bg-stone-50/80 dark:bg-stone-900/40`}
+        className={`rounded-lg border p-4 sm:p-5 ${SYMBOL_DIVIDER} bg-stone-100 dark:bg-stone-800`}
         aria-label={keyFacts.title}
       >
         <SectionHeading section={keyFacts} isDark={isDark} compact />

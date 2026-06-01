@@ -174,7 +174,7 @@ export function ProfileSettings() {
       return next;
     });
     setPendingExplanationProvider((pending) => syncForTier(pending));
-  }, [subscription.tier]);
+  }, [subscription]);
 
   const tier = subscription.tier;
   const hasPaidPlan = tier !== "FREE";

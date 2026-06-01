@@ -1562,7 +1562,11 @@ export class YahooFinanceService {
 async function getCrumbSafe(
   service: YahooFinanceService
 ): Promise<{ crumb: string; cookie: string }> {
-  return (service as any).getCrumb();
+  return (
+    service as YahooFinanceService & {
+      getCrumb(): Promise<{ crumb: string; cookie: string }>;
+    }
+  ).getCrumb();
 }
 
 // Export singleton instance

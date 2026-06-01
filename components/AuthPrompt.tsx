@@ -59,7 +59,6 @@ export function AuthPrompt({
   open,
   onClose,
   dismissible = true,
-  onAppleSignIn: _onAppleSignIn,
   onGoogleSignIn,
   onEmailSubmit,
   onEmailVerify,
@@ -287,7 +286,7 @@ export function AuthPrompt({
               <button
                 type="button"
                 disabled
-                className={`${oauthLinkClass} cursor-not-allowed bg-black/60 text-white opacity-60 dark:bg-white/20 dark:text-white`}
+                className={`${oauthLinkClass} cursor-not-allowed bg-stone-200 text-stone-500 opacity-60 dark:bg-stone-800 dark:text-stone-400`}
                 data-testid="auth-apple-disabled"
                 aria-describedby="auth-apple-unavailable-note"
               >

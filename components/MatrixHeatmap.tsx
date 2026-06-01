@@ -13,6 +13,13 @@ import { useMemo, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_LEGEND_DIVIDER,
+  HOME_LEGEND_TEXT,
+  HOME_MUTED_TEXT,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 export interface MatrixColumn {
   /** Unique key for this column */
@@ -64,7 +71,7 @@ function getCellColor(value: number, isDark: boolean): string {
   const intensity = 0.15 + (clamped / 10) * 0.75;
 
   if (value === 0) {
-    return isDark ? "rgba(107,114,128,0.3)" : "rgba(156,163,175,0.3)";
+    return isDark ? "rgba(120,113,108,0.35)" : "rgba(168,162,158,0.35)";
   }
   if (value > 0) {
     return `rgba(34,197,94,${intensity})`;
@@ -102,7 +109,7 @@ export function MatrixHeatmap({
   if (loading) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className={HOME_INSTRUMENT_PANEL}
         data-testid="matrix-heatmap-loading"
       >
         <LoadingSpinner className="py-8" />
@@ -113,13 +120,8 @@ export function MatrixHeatmap({
   // --- Empty state ---
   if (rows.length === 0 || columns.length === 0) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="matrix-heatmap-empty"
-      >
-        <p
-          className={`text-center ${isDark ? "text-gray-300" : "text-gray-500"}`}
-        >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="matrix-heatmap-empty">
+        <p className={`text-center ${HOME_SUBTLE_TEXT}`}>
           No matrix data available.
         </p>
       </div>
@@ -128,7 +130,7 @@ export function MatrixHeatmap({
 
   return (
     <div
-      className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className={HOME_INSTRUMENT_PANEL}
       data-testid="matrix-heatmap"
       role="region"
       aria-label="Matrix heatmap"
@@ -144,16 +146,12 @@ export function MatrixHeatmap({
             <tr>
               {/* Top-left corner cell */}
               <th
-                className={`px-3 py-2 text-left text-xs font-medium ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
+                className={`px-3 py-2 text-left text-xs font-medium ${HOME_SUBTLE_TEXT}`}
               />
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`px-3 py-2 text-center text-xs font-medium ${
-                    isDark ? "text-gray-300" : "text-gray-500"
-                  }`}
+                  className={`px-3 py-2 text-center text-xs font-medium ${HOME_SUBTLE_TEXT}`}
                   data-testid={`matrix-col-header-${col.key}`}
                 >
                   {col.label}
@@ -165,9 +163,7 @@ export function MatrixHeatmap({
             {rows.map((row) => (
               <tr key={row.key} data-testid={`matrix-row-${row.key}`}>
                 <td
-                  className={`px-3 py-2 text-xs font-medium whitespace-nowrap ${
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  }`}
+                  className={`px-3 py-2 text-xs font-medium whitespace-nowrap ${HOME_MUTED_TEXT}`}
                   data-testid={`matrix-row-header-${row.key}`}
                 >
                   {row.label}
@@ -179,11 +175,7 @@ export function MatrixHeatmap({
                   const bgColor = getCellColor(value, isDark);
                   const isHovered = hoveredCell === cellKey;
                   const textColor =
-                    value === 0
-                      ? isDark
-                        ? "text-gray-300"
-                        : "text-gray-700"
-                      : "text-white";
+                    value === 0 ? HOME_MUTED_TEXT : "text-white";
 
                   return (
                     <td
@@ -200,11 +192,13 @@ export function MatrixHeatmap({
                       tabIndex={0}
                       onMouseEnter={() => setHoveredCell(cellKey)}
                       onMouseLeave={() => setHoveredCell(null)}
-                      onClick={() => cell && onCellClick?.(cell)}
+                      onClick={() => {
+                        if (cell) onCellClick?.(cell);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          cell && onCellClick?.(cell);
+                          if (cell) onCellClick?.(cell);
                         }
                       }}
                     >
@@ -220,22 +214,18 @@ export function MatrixHeatmap({
 
       {/* Legend */}
       <div
-        className={`mt-4 pt-3 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}
+        className={HOME_LEGEND_DIVIDER}
         data-testid="matrix-heatmap-legend"
         aria-label="Matrix heatmap color legend"
       >
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          <span
-            className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          >
-            Strong decline
-          </span>
+          <span className={HOME_LEGEND_TEXT}>Strong decline</span>
           <div className="flex gap-0.5">
             {[
               "rgba(239,68,68,0.9)",
               "rgba(239,68,68,0.6)",
               "rgba(239,68,68,0.3)",
-              isDark ? "rgba(107,114,128,0.3)" : "rgba(156,163,175,0.3)",
+              isDark ? "rgba(120,113,108,0.35)" : "rgba(168,162,158,0.35)",
               "rgba(34,197,94,0.3)",
               "rgba(34,197,94,0.6)",
               "rgba(34,197,94,0.9)",
@@ -247,11 +237,7 @@ export function MatrixHeatmap({
               />
             ))}
           </div>
-          <span
-            className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          >
-            Strong gain
-          </span>
+          <span className={HOME_LEGEND_TEXT}>Strong gain</span>
         </div>
       </div>
     </div>

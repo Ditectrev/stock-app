@@ -4,6 +4,7 @@
  * Task 6.4 - Requirements: 4.2, 11.2, 11.4
  */
 
+import type { ComponentProps } from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ChartComponent } from "../ChartComponent";
@@ -42,7 +43,7 @@ const generateMockData = (days: number = 30): PriceData[] => {
 };
 
 // Wrapper component with ThemeProvider
-const ChartWithTheme = (props: any) => (
+const ChartWithTheme = (props: ComponentProps<typeof ChartComponent>) => (
   <ThemeProvider>
     <ChartComponent {...props} />
   </ThemeProvider>
@@ -251,7 +252,7 @@ describe("ChartComponent", () => {
     });
 
     it("should display error message when data is invalid", () => {
-      render(<ChartWithTheme data={null as any} />);
+      render(<ChartWithTheme data={null as unknown as typeof mockData} />);
 
       expect(screen.getByText("No data available")).toBeInTheDocument();
     });

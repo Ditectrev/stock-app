@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { marketDataService } from "@/services/market-data.service";
 import { logger } from "@/lib/logger";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const data = await marketDataService.getWorldMarkets();
 

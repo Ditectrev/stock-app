@@ -40,15 +40,17 @@ export function TrialTimer({ remainingSeconds, onExpired }: TrialTimerProps) {
     }
   }, [remainingSeconds]);
 
+  const timerRunning = seconds > 0;
+
   useEffect(() => {
-    if (seconds <= 0) return;
+    if (!timerRunning) return;
 
     const interval = setInterval(() => {
       setSeconds((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [remainingSeconds, seconds > 0]);
+  }, [timerRunning]);
 
   useEffect(() => {
     if (seconds <= 0) {
@@ -67,13 +69,15 @@ export function TrialTimer({ remainingSeconds, onExpired }: TrialTimerProps) {
       data-testid="trial-timer"
     >
       <ClockIcon
-        className={isLow ? "text-red-500" : "text-gray-500 dark:text-gray-400"}
+        className={
+          isLow ? "text-red-500" : "text-stone-600 dark:text-stone-300"
+        }
       />
       <span
         className={
           isLow
             ? "font-mono font-semibold text-red-500"
-            : "font-mono text-gray-700 dark:text-gray-300"
+            : "font-mono text-stone-700 dark:text-stone-200"
         }
         data-testid="trial-timer-display"
       >

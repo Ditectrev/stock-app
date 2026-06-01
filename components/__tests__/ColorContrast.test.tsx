@@ -97,21 +97,21 @@ describe("Color Contrast Compliance (Req 18.3)", () => {
   });
 
   describe("ErrorMessage", () => {
-    it("uses text-gray-300 for description text in dark mode", () => {
+    it("uses readable stone text for description in dark mode", () => {
       const { container } = render(<ErrorMessage type="api" />);
       const descEl = container.querySelector("p");
       expect(descEl).not.toBeNull();
       const cls = descEl!.className;
-      expect(cls).toContain("dark:text-gray-300");
+      expect(cls).toContain("dark:text-stone-300");
       expect(cls).not.toContain("dark:text-gray-400");
     });
 
-    it("uses text-gray-100 for title text in dark mode", () => {
+    it("uses readable stone text for title in dark mode", () => {
       const { container } = render(<ErrorMessage type="api" />);
       const titleEl = container.querySelector("h3");
       expect(titleEl).not.toBeNull();
       const cls = titleEl!.className;
-      expect(cls).toContain("dark:text-gray-100");
+      expect(cls).toContain("dark:text-stone-50");
     });
   });
 

@@ -13,8 +13,12 @@ import type { ScreenerFilter, ScreenerResult } from "@/types";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import {
   HOME_INPUT_SM,
+  HOME_MUTED_TEXT,
   HOME_PRIMARY_BUTTON,
   HOME_SECONDARY_BUTTON,
+  HOME_SECTION_LABEL,
+  HOME_SUBTLE_TEXT,
+  HOME_TOOLTIP_POPOVER,
   homeChipClasses,
 } from "@/lib/home-ui";
 
@@ -230,7 +234,7 @@ function Tooltip({ text }: { text: string }) {
         aria-label="More info"
       >
         <svg
-          className="h-4 w-4 text-gray-400 dark:text-gray-300"
+          className={`h-4 w-4 ${HOME_SUBTLE_TEXT}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -246,7 +250,7 @@ function Tooltip({ text }: { text: string }) {
       </button>
       <span
         role="tooltip"
-        className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-56 -translate-x-1/2 rounded bg-gray-900 dark:bg-gray-700 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+        className={`${HOME_TOOLTIP_POPOVER} opacity-0 group-hover:opacity-100 group-focus-within:opacity-100`}
       >
         {text}
       </span>
@@ -262,7 +266,9 @@ function SectionLabel({
   tooltip?: string;
 }) {
   return (
-    <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label
+      className={`flex items-center text-sm font-medium ${HOME_MUTED_TEXT}`}
+    >
       {children}
       {tooltip && <Tooltip text={tooltip} />}
     </label>
@@ -292,7 +298,7 @@ function RangeInput({
           onChange={(e) => onChange({ ...value, min: e.target.value })}
           className={HOME_INPUT_SM}
         />
-        <span className="text-gray-400 dark:text-gray-300 text-xs">–</span>
+        <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>–</span>
         <input
           type="number"
           placeholder="Max"
@@ -467,7 +473,9 @@ export function AssetScreener({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {/* ---- Valuation Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
+          <legend
+            className={`mb-1 text-sm font-semibold ${HOME_SECTION_LABEL}`}
+          >
             Valuation Metrics
           </legend>
           <RangeInput
@@ -492,7 +500,9 @@ export function AssetScreener({
 
         {/* ---- Growth Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
+          <legend
+            className={`mb-1 text-sm font-semibold ${HOME_SECTION_LABEL}`}
+          >
             Growth Metrics
           </legend>
           <RangeInput
@@ -511,7 +521,9 @@ export function AssetScreener({
 
         {/* ---- Dividend Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
+          <legend
+            className={`mb-1 text-sm font-semibold ${HOME_SECTION_LABEL}`}
+          >
             Dividend Metrics
           </legend>
           <RangeInput
@@ -530,7 +542,9 @@ export function AssetScreener({
 
         {/* ---- Sector ---- */}
         <fieldset className="space-y-2">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 flex items-center">
+          <legend
+            className={`mb-1 flex items-center text-sm font-semibold ${HOME_SECTION_LABEL}`}
+          >
             Sector
             <Tooltip text={TOOLTIPS.sector} />
           </legend>
@@ -554,7 +568,9 @@ export function AssetScreener({
 
         {/* ---- Market Cap ---- */}
         <fieldset className="space-y-2">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 flex items-center">
+          <legend
+            className={`mb-1 flex items-center text-sm font-semibold ${HOME_SECTION_LABEL}`}
+          >
             Market Cap
             <Tooltip text={TOOLTIPS.marketCap} />
           </legend>
@@ -578,7 +594,9 @@ export function AssetScreener({
 
         {/* ---- Volume / Liquidity ---- */}
         <fieldset className="space-y-2">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 flex items-center">
+          <legend
+            className={`mb-1 flex items-center text-sm font-semibold ${HOME_SECTION_LABEL}`}
+          >
             Volume &amp; Liquidity
             <Tooltip text={TOOLTIPS.volume} />
           </legend>
@@ -620,13 +638,13 @@ export function AssetScreener({
         </button>
 
         {resultCount !== null && (
-          <span className="text-sm text-gray-600 dark:text-gray-300">
+          <span className={`text-sm ${HOME_MUTED_TEXT}`}>
             {resultCount} {resultCount === 1 ? "asset" : "assets"} found
           </span>
         )}
 
         {activeFilters.length > 0 && (
-          <span className="text-xs text-gray-500 dark:text-gray-300">
+          <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>
             ({activeFilters.length}{" "}
             {activeFilters.length === 1 ? "filter" : "filters"} active)
           </span>

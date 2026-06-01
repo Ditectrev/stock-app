@@ -64,7 +64,6 @@ export function ChartComponent({
   indicators = [],
   onTimeRangeChange,
   onDataPointHover,
-  responsive = true,
   height = 400,
 }: ChartComponentProps) {
   const [selectedTimeRange, setSelectedTimeRange] =
@@ -374,7 +373,6 @@ export function ChartComponent({
             return;
           }
 
-          const timestamp = (param.time as number) * 1000;
           const point = filteredData.find(
             (d) =>
               Math.floor(new Date(d.timestamp).getTime() / 1000) === param.time

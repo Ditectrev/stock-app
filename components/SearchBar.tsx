@@ -62,7 +62,7 @@ export function SearchBar({
         setResults([]);
         setIsOpen(true); // Open dropdown to show error
       }
-    } catch (err) {
+    } catch {
       setError("Failed to search symbols");
       setResults([]);
       setIsOpen(true); // Open dropdown to show error
