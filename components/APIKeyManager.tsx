@@ -10,6 +10,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   apiKeyManagerService,
+  saveSelectedBYOKProvider,
   type BYOKProvider,
 } from "@/services/api-key-manager.service";
 import {
@@ -88,25 +89,35 @@ export default function APIKeyManager({
       ) as Record<BYOKProvider, ProviderRowState>
   );
 
-  // Load stored key metadata on mount
-  useEffect(() => {
-    const load = async () => {
+  const hydrateStoredKeys = useCallback(async () => {
+    const stored = await apiKeyManagerService.listStoredKeyInfo();
+    const storedByProvider = new Map(stored.map((row) => [row.provider, row]));
+
+    setRows((prev) => {
+      const next = { ...prev };
       for (const p of PROVIDERS) {
-        const info = await apiKeyManagerService.getStoredKeyInfo(p.id);
-        if (!info) continue;
-        setRows((prev) => ({
-          ...prev,
-          [p.id]: {
-            ...prev[p.id],
-            isStored: true,
-            addedAt: info.addedAt,
-            inputValue: "••••••••••••••••",
-          },
-        }));
+        const info = storedByProvider.get(p.id);
+        const hasLocal = apiKeyManagerService.hasLocalKey(p.id);
+        if (!info && !hasLocal) continue;
+        next[p.id] = {
+          ...next[p.id],
+          isStored: true,
+          addedAt: info?.addedAt ?? new Date(),
+          inputValue: "••••••••••••••••",
+          validationError: null,
+        };
       }
-    };
-    void load();
+      return next;
+    });
   }, []);
+
+  useEffect(() => {
+    void hydrateStoredKeys();
+    const onAuthChanged = () => void hydrateStoredKeys();
+    window.addEventListener("auth-state-changed", onAuthChanged);
+    return () =>
+      window.removeEventListener("auth-state-changed", onAuthChanged);
+  }, [hydrateStoredKeys]);
 
   const updateRow = useCallback(
     (provider: BYOKProvider, patch: Partial<ProviderRowState>) => {
@@ -153,7 +164,9 @@ export default function APIKeyManager({
       validationError: null,
     });
     if (selectedProvider === provider) {
-      onProviderSelect?.(PROVIDERS[0].id);
+      const fallback = PROVIDERS[0].id;
+      saveSelectedBYOKProvider(fallback);
+      onProviderSelect?.(fallback);
     }
   };
 

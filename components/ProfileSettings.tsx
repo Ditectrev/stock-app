@@ -12,7 +12,6 @@ import {
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
 import {
-  EXPLANATIONS_PROVIDER_STORAGE_KEY,
   getDefaultProviderForTier,
   isProviderAllowedForTier,
   PROVIDER_OPTIONS,
@@ -21,15 +20,16 @@ import {
   type ExplanationProvider,
   type Tier,
 } from "@/lib/explanation-provider";
+import {
+  readSelectedBYOKProvider,
+  saveSelectedBYOKProvider,
+  type BYOKProvider,
+} from "@/services/api-key-manager.service";
 
 type StatusMessage = {
   text: string;
   tone: "success" | "error" | "info";
 };
-
-function loadStoredProvider(): ExplanationProvider {
-  return readStoredExplanationProvider() ?? "OLLAMA";
-}
 
 function StatusNotice({ message }: { message: StatusMessage }) {
   return (
@@ -72,9 +72,9 @@ export function ProfileSettings() {
     useState<ExplanationProvider>("OLLAMA");
   const [pendingExplanationProvider, setPendingExplanationProvider] =
     useState<ExplanationProvider>("OLLAMA");
-  const [selectedProvider, setSelectedProvider] = useState<
-    "OPENAI" | "GEMINI" | "MISTRAL" | "DEEPSEEK"
-  >("OPENAI");
+  const [selectedProvider, setSelectedProvider] = useState<BYOKProvider>(() =>
+    typeof window === "undefined" ? "OPENAI" : readSelectedBYOKProvider()
+  );
   const [providerStatusMessage, setProviderStatusMessage] =
     useState<StatusMessage | null>(null);
   const [subscriptionStatusMessage, setSubscriptionStatusMessage] =
@@ -150,39 +150,47 @@ export function ProfileSettings() {
       window.removeEventListener("auth-state-changed", onAuthChanged);
   }, [refreshAuthState]);
 
-  useEffect(() => {
-    const stored = loadStoredProvider();
-    setSavedExplanationProvider(stored);
-    setPendingExplanationProvider(stored);
-  }, []);
+  const applyStoredExplanationProvider = useCallback(() => {
+    const tier = subscription.tier;
+    const stored = readStoredExplanationProvider() ?? "OLLAMA";
 
-  useEffect(() => {
-    const { tier } = subscription;
-    const syncForTier = (current: ExplanationProvider): ExplanationProvider => {
-      if (isProviderAllowedForTier(current, tier)) return current;
-      const next = getDefaultProviderForTier(tier);
-      if (!next) {
-        localStorage.removeItem(EXPLANATIONS_PROVIDER_STORAGE_KEY);
-        return current;
+    let resolved = stored;
+    if (!isProviderAllowedForTier(stored, tier)) {
+      const fallback = getDefaultProviderForTier(tier);
+      if (fallback) {
+        resolved = fallback;
+        saveExplanationProvider(fallback);
       }
-      return next;
-    };
+    }
 
-    setSavedExplanationProvider((saved) => {
-      const next = syncForTier(saved);
-      if (next !== saved) saveExplanationProvider(next);
-      return next;
-    });
-    setPendingExplanationProvider((pending) => syncForTier(pending));
-  }, [subscription]);
+    setSavedExplanationProvider(resolved);
+    setPendingExplanationProvider(resolved);
+  }, [subscription.tier]);
+
+  useEffect(() => {
+    if (loading) return;
+    applyStoredExplanationProvider();
+  }, [loading, applyStoredExplanationProvider]);
+
+  useEffect(() => {
+    const onProviderChanged = () => applyStoredExplanationProvider();
+    window.addEventListener("explanations-provider-changed", onProviderChanged);
+    return () =>
+      window.removeEventListener(
+        "explanations-provider-changed",
+        onProviderChanged
+      );
+  }, [applyStoredExplanationProvider]);
+
+  function handleBYOKProviderSelect(provider: BYOKProvider) {
+    setSelectedProvider(provider);
+    saveSelectedBYOKProvider(provider);
+  }
 
   const tier = subscription.tier;
   const hasPaidPlan = tier !== "FREE";
   const canManageApiKeys = tier === "BYOK";
   const hasAiTier = ["LOCAL", "BYOK", "HOSTED_AI"].includes(tier);
-
-  const hasUnsavedProvider =
-    pendingExplanationProvider !== savedExplanationProvider;
 
   function handleSelectProvider(provider: ExplanationProvider) {
     if (!isProviderAllowedForTier(provider, tier)) {
@@ -192,24 +200,11 @@ export function ProfileSettings() {
       });
       return;
     }
+    saveExplanationProvider(provider);
+    setSavedExplanationProvider(provider);
     setPendingExplanationProvider(provider);
-    if (providerStatusMessage?.tone === "success") {
-      setProviderStatusMessage(null);
-    }
-  }
-
-  function handleSaveExplanationProvider() {
-    if (!isProviderAllowedForTier(pendingExplanationProvider, tier)) {
-      setProviderStatusMessage({
-        text: "This provider is not available on your current plan.",
-        tone: "error",
-      });
-      return;
-    }
-    saveExplanationProvider(pendingExplanationProvider);
-    setSavedExplanationProvider(pendingExplanationProvider);
     setProviderStatusMessage({
-      text: `Saved ${PROVIDER_OPTIONS.find((p) => p.id === pendingExplanationProvider)?.name ?? pendingExplanationProvider} as your explanations provider.`,
+      text: `${PROVIDER_OPTIONS.find((p) => p.id === provider)?.name ?? provider} is now your explanations provider.`,
       tone: "success",
     });
   }
@@ -357,8 +352,8 @@ export function ProfileSettings() {
             Explanations provider
           </h2>
           <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
-            Choose which AI powers metric explanations and chart analysis, then
-            click Save to apply your choice across the app.
+            Choose which AI powers metric explanations and chart analysis. Your
+            selection is saved automatically and applies across the app.
           </p>
         </div>
         {!hasAiTier && (
@@ -405,23 +400,6 @@ export function ProfileSettings() {
             );
           })}
         </div>
-        {hasAiTier && (
-          <div className="flex flex-wrap items-center gap-3 pt-1">
-            <button
-              type="button"
-              onClick={handleSaveExplanationProvider}
-              disabled={!hasUnsavedProvider}
-              className={`${HOME_PRIMARY_BUTTON} disabled:cursor-not-allowed disabled:opacity-50`}
-            >
-              Save explanations provider
-            </button>
-            {hasUnsavedProvider && (
-              <p className={`text-xs ${HOME_SUBTLE_TEXT}`}>
-                You have unsaved changes.
-              </p>
-            )}
-          </div>
-        )}
         {providerStatusMessage && (
           <StatusNotice message={providerStatusMessage} />
         )}
@@ -432,7 +410,7 @@ export function ProfileSettings() {
         {canManageApiKeys ? (
           <APIKeyManager
             selectedProvider={selectedProvider}
-            onProviderSelect={setSelectedProvider}
+            onProviderSelect={handleBYOKProviderSelect}
           />
         ) : (
           <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>

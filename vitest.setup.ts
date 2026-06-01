@@ -22,14 +22,29 @@ Object.defineProperty(window, "matchMedia", {
   }),
 });
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: () => null,
-  setItem: () => {},
-  removeItem: () => {},
-  clear: () => {},
+// In-memory localStorage (supports set/get for preference persistence tests)
+const localStorageStore = new Map<string, string>();
+const localStorageMock: Storage = {
+  get length() {
+    return localStorageStore.size;
+  },
+  clear() {
+    localStorageStore.clear();
+  },
+  getItem(key: string) {
+    return localStorageStore.get(key) ?? null;
+  },
+  setItem(key: string, value: string) {
+    localStorageStore.set(key, value);
+  },
+  removeItem(key: string) {
+    localStorageStore.delete(key);
+  },
+  key(index: number) {
+    return Array.from(localStorageStore.keys())[index] ?? null;
+  },
 };
-global.localStorage = localStorageMock as unknown as Storage;
+global.localStorage = localStorageMock;
 
 // Mock HTMLCanvasElement and CanvasRenderingContext2D
 HTMLCanvasElement.prototype.getContext = vi.fn(() => ({
