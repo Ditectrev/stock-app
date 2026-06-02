@@ -22,6 +22,7 @@ import { usePricingTier } from "@/lib/use-pricing-tier";
 import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
 import { fetchAIPredictionForCurrentProvider } from "@/lib/local-ollama-ai-prediction";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import { AIPredictionPanel } from "@/components/AIPredictionPanel";
 import { HomeHub } from "@/components/HomeHub";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
@@ -173,7 +174,7 @@ export function HomePageClient() {
           const body = (await symbolResponse.json().catch(() => ({}))) as {
             error?: string;
           };
-          throw new Error(body.error ?? "Failed to fetch symbol data");
+          throw new Error(body.error ?? MARKET_UI_COPY.load.symbolData);
         }
         const symbolResult = await symbolResponse.json();
         setSymbolData(symbolResult.data);
@@ -182,7 +183,7 @@ export function HomePageClient() {
           `/api/market/historical/${selectedSymbol}?range=${timeRange}`
         );
         if (!historicalResponse.ok) {
-          throw new Error("Failed to fetch historical data");
+          throw new Error(MARKET_UI_COPY.load.historicalData);
         }
         const historicalResult = await historicalResponse.json();
         setHistoricalData(historicalResult.data);
@@ -221,7 +222,7 @@ export function HomePageClient() {
       } catch (err) {
         console.error("Error fetching symbol data:", err);
         setError(
-          err instanceof Error ? err.message : "Failed to load symbol data"
+          err instanceof Error ? err.message : MARKET_UI_COPY.load.symbolData
         );
       } finally {
         setLoading(false);
@@ -327,7 +328,7 @@ export function HomePageClient() {
         setAIPredictionError(
           error instanceof Error
             ? error.message
-            : "Failed to fetch AI prediction"
+            : MARKET_UI_COPY.load.aiPrediction
         );
       } finally {
         setAIPredictionLoading(false);
@@ -355,7 +356,7 @@ export function HomePageClient() {
         setStockOfTheDayError(
           error instanceof Error
             ? error.message
-            : "Failed to fetch stock of the day"
+            : MARKET_UI_COPY.load.stockOfTheDay
         );
       } finally {
         setStockOfTheDayLoading(false);

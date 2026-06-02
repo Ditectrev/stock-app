@@ -210,7 +210,7 @@ describe("StockHeatmap", () => {
     render(<StockHeatmap />);
     expect(screen.getByTestId("stock-heatmap-error")).toBeDefined();
     expect(
-      screen.getByText("Failed to load stock data. Please try again later.")
+      screen.getByText("We couldn't load the stock heatmap. Try again.")
     ).toBeDefined();
   });
 

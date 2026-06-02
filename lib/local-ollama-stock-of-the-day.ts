@@ -10,6 +10,7 @@ import {
   parseStockOfTheDayCandidates,
   STOCK_OF_THE_DAY_CANDIDATES_PROMPT,
 } from "@/lib/stock-of-the-day-ai";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import type { PricingTier, StockOfTheDayResult } from "@/types";
 
 type StockOfTheDayApiResponse = {
@@ -41,7 +42,7 @@ async function fetchStockOfTheDayViaServerGet(): Promise<StockOfTheDayResult | n
     const body = (await response.json().catch(() => ({}))) as {
       error?: string;
     };
-    throw new Error(body.error ?? "Failed to load stock of the day");
+    throw new Error(body.error ?? MARKET_UI_COPY.load.stockOfTheDay);
   }
 
   const result = (await response.json()) as StockOfTheDayApiResponse;
@@ -69,9 +70,7 @@ async function fetchStockOfTheDayWithBrowserLocalOllama(): Promise<StockOfTheDay
     const body = (await response.json().catch(() => ({}))) as {
       error?: string;
     };
-    throw new Error(
-      body.error ?? "Failed to validate local stock-of-the-day candidates"
-    );
+    throw new Error(body.error ?? MARKET_UI_COPY.load.stockOfTheDayValidate);
   }
 
   const result = (await response.json()) as StockOfTheDayApiResponse;

@@ -230,7 +230,9 @@ describe("AssetScreener", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Failed to fetch screener results")
+        screen.getByText(
+          "We couldn't run the screener. Check your filters and try again."
+        )
       ).toBeDefined();
     });
   });

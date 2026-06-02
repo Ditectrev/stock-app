@@ -33,7 +33,7 @@ const ERROR_CONFIGS: Record<ErrorType, ErrorConfig> = {
   api: {
     icon: "⚠️",
     title: "Something went wrong",
-    description: "We couldn't complete your request. Please try again later.",
+    description: "We couldn't complete your request. Try again in a moment.",
   },
   "not-found": {
     icon: "🔍",
@@ -45,12 +45,12 @@ const ERROR_CONFIGS: Record<ErrorType, ErrorConfig> = {
     icon: "🌐",
     title: "Connection error",
     description:
-      "Unable to connect to the server. Please check your internet connection and try again.",
+      "Unable to reach the server. Check your connection and try again.",
   },
   generic: {
     icon: "❗",
     title: "An error occurred",
-    description: "Something unexpected happened. Please try again.",
+    description: "Something unexpected happened. Try again.",
   },
 };
 

@@ -22,6 +22,8 @@ import {
   HeatmapSortField,
   HeatmapSortDirection,
 } from "./HeatmapComponent";
+import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 export interface ETFHeatmapProps {
   /** Auto-refresh interval in milliseconds (0 = disabled) */
@@ -115,9 +117,11 @@ export function ETFHeatmap({
   if (error && !response) {
     return (
       <div className={HOME_INSTRUMENT_PANEL} data-testid="etf-heatmap-error">
-        <p className="text-center text-red-600 dark:text-red-400">
-          Failed to load ETF data. Please try again later.
-        </p>
+        <ErrorMessage
+          type="api"
+          message={MARKET_UI_COPY.load.etfHeatmap}
+          onRetry={() => mutate()}
+        />
       </div>
     );
   }

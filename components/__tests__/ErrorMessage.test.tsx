@@ -25,7 +25,7 @@ describe("ErrorMessage", () => {
     expect(screen.getByText("Something went wrong")).toBeDefined();
     expect(
       screen.getByText(
-        "We couldn't complete your request. Please try again later."
+        "We couldn't complete your request. Try again in a moment."
       )
     ).toBeDefined();
   });
@@ -45,7 +45,7 @@ describe("ErrorMessage", () => {
     expect(screen.getByText("Connection error")).toBeDefined();
     expect(
       screen.getByText(
-        "Unable to connect to the server. Please check your internet connection and try again."
+        "Unable to reach the server. Check your connection and try again."
       )
     ).toBeDefined();
   });
@@ -56,7 +56,7 @@ describe("ErrorMessage", () => {
     expect(screen.getByText("Custom error detail")).toBeDefined();
     expect(
       screen.queryByText(
-        "We couldn't complete your request. Please try again later."
+        "We couldn't complete your request. Try again in a moment."
       )
     ).toBeNull();
   });

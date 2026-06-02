@@ -16,7 +16,7 @@ describe("StockOfTheDayPanel locked state", () => {
     );
 
     expect(
-      screen.getByText(/Your current plan does not include AI/i)
+      screen.getByText(/AI is available on Local AI, BYOK, and Ditectrev AI plans/i)
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /View AI plans/i })

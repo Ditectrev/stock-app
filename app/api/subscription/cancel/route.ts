@@ -9,6 +9,7 @@ import { subscriptionService } from "@/services/subscription.service";
 import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/server-auth";
 import { stripeBillingService } from "@/services/stripe-billing.service";
+import { MARKET_UI_COPY } from "@/lib/api-user-error";
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -46,7 +47,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "Failed to cancel Stripe subscription",
+          error: MARKET_UI_COPY.billing.cancelFailed,
           timestamp: new Date(),
         },
         { status: 500 }
@@ -67,7 +68,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to cancel subscription",
+        error: MARKET_UI_COPY.billing.cancelFailed,
         timestamp: new Date(),
       },
       { status: 500 }

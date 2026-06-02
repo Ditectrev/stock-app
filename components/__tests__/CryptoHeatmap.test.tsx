@@ -194,7 +194,7 @@ describe("CryptoHeatmap", () => {
     render(<CryptoHeatmap />);
     expect(screen.getByTestId("crypto-heatmap-error")).toBeDefined();
     expect(
-      screen.getByText("Failed to load crypto data. Please try again later.")
+      screen.getByText("We couldn't load the crypto heatmap. Try again.")
     ).toBeDefined();
   });
 

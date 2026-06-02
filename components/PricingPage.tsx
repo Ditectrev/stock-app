@@ -48,6 +48,11 @@ function PricingCard({
   featured,
 }: PricingCardProps) {
   const isFree = tier.price === 0;
+  const visibleFeatures = tier.features.slice(0, 8);
+  const hiddenCount = Math.max(
+    0,
+    tier.features.length - visibleFeatures.length
+  );
 
   return (
     <div
@@ -150,7 +155,7 @@ function PricingCard({
 
       {/* Feature list */}
       <ul className="space-y-2.5 flex-1" aria-label={`${tier.name} features`}>
-        {tier.features.map((feature) => (
+        {visibleFeatures.map((feature) => (
           <li key={feature} className="flex items-start gap-2">
             {CHECK_ICON}
             <span
@@ -164,6 +169,13 @@ function PricingCard({
             </span>
           </li>
         ))}
+        {hiddenCount > 0 && (
+          <li
+            className={`pl-6 text-xs ${featured ? "text-stone-300 dark:text-stone-700" : HOME_SUBTLE_TEXT}`}
+          >
+            +{hiddenCount} more plan details
+          </li>
+        )}
       </ul>
     </div>
   );
@@ -183,11 +195,18 @@ export function PricingPage({
   const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null);
   const featuredTier = tiers.find((tier) => tier.tier === "ADS_FREE");
   const secondaryTiers = tiers.filter((tier) => tier.tier !== "ADS_FREE");
+  const planOrder = ["FREE", "LOCAL", "BYOK", "HOSTED_AI"] as const;
+  const orderedTiers = planOrder
+    .map((id) => tiers.find((tier) => tier.tier === id))
+    .filter((tier): tier is PricingTierInfo => Boolean(tier));
 
   const handleSelect = (tier: PricingTier) => {
     setSelectedTier(tier);
     onSelectTier?.(tier);
   };
+
+  const hasFeature = (tier: PricingTierInfo, needle: string) =>
+    tier.features.some((feature) => feature.toLowerCase().includes(needle));
 
   return (
     <section
@@ -213,6 +232,67 @@ export function PricingPage({
 
       {/* Tier cards */}
       <div className="space-y-6">
+        <div className="grid gap-4 lg:grid-cols-[1.15fr_1.85fr]">
+          <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900">
+            <p
+              className={`text-xs font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
+            >
+              Plan guide
+            </p>
+            <h3 className={`mt-2 text-xl font-semibold ${HOME_PANEL_TITLE}`}>
+              Pick your workflow, not just a price
+            </h3>
+            <p className={`mt-2 text-sm ${HOME_MUTED_TEXT}`}>
+              Free and Local AI fit research-first users. BYOK is best for
+              provider flexibility. Ditectrev AI removes setup with hosted
+              infrastructure.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900">
+            <p
+              className={`text-xs font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
+            >
+              Quick compare
+            </p>
+            <div className="mt-3 space-y-2 text-sm">
+              <div className="grid grid-cols-5 gap-2">
+                <span className={`font-medium ${HOME_MUTED_TEXT}`}>
+                  Capability
+                </span>
+                {orderedTiers.map((tier) => (
+                  <span
+                    key={tier.tier}
+                    className={`text-center text-xs font-semibold ${HOME_SUBTLE_TEXT}`}
+                  >
+                    {tier.name}
+                  </span>
+                ))}
+              </div>
+              {[
+                ["AI explanations", "ai metric explanations"],
+                ["Chart analysis", "ai chart analysis"],
+                ["Bring your own keys", "api q&a"],
+                ["No ads", "ads-free"],
+              ].map(([label, needle]) => (
+                <div
+                  key={label}
+                  className="grid grid-cols-5 gap-2 border-t border-stone-200 pt-2 dark:border-stone-700"
+                >
+                  <span className={HOME_MUTED_TEXT}>{label}</span>
+                  {orderedTiers.map((tier) => (
+                    <span
+                      key={`${label}-${tier.tier}`}
+                      className="text-center text-sm"
+                    >
+                      {hasFeature(tier, needle) ? "✓" : "—"}
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {featuredTier && (
           <div className="grid grid-cols-1">
             <PricingCard

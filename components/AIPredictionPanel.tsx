@@ -134,6 +134,15 @@ function LockedGate({ pricingTier }: { pricingTier?: PricingTier | null }) {
   );
 }
 
+function isHostedSetupMessage(error: string): boolean {
+  const normalized = error.toLowerCase();
+  return (
+    normalized.includes("hosted ai is not configured") ||
+    normalized.includes("ai_provider") ||
+    normalized.includes("ai_api_key")
+  );
+}
+
 export function AIPredictionPanel({
   prediction,
   loading,
@@ -184,7 +193,7 @@ export function AIPredictionPanel({
 
               {loading && (
                 <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
-                  Generating AI prediction...
+                  Building your AI prediction...
                 </p>
               )}
 
@@ -232,27 +241,40 @@ export function AIPredictionPanel({
                   className={`rounded-lg border px-3 py-3 text-sm ${
                     isMissingByokApiKeyMessage(error)
                       ? "border-stone-300 bg-stone-100 text-stone-900 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100"
-                      : "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
+                      : isHostedSetupMessage(error)
+                        ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
+                        : "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
                   }`}
                 >
-                  <p className="font-medium">{error}</p>
+                  <p className="font-medium">
+                    {isHostedSetupMessage(error)
+                      ? "Ditectrev AI configuration needed"
+                      : "AI prediction unavailable"}
+                  </p>
+                  <p className="mt-1">{error}</p>
                   {isMissingByokApiKeyMessage(error) && (
                     <div className="mt-3 space-y-2">
                       <p className="text-xs opacity-90">
-                        Add your API key on the Profile page under API keys,
-                        then pick the same provider as your explanation model.
+                        Add your key in Profile → API keys, then select the same
+                        provider as your explanations model.
                       </p>
                       <Link href="/profile" className={HOME_PRIMARY_BUTTON}>
                         Open profile
                       </Link>
                     </div>
                   )}
+                  {isHostedSetupMessage(error) && (
+                    <p className="mt-2 text-xs opacity-90">
+                      If you are on the Ditectrev AI plan, ask support to verify
+                      deployment env setup for this region.
+                    </p>
+                  )}
                 </div>
               )}
 
               {!loading && !prediction && !locked && !error && (
                 <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
-                  No AI prediction returned yet. Try another symbol or refresh.
+                  No prediction yet. Try another symbol or refresh this panel.
                 </p>
               )}
             </div>

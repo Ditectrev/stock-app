@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { aiMarketInsightsService } from "@/services/ai-market-insights.service";
 import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/server-auth";
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
           success: false,
           error:
             resolved.error ??
-            "Configure an AI explanations provider to generate dynamic stock-of-the-day picks.",
+            "AI is available on your plan, but this deployment has no active provider configuration for stock ideas.",
           timestamp: new Date(),
         },
         { status: 400 }
@@ -65,10 +66,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to load stock of the day",
+        error: userFacingApiError(error, MARKET_UI_COPY.load.stockOfTheDay),
         timestamp: new Date(),
       },
       { status: 500 }
@@ -132,10 +130,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to validate stock-of-the-day candidates",
+        error: userFacingApiError(
+          error,
+          MARKET_UI_COPY.load.stockOfTheDayValidate
+        ),
         timestamp: new Date(),
       },
       { status: 500 }

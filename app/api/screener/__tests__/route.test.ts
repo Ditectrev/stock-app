@@ -290,7 +290,9 @@ describe("POST /api/screener/search", () => {
     const data = await response.json();
 
     expect(response.status).toBe(500);
-    expect(data.error).toBe("Failed to search screener");
+    expect(data.error).toBe(
+      "We couldn't run the screener. Check your filters and try again."
+    );
   });
 });
 

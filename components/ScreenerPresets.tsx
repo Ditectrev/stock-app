@@ -18,6 +18,7 @@ import {
   HOME_SECONDARY_BUTTON,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 export interface ScreenerPresetsProps {
   currentFilters: ScreenerFilter[];
@@ -50,12 +51,16 @@ export function ScreenerPresets({
       try {
         const res = await fetch("/api/screener/presets");
         if (!res.ok) {
-          throw new Error("Failed to fetch presets");
+          throw new Error(MARKET_UI_COPY.load.screenerPresetsLoad);
         }
         const json = await res.json();
         setPresets(json.data ?? []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load presets");
+        setError(
+          err instanceof Error
+            ? err.message
+            : MARKET_UI_COPY.load.screenerPresetsLoad
+        );
       } finally {
         setLoading(false);
       }
@@ -87,7 +92,7 @@ export function ScreenerPresets({
       });
 
       if (!res.ok) {
-        throw new Error("Failed to save preset");
+        throw new Error(MARKET_UI_COPY.load.screenerPresetsSave);
       }
 
       const json = await res.json();
@@ -97,7 +102,11 @@ export function ScreenerPresets({
       setSaveName("");
       setSaveDescription("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save preset");
+      setError(
+        err instanceof Error
+          ? err.message
+          : MARKET_UI_COPY.load.screenerPresetsSave
+      );
     } finally {
       setSaving(false);
     }

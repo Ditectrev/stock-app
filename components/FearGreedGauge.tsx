@@ -13,6 +13,7 @@ import { useTheme } from "@/lib/theme-context";
 import { FearGreedData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_INSTRUMENT_PANEL,
   HOME_MUTED_TEXT,
@@ -71,12 +72,14 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
     setError(null);
     try {
       const res = await fetch(`/api/market/fear-greed?limit=${limit}`);
-      if (!res.ok) throw new Error("Failed to fetch Fear & Greed data");
+      if (!res.ok) throw new Error(MARKET_UI_COPY.load.fearGreed);
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "Unknown error");
       setData(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(
+        err instanceof Error ? err.message : MARKET_UI_COPY.load.fearGreed
+      );
     } finally {
       setLoading(false);
     }

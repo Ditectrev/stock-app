@@ -13,7 +13,9 @@ import { DividendEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
+  CALENDAR_CHIP_IDLE,
   CALENDAR_DAY_HEADER,
   CALENDAR_EMPTY_TEXT,
   CALENDAR_EVENT_LIST,
@@ -82,12 +84,16 @@ export function DividendCalendar({
     setError(null);
     try {
       const res = await fetch("/api/calendar/dividends");
-      if (!res.ok) throw new Error("Failed to fetch dividend events");
+      if (!res.ok) throw new Error(MARKET_UI_COPY.load.dividendCalendar);
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "Unknown error");
       setData(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(
+        err instanceof Error
+          ? err.message
+          : MARKET_UI_COPY.load.dividendCalendar
+      );
     } finally {
       setLoading(false);
     }
@@ -186,11 +192,28 @@ export function DividendCalendar({
       role="region"
       aria-label="Dividend Calendar"
     >
-      <h3 className={CALENDAR_PAGE_TITLE}>Dividend Calendar</h3>
+      <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h3 className={CALENDAR_PAGE_TITLE}>Dividend Calendar</h3>
+          <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
+            Upcoming payouts by day with yield, amount, and payment schedule.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="rounded-full border border-stone-300 bg-stone-100 px-2.5 py-1 text-stone-700 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200">
+            {filteredEvents.length} matched
+          </span>
+          {countryFilter !== "all" && (
+            <span className={`rounded-full px-2.5 py-1 ${CALENDAR_CHIP_IDLE}`}>
+              {countryFilter}
+            </span>
+          )}
+        </div>
+      </div>
 
       {/* Filters */}
       <div
-        className="flex flex-col sm:flex-row gap-3 mb-4"
+        className="mb-4 flex flex-col gap-3 rounded-lg border border-stone-200 bg-stone-100 p-3 sm:flex-row sm:items-center dark:border-stone-700 dark:bg-stone-800"
         data-testid="filters"
       >
         <CalendarDateRangePicker
@@ -261,8 +284,7 @@ export function DividendCalendar({
           No dividend events match the selected filters.
           {!externalData && (
             <span className="block mt-1 text-xs">
-              The data source may be temporarily unavailable. Try again in a few
-              minutes.
+              {MARKET_UI_COPY.calendar.emptyHint}
             </span>
           )}
         </p>

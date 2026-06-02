@@ -20,6 +20,7 @@ import {
   type ExplanationProvider,
   type Tier,
 } from "@/lib/explanation-provider";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   readSelectedBYOKProvider,
   saveSelectedBYOKProvider,
@@ -221,7 +222,7 @@ export function ProfileSettings() {
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         setSubscriptionStatusMessage({
-          text: data.error ?? "Failed to cancel subscription.",
+          text: data.error ?? MARKET_UI_COPY.billing.cancelFailed,
           tone: "error",
         });
         return;
@@ -251,7 +252,7 @@ export function ProfileSettings() {
       };
       if (!res.ok || !data.data?.url) {
         setSubscriptionStatusMessage({
-          text: data.error ?? "Failed to open billing portal.",
+          text: data.error ?? MARKET_UI_COPY.billing.portalFailed,
           tone: "error",
         });
         return;

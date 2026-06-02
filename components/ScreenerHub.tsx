@@ -158,63 +158,82 @@ export function ScreenerHub({
       <header className="mb-4 sm:mb-6">
         <p className={HOME_SECTION_LABEL}>Discovery</p>
         <h2 className={`mt-1 ${HOME_PANEL_TITLE}`}>Screener</h2>
+        <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
+          Build a thesis with filters on the left, then inspect results in a
+          table or heatmap canvas.
+        </p>
       </header>
 
-      <div className="space-y-4">
-        <AssetScreener
-          onResultsChange={handleResultsChange}
-          onFiltersChange={handleFiltersChange}
-          initialFilters={presetFilters}
-        />
+      <div className="grid gap-4 lg:grid-cols-[1.1fr_1.9fr]">
+        <aside className="space-y-4 rounded-xl border border-stone-200 bg-stone-100 p-3 dark:border-stone-700 dark:bg-stone-800">
+          <AssetScreener
+            onResultsChange={handleResultsChange}
+            onFiltersChange={handleFiltersChange}
+            initialFilters={presetFilters}
+          />
 
-        {/* Presets */}
-        <ScreenerPresets
-          currentFilters={currentFilters}
-          onPresetSelect={handlePresetSelect}
-        />
+          <ScreenerPresets
+            currentFilters={currentFilters}
+            onPresetSelect={handlePresetSelect}
+          />
+        </aside>
 
-        {/* View mode toggle */}
-        <div
-          className={`${HOME_SEGMENTED_NAV} w-fit`}
-          role="tablist"
-          aria-label="Screener view mode"
-        >
-          <button
-            type="button"
-            role="tab"
-            aria-selected={viewMode === "table"}
-            onClick={() => setViewMode("table")}
-            className={homeSegmentedTabClasses(viewMode === "table", isDark)}
-            data-testid="view-toggle-table"
-          >
-            Table
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={viewMode === "heatmap"}
-            onClick={() => setViewMode("heatmap")}
-            className={homeSegmentedTabClasses(viewMode === "heatmap", isDark)}
-            data-testid="view-toggle-heatmap"
-          >
-            Heatmap
-          </button>
-        </div>
+        <section className="space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className={HOME_SECTION_LABEL}>Results canvas</p>
+              <p className="mt-1 text-xs text-stone-600 dark:text-stone-300">
+                {results.length} match{results.length === 1 ? "" : "es"}
+              </p>
+            </div>
+            <div
+              className={`${HOME_SEGMENTED_NAV} w-fit`}
+              role="tablist"
+              aria-label="Screener view mode"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={viewMode === "table"}
+                onClick={() => setViewMode("table")}
+                className={homeSegmentedTabClasses(
+                  viewMode === "table",
+                  isDark
+                )}
+                data-testid="view-toggle-table"
+              >
+                Table
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={viewMode === "heatmap"}
+                onClick={() => setViewMode("heatmap")}
+                className={homeSegmentedTabClasses(
+                  viewMode === "heatmap",
+                  isDark
+                )}
+                data-testid="view-toggle-heatmap"
+              >
+                Heatmap
+              </button>
+            </div>
+          </div>
 
-        {/* Active view */}
-        <div role="tabpanel">
-          {viewMode === "table" ? (
-            <ScreenerTableView
-              results={results}
-              onSymbolClick={onSymbolClick}
-            />
-          ) : (
-            <ScreenerHeatmapView
-              results={results}
-              onSymbolClick={onSymbolClick}
-            />
-          )}
-        </div>
+          <div role="tabpanel">
+            {viewMode === "table" ? (
+              <ScreenerTableView
+                results={results}
+                onSymbolClick={onSymbolClick}
+              />
+            ) : (
+              <ScreenerHeatmapView
+                results={results}
+                onSymbolClick={onSymbolClick}
+              />
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

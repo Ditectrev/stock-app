@@ -45,7 +45,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
       return {
         ok: false,
         error:
-          "Hosted AI is not configured on this deployment. Set AI_PROVIDER and AI_API_KEY for server-side inference.",
+          "Ditectrev AI is not configured for this deployment yet. Set AI_PROVIDER and AI_API_KEY on the server.",
       };
     }
 
@@ -72,7 +72,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
       if (!apiKey) {
         return {
           ok: false,
-          error: `Hosted AI is set to ${providerRaw} but AI_API_KEY is not set on the deployment.`,
+          error: `Ditectrev AI is set to ${providerRaw}, but AI_API_KEY is missing on this deployment.`,
         };
       }
       return {

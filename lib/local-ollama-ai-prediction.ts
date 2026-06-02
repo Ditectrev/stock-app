@@ -11,6 +11,7 @@ import {
   type AIPredictionMarketSnapshot,
 } from "@/lib/ai-prediction";
 import { getAIProviderHeaders } from "@/lib/explanation-provider";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import type { AIPredictionReport, PricingTier } from "@/types";
 
 type PredictionApiResponse = {
@@ -48,7 +49,7 @@ async function fetchAIPredictionViaServerGet(
     const body = (await response.json().catch(() => ({}))) as {
       error?: string;
     };
-    throw new Error(body.error ?? "Failed to fetch AI prediction");
+    throw new Error(body.error ?? MARKET_UI_COPY.load.aiPrediction);
   }
 
   const result = (await response.json()) as PredictionApiResponse;
@@ -71,9 +72,7 @@ async function fetchAIPredictionWithBrowserLocalOllama(
     const body = (await snapshotResponse.json().catch(() => ({}))) as {
       error?: string;
     };
-    throw new Error(
-      body.error ?? "Failed to load market data for AI prediction"
-    );
+    throw new Error(body.error ?? MARKET_UI_COPY.load.aiPredictionMarketData);
   }
 
   const snapshotResult = (await snapshotResponse.json()) as SnapshotApiResponse;
@@ -104,7 +103,7 @@ async function fetchAIPredictionWithBrowserLocalOllama(
     const body = (await response.json().catch(() => ({}))) as {
       error?: string;
     };
-    throw new Error(body.error ?? "Failed to validate AI prediction");
+    throw new Error(body.error ?? MARKET_UI_COPY.load.aiPredictionValidate);
   }
 
   const result = (await response.json()) as PredictionApiResponse;

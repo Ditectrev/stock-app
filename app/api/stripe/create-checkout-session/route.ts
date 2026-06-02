@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import type { PricingTier } from "@/types";
 import { getAuthenticatedUser } from "@/lib/server-auth";
 import { stripeBillingService } from "@/services/stripe-billing.service";
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     if (!session.url) {
       return NextResponse.json(
-        { success: false, error: "Failed to create checkout URL" },
+        { success: false, error: MARKET_UI_COPY.load.checkoutUrl },
         { status: 500 }
       );
     }
@@ -58,10 +59,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to create checkout session",
+        error: userFacingApiError(error, MARKET_UI_COPY.load.checkout),
         timestamp: new Date(),
       },
       { status: 500 }

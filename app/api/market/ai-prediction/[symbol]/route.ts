@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { aiMarketInsightsService } from "@/services/ai-market-insights.service";
 import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/server-auth";
@@ -54,7 +55,8 @@ export async function GET(
       return NextResponse.json(
         {
           success: false,
-          error: "Configure an AI provider to generate predictions.",
+          error:
+            "AI is available on your plan, but this deployment has no active provider configuration.",
         },
         { status: 503 }
       );
@@ -79,10 +81,10 @@ export async function GET(
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to generate AI prediction",
+        error: userFacingApiError(
+          error,
+          MARKET_UI_COPY.load.aiPredictionGenerate
+        ),
         timestamp: new Date(),
       },
       { status: 500 }
@@ -151,10 +153,10 @@ export async function POST(
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to validate AI prediction",
+        error: userFacingApiError(
+          error,
+          MARKET_UI_COPY.load.aiPredictionValidate
+        ),
         timestamp: new Date(),
       },
       { status: 500 }

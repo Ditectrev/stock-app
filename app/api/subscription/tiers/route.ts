@@ -5,6 +5,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { MARKET_UI_COPY } from "@/lib/api-user-error";
 import { subscriptionService } from "@/services/subscription.service";
 import { logger } from "@/lib/logger";
 
@@ -23,7 +24,7 @@ export async function GET() {
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to fetch pricing tiers",
+        error: MARKET_UI_COPY.load.pricingDetails,
         timestamp: new Date(),
       },
       { status: 500 }

@@ -170,7 +170,7 @@ describe("Req 14.4: Connectivity error message", () => {
     expect(screen.getByText("Connection error")).toBeDefined();
     expect(
       screen.getByText(
-        "Unable to connect to the server. Please check your internet connection and try again."
+        "Unable to reach the server. Check your connection and try again."
       )
     ).toBeDefined();
   });

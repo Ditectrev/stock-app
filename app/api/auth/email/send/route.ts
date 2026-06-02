@@ -7,6 +7,7 @@ import { AppwriteException, ID } from "node-appwrite";
 import { createServerClient } from "@/lib/appwrite";
 import { getAppwriteServerEnv } from "@/lib/appwrite-server-env";
 import { logger } from "@/lib/logger";
+import { MARKET_UI_COPY } from "@/lib/api-user-error";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
         ? err.message
         : err instanceof Error
           ? err.message
-          : "Failed to send verification email.";
+          : MARKET_UI_COPY.auth.verificationEmail;
     if (typeof message === "string" && message.includes("sessions.write")) {
       message =
         "Appwrite API key must include the sessions.write scope. In Appwrite Console: Project → API keys → your key → Scopes → enable Sessions (write).";

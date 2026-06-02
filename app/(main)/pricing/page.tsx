@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import type { PricingTier, PricingTierInfo } from "@/types";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 const PricingPage = dynamic(
   () => import("@/components/PricingPage").then((m) => m.PricingPage),
@@ -58,7 +59,7 @@ function PricingRouteContent() {
       }
     } catch {
       setMessage({
-        text: "Failed to load pricing details. Please refresh.",
+        text: MARKET_UI_COPY.load.pricingDetails,
         tone: "warning",
       });
     }
@@ -147,14 +148,14 @@ function PricingRouteContent() {
       };
       if (!response.ok || !payload.data?.url) {
         setMessage({
-          text: payload.error ?? "Failed to start checkout.",
+          text: payload.error ?? MARKET_UI_COPY.load.checkout,
           tone: "warning",
         });
         return;
       }
       window.location.assign(payload.data.url);
     } catch {
-      setMessage({ text: "Failed to start checkout.", tone: "warning" });
+      setMessage({ text: MARKET_UI_COPY.load.checkout, tone: "warning" });
     }
   };
 

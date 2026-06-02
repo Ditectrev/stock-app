@@ -188,7 +188,7 @@ describe("ETFHeatmap", () => {
     render(<ETFHeatmap />);
     expect(screen.getByTestId("etf-heatmap-error")).toBeDefined();
     expect(
-      screen.getByText("Failed to load ETF data. Please try again later.")
+      screen.getByText("We couldn't load the ETF heatmap. Try again.")
     ).toBeDefined();
   });
 

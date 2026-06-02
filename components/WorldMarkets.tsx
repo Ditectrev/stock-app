@@ -13,6 +13,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { MarketIndex } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_INSTRUMENT_PANEL,
   HOME_MUTED_TEXT,
@@ -75,12 +76,14 @@ export function WorldMarkets({
     setError(null);
     try {
       const res = await fetch("/api/market/world-markets");
-      if (!res.ok) throw new Error("Failed to fetch world markets data");
+      if (!res.ok) throw new Error(MARKET_UI_COPY.load.worldMarkets);
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "Unknown error");
       setData(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(
+        err instanceof Error ? err.message : MARKET_UI_COPY.load.worldMarkets
+      );
     } finally {
       setLoading(false);
     }

@@ -11,6 +11,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type { ScreenerFilter, ScreenerResult } from "@/types";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_INPUT_SM,
   HOME_MUTED_TEXT,
@@ -441,7 +442,7 @@ export function AssetScreener({
       });
 
       if (!res.ok) {
-        throw new Error("Failed to fetch screener results");
+        throw new Error(MARKET_UI_COPY.load.screenerResults);
       }
 
       const json = await res.json();
@@ -451,7 +452,7 @@ export function AssetScreener({
       onFiltersChange?.(filters);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : MARKET_UI_COPY.load.screenerResults
       );
     } finally {
       setLoading(false);

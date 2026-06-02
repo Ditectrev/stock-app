@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { screenerService } from "@/services/screener.service";
 import { logger } from "@/lib/logger";
 import type { ScreenerFilter, ScreenerResult } from "@/types";
@@ -87,10 +88,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to export screener results",
+        error: userFacingApiError(error, MARKET_UI_COPY.load.screenerExport),
         timestamp: new Date(),
       },
       { status: 500 }

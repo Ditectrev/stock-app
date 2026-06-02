@@ -338,13 +338,15 @@ describe("SearchBar", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("Failed to search symbols")).toBeDefined();
+        expect(
+          screen.getByText("We couldn't search symbols right now. Try again.")
+        ).toBeDefined();
       },
       { timeout: 500 }
     );
   });
 
-  it("should display 'No results found' when search returns empty", async () => {
+  it("should display empty search message when search returns empty", async () => {
     vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: [] }),
@@ -357,7 +359,7 @@ describe("SearchBar", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("No results found")).toBeDefined();
+        expect(screen.getByText("No symbols match that search.")).toBeDefined();
       },
       { timeout: 500 }
     );

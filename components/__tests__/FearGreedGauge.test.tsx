@@ -131,7 +131,7 @@ describe("FearGreedGauge", () => {
     await waitFor(() => {
       expect(screen.getByTestId("fear-greed-error")).toBeDefined();
       expect(
-        screen.getByText("Failed to fetch Fear & Greed data")
+        screen.getByText("We couldn't load the Fear & Greed index. Try again.")
       ).toBeDefined();
     });
   });

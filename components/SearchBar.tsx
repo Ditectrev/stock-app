@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { HOME_INPUT, HOME_MUTED_TEXT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 interface SearchResult {
   symbol: string;
@@ -49,7 +50,7 @@ export function SearchBar({
       );
 
       if (!response.ok) {
-        throw new Error("Search failed");
+        throw new Error(MARKET_UI_COPY.search.genericFailed);
       }
 
       const data = await response.json();
@@ -58,12 +59,12 @@ export function SearchBar({
         setResults(data.data || []);
         setIsOpen(true);
       } else {
-        setError(data.error || "Search failed");
+        setError(data.error || MARKET_UI_COPY.search.genericFailed);
         setResults([]);
         setIsOpen(true); // Open dropdown to show error
       }
     } catch {
-      setError("Failed to search symbols");
+      setError(MARKET_UI_COPY.search.failed);
       setResults([]);
       setIsOpen(true); // Open dropdown to show error
     } finally {
@@ -238,7 +239,7 @@ export function SearchBar({
 
           {!error && results.length === 0 && !isLoading && (
             <div className={`px-4 py-3 text-sm ${HOME_MUTED_TEXT}`}>
-              No results found
+              {MARKET_UI_COPY.search.noResults}
             </div>
           )}
 

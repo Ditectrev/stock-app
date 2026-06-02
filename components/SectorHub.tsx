@@ -13,6 +13,7 @@ import { useTheme } from "@/lib/theme-context";
 import { SectorData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_CHIP,
   HOME_INSTRUMENT_PANEL,
@@ -79,12 +80,14 @@ export function SectorHub({
     setError(null);
     try {
       const res = await fetch(`/api/market/sectors?period=${timePeriod}`);
-      if (!res.ok) throw new Error("Failed to fetch sector data");
+      if (!res.ok) throw new Error(MARKET_UI_COPY.load.sectorHub);
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "Unknown error");
       setData(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(
+        err instanceof Error ? err.message : MARKET_UI_COPY.load.sectorHub
+      );
     } finally {
       setLoading(false);
     }

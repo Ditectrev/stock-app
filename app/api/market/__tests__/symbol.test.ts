@@ -617,7 +617,9 @@ describe("Error Responses", () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Failed to calculate indicators");
+      expect(data.error).toBe(
+        "We couldn't load technical indicators. Try again."
+      );
     });
 
     it("should return descriptive error for forecast API failure", async () => {
@@ -682,7 +684,9 @@ describe("Error Responses", () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Failed to fetch Fear & Greed Index");
+      expect(data.error).toBe(
+        "We couldn't load the Fear & Greed index. Try again."
+      );
     });
 
     it("should return fallback message for non-Error throws in world-markets", async () => {
@@ -695,7 +699,7 @@ describe("Error Responses", () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Failed to fetch world markets");
+      expect(data.error).toBe("We couldn't load world markets. Try again.");
     });
 
     it("should return fallback message for non-Error throws in sectors", async () => {
@@ -708,7 +712,9 @@ describe("Error Responses", () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Failed to fetch sector performance");
+      expect(data.error).toBe(
+        "We couldn't load sector performance. Try again."
+      );
     });
   });
 

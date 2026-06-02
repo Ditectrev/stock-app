@@ -13,6 +13,7 @@ import { ChartWrapper, IChartApi } from "./ChartWrapper";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
 import { homeChipClasses, HOME_CALLOUT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   calculateRSI,
   calculateMACD,
@@ -177,7 +178,7 @@ export function ChartComponent({
   const initializeChart = useCallback(
     (chart: IChartApi) => {
       if (!filteredData || filteredData.length === 0) {
-        setError("No data available");
+        setError(MARKET_UI_COPY.chart.noData);
         return;
       }
 
@@ -388,7 +389,7 @@ export function ChartComponent({
         chart.timeScale().fitContent();
       } catch (err) {
         console.error("Error initializing chart:", err);
-        setError("Failed to initialize chart");
+        setError(MARKET_UI_COPY.chart.initFailed);
       }
     },
     [

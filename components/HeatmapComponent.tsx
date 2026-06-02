@@ -213,7 +213,9 @@ export function HeatmapComponent({
           <button
             key={period}
             data-testid={`heatmap-period-${period}`}
-            className={`${HOME_CHIP} ${homeChipClasses(timePeriod === period)}`}
+            className={`${HOME_CHIP} ${homeChipClasses(
+              timePeriod === period
+            )} transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1`}
             aria-pressed={timePeriod === period}
             onClick={() => onTimePeriodChange?.(period)}
           >
@@ -240,7 +242,9 @@ export function HeatmapComponent({
             <button
               key={field}
               data-testid={`heatmap-sort-${field}`}
-              className={`${HOME_CHIP} ${homeChipClasses(sortField === field)}`}
+              className={`${HOME_CHIP} ${homeChipClasses(
+                sortField === field
+              )} transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1`}
               aria-pressed={sortField === field}
               onClick={() => handleSortClick(field)}
             >
@@ -254,7 +258,7 @@ export function HeatmapComponent({
           data-testid="heatmap-sector-filter"
           className={`${HOME_CHIP} border ${homeChipClasses(false)} ${
             isDark ? "border-stone-600" : "border-stone-200"
-          }`}
+          } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1`}
           value={sectorFilter ?? ""}
           onChange={(e) => onSectorFilterChange?.(e.target.value)}
           aria-label="Filter by sector"
@@ -280,7 +284,7 @@ export function HeatmapComponent({
           return (
             <div
               key={item.symbol}
-              className={`rounded-lg p-2 sm:p-3 md:p-3 lg:p-4 flex flex-col items-center justify-center min-h-[70px] sm:min-h-[80px] md:min-h-[90px] lg:min-h-[100px] transition-transform hover:scale-105 active:scale-95 cursor-pointer ${textColor}`}
+              className={`rounded-lg p-2 sm:p-3 md:p-3 lg:p-4 flex flex-col items-center justify-center min-h-[70px] sm:min-h-[80px] md:min-h-[90px] lg:min-h-[100px] cursor-pointer transition-all duration-150 hover:scale-[1.03] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1 ${textColor}`}
               style={{ backgroundColor: bgColor }}
               data-testid={`heatmap-tile-${item.symbol}`}
               aria-label={`${item.symbol}: ${formatPercent(item.changePercent)}`}

@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY } from "@/lib/api-user-error";
 import { subscriptionService } from "@/services/subscription.service";
 import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/server-auth";
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to fetch current subscription",
+        error: MARKET_UI_COPY.account.subscription,
         timestamp: new Date(),
       },
       { status: 500 }

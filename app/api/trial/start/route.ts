@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { parseTrialIdentity } from "@/lib/trial-request-identity";
 import { serverTrialManagementService } from "@/services/server-trial-management.service";
 import { logger } from "@/lib/logger";
@@ -31,10 +32,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to start trial session",
+        error: userFacingApiError(error, MARKET_UI_COPY.account.trialStart),
         timestamp: new Date(),
       },
       { status: 403 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePricingTier } from "@/lib/use-pricing-tier";
 import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
 import type { StockOfTheDayResult } from "@/types";
 
@@ -52,7 +53,7 @@ export default function StockOfTheDayPage() {
       } catch (err) {
         setItem(null);
         setLoadError(
-          err instanceof Error ? err.message : "Failed to load stock of the day"
+          err instanceof Error ? err.message : MARKET_UI_COPY.load.stockOfTheDay
         );
       } finally {
         setLoading(false);

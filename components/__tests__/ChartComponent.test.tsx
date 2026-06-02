@@ -248,13 +248,17 @@ describe("ChartComponent", () => {
     it("should display error message when data is empty", () => {
       render(<ChartWithTheme data={[]} />);
 
-      expect(screen.getByText("No data available")).toBeInTheDocument();
+      expect(
+        screen.getByText("No price data for this range.")
+      ).toBeInTheDocument();
     });
 
     it("should display error message when data is invalid", () => {
       render(<ChartWithTheme data={null as unknown as typeof mockData} />);
 
-      expect(screen.getByText("No data available")).toBeInTheDocument();
+      expect(
+        screen.getByText("No price data for this range.")
+      ).toBeInTheDocument();
     });
   });
 
