@@ -12,6 +12,10 @@ import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
 import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
 import {
+  technicalSignalStyles,
+  type TechnicalSignal,
+} from "@/lib/market-semantics";
+import {
   SYMBOL_DIVIDER,
   SYMBOL_HELP_BUTTON,
   SYMBOL_MUTED_TEXT,
@@ -23,7 +27,7 @@ export interface TechnicalIndicatorsDisplayProps {
   indicators: TechnicalIndicators | null | undefined;
 }
 
-type Signal = "overpriced" | "underpriced" | "fair";
+type Signal = TechnicalSignal;
 
 interface IndicatorRowData {
   name: string;
@@ -44,33 +48,6 @@ const SENTIMENT_LABELS: Record<Signal, string> = {
   underpriced: "Overall: Appears Underpriced",
   fair: "Overall: Appears Fairly Priced",
 };
-
-function getSignalAccent(signal: Signal, isDark: boolean) {
-  switch (signal) {
-    case "overpriced":
-      return {
-        border: isDark ? "border-red-500/70" : "border-red-500",
-        badge: isDark ? "bg-red-950/50 text-red-300" : "bg-red-50 text-red-700",
-        text: isDark ? "text-red-300" : "text-red-700",
-      };
-    case "underpriced":
-      return {
-        border: isDark ? "border-green-500/70" : "border-green-600",
-        badge: isDark
-          ? "bg-green-950/50 text-green-300"
-          : "bg-green-50 text-green-700",
-        text: isDark ? "text-green-300" : "text-green-700",
-      };
-    default:
-      return {
-        border: isDark ? "border-stone-500" : "border-stone-400",
-        badge: isDark
-          ? "bg-stone-800 text-stone-300"
-          : "bg-stone-100 text-stone-700",
-        text: isDark ? "text-stone-300" : "text-stone-700",
-      };
-  }
-}
 
 function buildIndicatorRows(
   indicators: TechnicalIndicators
@@ -141,7 +118,7 @@ export function TechnicalIndicatorsDisplay({
   }
 
   const rows = buildIndicatorRows(indicators);
-  const sentiment = getSignalAccent(indicators.overallSentiment, isDark);
+  const sentiment = technicalSignalStyles(indicators.overallSentiment);
 
   return (
     <SymbolTabShell
@@ -182,7 +159,7 @@ function IndicatorRow({
   isDark: boolean;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const accent = getSignalAccent(row.signal, isDark);
+  const accent = technicalSignalStyles(row.signal);
 
   return (
     <li

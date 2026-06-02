@@ -14,6 +14,7 @@ import {
   SYMBOL_INSTRUMENT_PANEL,
   SYMBOL_PANEL_TITLE,
   SYMBOL_SECTION_LABEL,
+  SYMBOL_SUBTLE_TEXT,
 } from "@/lib/symbol-ui";
 
 export interface OverviewTabProps {
@@ -33,7 +34,11 @@ export function OverviewTab({
     <div className="space-y-6" role="tabpanel" aria-label="Overview">
       <div className={`${SYMBOL_INSTRUMENT_PANEL} lg:p-8`}>
         <p className={`mb-2 ${SYMBOL_SECTION_LABEL}`}>Price trend</p>
-        <h2 className={`mb-3 sm:mb-4 ${SYMBOL_PANEL_TITLE}`}>Chart</h2>
+        <h2 className={`mb-2 sm:mb-3 ${SYMBOL_PANEL_TITLE}`}>Chart</h2>
+        <p className={`mb-3 text-sm sm:mb-4 ${SYMBOL_SUBTLE_TEXT}`}>
+          Adjust the range to compare price action. Headline price is in the
+          symbol header.
+        </p>
         <div className="h-[300px] md:h-[380px] lg:h-[420px] xl:h-[500px]">
           <ChartComponent
             data={historicalData}

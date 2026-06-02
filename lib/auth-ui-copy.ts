@@ -21,4 +21,24 @@ export const AUTH_UI_COPY = {
     "We couldn't confirm checkout. Refresh the page or contact support.",
   subscriptionConfirmFailed:
     "We couldn't confirm your subscription. If you were charged, contact support.",
+  appleSignInFailed: "We couldn't start Apple sign-in. Try again.",
+  googleSignInFailed: "We couldn't start Google sign-in. Try again.",
+  verificationEmailFailed:
+    "We couldn't send the verification email. Check the address and try again.",
+  oauthSessionFailed: "We couldn't finish sign-in. Try again.",
+  emailOtpVerifyFailed:
+    "That code didn't work. It may have expired — request a new one.",
+  signOutFailed: "We couldn't sign out. Try again.",
+  ollamaTimeout:
+    "Local Ollama timed out. Make sure Ollama is running at http://localhost:11434 and the model is available.",
+  ollamaReachPrefix:
+    "We couldn't reach local Ollama at http://localhost:11434 from the browser",
+  hostedRateLimitPrefix: "Rate limit reached. Try again",
+  hostedReachPrefix: "We couldn't reach hosted AI",
+  hostedTierRequired:
+    "Hosted AI requires an active subscription. Upgrade to the Hosted AI tier.",
+  trialStartFailed: "We couldn't start your trial. Try again.",
+  trialStatusFailed: "We couldn't load trial status. Try again.",
+  trialEndFailed: "We couldn't end the trial session. Try again.",
+  trialEligibilityFailed: "We couldn't check trial eligibility. Try again.",
 } as const;

@@ -8,12 +8,12 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useTheme } from "@/lib/theme-context";
 import { DividendEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import { MARKET_UP_BADGE } from "@/lib/market-semantics";
 import {
   CALENDAR_CHIP_IDLE,
   CALENDAR_DAY_HEADER,
@@ -67,9 +67,6 @@ export function DividendCalendar({
   data: externalData,
   onSymbolClick,
 }: DividendCalendarProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const [data, setData] = useState<DividendEvent[] | null>(
     externalData ?? null
   );
@@ -332,11 +329,7 @@ export function DividendCalendar({
                         {/* Symbol badge */}
                         <button
                           onClick={() => onSymbolClick?.(event.symbol)}
-                          className={`text-xs font-semibold px-2 py-0.5 rounded shrink-0 w-16 text-center inline-block cursor-pointer transition-colors ${
-                            isDark
-                              ? "bg-green-900/40 text-green-300 hover:bg-green-800/60"
-                              : "bg-green-100 text-green-700 hover:bg-green-200"
-                          }`}
+                          className={`text-xs font-semibold px-2 py-0.5 rounded shrink-0 w-16 text-center inline-block cursor-pointer transition-colors ${MARKET_UP_BADGE} hover:opacity-90`}
                           data-testid={`symbol-${event.id}`}
                           aria-label={`View details for ${event.symbol}`}
                         >

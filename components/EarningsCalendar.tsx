@@ -14,6 +14,7 @@ import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import { marketChangeTextClass } from "@/lib/market-semantics";
 import {
   CALENDAR_DAY_HEADER,
   CALENDAR_EMPTY_TEXT,
@@ -249,14 +250,9 @@ export function EarningsCalendar({
                     const hasSurprise =
                       event.epsSurprise !== undefined &&
                       event.epsSurprise !== null;
-                    const isBeat = hasSurprise && event.epsSurprise! > 0;
-                    const isMiss = hasSurprise && event.epsSurprise! < 0;
-
-                    const surpriseColorClass = isBeat
-                      ? "text-green-600 dark:text-green-400"
-                      : isMiss
-                        ? "text-red-600 dark:text-red-400"
-                        : CALENDAR_NEUTRAL_TEXT;
+                    const surpriseColorClass = hasSurprise
+                      ? marketChangeTextClass(event.epsSurprise!)
+                      : CALENDAR_NEUTRAL_TEXT;
 
                     return (
                       <div

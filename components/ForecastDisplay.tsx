@@ -12,6 +12,11 @@ import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
 import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
 import {
+  forecastRatingBarClass,
+  marketChangeBgClass,
+  marketChangeTextClass,
+} from "@/lib/market-semantics";
+import {
   SYMBOL_DIVIDER,
   SYMBOL_HELP_BUTTON,
   SYMBOL_MUTED_TEXT,
@@ -53,17 +58,6 @@ const RATING_KEYS: Array<keyof ForecastData["analystRatings"]> = [
   "sell",
   "strongSell",
 ];
-
-function getRatingBarColor(index: number, isDark: boolean): string {
-  const colors = [
-    isDark ? "bg-green-500" : "bg-green-600",
-    isDark ? "bg-green-400" : "bg-green-500",
-    isDark ? "bg-amber-400" : "bg-amber-500",
-    isDark ? "bg-red-400" : "bg-red-500",
-    isDark ? "bg-red-500" : "bg-red-600",
-  ];
-  return colors[index];
-}
 
 function SectionLabel({ label, tooltip }: TooltipTriggerProps) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -108,27 +102,13 @@ function formatCurrency(value: number): string {
 function SurpriseIndicator({
   surprise,
   surprisePercent,
-  isDark,
 }: {
   surprise: number;
   surprisePercent?: number;
-  isDark: boolean;
 }) {
   const isBeat = surprise > 0;
-  const colorClass = isBeat
-    ? isDark
-      ? "text-green-400"
-      : "text-green-600"
-    : isDark
-      ? "text-red-400"
-      : "text-red-600";
-  const bgClass = isBeat
-    ? isDark
-      ? "bg-green-900/30"
-      : "bg-green-50"
-    : isDark
-      ? "bg-red-900/30"
-      : "bg-red-50";
+  const colorClass = marketChangeTextClass(surprise);
+  const bgClass = marketChangeBgClass(surprise);
   const label = isBeat ? "Beat" : "Missed";
   const icon = isBeat ? "▲" : "▼";
 
@@ -292,7 +272,7 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                     }`}
                   >
                     <div
-                      className={`h-full rounded-full ${getRatingBarColor(index, isDark)}`}
+                      className={`h-full rounded-full ${forecastRatingBarClass(index, isDark)}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -342,7 +322,6 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                     <SurpriseIndicator
                       surprise={eps.surprise}
                       surprisePercent={eps.surprisePercent}
-                      isDark={isDark}
                     />
                   )}
                 </div>
@@ -390,7 +369,7 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                     )}
                   </div>
                   {surprise !== undefined && surprise !== 0 && (
-                    <SurpriseIndicator surprise={surprise} isDark={isDark} />
+                    <SurpriseIndicator surprise={surprise} />
                   )}
                 </div>
               </div>

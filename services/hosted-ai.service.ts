@@ -5,6 +5,7 @@
  * Requirements: 22.16, 22.17
  */
 
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import { logger } from "@/lib/logger";
 import type { PriceData, SymbolData, TechnicalIndicators } from "@/types";
 
@@ -53,8 +54,7 @@ export class HostedAIService {
       if (response.status === 401 || response.status === 403) {
         return {
           success: false,
-          error:
-            "Hosted AI requires an active subscription. Please upgrade to the Hosted AI tier.",
+          error: AUTH_UI_COPY.hostedTierRequired,
         };
       }
 
@@ -62,14 +62,14 @@ export class HostedAIService {
         const retryAfter = response.headers.get("Retry-After");
         return {
           success: false,
-          error: `Rate limit reached. Please try again${retryAfter ? ` in ${retryAfter}s` : " shortly"}.`,
+          error: `${AUTH_UI_COPY.hostedRateLimitPrefix}${retryAfter ? ` in ${retryAfter}s` : " shortly"}.`,
         };
       }
 
       if (!response.ok) {
         return {
           success: false,
-          error: `Hosted AI service error: HTTP ${response.status}`,
+          error: `${AUTH_UI_COPY.hostedReachPrefix} (HTTP ${response.status}).`,
         };
       }
 
@@ -84,7 +84,7 @@ export class HostedAIService {
       logger.error("Hosted AI request failed", error as Error);
       return {
         success: false,
-        error: `Could not reach hosted AI service: ${message}`,
+        error: `${AUTH_UI_COPY.hostedReachPrefix}: ${message}`,
       };
     }
   }

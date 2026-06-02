@@ -8,12 +8,18 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useTheme } from "@/lib/theme-context";
 import { EconomicEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import {
+  CALENDAR_IMPORTANCE_HIGH,
+  CALENDAR_IMPORTANCE_LOW,
+  CALENDAR_IMPORTANCE_MEDIUM,
+  MARKET_NEUTRAL_TEXT,
+  marketChangeTextClass,
+} from "@/lib/market-semantics";
 import {
   CALENDAR_DAY_HEADER,
   CALENDAR_CHIP_IDLE,
@@ -74,14 +80,27 @@ const IMPORTANCE_LEVELS = ["high", "medium", "low"] as const;
 type ImportanceLevel = (typeof IMPORTANCE_LEVELS)[number];
 
 const IMPORTANCE_STYLES: Record<ImportanceLevel, string> = {
-  high: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  medium:
-    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  low: "bg-stone-100 text-stone-700 dark:bg-stone-700 dark:text-stone-300",
+  high: CALENDAR_IMPORTANCE_HIGH,
+  medium: CALENDAR_IMPORTANCE_MEDIUM,
+  low: CALENDAR_IMPORTANCE_LOW,
 };
 
 export interface EconomicCalendarProps {
   data?: EconomicEvent[];
+}
+
+function parseMetricValue(value: string): number | null {
+  const parsed = parseFloat(value.replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function economicActualTextClass(actual: string, forecast?: string): string {
+  if (!forecast) return MARKET_NEUTRAL_TEXT;
+  const actualNum = parseMetricValue(actual);
+  const forecastNum = parseMetricValue(forecast);
+  if (actualNum === null || forecastNum === null) return MARKET_NEUTRAL_TEXT;
+  if (actualNum === forecastNum) return MARKET_NEUTRAL_TEXT;
+  return marketChangeTextClass(actualNum - forecastNum);
 }
 
 function toDateString(d: Date): string {
@@ -109,9 +128,6 @@ const defaultEnd = "";
 export function EconomicCalendar({
   data: externalData,
 }: EconomicCalendarProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const [data, setData] = useState<EconomicEvent[] | null>(
     externalData ?? null
   );
@@ -407,11 +423,10 @@ export function EconomicCalendar({
                           )}
                           {event.actual && (
                             <span
-                              className={
-                                isDark
-                                  ? "text-green-400 font-medium"
-                                  : "text-green-700 font-medium"
-                              }
+                              className={`font-medium ${economicActualTextClass(
+                                event.actual,
+                                event.forecast
+                              )}`}
                             >
                               Act: {event.actual}
                             </span>

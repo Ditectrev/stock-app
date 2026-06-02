@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { SeasonalHeatmap } from "../SeasonalHeatmap";
 import { ThemeProvider } from "@/lib/theme-context";
 import { SeasonalData } from "@/types";
@@ -41,7 +41,7 @@ describe("SeasonalHeatmap", () => {
   describe("Heatmap Rendering", () => {
     it("should render the heading", () => {
       renderWithTheme(mockSeasonalData);
-      expect(screen.getByText("Seasonal Patterns")).toBeInTheDocument();
+      expect(screen.getByText("Monthly return patterns")).toBeInTheDocument();
     });
 
     it("should render month column headers", () => {
@@ -61,7 +61,7 @@ describe("SeasonalHeatmap", () => {
         "Dec",
       ];
       for (const m of months) {
-        expect(screen.getByText(m)).toBeInTheDocument();
+        expect(screen.getAllByText(m).length).toBeGreaterThanOrEqual(1);
       }
     });
 
@@ -93,7 +93,7 @@ describe("SeasonalHeatmap", () => {
 
     it("should show loading skeleton when data is null", () => {
       const { container } = renderWithTheme(null);
-      expect(screen.getByText("Seasonal Patterns")).toBeInTheDocument();
+      expect(screen.getByText("Monthly return patterns")).toBeInTheDocument();
       const pulseElements = container.querySelectorAll(".animate-pulse");
       expect(pulseElements.length).toBeGreaterThan(0);
     });
@@ -115,37 +115,37 @@ describe("SeasonalHeatmap", () => {
   describe("Color Coding", () => {
     it("should apply green color classes for positive returns", () => {
       renderWithTheme(mockSeasonalData);
-      // Strong positive (>=5): bg-green-500 in light mode
+      // Strong positive (>=5): bg-emerald-600 in light mode
       const cell6 = screen.getByText("6.0%");
-      expect(cell6.closest("div")).toHaveClass("bg-green-500");
+      expect(cell6.closest("div")).toHaveClass("bg-emerald-600");
     });
 
     it("should apply red color classes for negative returns", () => {
       renderWithTheme(mockSeasonalData);
-      // Strong negative (>=5): bg-red-500 in light mode
+      // Strong negative (>=5): bg-rose-600 in light mode
       const cell = screen.getByText("-5.8%");
-      expect(cell.closest("div")).toHaveClass("bg-red-500");
+      expect(cell.closest("div")).toHaveClass("bg-rose-600");
     });
 
     it("should apply moderate green for mid-range positive returns", () => {
       renderWithTheme(mockSeasonalData);
-      // 3.5% is >=2 and <5 → bg-green-400
+      // 3.5% is >=2 and <5 → bg-emerald-400
       const cell = screen.getByText("3.5%");
-      expect(cell.closest("div")).toHaveClass("bg-green-400");
+      expect(cell.closest("div")).toHaveClass("bg-emerald-400");
     });
 
     it("should apply moderate red for mid-range negative returns", () => {
       renderWithTheme(mockSeasonalData);
-      // -3.4% is >=2 and <5 → bg-red-400
+      // -3.4% is >=2 and <5 → bg-rose-400
       const cell = screen.getByText("-3.4%");
-      expect(cell.closest("div")).toHaveClass("bg-red-400");
+      expect(cell.closest("div")).toHaveClass("bg-rose-400");
     });
 
     it("should apply mild color for small returns", () => {
       renderWithTheme(mockSeasonalData);
-      // -1.2% is <2 → bg-red-200
+      // -1.2% is <2 → bg-rose-100
       const cell = screen.getByText("-1.2%");
-      expect(cell.closest("div")).toHaveClass("bg-red-200");
+      expect(cell.closest("div")).toHaveClass("bg-rose-100");
     });
 
     it("should apply gray for zero return", () => {
@@ -205,9 +205,12 @@ describe("SeasonalHeatmap", () => {
       renderWithTheme(mockSeasonalData);
 
       // Find a dash cell (no data) and hover it
-      const dashes = screen.getAllByText("—");
-      const td = dashes[0].closest("td")!;
-      fireEvent.mouseEnter(td);
+      const grid = screen.getByRole("grid");
+      const dashInGrid = within(grid)
+        .getAllByText("—")
+        .find((el) => el.closest("td"));
+      expect(dashInGrid).toBeDefined();
+      fireEvent.mouseEnter(dashInGrid!.closest("td")!);
 
       // No tooltip should appear — "Return:" text is only in tooltips
       expect(screen.queryByText("Return:")).not.toBeInTheDocument();

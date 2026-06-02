@@ -98,11 +98,11 @@ describe("EconomicCalendar", () => {
     render(<EconomicCalendar data={mockEvents} />);
     const highBadge = screen.getByTestId("badge-1");
     expect(highBadge.textContent).toBe("high");
-    expect(highBadge.className).toContain("bg-red-100");
+    expect(highBadge.className).toContain("bg-rose-100");
 
     const medBadge = screen.getByTestId("badge-3");
     expect(medBadge.textContent).toBe("medium");
-    expect(medBadge.className).toContain("bg-yellow-100");
+    expect(medBadge.className).toContain("bg-amber-100");
 
     const lowBadge = screen.getByTestId("badge-4");
     expect(lowBadge.textContent).toBe("low");

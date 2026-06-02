@@ -150,13 +150,13 @@ describe("EarningsCalendar", () => {
   it("should color-code earnings beat in green (Req 24.13)", () => {
     render(<EarningsCalendar data={mockEvents} />);
     const surprise = screen.getByTestId("eps-surprise-1");
-    expect(surprise.className).toContain("text-green-600");
+    expect(surprise.className).toContain("text-emerald-800");
   });
 
   it("should color-code earnings miss in red (Req 24.13)", () => {
     render(<EarningsCalendar data={mockEvents} />);
     const surprise = screen.getByTestId("eps-surprise-3");
-    expect(surprise.className).toContain("text-red-600");
+    expect(surprise.className).toContain("text-rose-800");
   });
 
   it("should color-code zero surprise in gray (Req 24.13)", () => {

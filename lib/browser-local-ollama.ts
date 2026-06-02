@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import { readStoredExplanationProvider } from "@/lib/explanation-provider";
 import type { PricingTier } from "@/types";
 
@@ -72,16 +73,14 @@ export async function generateWithBrowserLocalOllama(
     return data.response;
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
-      throw new Error(
-        "Local Ollama timed out. Make sure Ollama is running at http://localhost:11434 and the model is available."
-      );
+      throw new Error(AUTH_UI_COPY.ollamaTimeout);
     }
 
     const detail = error instanceof Error ? error.message : "Unknown error";
     const corsHint =
       'If you opened the app from a deployed URL, allow that origin in Ollama and restart Ollama. Example on macOS/Linux shell: OLLAMA_ORIGINS="https://theopenstock.com" ollama serve. If you see \'127.0.0.1:11434: bind: address already in use\', Ollama is already running; quit the existing process/app or see https://github.com/ollama/ollama/issues/707. For the Ollama desktop app on macOS: launchctl setenv OLLAMA_ORIGINS "https://theopenstock.com", then fully restart Ollama. Or run the app on http://localhost so the server can call Ollama instead.';
     throw new Error(
-      `Could not reach local Ollama at http://localhost:11434 from the browser (${detail}). ${corsHint}`
+      `${AUTH_UI_COPY.ollamaReachPrefix} (${detail}). ${corsHint}`
     );
   } finally {
     window.clearTimeout(timeoutId);
