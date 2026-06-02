@@ -147,7 +147,8 @@ jobs:
   #
   # Environment secrets (GitHub "Production" vs "Preview"): only Appwrite targets differ per env:
   #   APPWRITE_DATABASE_ID, APPWRITE_COLLECTION_ID_TRIAL_SESSIONS, APPWRITE_COLLECTION_ID_AI_KEYS, APPWRITE_COLLECTION_ID_SUBSCRIPTIONS
-  # All other deploy secrets stay repository-wide: VERCEL_*, NEXT_PUBLIC_APPWRITE_*, APPWRITE_API_KEY.
+  # All other deploy secrets stay repository-wide: VERCEL_*, NEXT_PUBLIC_APPWRITE_*, APPWRITE_API_KEY,
+  # AI_PROVIDER, AI_API_KEY (Hosted AI / Ditectrev AI on server — synced to Vercel below).
   # Set GitHub variable NEXT_PUBLIC_SITE_URL (e.g. https://theopenstock.com) for canonical URLs, sitemap, and OG.
   # With `environment:` set, GitHub still exposes repository secrets to the job; environment adds/overrides
   # only the names defined on that environment (here: Appwrite DB + collection ids).
@@ -188,6 +189,11 @@ jobs:
             vercel env add FINNHUB_BASE_URL $ENV_TYPE "" --value "${{ vars.FINNHUB_BASE_URL }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
           fi
           vercel env add FINNHUB_API_KEY $ENV_TYPE "" --value "${{ secrets.FINNHUB_API_KEY }}" --yes --force --sensitive --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env add AI_PROVIDER $ENV_TYPE "" --value "${{ secrets.AI_PROVIDER }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env add AI_API_KEY $ENV_TYPE "" --value "${{ secrets.AI_API_KEY }}" --yes --force --sensitive --token=${{ secrets.VERCEL_TOKEN }}
+          if [ -n "${{ vars.AI_MODEL }}" ]; then
+            vercel env add AI_MODEL $ENV_TYPE "" --value "${{ vars.AI_MODEL }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
+          fi
           if [ -n "${{ vars.YAHOO_FINANCE_API_URL }}" ]; then
             vercel env add YAHOO_FINANCE_API_URL $ENV_TYPE "" --value "${{ vars.YAHOO_FINANCE_API_URL }}" --yes --force --token=${{ secrets.VERCEL_TOKEN }}
           fi

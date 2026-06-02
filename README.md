@@ -137,6 +137,16 @@ If `ollama serve` shows `127.0.0.1:11434: bind: address already in use`, Ollama 
 
 Also required for trial features: `APPWRITE_COLLECTION_ID_TRIAL_SESSIONS`.
 
+### Hosted AI (Ditectrev AI tier on production)
+
+Required on Vercel when subscribers use the **Hosted AI** plan. Synced from GitHub Actions on deploy (see `.github/workflows/deploy.yml`).
+
+| Variable      | Description                                                                           | Example    |
+| ------------- | ------------------------------------------------------------------------------------- | ---------- |
+| `AI_PROVIDER` | Server LLM vendor for Hosted AI (`MISTRAL`, `OPENAI`, `GEMINI`, `DEEPSEEK`, `OLLAMA`) | `MISTRAL`  |
+| `AI_API_KEY`  | API key for that provider                                                             | _(secret)_ |
+| `AI_MODEL`    | Optional model override; defaults are used per provider if unset                      | unset      |
+
 ### SEO & analytics (recommended for production)
 
 | Variable               | Description                                                                               |

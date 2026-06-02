@@ -1,3 +1,8 @@
+import {
+  getServerAIApiKey,
+  getServerAIModel,
+  getServerAIProvider,
+} from "@/lib/server-ai-env";
 import { appwriteAIKeyStoreService } from "@/services/appwrite-ai-key-store.service";
 import type { BYOKProvider } from "@/services/api-key-manager.service";
 import type { AIProvider } from "@/types";
@@ -24,7 +29,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
   | { ok: true; llmConfig: MarketRouteLLMConfig | undefined }
   | { ok: false; error: string }
 > {
-  const model = process.env.AI_MODEL?.trim() || undefined;
+  const model = getServerAIModel();
 
   if (opts.tier === "LOCAL") {
     return {
@@ -34,7 +39,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
   }
 
   if (opts.tier === "HOSTED_AI") {
-    const providerRaw = process.env.AI_PROVIDER?.trim().toUpperCase();
+    const providerRaw = getServerAIProvider();
 
     if (!providerRaw) {
       return {
@@ -63,7 +68,7 @@ export async function resolveMarketRouteLLMConfig(opts: {
     }
 
     if (isBYOKCloudProvider(providerRaw)) {
-      const apiKey = process.env.AI_API_KEY?.trim() || "";
+      const apiKey = getServerAIApiKey() ?? "";
       if (!apiKey) {
         return {
           ok: false,
