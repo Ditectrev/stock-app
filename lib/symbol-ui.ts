@@ -1,18 +1,22 @@
+import {
+  DNA_CAPTION,
+  DNA_EYEBROW,
+  DNA_HEADING,
+  DNA_INSTRUMENT_PANEL,
+} from "@/lib/design-dna";
+
 /** Shared surfaces and type for symbol detail tabs. */
-export const SYMBOL_INSTRUMENT_PANEL =
-  "rounded-xl border border-stone-200 bg-white p-4 sm:p-6 dark:border-stone-700 dark:bg-stone-900";
+export const SYMBOL_INSTRUMENT_PANEL = DNA_INSTRUMENT_PANEL;
 
-export const SYMBOL_SECTION_LABEL =
-  "text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-stone-600 dark:text-stone-300";
+export const SYMBOL_SECTION_LABEL = DNA_EYEBROW;
 
-export const SYMBOL_PANEL_TITLE =
-  "text-lg font-semibold tracking-tight text-stone-900 dark:text-stone-50";
+export const SYMBOL_PANEL_TITLE = DNA_HEADING;
 
 export const SYMBOL_DIVIDER = "border-stone-200 dark:border-stone-700";
 
 export const SYMBOL_MUTED_TEXT = "text-stone-700 dark:text-stone-200";
 
-export const SYMBOL_SUBTLE_TEXT = "text-stone-600 dark:text-stone-300";
+export const SYMBOL_SUBTLE_TEXT = DNA_CAPTION;
 
 export const SYMBOL_SKELETON =
   "animate-pulse rounded-lg bg-stone-200 dark:bg-stone-700";

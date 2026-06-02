@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { DNA_SECTION_STACK } from "@/lib/design-dna";
 import {
   SYMBOL_INSTRUMENT_PANEL,
   SYMBOL_PANEL_TITLE,
@@ -29,7 +30,7 @@ export function SymbolTabShell({
       role="tabpanel"
       aria-label={ariaLabel}
     >
-      <header className="mb-4 sm:mb-6">
+      <header className={`${DNA_SECTION_STACK} mb-4 sm:mb-6`}>
         <p className={SYMBOL_SECTION_LABEL}>{eyebrow}</p>
         <h2 className={`mt-1 ${SYMBOL_PANEL_TITLE}`}>{title}</h2>
       </header>

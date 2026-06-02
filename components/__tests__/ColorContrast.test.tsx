@@ -108,7 +108,7 @@ describe("Color Contrast Compliance (Req 18.3)", () => {
 
     it("uses readable stone text for title in dark mode", () => {
       const { container } = render(<ErrorMessage type="api" />);
-      const titleEl = container.querySelector("h3");
+      const titleEl = container.querySelector("h2");
       expect(titleEl).not.toBeNull();
       const cls = titleEl!.className;
       expect(cls).toContain("dark:text-stone-50");

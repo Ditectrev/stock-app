@@ -22,6 +22,7 @@ import {
   seasonalLegendSwatchClass,
 } from "@/lib/market-semantics";
 import { SymbolTabSkeleton } from "@/components/SymbolTabShell";
+import { DNA_PAGE_STACK } from "@/lib/design-dna";
 import {
   SYMBOL_DIVIDER,
   SYMBOL_INSTRUMENT_PANEL,
@@ -69,7 +70,11 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
 
   if (!data) {
     return (
-      <div className="space-y-5" role="tabpanel" aria-label="Seasonal Patterns">
+      <div
+        className={DNA_PAGE_STACK}
+        role="tabpanel"
+        aria-label="Seasonal Patterns"
+      >
         <SeasonalHeader />
         <SymbolTabSkeleton blocks={3} blockClassName="h-10" />
       </div>
@@ -78,7 +83,11 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
 
   if (years.length === 0) {
     return (
-      <div className="space-y-5" role="tabpanel" aria-label="Seasonal Patterns">
+      <div
+        className={DNA_PAGE_STACK}
+        role="tabpanel"
+        aria-label="Seasonal Patterns"
+      >
         <SeasonalHeader />
         <p className={`text-sm ${SYMBOL_SUBTLE_TEXT}`}>
           No seasonal data available.
@@ -88,7 +97,11 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
   }
 
   return (
-    <div className="space-y-5" role="tabpanel" aria-label="Seasonal Patterns">
+    <div
+      className={DNA_PAGE_STACK}
+      role="tabpanel"
+      aria-label="Seasonal Patterns"
+    >
       <SeasonalHeader />
 
       <SeasonalPanel label="Typical month (average)">

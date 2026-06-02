@@ -12,7 +12,14 @@ import {
   SITE_NAV_MOBILE_LABEL,
   SITE_SHORT_NAME,
 } from "@/lib/site-seo";
-import { HOME_NAV_BAR, HOME_SEGMENTED_NAV } from "@/lib/home-ui";
+import {
+  DNA_ACCENT_BAR,
+  DNA_NAV_BAR,
+  DNA_NAV_BRAND_TAGLINE,
+  DNA_NAV_LINK_ACTIVE,
+  DNA_NAV_LINK_IDLE,
+} from "@/lib/design-dna";
+import { HOME_SEGMENTED_NAV } from "@/lib/home-ui";
 
 export interface NavigationProps {
   /** Override active section (e.g. tests); default: derived from URL */
@@ -39,7 +46,8 @@ export function Navigation({
 
   return (
     <nav
-      className={`overflow-visible backdrop-blur ${HOME_NAV_BAR}`}
+      className={`overflow-visible backdrop-blur ${DNA_NAV_BAR}`}
+      data-nav-archetype="terminal"
       aria-label="Main navigation"
       data-testid="navigation"
       data-active-section={activeSection}
@@ -51,7 +59,7 @@ export function Navigation({
             className="flex shrink-0 items-center gap-3 text-stone-900 dark:text-stone-100"
             aria-label={`${SITE_NAME} home`}
           >
-            <span className="inline-block h-8 w-[2px] rounded-full bg-stone-900 dark:bg-stone-100" />
+            <span className={DNA_ACCENT_BAR} />
             <span className="leading-tight">
               <span className="hidden text-lg font-bold sm:inline">
                 {SITE_SHORT_NAME}
@@ -59,7 +67,7 @@ export function Navigation({
               <span className="text-base font-bold sm:hidden">
                 {SITE_NAV_MOBILE_LABEL}
               </span>
-              <span className="hidden text-[0.65rem] uppercase tracking-[0.16em] text-stone-600 dark:text-stone-300 sm:block">
+              <span className={`hidden sm:block ${DNA_NAV_BRAND_TAGLINE}`}>
                 Markets · AI
               </span>
             </span>
@@ -72,12 +80,11 @@ export function Navigation({
               <Link
                 key={link.id}
                 href={link.href}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors
-                  ${
-                    activeSection === link.id
-                      ? "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900"
-                      : "text-stone-700 hover:bg-white hover:text-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-stone-50"
-                  }`}
+                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  activeSection === link.id
+                    ? DNA_NAV_LINK_ACTIVE
+                    : DNA_NAV_LINK_IDLE
+                }`}
                 aria-current={activeSection === link.id ? "page" : undefined}
               >
                 {link.label}
@@ -161,12 +168,11 @@ export function Navigation({
                 key={link.id}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block w-full rounded-md px-3 py-2 text-left text-base font-medium transition-colors
-                  ${
-                    activeSection === link.id
-                      ? "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900"
-                      : "text-stone-700 hover:bg-white hover:text-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-stone-50"
-                  }`}
+                className={`block w-full rounded-md px-3 py-2 text-left text-base font-medium transition-colors ${
+                  activeSection === link.id
+                    ? DNA_NAV_LINK_ACTIVE
+                    : DNA_NAV_LINK_IDLE
+                }`}
                 aria-current={activeSection === link.id ? "page" : undefined}
               >
                 {link.label}

@@ -9,16 +9,14 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
 import { AccountNotice } from "@/components/AccountNotice";
+import { ProductOverlay } from "@/components/ProductShell";
 import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import {
   HOME_INPUT,
-  HOME_INSTRUMENT_PANEL,
   HOME_MUTED_TEXT,
   HOME_PRIMARY_BUTTON,
   HOME_SECONDARY_BUTTON,
-  HOME_SECTION_LABEL,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
 
@@ -194,266 +192,229 @@ export function AuthPrompt({
 
   const oauthLinkClass = `${HOME_SECONDARY_BUTTON} w-full justify-center gap-2 py-3 no-underline`;
 
-  const modal = (
-    <div
-      className="fixed inset-0 z-[10000] flex items-start justify-center bg-stone-950/50 p-4 pt-[12vh] sm:items-center sm:pt-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Sign in"
-      data-testid="auth-prompt"
+  return (
+    <ProductOverlay
+      open={open}
+      onClose={onClose}
+      dismissible={dismissible}
+      eyebrow="Account"
+      title={AUTH_UI_COPY.signInTitle}
+      testId="auth-prompt"
+      closeTestId="auth-close"
+      ariaLabel="Sign in"
     >
-      <div className={`relative w-full max-w-sm ${HOME_INSTRUMENT_PANEL}`}>
-        {/* Close button */}
-        {dismissible && (
+      {displayError && (
+        <AccountNotice tone="error" testId="auth-error">
+          {displayError}
+        </AccountNotice>
+      )}
+
+      {infoMessage && (
+        <AccountNotice tone="success" testId="auth-info">
+          {infoMessage}
+        </AccountNotice>
+      )}
+
+      {view === "providers" ? (
+        <div className="space-y-3">
+          <a
+            href="/api/auth/oauth/google"
+            className={`${oauthLinkClass} ${
+              loading ? "pointer-events-none opacity-50" : ""
+            }`}
+            data-testid="auth-google"
+            aria-disabled={loading}
+            onClick={(e) => {
+              if (loading) {
+                e.preventDefault();
+                return;
+              }
+              onGoogleSignIn?.();
+            }}
+          >
+            <GoogleIcon />
+            Continue with Google
+          </a>
+
+          <div className="space-y-1">
+            <button
+              type="button"
+              disabled
+              className={`${oauthLinkClass} cursor-not-allowed bg-stone-200 text-stone-500 opacity-60 dark:bg-stone-800 dark:text-stone-400`}
+              data-testid="auth-apple-disabled"
+              aria-describedby="auth-apple-unavailable-note"
+            >
+              <AppleIcon />
+              Continue with Apple
+            </button>
+            <p
+              id="auth-apple-unavailable-note"
+              className={`text-xs ${HOME_SUBTLE_TEXT}`}
+              data-testid="auth-apple-unavailable-note"
+            >
+              Apple Sign-In is not available yet. Use Google or email below.
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
+            <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>or</span>
+            <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
+          </div>
+
+          {/* Email OTP */}
           <button
             type="button"
-            onClick={onClose}
-            className={`absolute right-3 top-3 rounded-md p-1 ${HOME_SUBTLE_TEXT} hover:text-stone-900 dark:hover:text-stone-50`}
-            aria-label="Close"
-            data-testid="auth-close"
+            onClick={() => setView("email")}
+            disabled={loading}
+            className={`${HOME_SECONDARY_BUTTON} w-full justify-center gap-2 py-3 disabled:opacity-50`}
+            data-testid="auth-email-btn"
           >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <EmailIcon />
+            Continue with Email
           </button>
-        )}
-
-        <p className={HOME_SECTION_LABEL}>Account</p>
-        <h2 className="mb-4 text-xl font-semibold text-stone-900 dark:text-stone-100">
-          {AUTH_UI_COPY.signInTitle}
-        </h2>
-
-        {displayError && (
-          <AccountNotice tone="error" testId="auth-error">
-            {displayError}
-          </AccountNotice>
-        )}
-
-        {infoMessage && (
-          <AccountNotice tone="success" testId="auth-info">
-            {infoMessage}
-          </AccountNotice>
-        )}
-
-        {view === "providers" ? (
-          <div className="space-y-3">
-            <a
-              href="/api/auth/oauth/google"
-              className={`${oauthLinkClass} ${
-                loading ? "pointer-events-none opacity-50" : ""
-              }`}
-              data-testid="auth-google"
-              aria-disabled={loading}
-              onClick={(e) => {
-                if (loading) {
-                  e.preventDefault();
-                  return;
-                }
-                onGoogleSignIn?.();
-              }}
-            >
-              <GoogleIcon />
-              Continue with Google
-            </a>
-
-            <div className="space-y-1">
-              <button
-                type="button"
-                disabled
-                className={`${oauthLinkClass} cursor-not-allowed bg-stone-200 text-stone-500 opacity-60 dark:bg-stone-800 dark:text-stone-400`}
-                data-testid="auth-apple-disabled"
-                aria-describedby="auth-apple-unavailable-note"
-              >
-                <AppleIcon />
-                Continue with Apple
-              </button>
-              <p
-                id="auth-apple-unavailable-note"
-                className={`text-xs ${HOME_SUBTLE_TEXT}`}
-                data-testid="auth-apple-unavailable-note"
-              >
-                Apple Sign-In is not available yet. Use Google or email below.
-              </p>
-            </div>
-
-            {/* Divider */}
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
-              <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>or</span>
-              <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
-            </div>
-
-            {/* Email OTP */}
-            <button
-              type="button"
-              onClick={() => setView("email")}
-              disabled={loading}
-              className={`${HOME_SECONDARY_BUTTON} w-full justify-center gap-2 py-3 disabled:opacity-50`}
-              data-testid="auth-email-btn"
-            >
-              <EmailIcon />
-              Continue with Email
-            </button>
-          </div>
-        ) : emailSubStep === "request" ? (
-          <form
-            ref={emailFormRef}
-            onSubmit={handleEmailSubmit}
-            className="space-y-4"
-            noValidate
+        </div>
+      ) : emailSubStep === "request" ? (
+        <form
+          ref={emailFormRef}
+          onSubmit={handleEmailSubmit}
+          className="space-y-4"
+          noValidate
+        >
+          <button
+            type="button"
+            onClick={() => {
+              setView("providers");
+              setEmailError(null);
+            }}
+            className={`mb-2 text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 dark:hover:text-stone-100`}
+            data-testid="auth-back"
           >
-            <button
-              type="button"
-              onClick={() => {
-                setView("providers");
-                setEmailError(null);
-              }}
-              className={`mb-2 text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 dark:hover:text-stone-100`}
-              data-testid="auth-back"
-            >
-              ← Back
-            </button>
+            ← Back
+          </button>
 
-            <label
-              htmlFor="auth-email"
-              className="block text-sm font-medium text-stone-700 dark:text-stone-300"
-            >
-              Email address
-            </label>
-            <input
-              ref={emailInputRef}
-              id="auth-email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className={HOME_INPUT}
-              data-testid="auth-email-input"
-            />
-
-            <button
-              type="button"
-              onClick={() => {
-                void submitEmailRequest();
-              }}
-              disabled={isBusy}
-              className={`${HOME_PRIMARY_BUTTON} w-full justify-center py-2.5 disabled:opacity-50`}
-              data-testid="auth-email-submit"
-            >
-              {isBusy ? "Sending…" : "Send verification code"}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerifySubmit} className="space-y-4" noValidate>
-            <button
-              type="button"
-              onClick={() => {
-                setEmailSubStep("request");
-                setPendingUserId(null);
-                setOtp("");
-              }}
-              className={`mb-2 text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 dark:hover:text-stone-100`}
-              data-testid="auth-verify-back"
-            >
-              ← Change email
-            </button>
-
-            <p className={`text-sm ${HOME_MUTED_TEXT}`}>
-              Enter the 6-digit code sent to{" "}
-              <span className="font-medium text-stone-900 dark:text-stone-100">
-                {email}
-              </span>
-              .
-            </p>
-
-            <label
-              htmlFor="auth-otp"
-              className="block text-sm font-medium text-stone-700 dark:text-stone-300"
-            >
-              Verification code
-            </label>
-            <input
-              id="auth-otp"
-              name="otp"
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={32}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/[^\d\s]/g, ""))}
-              placeholder="e.g. 512646"
-              className={`${HOME_INPUT} text-center font-mono text-lg tracking-widest`}
-              data-testid="auth-otp-input"
-            />
-
-            <button
-              type="submit"
-              disabled={loading}
-              className={`${HOME_PRIMARY_BUTTON} w-full justify-center py-2.5 disabled:opacity-50`}
-              data-testid="auth-verify-submit"
-            >
-              {loading ? "Verifying…" : "Verify and sign in"}
-            </button>
-
-            <button
-              type="button"
-              disabled={loading}
-              onClick={async () => {
-                setEmailError(null);
-                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                  setEmailError(AUTH_UI_COPY.invalidEmailBack);
-                  return;
-                }
-                try {
-                  const result = await onEmailSubmit(email);
-                  if (result.ok && result.userId) {
-                    setPendingUserId(result.userId);
-                  }
-                } catch (err) {
-                  setEmailError(
-                    err instanceof Error
-                      ? err.message
-                      : AUTH_UI_COPY.resendFailed
-                  );
-                }
-              }}
-              className={`w-full text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 disabled:opacity-50 dark:hover:text-stone-100`}
-              data-testid="auth-resend-code"
-            >
-              Resend code
-            </button>
-          </form>
-        )}
-
-        {loading && (
-          <p
-            className={`mt-3 text-center text-xs ${HOME_SUBTLE_TEXT}`}
-            aria-live="polite"
+          <label
+            htmlFor="auth-email"
+            className="block text-sm font-medium text-stone-700 dark:text-stone-300"
           >
-            Please wait…
+            Email address
+          </label>
+          <input
+            ref={emailInputRef}
+            id="auth-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className={HOME_INPUT}
+            data-testid="auth-email-input"
+          />
+
+          <button
+            type="button"
+            onClick={() => {
+              void submitEmailRequest();
+            }}
+            disabled={isBusy}
+            className={`${HOME_PRIMARY_BUTTON} w-full justify-center py-2.5 disabled:opacity-50`}
+            data-testid="auth-email-submit"
+          >
+            {isBusy ? "Sending…" : "Send verification code"}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleVerifySubmit} className="space-y-4" noValidate>
+          <button
+            type="button"
+            onClick={() => {
+              setEmailSubStep("request");
+              setPendingUserId(null);
+              setOtp("");
+            }}
+            className={`mb-2 text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 dark:hover:text-stone-100`}
+            data-testid="auth-verify-back"
+          >
+            ← Change email
+          </button>
+
+          <p className={`text-sm ${HOME_MUTED_TEXT}`}>
+            Enter the 6-digit code sent to{" "}
+            <span className="font-medium text-stone-900 dark:text-stone-100">
+              {email}
+            </span>
+            .
           </p>
-        )}
-      </div>
-    </div>
-  );
 
-  if (typeof document !== "undefined") {
-    return createPortal(modal, document.body);
-  }
-  return modal;
+          <label
+            htmlFor="auth-otp"
+            className="block text-sm font-medium text-stone-700 dark:text-stone-300"
+          >
+            Verification code
+          </label>
+          <input
+            id="auth-otp"
+            name="otp"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={32}
+            value={otp}
+            onChange={(e) => setOtp(e.target.value.replace(/[^\d\s]/g, ""))}
+            placeholder="e.g. 512646"
+            className={`${HOME_INPUT} text-center font-mono text-lg tracking-widest`}
+            data-testid="auth-otp-input"
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`${HOME_PRIMARY_BUTTON} w-full justify-center py-2.5 disabled:opacity-50`}
+            data-testid="auth-verify-submit"
+          >
+            {loading ? "Verifying…" : "Verify and sign in"}
+          </button>
+
+          <button
+            type="button"
+            disabled={loading}
+            onClick={async () => {
+              setEmailError(null);
+              if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                setEmailError(AUTH_UI_COPY.invalidEmailBack);
+                return;
+              }
+              try {
+                const result = await onEmailSubmit(email);
+                if (result.ok && result.userId) {
+                  setPendingUserId(result.userId);
+                }
+              } catch (err) {
+                setEmailError(
+                  err instanceof Error ? err.message : AUTH_UI_COPY.resendFailed
+                );
+              }
+            }}
+            className={`w-full text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 disabled:opacity-50 dark:hover:text-stone-100`}
+            data-testid="auth-resend-code"
+          >
+            Resend code
+          </button>
+        </form>
+      )}
+
+      {loading && (
+        <p
+          className={`mt-3 text-center text-xs ${HOME_SUBTLE_TEXT}`}
+          aria-live="polite"
+        >
+          Please wait…
+        </p>
+      )}
+    </ProductOverlay>
+  );
 }
 
 /* ------------------------------------------------------------------ */

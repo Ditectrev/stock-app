@@ -35,7 +35,7 @@ describe("ErrorMessage", () => {
     expect(screen.getByText("Symbol not found")).toBeDefined();
     expect(
       screen.getByText(
-        "The symbol you searched for could not be found. Please check the ticker and try again."
+        "The symbol you searched for could not be found. Check the ticker and try again."
       )
     ).toBeDefined();
   });
@@ -87,17 +87,17 @@ describe("ErrorMessage", () => {
     expect(el.classList.contains("mt-8")).toBe(true);
   });
 
-  it("should display the correct icon for each error type", () => {
+  it("should display eyebrow labels for each error type", () => {
     const { rerender } = render(<ErrorMessage type="api" />);
-    expect(screen.getByText("⚠️")).toBeDefined();
+    expect(screen.getByText("Request")).toBeDefined();
 
     rerender(<ErrorMessage type="not-found" />);
-    expect(screen.getByText("🔍")).toBeDefined();
+    expect(screen.getByText("Symbol")).toBeDefined();
 
     rerender(<ErrorMessage type="network" />);
-    expect(screen.getByText("🌐")).toBeDefined();
+    expect(screen.getByText("Connection")).toBeDefined();
 
     rerender(<ErrorMessage type="generic" />);
-    expect(screen.getByText("❗")).toBeDefined();
+    expect(screen.getByText("Error")).toBeDefined();
   });
 });

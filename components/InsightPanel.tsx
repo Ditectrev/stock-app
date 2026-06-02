@@ -1,8 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { HOME_MUTED_TEXT } from "@/lib/home-ui";
+import { ProductGate } from "@/components/ProductShell";
+import { DNA_BODY, DNA_HEADING } from "@/lib/design-dna";
+import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 export function InsightPanel({
   children,
@@ -30,18 +31,15 @@ export function InsightPanelHeader({
   return (
     <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
       <div>
-        {title ? (
-          <h2 className="text-lg font-semibold sm:text-xl">{title}</h2>
-        ) : null}
-        {subtitle ? (
-          <p className={`mt-1 text-sm ${HOME_MUTED_TEXT}`}>{subtitle}</p>
-        ) : null}
+        {title ? <h2 className={DNA_HEADING}>{title}</h2> : null}
+        {subtitle ? <p className={`mt-1 ${DNA_BODY}`}>{subtitle}</p> : null}
       </div>
       {right ? <div className="sm:text-right">{right}</div> : null}
     </div>
   );
 }
 
+/** @deprecated Prefer ProductGate directly; kept for existing call sites. */
 export function InsightPanelGate({
   message,
   ctaHref,
@@ -49,7 +47,7 @@ export function InsightPanelGate({
   title,
   overlay = false,
   align = "start",
-  buttonClassName,
+  buttonClassName = HOME_PRIMARY_BUTTON,
 }: {
   message: ReactNode;
   ctaHref: string;
@@ -57,25 +55,23 @@ export function InsightPanelGate({
   title?: ReactNode;
   overlay?: boolean;
   align?: "start" | "center";
-  buttonClassName: string;
+  buttonClassName?: string;
 }) {
-  const alignmentClass =
-    align === "center" ? "items-center text-center" : "items-start";
-  const shellClass = overlay
-    ? "absolute inset-0 rounded-xl px-6 py-8"
-    : "min-h-[11rem] py-2 sm:min-h-[12rem]";
-
   return (
-    <div
-      className={`flex flex-col justify-center gap-4 ${alignmentClass} ${shellClass}`}
-    >
-      {title ? <p className="text-lg font-semibold">{title}</p> : null}
-      <p className="max-w-xl text-sm leading-relaxed sm:text-base">{message}</p>
-      <div>
-        <Link href={ctaHref} className={buttonClassName}>
-          {ctaLabel}
-        </Link>
-      </div>
-    </div>
+    <ProductGate
+      eyebrow="Subscription"
+      title={title ?? "Upgrade to continue"}
+      message={message}
+      ctaHref={ctaHref}
+      ctaLabel={ctaLabel}
+      overlay={overlay}
+      align={align}
+      buttonClassName={buttonClassName}
+      className={
+        overlay
+          ? "absolute inset-0 z-10 min-h-[11rem] justify-center sm:min-h-[12rem]"
+          : "min-h-[11rem] py-2 sm:min-h-[12rem]"
+      }
+    />
   );
 }

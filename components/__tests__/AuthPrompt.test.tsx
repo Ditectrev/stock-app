@@ -196,8 +196,8 @@ describe("AuthPrompt", () => {
   it("should have proper dialog role and aria attributes", () => {
     renderAuthPrompt();
 
-    const dialog = screen.getByTestId("auth-prompt");
-    expect(dialog.getAttribute("role")).toBe("dialog");
+    expect(screen.getByTestId("auth-prompt")).toBeDefined();
+    const dialog = screen.getByRole("dialog");
     expect(dialog.getAttribute("aria-modal")).toBe("true");
     expect(dialog.getAttribute("aria-label")).toBe("Sign in");
   });

@@ -1,16 +1,20 @@
+import {
+  DNA_EYEBROW,
+  DNA_INSTRUMENT_PANEL,
+  DNA_NAV_BAR,
+  DNA_PAGE_BACKGROUND,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
+
 /** Shared surfaces for the home dashboard (Market pulse, AI panels, etc.). */
-export const HOME_PAGE_BACKGROUND =
-  "bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100";
+export const HOME_PAGE_BACKGROUND = DNA_PAGE_BACKGROUND;
 
 /** Solid panels — avoid /60 and /90 overlays that wash out contrast. */
-export const HOME_INSTRUMENT_PANEL =
-  "rounded-xl border border-stone-200 bg-white p-4 sm:p-6 dark:border-stone-700 dark:bg-stone-900";
+export const HOME_INSTRUMENT_PANEL = DNA_INSTRUMENT_PANEL;
 
-export const HOME_PANEL_TITLE =
-  "text-base font-semibold tracking-tight text-stone-900 dark:text-stone-50";
+export const HOME_PANEL_TITLE = DNA_SUBHEADING;
 
-export const HOME_SECTION_LABEL =
-  "text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-stone-600 dark:text-stone-300";
+export const HOME_SECTION_LABEL = DNA_EYEBROW;
 
 export const HOME_PRIMARY_BUTTON =
   "inline-flex items-center rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-stone-50 transition-colors hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200";
@@ -54,8 +58,7 @@ export const HOME_CALLOUT =
 export const HOME_FACTOR_GROUP =
   "rounded-lg border border-stone-200 bg-stone-100 p-3 dark:border-stone-600 dark:bg-stone-800";
 
-export const HOME_NAV_BAR =
-  "border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950";
+export const HOME_NAV_BAR = DNA_NAV_BAR;
 
 /** Calendar “today” highlights — stone accent, not blue. */
 export const CALENDAR_TODAY_HEADER =

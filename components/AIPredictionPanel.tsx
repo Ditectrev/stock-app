@@ -287,16 +287,15 @@ export function AIPredictionPanel({
             </div>
 
             {showLockedOverlay && (
-              <div className="absolute inset-0 rounded-xl bg-white text-stone-900 dark:bg-stone-950 dark:text-stone-100">
-                <InsightPanelGate
-                  message={gateMessage}
-                  ctaHref="/pricing"
-                  ctaLabel="Upgrade to unlock"
-                  align="center"
-                  overlay
-                  buttonClassName={HOME_PRIMARY_BUTTON}
-                />
-              </div>
+              <InsightPanelGate
+                title="AI Prediction"
+                message={gateMessage}
+                ctaHref="/pricing"
+                ctaLabel="Upgrade to unlock"
+                align="center"
+                overlay
+                buttonClassName={HOME_PRIMARY_BUTTON}
+              />
             )}
           </>
         )}

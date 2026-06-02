@@ -150,14 +150,14 @@ describe("Req 14.3: Symbol not found message", () => {
     expect(screen.getByText("Symbol not found")).toBeDefined();
     expect(
       screen.getByText(
-        "The symbol you searched for could not be found. Please check the ticker and try again."
+        "The symbol you searched for could not be found. Check the ticker and try again."
       )
     ).toBeDefined();
   });
 
-  it("not-found type shows search icon", () => {
+  it("not-found type shows symbol eyebrow", () => {
     render(<ErrorMessage type="not-found" />);
-    expect(screen.getByText("🔍")).toBeDefined();
+    expect(screen.getByText("Symbol")).toBeDefined();
   });
 });
 
@@ -175,9 +175,9 @@ describe("Req 14.4: Connectivity error message", () => {
     ).toBeDefined();
   });
 
-  it("network type shows globe icon", () => {
+  it("network type shows connection eyebrow", () => {
     render(<ErrorMessage type="network" />);
-    expect(screen.getByText("🌐")).toBeDefined();
+    expect(screen.getByText("Connection")).toBeDefined();
   });
 });
 

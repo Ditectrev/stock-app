@@ -95,10 +95,11 @@ describe("Accessibility - ErrorMessage (Req 18.5)", () => {
     expect(el.getAttribute("aria-live")).toBe("assertive");
   });
 
-  it("should have aria-hidden on decorative icon", () => {
+  it("should expose a readable title for screen readers", () => {
     render(<ErrorMessage type="api" />);
-    const icon = screen.getByText("⚠️");
-    expect(icon.getAttribute("aria-hidden")).toBe("true");
+    expect(
+      screen.getByRole("heading", { name: "Something went wrong" })
+    ).toBeDefined();
   });
 });
 

@@ -10,6 +10,7 @@
 import { SymbolData, PriceData, TimeRange } from "@/types";
 import { ChartComponent } from "@/components/ChartComponent";
 import { KeyMetrics } from "@/components/KeyMetrics";
+import { DNA_PAGE_STACK } from "@/lib/design-dna";
 import {
   SYMBOL_INSTRUMENT_PANEL,
   SYMBOL_PANEL_TITLE,
@@ -31,7 +32,7 @@ export function OverviewTab({
   onTimeRangeChange,
 }: OverviewTabProps) {
   return (
-    <div className="space-y-6" role="tabpanel" aria-label="Overview">
+    <div className={DNA_PAGE_STACK} role="tabpanel" aria-label="Overview">
       <div className={`${SYMBOL_INSTRUMENT_PANEL} lg:p-8`}>
         <p className={`mb-2 ${SYMBOL_SECTION_LABEL}`}>Price trend</p>
         <h2 className={`mb-2 sm:mb-3 ${SYMBOL_PANEL_TITLE}`}>Chart</h2>
