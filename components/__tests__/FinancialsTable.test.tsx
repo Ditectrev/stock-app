@@ -226,28 +226,28 @@ describe("FinancialsTable", () => {
       renderWithTheme(mockFinancials);
       // profitMargin = 0.246 → 24.60% → favorable → green
       const value = screen.getByText("24.60%");
-      expect(value).toHaveClass("text-green-600");
+      expect(value).toHaveClass("text-emerald-800");
     });
 
     it("should apply red color for unfavorable P/B ratio (>5)", () => {
       renderWithTheme(mockFinancials);
       // pbRatio = 45.2 → unfavorable → red
       const value = screen.getByText("45.20");
-      expect(value).toHaveClass("text-red-600");
+      expect(value).toHaveClass("text-rose-800");
     });
 
     it("should apply neutral color for neutral growth values", () => {
       // revenueGrowth = 0.08 → 8.00% → between 0 and 0.1 → neutral
       renderWithTheme(mockFinancials);
       const value = screen.getByText("8.00%");
-      expect(value).toHaveClass("text-stone-700");
+      expect(value).toHaveClass("text-stone-600");
     });
 
     it("should apply green for favorable earnings growth (>10%)", () => {
       renderWithTheme(mockFinancials);
       // earningsGrowth = 0.15 → 15.00% → favorable → green
       const value = screen.getByText("15.00%");
-      expect(value).toHaveClass("text-green-600");
+      expect(value).toHaveClass("text-emerald-800");
     });
 
     it("should apply red for negative net income", () => {
@@ -257,14 +257,14 @@ describe("FinancialsTable", () => {
       };
       renderWithTheme(negativeData);
       const value = screen.getByText("$-5.00B");
-      expect(value).toHaveClass("text-red-600");
+      expect(value).toHaveClass("text-rose-800");
     });
 
     it("should apply green for favorable ROE (>15%)", () => {
       renderWithTheme(mockFinancials);
       // roe = 0.175 → 17.50% → favorable → green
       const value = screen.getByText("17.50%");
-      expect(value).toHaveClass("text-green-600");
+      expect(value).toHaveClass("text-emerald-800");
     });
   });
 

@@ -110,7 +110,7 @@ describe("AuthPrompt", () => {
     fireEvent.submit(form);
 
     expect(screen.getByTestId("auth-error")).toBeDefined();
-    expect(screen.getByText("Please enter your email address.")).toBeDefined();
+    expect(screen.getByText("Enter your email address.")).toBeDefined();
   });
 
   it("should show error for invalid email format", () => {
@@ -124,9 +124,7 @@ describe("AuthPrompt", () => {
     const form = screen.getByTestId("auth-email-submit").closest("form")!;
     fireEvent.submit(form);
 
-    expect(
-      screen.getByText("Please enter a valid email address.")
-    ).toBeDefined();
+    expect(screen.getByText("Enter a valid email address.")).toBeDefined();
   });
 
   it("should call onEmailSubmit with trimmed email for valid input", () => {

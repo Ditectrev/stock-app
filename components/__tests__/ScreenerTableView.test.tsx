@@ -229,11 +229,11 @@ describe("ScreenerTableView", () => {
 
     const upRow = screen.getByTestId("row-UP");
     const upChange = within(upRow).getByText("+2.50%");
-    expect(upChange.className).toContain("text-green-600");
+    expect(upChange.className).toContain("text-emerald-800");
 
     const downRow = screen.getByTestId("row-DOWN");
     const downChange = within(downRow).getByText("-1.50%");
-    expect(downChange.className).toContain("text-red-600");
+    expect(downChange.className).toContain("text-rose-800");
   });
 
   // --- Symbol click navigation (Req 26.19) ---

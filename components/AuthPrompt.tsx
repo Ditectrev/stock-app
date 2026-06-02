@@ -10,6 +10,8 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { AccountNotice } from "@/components/AccountNotice";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import {
   HOME_INPUT,
   HOME_INSTRUMENT_PANEL,
@@ -106,17 +108,17 @@ export function AuthPrompt({
       }
 
       if (!trimmed) {
-        setEmailError("Please enter your email address.");
+        setEmailError(AUTH_UI_COPY.emailRequired);
         return;
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-        setEmailError("Please enter a valid email address.");
+        setEmailError(AUTH_UI_COPY.emailInvalid);
         return;
       }
 
       const result = await onEmailSubmit(trimmed);
       if (!result || typeof result.ok !== "boolean") {
-        setEmailError("Could not start verification. Please try again.");
+        setEmailError(AUTH_UI_COPY.verificationStartFailed);
         return;
       }
       if (result.ok && result.userId) {
@@ -124,15 +126,13 @@ export function AuthPrompt({
         setEmailSubStep("verify");
         setOtp("");
       } else if (result.ok && !result.userId) {
-        setEmailError("Could not start verification. Please try again.");
+        setEmailError(AUTH_UI_COPY.verificationStartFailed);
       } else if (!result.ok && result.error) {
         setEmailError(result.error);
       }
     } catch (err) {
       const message =
-        err instanceof Error
-          ? err.message
-          : "Something went wrong. Please try again.";
+        err instanceof Error ? err.message : AUTH_UI_COPY.genericFailed;
       setEmailError(message);
     } finally {
       setLocalSubmitting(false);
@@ -160,30 +160,26 @@ export function AuthPrompt({
       const digits = (fromInput || fromFormData || otp).replace(/\D/g, "");
 
       if (!pendingUserId) {
-        setEmailError("Session expired. Go back and request a new code.");
+        setEmailError(AUTH_UI_COPY.sessionExpired);
         return;
       }
       if (digits.length < 6) {
-        setEmailError("Enter the 6-digit code from your email.");
+        setEmailError(AUTH_UI_COPY.codeLength);
         return;
       }
 
       try {
         const result = await onEmailVerify(pendingUserId, digits);
         if (!result || typeof result.ok !== "boolean") {
-          setEmailError("Verification failed. Please try again.");
+          setEmailError(AUTH_UI_COPY.verificationFailed);
           return;
         }
         if (!result.ok) {
-          setEmailError(
-            result.error ?? "Invalid or expired code. Please try again."
-          );
+          setEmailError(result.error ?? AUTH_UI_COPY.invalidCode);
         }
       } catch (err) {
         const message =
-          err instanceof Error
-            ? err.message
-            : "Something went wrong. Please try again.";
+          err instanceof Error ? err.message : AUTH_UI_COPY.genericFailed;
         setEmailError(message);
       }
     },
@@ -235,30 +231,19 @@ export function AuthPrompt({
 
         <p className={HOME_SECTION_LABEL}>Account</p>
         <h2 className="mb-4 text-xl font-semibold text-stone-900 dark:text-stone-100">
-          Sign in to continue
+          {AUTH_UI_COPY.signInTitle}
         </h2>
 
-        {/* Error display (Req 1.6) */}
         {displayError && (
-          <div
-            className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300"
-            role="alert"
-            aria-live="assertive"
-            data-testid="auth-error"
-          >
+          <AccountNotice tone="error" testId="auth-error">
             {displayError}
-          </div>
+          </AccountNotice>
         )}
 
         {infoMessage && (
-          <div
-            className="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-200"
-            role="status"
-            aria-live="polite"
-            data-testid="auth-info"
-          >
+          <AccountNotice tone="success" testId="auth-info">
             {infoMessage}
-          </div>
+          </AccountNotice>
         )}
 
         {view === "providers" ? (
@@ -429,7 +414,7 @@ export function AuthPrompt({
               onClick={async () => {
                 setEmailError(null);
                 if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                  setEmailError("Invalid email. Go back and re-enter it.");
+                  setEmailError(AUTH_UI_COPY.invalidEmailBack);
                   return;
                 }
                 try {
@@ -441,7 +426,7 @@ export function AuthPrompt({
                   setEmailError(
                     err instanceof Error
                       ? err.message
-                      : "Could not resend. Try again."
+                      : AUTH_UI_COPY.resendFailed
                   );
                 }
               }}

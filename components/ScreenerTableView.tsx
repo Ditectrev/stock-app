@@ -10,6 +10,12 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { ScreenerResult } from "@/types";
 import {
+  MARKET_DOWN_BADGE,
+  MARKET_NEUTRAL_BADGE,
+  MARKET_UP_BADGE,
+  marketChangeTextClass,
+} from "@/lib/market-semantics";
+import {
   HOME_MUTED_TEXT,
   HOME_SECONDARY_BUTTON,
   HOME_SUBTLE_TEXT,
@@ -223,11 +229,9 @@ export function ScreenerTableView({
                   </td>
                   <td
                     className={`px-3 py-2 font-medium tabular-nums ${
-                      row.changePercent > 0
-                        ? "text-green-600 dark:text-green-400"
-                        : row.changePercent < 0
-                          ? "text-red-600 dark:text-red-400"
-                          : HOME_MUTED_TEXT
+                      row.changePercent === 0
+                        ? HOME_MUTED_TEXT
+                        : marketChangeTextClass(row.changePercent)
                     }`}
                   >
                     {formatChangePercent(row.changePercent)}
@@ -248,10 +252,10 @@ export function ScreenerTableView({
                     <span
                       className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
                         row.valuationContext === "overpriced"
-                          ? "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
+                          ? MARKET_DOWN_BADGE
                           : row.valuationContext === "underpriced"
-                            ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300"
-                            : "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-200"
+                            ? MARKET_UP_BADGE
+                            : MARKET_NEUTRAL_BADGE
                       }`}
                     >
                       {row.valuationContext}

@@ -119,10 +119,10 @@ describe("SectorHub", () => {
   it("should color-code positive green and negative red (Req 23.4)", () => {
     render(<SectorHub data={mockData} />);
     const techChange = screen.getByTestId("change-Technology");
-    expect(techChange.className).toContain("text-green-500");
+    expect(techChange.className).toContain("text-emerald-800");
 
     const finChange = screen.getByTestId("change-Financial");
-    expect(finChange.className).toContain("text-red-500");
+    expect(finChange.className).toContain("text-rose-800");
   });
 
   it("should show comparison view when sectors are selected (Req 23.5, 23.6)", () => {

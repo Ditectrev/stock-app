@@ -13,6 +13,7 @@ import { useTheme } from "@/lib/theme-context";
 import { SectorData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { marketChangeTextClass } from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_CHIP,
@@ -242,7 +243,7 @@ export function SectorHub({
       >
         {sortedData.map((sector) => {
           const isPositive = sector.changePercent >= 0;
-          const colorClass = isPositive ? "text-green-500" : "text-red-500";
+          const colorClass = marketChangeTextClass(isPositive ? 1 : -1);
           const barWidth = Math.min(
             (Math.abs(sector.changePercent) / maxAbsChange) * 100,
             100
@@ -348,7 +349,7 @@ export function SectorHub({
                     />
                   </div>
                   <span
-                    className={`text-xs font-medium w-16 text-right ${isPositive ? "text-green-500" : "text-red-500"}`}
+                    className={`text-xs font-medium w-16 text-right ${marketChangeTextClass(isPositive ? 1 : -1)}`}
                   >
                     {formatPercent(sector.changePercent)}
                   </span>

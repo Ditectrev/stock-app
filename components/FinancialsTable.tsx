@@ -12,6 +12,11 @@ import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
 import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
 import {
+  MARKET_DOWN_TEXT,
+  MARKET_NEUTRAL_TEXT,
+  MARKET_UP_TEXT,
+} from "@/lib/market-semantics";
+import {
   SYMBOL_DIVIDER,
   SYMBOL_HELP_BUTTON,
   SYMBOL_MUTED_TEXT,
@@ -38,14 +43,14 @@ interface MetricSection {
   metrics: MetricItem[];
 }
 
-function getFavorabilityColors(favorability: Favorability, isDark: boolean) {
+function getFavorabilityColors(favorability: Favorability): string {
   switch (favorability) {
     case "favorable":
-      return isDark ? "text-green-400" : "text-green-600";
+      return MARKET_UP_TEXT;
     case "unfavorable":
-      return isDark ? "text-red-400" : "text-red-600";
+      return MARKET_DOWN_TEXT;
     default:
-      return isDark ? "text-stone-300" : "text-stone-700";
+      return MARKET_NEUTRAL_TEXT;
   }
 }
 
@@ -255,12 +260,7 @@ export function FinancialsTable({ financials }: FinancialsTableProps) {
         <SectionHeading section={keyFacts} isDark={isDark} compact />
         <dl className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           {keyFacts.metrics.map((metric) => (
-            <MetricCell
-              key={metric.label}
-              metric={metric}
-              isDark={isDark}
-              withTooltip
-            />
+            <MetricCell key={metric.label} metric={metric} withTooltip />
           ))}
         </dl>
       </section>
@@ -333,7 +333,7 @@ function LedgerSection({
       <SectionHeading section={section} isDark={isDark} />
       <div className="mt-3 space-y-0">
         {section.metrics.map((metric) => (
-          <MetricRow key={metric.label} metric={metric} isDark={isDark} />
+          <MetricRow key={metric.label} metric={metric} />
         ))}
       </div>
     </section>
@@ -342,15 +342,13 @@ function LedgerSection({
 
 function MetricCell({
   metric,
-  isDark,
   withTooltip = false,
 }: {
   metric: MetricItem;
-  isDark: boolean;
   withTooltip?: boolean;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const colors = getFavorabilityColors(metric.favorability, isDark);
+  const colors = getFavorabilityColors(metric.favorability);
 
   return (
     <div>
@@ -392,15 +390,9 @@ function MetricCell({
   );
 }
 
-function MetricRow({
-  metric,
-  isDark,
-}: {
-  metric: MetricItem;
-  isDark: boolean;
-}) {
+function MetricRow({ metric }: { metric: MetricItem }) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const colors = getFavorabilityColors(metric.favorability, isDark);
+  const colors = getFavorabilityColors(metric.favorability);
 
   return (
     <div

@@ -16,7 +16,12 @@ import {
   postEmailOtpVerify,
 } from "@/lib/auth/trial-auth-navigation";
 import { describeAuthQueryError } from "@/lib/auth/auth-query-messages";
-import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
+import {
+  HOME_CALLOUT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 /** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
 const TRIAL_STATUS_SYNC_MS = 30_000;
@@ -229,24 +234,22 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
     try {
       const result = await postEmailOtpSend(email);
       if (!result.ok) {
-        const err = result.error ?? "Something went wrong. Please try again.";
+        const err = result.error ?? AUTH_UI_COPY.genericFailed;
         setAuthError(err);
         return { ok: false as const, error: err };
       }
       if (!result.userId) {
-        const err = "Could not start verification. Please try again.";
+        const err = AUTH_UI_COPY.verificationStartFailed;
         setAuthError(err);
         return { ok: false as const, error: err };
       }
-      setAuthInfo(
-        "We sent a verification email. Check your inbox (and spam) for the 6-digit code."
-      );
+      setAuthInfo(AUTH_UI_COPY.emailSentInfo);
       return { ok: true as const, userId: result.userId };
     } catch {
-      setAuthError("Network error. Please try again.");
+      setAuthError(AUTH_UI_COPY.networkFailed);
       return {
         ok: false as const,
-        error: "Network error. Please try again.",
+        error: AUTH_UI_COPY.networkFailed,
       };
     } finally {
       setAuthLoading(false);
@@ -260,8 +263,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
       try {
         const result = await postEmailOtpVerify(userId, secret);
         if (!result.ok) {
-          const err =
-            result.error ?? "Invalid or expired code. Please try again.";
+          const err = result.error ?? AUTH_UI_COPY.invalidCode;
           setAuthError(err);
           return { ok: false as const, error: err };
         }
@@ -289,12 +291,12 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
     <>
       {isActive && !isAuthenticated && (
         <div
-          className="flex items-center justify-between border-b border-yellow-200 bg-yellow-50 px-4 py-2 dark:border-yellow-800 dark:bg-yellow-900/30"
+          className={`flex items-center justify-between border-b border-stone-200 px-4 py-2 ${HOME_CALLOUT}`}
           role="status"
           aria-label="Trial session active"
           data-testid="trial-banner"
         >
-          <span className="text-sm text-yellow-800 dark:text-yellow-200">
+          <span className={`text-sm font-medium ${HOME_SUBTLE_TEXT}`}>
             Trial session
           </span>
           <div className="flex items-center gap-3">
@@ -316,11 +318,11 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
 
       {!isActive && hasUsedTrial && !isAuthenticated && (
         <div
-          className="flex items-center justify-center border-b border-red-200 bg-red-50 px-4 py-2 dark:border-red-800 dark:bg-red-900/30"
+          className={`flex items-center justify-center border-b border-stone-300 px-4 py-2 ${HOME_CALLOUT}`}
           role="alert"
           data-testid="trial-expired-banner"
         >
-          <span className="text-sm text-red-700 dark:text-red-300">
+          <span className={`text-sm ${HOME_SUBTLE_TEXT}`}>
             Trial expired.{" "}
             <button
               type="button"

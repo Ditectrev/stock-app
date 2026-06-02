@@ -15,22 +15,19 @@ import {
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
 
-const CHECK_ICON = (
-  <svg
-    className="w-4 h-4 text-green-500 flex-shrink-0"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
+const FEATURE_MARK = (
+  <span
+    className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-stone-500 dark:bg-stone-400"
     aria-hidden="true"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 13l4 4L19 7"
-    />
-  </svg>
+  />
 );
+
+const COMPARE_CAPABILITIES = [
+  { label: "AI explanations", needle: "ai metric explanations" },
+  { label: "Chart analysis", needle: "ai chart analysis" },
+  { label: "Bring your own keys", needle: "api q&a" },
+  { label: "No ads", needle: "ads-free" },
+] as const;
 
 interface PricingCardProps {
   tier: PricingTierInfo;
@@ -48,7 +45,7 @@ function PricingCard({
   featured,
 }: PricingCardProps) {
   const isFree = tier.price === 0;
-  const visibleFeatures = tier.features.slice(0, 8);
+  const visibleFeatures = tier.features.slice(0, 5);
   const hiddenCount = Math.max(
     0,
     tier.features.length - visibleFeatures.length
@@ -157,7 +154,7 @@ function PricingCard({
       <ul className="space-y-2.5 flex-1" aria-label={`${tier.name} features`}>
         {visibleFeatures.map((feature) => (
           <li key={feature} className="flex items-start gap-2">
-            {CHECK_ICON}
+            {FEATURE_MARK}
             <span
               className={`text-sm ${
                 featured
@@ -254,39 +251,24 @@ export function PricingPage({
             >
               Quick compare
             </p>
-            <div className="mt-3 space-y-2 text-sm">
-              <div className="grid grid-cols-5 gap-2">
-                <span className={`font-medium ${HOME_MUTED_TEXT}`}>
-                  Capability
-                </span>
-                {orderedTiers.map((tier) => (
-                  <span
-                    key={tier.tier}
-                    className={`text-center text-xs font-semibold ${HOME_SUBTLE_TEXT}`}
-                  >
-                    {tier.name}
-                  </span>
-                ))}
-              </div>
-              {[
-                ["AI explanations", "ai metric explanations"],
-                ["Chart analysis", "ai chart analysis"],
-                ["Bring your own keys", "api q&a"],
-                ["No ads", "ads-free"],
-              ].map(([label, needle]) => (
+            <div className="mt-3 space-y-3 text-sm">
+              {COMPARE_CAPABILITIES.map(({ label, needle }) => (
                 <div
                   key={label}
-                  className="grid grid-cols-5 gap-2 border-t border-stone-200 pt-2 dark:border-stone-700"
+                  className="border-t border-stone-200 pt-3 first:border-t-0 first:pt-0 dark:border-stone-700"
                 >
-                  <span className={HOME_MUTED_TEXT}>{label}</span>
-                  {orderedTiers.map((tier) => (
-                    <span
-                      key={`${label}-${tier.tier}`}
-                      className="text-center text-sm"
-                    >
-                      {hasFeature(tier, needle) ? "✓" : "—"}
-                    </span>
-                  ))}
+                  <p className={`font-medium ${HOME_MUTED_TEXT}`}>{label}</p>
+                  <p
+                    className={`mt-1 text-xs leading-relaxed ${HOME_SUBTLE_TEXT}`}
+                  >
+                    {orderedTiers
+                      .map((tier) =>
+                        hasFeature(tier, needle)
+                          ? `${tier.name}: included`
+                          : `${tier.name}: not included`
+                      )
+                      .join(" · ")}
+                  </p>
                 </div>
               ))}
             </div>

@@ -8,6 +8,7 @@
  */
 
 import { SymbolData } from "@/types";
+import { marketChangeTextClass } from "@/lib/market-semantics";
 import {
   SYMBOL_INSTRUMENT_PANEL,
   SYMBOL_MUTED_TEXT,
@@ -21,9 +22,7 @@ export interface SymbolHeaderProps {
 
 export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
   const isPositive = symbolData.change >= 0;
-  const changeColor = isPositive
-    ? "text-green-700 dark:text-green-400"
-    : "text-red-700 dark:text-red-400";
+  const changeColor = marketChangeTextClass(symbolData.change);
 
   return (
     <div

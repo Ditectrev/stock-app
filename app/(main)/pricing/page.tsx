@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import type { PricingTier, PricingTierInfo } from "@/types";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 const PricingPage = dynamic(
@@ -91,9 +92,7 @@ function PricingRouteContent() {
         if (cancelled) return;
         if (!res.ok || !payload.success) {
           setMessage({
-            text:
-              payload.error ??
-              "Could not confirm your subscription. If you were charged, contact support.",
+            text: payload.error ?? AUTH_UI_COPY.subscriptionConfirmFailed,
             tone: "warning",
           });
           return;
@@ -108,7 +107,7 @@ function PricingRouteContent() {
       } catch {
         if (!cancelled) {
           setMessage({
-            text: "Could not confirm checkout. Please refresh the page.",
+            text: AUTH_UI_COPY.checkoutConfirmFailed,
             tone: "warning",
           });
         }

@@ -10,6 +10,8 @@ import {
   InsightPanelHeader,
 } from "@/components/InsightPanel";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
+import { AccountNotice } from "@/components/AccountNotice";
+import { marketChangeBadgeClass } from "@/lib/market-semantics";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
 import {
   HOME_CALLOUT,
@@ -34,12 +36,7 @@ function RecommendationBadge({
   recommendation?: AIPredictionReport["recommendation"];
 }) {
   const recommendationValue = recommendation ?? "hold";
-  const styles =
-    recommendationValue === "buy"
-      ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
-      : recommendationValue === "sell"
-        ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
-        : "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300";
+  const styles = marketChangeBadgeClass(recommendationValue);
 
   return (
     <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${styles}`}>
@@ -49,6 +46,9 @@ function RecommendationBadge({
 }
 
 type FactorId = (typeof AI_PREDICTION_SECTIONS)[number]["id"];
+
+const MAX_FACTOR_BULLETS = 2;
+const MAX_SYMBOL_BULLETS = 3;
 
 const FACTOR_GROUPS: ReadonlyArray<{
   title: string;
@@ -106,7 +106,7 @@ function FactorGroup({
               {section!.label}
             </p>
             <ul className={`mt-1 space-y-1 text-sm ${HOME_MUTED_TEXT}`}>
-              {items.map((item, index) => (
+              {items.slice(0, MAX_FACTOR_BULLETS).map((item, index) => (
                 <li key={`${section!.id}-${index}`} className="flex gap-2">
                   <span aria-hidden="true" className="mt-1 text-xs">
                     •
@@ -115,6 +115,11 @@ function FactorGroup({
                 </li>
               ))}
             </ul>
+            {items.length > MAX_FACTOR_BULLETS && (
+              <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
+                +{items.length - MAX_FACTOR_BULLETS} more points in this section
+              </p>
+            )}
           </div>
         ))}
       </div>
@@ -221,40 +226,42 @@ export function AIPredictionPanel({
                         {symbolSpecific.title}
                       </p>
                       <ul className={`space-y-1 text-sm ${HOME_MUTED_TEXT}`}>
-                        {symbolSpecific.bullets.map((item, index) => (
-                          <li
-                            key={`${symbolSpecific.title}-${index}`}
-                            className="flex gap-2"
-                          >
-                            <span aria-hidden="true">•</span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
+                        {symbolSpecific.bullets
+                          .slice(0, MAX_SYMBOL_BULLETS)
+                          .map((item, index) => (
+                            <li
+                              key={`${symbolSpecific.title}-${index}`}
+                              className="flex gap-2"
+                            >
+                              <span aria-hidden="true">•</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
                       </ul>
+                      {symbolSpecific.bullets.length > MAX_SYMBOL_BULLETS && (
+                        <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
+                          +{symbolSpecific.bullets.length - MAX_SYMBOL_BULLETS}{" "}
+                          more symbol-specific notes
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
               )}
 
               {!loading && !prediction && !locked && error && (
-                <div
-                  className={`rounded-lg border px-3 py-3 text-sm ${
-                    isMissingByokApiKeyMessage(error)
-                      ? "border-stone-300 bg-stone-100 text-stone-900 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100"
-                      : isHostedSetupMessage(error)
-                        ? "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
-                        : "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
-                  }`}
-                >
-                  <p className="font-medium">
-                    {isHostedSetupMessage(error)
+                <AccountNotice
+                  tone={isHostedSetupMessage(error) ? "warning" : "error"}
+                  title={
+                    isHostedSetupMessage(error)
                       ? "Ditectrev AI configuration needed"
-                      : "AI prediction unavailable"}
-                  </p>
-                  <p className="mt-1">{error}</p>
+                      : "AI prediction unavailable"
+                  }
+                >
+                  <span>{error}</span>
                   {isMissingByokApiKeyMessage(error) && (
                     <div className="mt-3 space-y-2">
-                      <p className="text-xs opacity-90">
+                      <p className="text-xs">
                         Add your key in Profile → API keys, then select the same
                         provider as your explanations model.
                       </p>
@@ -264,12 +271,12 @@ export function AIPredictionPanel({
                     </div>
                   )}
                   {isHostedSetupMessage(error) && (
-                    <p className="mt-2 text-xs opacity-90">
+                    <p className="mt-2 text-xs">
                       If you are on the Ditectrev AI plan, ask support to verify
                       deployment env setup for this region.
                     </p>
                   )}
-                </div>
+                </AccountNotice>
               )}
 
               {!loading && !prediction && !locked && !error && (

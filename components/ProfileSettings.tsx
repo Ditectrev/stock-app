@@ -9,6 +9,7 @@ import {
   HOME_PANEL_TITLE,
   HOME_PRIMARY_BUTTON,
   HOME_SECONDARY_BUTTON,
+  HOME_SECTION_LABEL,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
 import {
@@ -281,9 +282,13 @@ export function ProfileSettings() {
     );
   }
 
+  const profileSectionClass =
+    "border-l-2 border-stone-900 pl-5 dark:border-stone-100";
+
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div className="space-y-10 max-w-3xl">
       <header className="space-y-1">
+        <p className={HOME_SECTION_LABEL}>Account</p>
         <h1 className={`text-2xl ${HOME_PANEL_TITLE}`}>User Profile</h1>
         <p className={`text-sm ${HOME_MUTED_TEXT}`}>{user.email}</p>
         {user.name && (
@@ -291,8 +296,17 @@ export function ProfileSettings() {
         )}
       </header>
 
-      <section className={`${HOME_INSTRUMENT_PANEL} space-y-3 !p-5`}>
-        <h2 className={`text-lg ${HOME_PANEL_TITLE}`}>Subscription</h2>
+      <section
+        className={`${profileSectionClass} space-y-3`}
+        aria-labelledby="profile-subscription-heading"
+      >
+        <p className={HOME_SECTION_LABEL}>Plan</p>
+        <h2
+          id="profile-subscription-heading"
+          className={`text-lg ${HOME_PANEL_TITLE}`}
+        >
+          Subscription
+        </h2>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
           <div>
             <dt className={HOME_SUBTLE_TEXT}>Current plan</dt>
@@ -347,9 +361,16 @@ export function ProfileSettings() {
         )}
       </section>
 
-      <section className={`${HOME_INSTRUMENT_PANEL} space-y-4 !p-5`}>
+      <section
+        className={`${profileSectionClass} space-y-4`}
+        aria-labelledby="profile-provider-heading"
+      >
+        <p className={HOME_SECTION_LABEL}>AI model</p>
         <div>
-          <h2 className={`text-lg ${HOME_PANEL_TITLE}`}>
+          <h2
+            id="profile-provider-heading"
+            className={`text-lg ${HOME_PANEL_TITLE}`}
+          >
             Explanations provider
           </h2>
           <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
@@ -406,8 +427,17 @@ export function ProfileSettings() {
         )}
       </section>
 
-      <section className={`${HOME_INSTRUMENT_PANEL} !p-5`}>
-        <h2 className={`mb-3 text-lg ${HOME_PANEL_TITLE}`}>API keys</h2>
+      <section
+        className={profileSectionClass}
+        aria-labelledby="profile-keys-heading"
+      >
+        <p className={HOME_SECTION_LABEL}>BYOK</p>
+        <h2
+          id="profile-keys-heading"
+          className={`mb-3 text-lg ${HOME_PANEL_TITLE}`}
+        >
+          API keys
+        </h2>
         {canManageApiKeys ? (
           <APIKeyManager
             selectedProvider={selectedProvider}

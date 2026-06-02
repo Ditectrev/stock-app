@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { HOME_INPUT, HOME_MUTED_TEXT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
+import { AccountNotice } from "@/components/AccountNotice";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 interface SearchResult {
@@ -232,8 +233,10 @@ export function SearchBar({
           className="absolute z-50 mt-2 max-h-96 w-full overflow-y-auto rounded-lg border border-stone-200 bg-white shadow-lg dark:border-stone-700 dark:bg-stone-900"
         >
           {error && (
-            <div className="px-4 py-3 text-sm text-red-600 dark:text-red-400">
-              {error}
+            <div className="px-3 py-2">
+              <AccountNotice tone="error" className="mb-0">
+                {error}
+              </AccountNotice>
             </div>
           )}
 
