@@ -9,6 +9,8 @@ coverage/
 playwright-report/
 test-results/
 .lighthouseci/
+e2e/**/*.png
+**/*-snapshots/**
 
 # Lockfiles Prettier doesn't need to touch
 bun.lockb

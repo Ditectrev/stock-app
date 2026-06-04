@@ -138,7 +138,10 @@ export const MARKET_CHART_OVERLAY_COLORS_DARK = [
   "#78716c",
 ] as const;
 
-export function marketChartOverlayColor(index: number, isDark: boolean): string {
+export function marketChartOverlayColor(
+  index: number,
+  isDark: boolean
+): string {
   const palette = isDark
     ? MARKET_CHART_OVERLAY_COLORS_DARK
     : MARKET_CHART_OVERLAY_COLORS_LIGHT;

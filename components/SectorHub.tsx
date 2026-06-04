@@ -8,7 +8,12 @@
  * Requirements: 23.1, 23.2, 23.3, 23.4, 23.5, 23.6, 23.7, 23.8, 23.9, 23.10, 23.11, 23.12
  */
 
-import { DNA_EYEBROW, DNA_LABEL_STRONG, DNA_METRIC_COMPACT, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_EYEBROW,
+  DNA_LABEL_STRONG,
+  DNA_METRIC_COMPACT,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { SectorData } from "@/types";
@@ -287,11 +292,7 @@ export function SectorHub({
               />
 
               <div className="flex items-center justify-between">
-                <p
-                  className={DNA_LABEL_STRONG}
-                >
-                  {sector.sector}
-                </p>
+                <p className={DNA_LABEL_STRONG}>{sector.sector}</p>
                 <p
                   className={`${DNA_METRIC_COMPACT} ${colorClass}`}
                   data-testid={`change-${sector.sector.replace(/\s+/g, "-")}`}

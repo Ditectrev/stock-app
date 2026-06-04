@@ -158,7 +158,9 @@ function PricingCard({
             {FEATURE_MARK}
             <span
               className={
-                featured ? "text-sm text-stone-200 dark:text-stone-700" : DNA_BODY
+                featured
+                  ? "text-sm text-stone-200 dark:text-stone-700"
+                  : DNA_BODY
               }
             >
               {feature}
@@ -244,9 +246,7 @@ export function PricingPage({
                   className="border-t border-stone-200 pt-3 first:border-t-0 first:pt-0 dark:border-stone-700"
                 >
                   <p className={`font-medium ${DNA_BODY}`}>{label}</p>
-                  <p
-                    className={`mt-1 text-xs leading-relaxed ${DNA_CAPTION}`}
-                  >
+                  <p className={`mt-1 text-xs leading-relaxed ${DNA_CAPTION}`}>
                     {orderedTiers
                       .map((tier) =>
                         hasFeature(tier, needle)

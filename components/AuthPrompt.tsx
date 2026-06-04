@@ -13,7 +13,11 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { AccountNotice } from "@/components/AccountNotice";
 import { ProductOverlay } from "@/components/ProductShell";
 import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
-import { HOME_INPUT, HOME_PRIMARY_BUTTON, HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
+import {
+  HOME_INPUT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+} from "@/lib/home-ui";
 
 export type AuthView = "providers" | "email";
 
@@ -289,10 +293,7 @@ export function AuthPrompt({
             ← Back
           </button>
 
-          <label
-            htmlFor="auth-email"
-            className={`block ${DNA_LABEL}`}
-          >
+          <label htmlFor="auth-email" className={`block ${DNA_LABEL}`}>
             Email address
           </label>
           <input
@@ -343,10 +344,7 @@ export function AuthPrompt({
             .
           </p>
 
-          <label
-            htmlFor="auth-otp"
-            className={`block ${DNA_LABEL}`}
-          >
+          <label htmlFor="auth-otp" className={`block ${DNA_LABEL}`}>
             Verification code
           </label>
           <input
@@ -401,10 +399,7 @@ export function AuthPrompt({
       )}
 
       {loading && (
-        <p
-          className={`mt-3 text-center ${DNA_CAPTION}`}
-          aria-live="polite"
-        >
+        <p className={`mt-3 text-center ${DNA_CAPTION}`} aria-live="polite">
           Please wait…
         </p>
       )}

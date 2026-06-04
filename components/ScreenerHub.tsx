@@ -9,7 +9,12 @@
  * Requirements: 26.10, 26.11, 26.12, 26.13, 26.15, 26.17, 26.23, 26.25
  */
 
-import { DNA_BODY, DNA_CAPTION, DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_BODY,
+  DNA_CAPTION,
+  DNA_EYEBROW,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { ScreenerFilter, ScreenerPreset, ScreenerResult } from "@/types";
 import {

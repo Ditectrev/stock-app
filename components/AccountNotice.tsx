@@ -44,13 +44,7 @@ export function AccountNotice({
       {title ? (
         <p className="font-medium text-stone-900 dark:text-stone-50">{title}</p>
       ) : null}
-      <div
-        className={
-          title
-            ? `mt-1 ${DNA_BODY}`
-            : `${DNA_BODY}`
-        }
-      >
+      <div className={title ? `mt-1 ${DNA_BODY}` : `${DNA_BODY}`}>
         {children}
       </div>
     </div>

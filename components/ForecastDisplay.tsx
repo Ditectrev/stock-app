@@ -291,9 +291,7 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                   i > 0 ? `border-t ${SYMBOL_DIVIDER}` : ""
                 }`}
               >
-                <span className={SYMBOL_LABEL}>
-                  {eps.quarter}
-                </span>
+                <span className={SYMBOL_LABEL}>{eps.quarter}</span>
                 <div className="flex items-center gap-3">
                   <div className="text-right text-xs">
                     <div className={SYMBOL_SUBTLE_TEXT}>
@@ -341,9 +339,7 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                   i > 0 ? `border-t ${SYMBOL_DIVIDER}` : ""
                 }`}
               >
-                <span className={SYMBOL_LABEL}>
-                  {rev.quarter}
-                </span>
+                <span className={SYMBOL_LABEL}>{rev.quarter}</span>
                 <div className="flex items-center gap-3">
                   <div className="text-right text-xs">
                     <div className={SYMBOL_SUBTLE_TEXT}>

@@ -56,10 +56,7 @@ export function CalendarDateRangePicker({
         Today
       </button>
 
-      <label
-        htmlFor={`${idPrefix}-start-date`}
-        className={`${DNA_BODY}`}
-      >
+      <label htmlFor={`${idPrefix}-start-date`} className={`${DNA_BODY}`}>
         From:
       </label>
       <input
@@ -71,10 +68,7 @@ export function CalendarDateRangePicker({
         data-testid="start-date"
       />
 
-      <label
-        htmlFor={`${idPrefix}-end-date`}
-        className={`${DNA_BODY}`}
-      >
+      <label htmlFor={`${idPrefix}-end-date`} className={`${DNA_BODY}`}>
         To:
       </label>
       <input

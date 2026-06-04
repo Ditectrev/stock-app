@@ -432,7 +432,9 @@ async function mockCalendarTabFixtures(page: import("@playwright/test").Page) {
   );
 }
 
-async function mockProfileProviderStorage(page: import("@playwright/test").Page) {
+async function mockProfileProviderStorage(
+  page: import("@playwright/test").Page
+) {
   await page.addInitScript(() => {
     localStorage.setItem("explanations_provider", "HOSTED");
   });
@@ -564,7 +566,9 @@ test.describe("Hallmark visual regression", () => {
     await mockHomePulseApis(page);
     await mockFreeSubscription(page);
     await page.goto("/");
-    const gate = page.getByTestId("home-ai-outlook").getByTestId("product-gate");
+    const gate = page
+      .getByTestId("home-ai-outlook")
+      .getByTestId("product-gate");
     await expect(gate).toBeVisible({ timeout: 15000 });
     await expect(gate).toHaveScreenshot("subscription-gate.png", {
       maxDiffPixelRatio: 0.03,
@@ -888,7 +892,9 @@ test.describe("Hallmark visual regression", () => {
     });
   });
 
-  test("stock of the day panel dark mode matches baseline", async ({ page }) => {
+  test("stock of the day panel dark mode matches baseline", async ({
+    page,
+  }) => {
     await page.emulateMedia({ colorScheme: "dark" });
     await mockHostedAiSubscription(page);
     await mockNoByokKeys(page);
@@ -911,7 +917,9 @@ test.describe("Hallmark visual regression", () => {
 
     const pageRoot = page.getByTestId("stock-of-the-day-page");
     await expect(pageRoot).toBeVisible({ timeout: 20000 });
-    await expect(pageRoot.getByRole("heading", { name: /stock of the day/i })).toBeVisible();
+    await expect(
+      pageRoot.getByRole("heading", { name: /stock of the day/i })
+    ).toBeVisible();
     await expect(pageRoot).toHaveScreenshot("stock-of-the-day-page.png", {
       maxDiffPixelRatio: 0.03,
     });

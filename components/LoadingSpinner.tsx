@@ -41,11 +41,7 @@ export function LoadingSpinner({
       <div
         className={`animate-spin rounded-full border-stone-700 border-b-transparent dark:border-stone-300 ${SIZE_CLASSES[size]}`}
       />
-      {message && (
-        <p className={`mt-3 ${DNA_BODY}`}>
-          {message}
-        </p>
-      )}
+      {message && <p className={`mt-3 ${DNA_BODY}`}>{message}</p>}
       <span className="sr-only">{message ?? "Loading"}</span>
     </div>
   );

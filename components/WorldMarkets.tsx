@@ -9,7 +9,14 @@
  * Requirements: 10.1, 10.2, 10.3, 10.5
  */
 
-import { DNA_BODY, DNA_CAPTION, DNA_EYEBROW, DNA_HEADING, DNA_LABEL_STRONG, DNA_METRIC_COMPACT } from "@/lib/design-dna";
+import {
+  DNA_BODY,
+  DNA_CAPTION,
+  DNA_EYEBROW,
+  DNA_HEADING,
+  DNA_LABEL_STRONG,
+  DNA_METRIC_COMPACT,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { MarketIndex } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";

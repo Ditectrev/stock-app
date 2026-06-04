@@ -293,9 +293,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
           aria-label="Trial session active"
           data-testid="trial-banner"
         >
-          <span className={DNA_LABEL}>
-            Trial session
-          </span>
+          <span className={DNA_LABEL}>Trial session</span>
           <div className="flex items-center gap-3">
             <TrialTimer
               remainingSeconds={remainingSeconds}

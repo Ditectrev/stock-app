@@ -12,7 +12,12 @@ import { DNA_BODY, DNA_CAPTION } from "@/lib/design-dna";
 import { MARKET_CHART_OVERLAY_COLORS_LIGHT } from "@/lib/market-semantics";
 import { useState, useCallback } from "react";
 import { ChartIndicator, PriceData } from "@/types";
-import { HOME_CALLOUT, HOME_INPUT_SM, HOME_INSTRUMENT_PANEL, HOME_RANGE_BUTTON_ACTIVE } from "@/lib/home-ui";
+import {
+  HOME_CALLOUT,
+  HOME_INPUT_SM,
+  HOME_INSTRUMENT_PANEL,
+  HOME_RANGE_BUTTON_ACTIVE,
+} from "@/lib/home-ui";
 
 export interface TechnicalIndicatorOverlayProps {
   onIndicatorsChange: (indicators: ChartIndicator[]) => void;

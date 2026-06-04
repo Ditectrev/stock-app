@@ -19,7 +19,12 @@ import {
   getHeatmapNeutralLegendColor,
   getHeatmapTextClass,
 } from "@/lib/heatmap-colors";
-import { HOME_CHIP, HOME_LEGEND_DIVIDER, HOME_LEGEND_TEXT, homeChipClasses } from "@/lib/home-ui";
+import {
+  HOME_CHIP,
+  HOME_LEGEND_DIVIDER,
+  HOME_LEGEND_TEXT,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 export type HeatmapTimePeriod =
   | "1D"

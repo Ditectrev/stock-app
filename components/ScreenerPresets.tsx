@@ -12,7 +12,11 @@
 import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_LABEL } from "@/lib/design-dna";
 import { useState, useEffect, useCallback } from "react";
 import type { ScreenerFilter, ScreenerPreset } from "@/types";
-import { HOME_INPUT_SM, HOME_PRIMARY_BUTTON, HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
+import {
+  HOME_INPUT_SM,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+} from "@/lib/home-ui";
 import { MARKET_DOWN_TEXT, MARKET_NEUTRAL_BADGE } from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
@@ -112,10 +116,7 @@ export function ScreenerPresets({
 
   if (loading) {
     return (
-      <div
-        className={`${DNA_BODY_SECONDARY}`}
-        data-testid="presets-loading"
-      >
+      <div className={`${DNA_BODY_SECONDARY}`} data-testid="presets-loading">
         Loading presets…
       </div>
     );
@@ -125,9 +126,7 @@ export function ScreenerPresets({
     <div data-testid="screener-presets" className="space-y-3">
       {/* Preset row */}
       <div className="flex items-center gap-2">
-        <span className={`shrink-0 ${DNA_LABEL}`}>
-          Presets:
-        </span>
+        <span className={`shrink-0 ${DNA_LABEL}`}>Presets:</span>
         <div
           className="flex items-center gap-2 overflow-x-auto pb-1"
           data-testid="presets-row"

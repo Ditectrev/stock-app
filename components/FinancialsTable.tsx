@@ -289,9 +289,7 @@ function SectionHeading({
       onMouseEnter={() => setSectionTooltip(true)}
       onMouseLeave={() => setSectionTooltip(false)}
     >
-      <h3
-        className={`font-semibold ${compact ? DNA_LABEL : DNA_SUBHEADING}`}
-      >
+      <h3 className={`font-semibold ${compact ? DNA_LABEL : DNA_SUBHEADING}`}>
         {section.title}
       </h3>
       <span className={SYMBOL_HELP_BUTTON} aria-hidden>

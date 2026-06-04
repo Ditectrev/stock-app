@@ -167,11 +167,7 @@ function IndicatorRow({
     >
       <div className="min-w-0 flex-1">
         <div className="relative flex items-center gap-2">
-          <span
-            className={SYMBOL_LABEL}
-          >
-            {row.name}
-          </span>
+          <span className={SYMBOL_LABEL}>{row.name}</span>
           <button
             type="button"
             className={SYMBOL_HELP_BUTTON}

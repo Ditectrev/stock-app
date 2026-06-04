@@ -1,10 +1,25 @@
 "use client";
 
-import { DNA_BODY, DNA_BODY_SECONDARY, DNA_CALLOUT_WARNING, DNA_CAPTION, DNA_DISPLAY, DNA_EYEBROW, DNA_HEADING, DNA_LABEL_STRONG, DNA_MARKETING_STACK, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_BODY,
+  DNA_BODY_SECONDARY,
+  DNA_CALLOUT_WARNING,
+  DNA_CAPTION,
+  DNA_DISPLAY,
+  DNA_EYEBROW,
+  DNA_HEADING,
+  DNA_LABEL_STRONG,
+  DNA_MARKETING_STACK,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import APIKeyManager from "@/components/APIKeyManager";
-import { HOME_INSTRUMENT_PANEL, HOME_PRIMARY_BUTTON, HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+} from "@/lib/home-ui";
 import {
   getDefaultProviderForTier,
   isProviderAllowedForTier,
@@ -400,16 +415,12 @@ export function ProfileSettings() {
                 <p className={DNA_SUBHEADING}>
                   {provider.name}
                   {isActive && (
-                    <span
-                      className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
-                    >
+                    <span className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}>
                       Active
                     </span>
                   )}
                 </p>
-                <p className={`mt-1 ${DNA_CAPTION}`}>
-                  {provider.subtitle}
-                </p>
+                <p className={`mt-1 ${DNA_CAPTION}`}>{provider.subtitle}</p>
               </button>
             );
           })}

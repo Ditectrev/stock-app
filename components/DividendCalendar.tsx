@@ -7,7 +7,11 @@
  * Requirements: 24.14, 24.15, 24.16, 24.17, 24.18
  */
 
-import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { DividendEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
@@ -15,7 +19,20 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import { MARKET_UP_BADGE } from "@/lib/market-semantics";
-import { CALENDAR_CHIP_IDLE, CALENDAR_DAY_HEADER, CALENDAR_EMPTY_TEXT, CALENDAR_EVENT_LIST, CALENDAR_EVENT_META, CALENDAR_EVENT_ROW, CALENDAR_EVENT_TITLE, CALENDAR_FILTER_LABEL, CALENDAR_PAGE_TITLE, CALENDAR_SELECT, CALENDAR_TODAY_BADGE, CALENDAR_TODAY_HEADER } from "@/lib/home-ui";
+import {
+  CALENDAR_CHIP_IDLE,
+  CALENDAR_DAY_HEADER,
+  CALENDAR_EMPTY_TEXT,
+  CALENDAR_EVENT_LIST,
+  CALENDAR_EVENT_META,
+  CALENDAR_EVENT_ROW,
+  CALENDAR_EVENT_TITLE,
+  CALENDAR_FILTER_LABEL,
+  CALENDAR_PAGE_TITLE,
+  CALENDAR_SELECT,
+  CALENDAR_TODAY_BADGE,
+  CALENDAR_TODAY_HEADER,
+} from "@/lib/home-ui";
 
 export interface DividendCalendarProps {
   data?: DividendEvent[];
@@ -292,9 +309,7 @@ export function DividendCalendar({
                       Today
                     </span>
                   )}
-                  <span
-                    className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
-                  >
+                  <span className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}>
                     ({events.length} event
                     {events.length !== 1 ? "s" : ""})
                   </span>

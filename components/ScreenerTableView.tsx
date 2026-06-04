@@ -167,10 +167,7 @@ export function ScreenerTableView({
   return (
     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-700 dark:bg-stone-900">
       <div className="overflow-x-auto -mx-0">
-        <table
-          className={`w-full ${DNA_BODY}`}
-          aria-label="Screener results"
-        >
+        <table className={`w-full ${DNA_BODY}`} aria-label="Screener results">
           <thead>
             <tr className="border-b border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-950">
               {COLUMNS.map((col) => (
@@ -238,9 +235,7 @@ export function ScreenerTableView({
                   <td className={`px-3 py-2 tabular-nums ${DNA_BODY}`}>
                     {row.peRatio != null ? row.peRatio.toFixed(1) : "—"}
                   </td>
-                  <td className={`px-3 py-2 ${DNA_BODY}`}>
-                    {row.sector}
-                  </td>
+                  <td className={`px-3 py-2 ${DNA_BODY}`}>{row.sector}</td>
                   <td className="px-3 py-2">
                     <span
                       className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${

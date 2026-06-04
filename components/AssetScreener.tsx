@@ -8,12 +8,23 @@
  * Requirements: 26.1, 26.2, 26.3, 26.4, 26.5, 26.6, 26.7, 26.14, 26.24
  */
 
-import { DNA_BODY, DNA_CAPTION, DNA_LABEL, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_BODY,
+  DNA_CAPTION,
+  DNA_LABEL,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type { ScreenerFilter, ScreenerResult } from "@/types";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
-import { HOME_INPUT_SM, HOME_PRIMARY_BUTTON, HOME_SECONDARY_BUTTON, HOME_TOOLTIP_POPOVER, homeChipClasses } from "@/lib/home-ui";
+import {
+  HOME_INPUT_SM,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+  HOME_TOOLTIP_POPOVER,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -259,9 +270,7 @@ function SectionLabel({
   tooltip?: string;
 }) {
   return (
-    <label
-      className={`flex items-center ${DNA_LABEL}`}
-    >
+    <label className={`flex items-center ${DNA_LABEL}`}>
       {children}
       {tooltip && <Tooltip text={tooltip} />}
     </label>

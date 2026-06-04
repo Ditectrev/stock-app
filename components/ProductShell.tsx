@@ -1,6 +1,17 @@
 "use client";
 
-import { DNA_ACCENT_BAR, DNA_BODY, DNA_EYEBROW, DNA_GATE_INLINE, DNA_GATE_OVERLAY, DNA_GATE_SHELL, DNA_HEADING, DNA_OVERLAY_PANEL, DNA_OVERLAY_SCRIM, DNA_PANEL_STACK } from "@/lib/design-dna";
+import {
+  DNA_ACCENT_BAR,
+  DNA_BODY,
+  DNA_EYEBROW,
+  DNA_GATE_INLINE,
+  DNA_GATE_OVERLAY,
+  DNA_GATE_SHELL,
+  DNA_HEADING,
+  DNA_OVERLAY_PANEL,
+  DNA_OVERLAY_SCRIM,
+  DNA_PANEL_STACK,
+} from "@/lib/design-dna";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";

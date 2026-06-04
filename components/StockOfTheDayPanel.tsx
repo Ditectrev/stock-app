@@ -1,6 +1,12 @@
 "use client";
 
-import { DNA_BODY, DNA_BODY_SECONDARY, DNA_CAPTION, DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_BODY,
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_EYEBROW,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import type { PricingTier, StockOfTheDay, StockOfTheDayResult } from "@/types";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
@@ -62,10 +68,7 @@ function PickCard({
           <p className={DNA_EYEBROW}>{title}</p>
           <p className={`mt-1 ${DNA_SUBHEADING}`}>
             <span className="tabular-nums">{pick.symbol}</span>
-            <span className={`font-normal ${DNA_CAPTION}`}>
-              {" "}
-              · {pick.name}
-            </span>
+            <span className={`font-normal ${DNA_CAPTION}`}> · {pick.name}</span>
           </p>
         </div>
         <StanceLabel recommendation={pick.recommendation} />

@@ -32,7 +32,11 @@ import {
   marketSentimentLegendRanges,
 } from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
-import { HOME_INSTRUMENT_PANEL, HOME_RANGE_BUTTON_ACTIVE, HOME_RANGE_BUTTON_IDLE } from "@/lib/home-ui";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_RANGE_BUTTON_ACTIVE,
+  HOME_RANGE_BUTTON_IDLE,
+} from "@/lib/home-ui";
 
 export interface FearGreedGaugeProps {
   data?: FearGreedData;
@@ -421,15 +425,27 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
               )}
 
               <div className="pointer-events-none absolute left-0 top-0 flex h-full flex-col justify-between">
-                <span className={`text-[10px] text-stone-600 dark:text-stone-300`}>100</span>
-                <span className={`text-[10px] text-stone-600 dark:text-stone-300`}>0</span>
+                <span
+                  className={`text-[10px] text-stone-600 dark:text-stone-300`}
+                >
+                  100
+                </span>
+                <span
+                  className={`text-[10px] text-stone-600 dark:text-stone-300`}
+                >
+                  0
+                </span>
               </div>
             </div>
             <div className="mt-1 flex justify-between">
-              <span className={`text-[10px] text-stone-600 dark:text-stone-300`}>
+              <span
+                className={`text-[10px] text-stone-600 dark:text-stone-300`}
+              >
                 {new Date(data.history[0].date).toLocaleDateString()}
               </span>
-              <span className={`text-[10px] text-stone-600 dark:text-stone-300`}>
+              <span
+                className={`text-[10px] text-stone-600 dark:text-stone-300`}
+              >
                 {new Date(
                   data.history[data.history.length - 1].date
                 ).toLocaleDateString()}

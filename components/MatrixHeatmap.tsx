@@ -19,7 +19,11 @@ import {
   getHeatmapNeutralLegendColor,
   getHeatmapTextClass,
 } from "@/lib/heatmap-colors";
-import { HOME_INSTRUMENT_PANEL, HOME_LEGEND_DIVIDER, HOME_LEGEND_TEXT } from "@/lib/home-ui";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_LEGEND_DIVIDER,
+  HOME_LEGEND_TEXT,
+} from "@/lib/home-ui";
 
 export interface MatrixColumn {
   /** Unique key for this column */

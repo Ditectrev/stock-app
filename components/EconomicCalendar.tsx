@@ -7,7 +7,11 @@
  * Requirements: 24.4, 24.5, 24.6, 24.7
  */
 
-import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { EconomicEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
@@ -21,7 +25,19 @@ import {
   MARKET_NEUTRAL_TEXT,
   marketChangeTextClass,
 } from "@/lib/market-semantics";
-import { CALENDAR_DAY_HEADER, CALENDAR_CHIP_IDLE, CALENDAR_EMPTY_TEXT, CALENDAR_EVENT_LIST, CALENDAR_EVENT_ROW, CALENDAR_EVENT_TITLE, CALENDAR_FILTER_LABEL, CALENDAR_SELECT, CALENDAR_TODAY_BADGE, CALENDAR_TODAY_HEADER, HOME_PANEL_TITLE } from "@/lib/home-ui";
+import {
+  CALENDAR_DAY_HEADER,
+  CALENDAR_CHIP_IDLE,
+  CALENDAR_EMPTY_TEXT,
+  CALENDAR_EVENT_LIST,
+  CALENDAR_EVENT_ROW,
+  CALENDAR_EVENT_TITLE,
+  CALENDAR_FILTER_LABEL,
+  CALENDAR_SELECT,
+  CALENDAR_TODAY_BADGE,
+  CALENDAR_TODAY_HEADER,
+  HOME_PANEL_TITLE,
+} from "@/lib/home-ui";
 
 const COUNTRIES = [
   "All",
@@ -344,9 +360,7 @@ export function EconomicCalendar({
                       Today
                     </span>
                   )}
-                  <span
-                    className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
-                  >
+                  <span className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}>
                     ({events.length} event{events.length !== 1 ? "s" : ""})
                   </span>
                 </div>

@@ -7,7 +7,11 @@
  * Requirements: 24.8, 24.9, 24.10, 24.11, 24.12, 24.13
  */
 
-import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { EarningsEvent } from "@/types";
@@ -16,7 +20,19 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import { marketChangeTextClass } from "@/lib/market-semantics";
-import { CALENDAR_DAY_HEADER, CALENDAR_EMPTY_TEXT, CALENDAR_EVENT_LIST, CALENDAR_EVENT_ROW, CALENDAR_EVENT_META, CALENDAR_EVENT_TITLE, CALENDAR_NEUTRAL_TEXT, CALENDAR_PAGE_TITLE, CALENDAR_TIME_BADGE, CALENDAR_TODAY_BADGE, CALENDAR_TODAY_HEADER } from "@/lib/home-ui";
+import {
+  CALENDAR_DAY_HEADER,
+  CALENDAR_EMPTY_TEXT,
+  CALENDAR_EVENT_LIST,
+  CALENDAR_EVENT_ROW,
+  CALENDAR_EVENT_META,
+  CALENDAR_EVENT_TITLE,
+  CALENDAR_NEUTRAL_TEXT,
+  CALENDAR_PAGE_TITLE,
+  CALENDAR_TIME_BADGE,
+  CALENDAR_TODAY_BADGE,
+  CALENDAR_TODAY_HEADER,
+} from "@/lib/home-ui";
 
 export interface EarningsCalendarProps {
   data?: EarningsEvent[];
@@ -225,9 +241,7 @@ export function EarningsCalendar({
                       Today
                     </span>
                   )}
-                  <span
-                    className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
-                  >
+                  <span className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}>
                     ({events.length} event{events.length !== 1 ? "s" : ""})
                   </span>
                 </div>

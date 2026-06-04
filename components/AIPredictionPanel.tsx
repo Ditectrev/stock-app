@@ -16,7 +16,12 @@ import { InsightPanel, InsightPanelHeader } from "@/components/InsightPanel";
 import { SubscriptionGate } from "@/components/ProductShell";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { marketChangeBadgeClass } from "@/lib/market-semantics";
-import { HOME_CALLOUT, HOME_FACTOR_GROUP, HOME_INSTRUMENT_PANEL, HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
+import {
+  HOME_CALLOUT,
+  HOME_FACTOR_GROUP,
+  HOME_INSTRUMENT_PANEL,
+  HOME_PRIMARY_BUTTON,
+} from "@/lib/home-ui";
 
 interface AIPredictionPanelProps {
   prediction: AIPredictionReport | null;
@@ -193,9 +198,7 @@ export function AIPredictionPanel({
                       <RecommendationBadge
                         recommendation={prediction.recommendation}
                       />
-                      <span
-                        className={`flex items-center ${DNA_CAPTION}`}
-                      >
+                      <span className={`flex items-center ${DNA_CAPTION}`}>
                         <span>
                           Confidence {Math.round(prediction.confidence * 100)}%
                         </span>
@@ -214,9 +217,7 @@ export function AIPredictionPanel({
 
               {!loading && prediction && (
                 <div className="space-y-4">
-                  <div className={HOME_CALLOUT}>
-                    {prediction.summary}
-                  </div>
+                  <div className={HOME_CALLOUT}>{prediction.summary}</div>
 
                   <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
                     {FACTOR_GROUPS.map((group) => (

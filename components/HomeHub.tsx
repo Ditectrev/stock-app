@@ -9,7 +9,13 @@ import {
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { HOME_EXPLORE_CARD_TITLE, HOME_HERO, HOME_HERO_LEAD, HOME_MARKETING_STACK, HOME_SECTION_LABEL } from "@/lib/home-ui";
+import {
+  HOME_EXPLORE_CARD_TITLE,
+  HOME_HERO,
+  HOME_HERO_LEAD,
+  HOME_MARKETING_STACK,
+  HOME_SECTION_LABEL,
+} from "@/lib/home-ui";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site-seo";
 
 const EXPLORE_LINKS = [
@@ -212,10 +218,7 @@ export function HomeHub({
         {worldMarkets}
       </section>
 
-      <section
-        aria-labelledby="home-ai-heading"
-        data-testid="home-ai-outlook"
-      >
+      <section aria-labelledby="home-ai-heading" data-testid="home-ai-outlook">
         <h2
           id="home-ai-heading"
           className={`mb-4 sm:mb-6 ${SECTION_LABEL_CLASS}`}

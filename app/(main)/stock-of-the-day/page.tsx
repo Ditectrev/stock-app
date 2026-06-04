@@ -5,7 +5,11 @@ import { usePricingTier } from "@/lib/use-pricing-tier";
 import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
-import { DNA_BODY_SECONDARY, DNA_DISPLAY, DNA_PAGE_STACK } from "@/lib/design-dna";
+import {
+  DNA_BODY_SECONDARY,
+  DNA_DISPLAY,
+  DNA_PAGE_STACK,
+} from "@/lib/design-dna";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
 import type { StockOfTheDayResult } from "@/types";
 

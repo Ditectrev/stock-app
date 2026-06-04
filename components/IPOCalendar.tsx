@@ -7,7 +7,11 @@
  * Requirements: 24.19, 24.20, 24.21
  */
 
-import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_SUBHEADING } from "@/lib/design-dna";
+import {
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { IPOEvent } from "@/types";
@@ -15,7 +19,18 @@ import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
-import { CALENDAR_DAY_HEADER, CALENDAR_EMPTY_TEXT, CALENDAR_EVENT_LIST, CALENDAR_EVENT_META, CALENDAR_EVENT_ROW, CALENDAR_EVENT_TITLE, CALENDAR_SYMBOL_CHIP, CALENDAR_PAGE_TITLE, CALENDAR_TODAY_BADGE, CALENDAR_TODAY_HEADER } from "@/lib/home-ui";
+import {
+  CALENDAR_DAY_HEADER,
+  CALENDAR_EMPTY_TEXT,
+  CALENDAR_EVENT_LIST,
+  CALENDAR_EVENT_META,
+  CALENDAR_EVENT_ROW,
+  CALENDAR_EVENT_TITLE,
+  CALENDAR_SYMBOL_CHIP,
+  CALENDAR_PAGE_TITLE,
+  CALENDAR_TODAY_BADGE,
+  CALENDAR_TODAY_HEADER,
+} from "@/lib/home-ui";
 
 export interface IPOCalendarProps {
   data?: IPOEvent[];
@@ -219,9 +234,7 @@ export function IPOCalendar({
                       Today
                     </span>
                   )}
-                  <span
-                    className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
-                  >
+                  <span className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}>
                     ({events.length} IPO{events.length !== 1 ? "s" : ""})
                   </span>
                 </div>

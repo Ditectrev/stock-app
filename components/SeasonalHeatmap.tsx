@@ -7,7 +7,14 @@
  * Requirements: 7.1, 7.3, 7.4
  */
 
-import { DNA_BODY, DNA_CAPTION, DNA_LABEL, DNA_PAGE_STACK, DNA_SUBHEADING, DNA_TABLE_HEADER } from "@/lib/design-dna";
+import {
+  DNA_BODY,
+  DNA_CAPTION,
+  DNA_LABEL,
+  DNA_PAGE_STACK,
+  DNA_SUBHEADING,
+  DNA_TABLE_HEADER,
+} from "@/lib/design-dna";
 import { SeasonalData } from "@/types";
 import { useTheme } from "@/lib/theme-context";
 import { useState, type ReactNode } from "react";
@@ -90,9 +97,7 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
         aria-label="Seasonal Patterns"
       >
         <SeasonalHeader />
-        <p className={DNA_BODY}>
-          No seasonal data available.
-        </p>
+        <p className={DNA_BODY}>No seasonal data available.</p>
       </div>
     );
   }
@@ -153,11 +158,7 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
             <tbody>
               {years.map((year) => (
                 <tr key={year}>
-                  <td
-                    className={`px-2 py-1 ${DNA_LABEL}`}
-                  >
-                    {year}
-                  </td>
+                  <td className={`px-2 py-1 ${DNA_LABEL}`}>{year}</td>
                   {months.map((month) => {
                     const value = getReturnForCell(monthlyReturns, year, month);
                     const isHovered =

@@ -1,6 +1,16 @@
 "use client";
 
-import { DNA_ACCENT_BAR, DNA_LABEL, DNA_NAV_BAR, DNA_NAV_BRAND_TAGLINE, DNA_NAV_LINK_ACTIVE, DNA_NAV_LINK_IDLE, DNA_NAV_MOBILE, DNA_NAV_WORDMARK, DNA_NAV_WORDMARK_MOBILE } from "@/lib/design-dna";
+import {
+  DNA_ACCENT_BAR,
+  DNA_LABEL,
+  DNA_NAV_BAR,
+  DNA_NAV_BRAND_TAGLINE,
+  DNA_NAV_LINK_ACTIVE,
+  DNA_NAV_LINK_IDLE,
+  DNA_NAV_MOBILE,
+  DNA_NAV_WORDMARK,
+  DNA_NAV_WORDMARK_MOBILE,
+} from "@/lib/design-dna";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
