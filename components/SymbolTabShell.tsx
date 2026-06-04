@@ -1,7 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { DNA_SECTION_STACK } from "@/lib/design-dna";
+import type { ReactNode } from "react";
 import {
   SYMBOL_INSTRUMENT_PANEL,
   SYMBOL_PANEL_TITLE,

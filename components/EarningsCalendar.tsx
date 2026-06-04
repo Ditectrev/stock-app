@@ -7,6 +7,7 @@
  * Requirements: 24.8, 24.9, 24.10, 24.11, 24.12, 24.13
  */
 
+import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { EarningsEvent } from "@/types";
@@ -15,20 +16,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import { marketChangeTextClass } from "@/lib/market-semantics";
-import {
-  CALENDAR_DAY_HEADER,
-  CALENDAR_EMPTY_TEXT,
-  CALENDAR_EVENT_LIST,
-  CALENDAR_EVENT_ROW,
-  CALENDAR_EVENT_META,
-  CALENDAR_EVENT_TITLE,
-  CALENDAR_NEUTRAL_TEXT,
-  CALENDAR_PAGE_TITLE,
-  CALENDAR_TIME_BADGE,
-  CALENDAR_TODAY_BADGE,
-  CALENDAR_TODAY_HEADER,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { CALENDAR_DAY_HEADER, CALENDAR_EMPTY_TEXT, CALENDAR_EVENT_LIST, CALENDAR_EVENT_ROW, CALENDAR_EVENT_META, CALENDAR_EVENT_TITLE, CALENDAR_NEUTRAL_TEXT, CALENDAR_PAGE_TITLE, CALENDAR_TIME_BADGE, CALENDAR_TODAY_BADGE, CALENDAR_TODAY_HEADER } from "@/lib/home-ui";
 
 export interface EarningsCalendarProps {
   data?: EarningsEvent[];
@@ -181,7 +169,7 @@ export function EarningsCalendar({
       <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 className={CALENDAR_PAGE_TITLE}>Earnings Calendar</h3>
-          <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
+          <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
             Earnings releases with estimate, actuals, and surprise context.
           </p>
         </div>
@@ -224,7 +212,7 @@ export function EarningsCalendar({
               <div key={dateKey} data-testid={`day-group-${dateKey}`}>
                 {/* Day header */}
                 <div
-                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 text-sm font-semibold ${
+                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 ${DNA_SUBHEADING} ${
                     isToday ? CALENDAR_TODAY_HEADER : CALENDAR_DAY_HEADER
                   }`}
                   data-testid={`day-header-${dateKey}`}
@@ -238,7 +226,7 @@ export function EarningsCalendar({
                     </span>
                   )}
                   <span
-                    className={`ml-2 text-xs font-normal ${HOME_SUBTLE_TEXT}`}
+                    className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
                   >
                     ({events.length} event{events.length !== 1 ? "s" : ""})
                   </span>

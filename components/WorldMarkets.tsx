@@ -9,17 +9,14 @@
  * Requirements: 10.1, 10.2, 10.3, 10.5
  */
 
+import { DNA_BODY, DNA_CAPTION, DNA_EYEBROW, DNA_HEADING, DNA_LABEL_STRONG, DNA_METRIC_COMPACT } from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { MarketIndex } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
-import {
-  HOME_INSTRUMENT_PANEL,
-  HOME_MUTED_TEXT,
-  HOME_PANEL_TITLE,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { marketChangeTextClass } from "@/lib/market-semantics";
+import { HOME_INSTRUMENT_PANEL } from "@/lib/home-ui";
 
 type Region = "Americas" | "Europe" | "Asia-Pacific";
 
@@ -162,8 +159,8 @@ export function WorldMarkets({
       role="region"
       aria-label="World Markets"
     >
-      <h3 className={`mb-4 sm:mb-5 ${HOME_PANEL_TITLE}`}>World Markets</h3>
-      <p className={`-mt-2 mb-4 text-sm ${HOME_MUTED_TEXT}`}>
+      <h3 className={`mb-4 sm:mb-5 ${DNA_HEADING}`}>World Markets</h3>
+      <p className={`-mt-2 mb-4 ${DNA_BODY}`}>
         Major indices by region — refreshed every minute.
       </p>
 
@@ -181,12 +178,12 @@ export function WorldMarkets({
               aria-label={`${region.label} markets`}
             >
               <h4
-                className={`mb-3 border-b border-stone-200 pb-2 text-xs font-semibold uppercase tracking-[0.15em] dark:border-stone-700 ${HOME_SUBTLE_TEXT}`}
+                className={`mb-3 border-b border-stone-200 pb-2 dark:border-stone-700 ${DNA_EYEBROW}`}
               >
                 {region.label}
                 {region.id === "Americas" && (
                   <span
-                    className={`ml-2 normal-case tracking-normal ${HOME_MUTED_TEXT}`}
+                    className={`ml-2 normal-case tracking-normal ${DNA_BODY}`}
                   >
                     · primary session
                   </span>
@@ -195,10 +192,7 @@ export function WorldMarkets({
 
               <ul className="space-y-1">
                 {indices.map((idx) => {
-                  const isPositive = idx.changePercent >= 0;
-                  const colorClass = isPositive
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-rose-600 dark:text-rose-400";
+                  const changeClass = marketChangeTextClass(idx.changePercent);
 
                   return (
                     <li
@@ -207,23 +201,21 @@ export function WorldMarkets({
                       data-testid={`index-${idx.symbol}`}
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-stone-900 dark:text-stone-100">
+                        <p className={`truncate ${DNA_LABEL_STRONG}`}>
                           {idx.name}
                         </p>
-                        <p className={`text-xs ${HOME_SUBTLE_TEXT}`}>
-                          {idx.symbol}
-                        </p>
+                        <p className={DNA_CAPTION}>{idx.symbol}</p>
                       </div>
 
                       <div className="text-right ml-3 flex-shrink-0">
                         <p
-                          className="text-sm font-medium tabular-nums text-stone-900 dark:text-stone-100"
+                          className={DNA_METRIC_COMPACT}
                           data-testid={`value-${idx.symbol}`}
                         >
                           {formatValue(idx.value)}
                         </p>
                         <p
-                          className={`text-xs font-medium ${colorClass}`}
+                          className={`${DNA_CAPTION} font-medium ${changeClass}`}
                           data-testid={`change-${idx.symbol}`}
                         >
                           {formatChange(idx.change)} (

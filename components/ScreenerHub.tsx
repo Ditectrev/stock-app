@@ -9,12 +9,11 @@
  * Requirements: 26.10, 26.11, 26.12, 26.13, 26.15, 26.17, 26.23, 26.25
  */
 
+import { DNA_BODY, DNA_CAPTION, DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { ScreenerFilter, ScreenerPreset, ScreenerResult } from "@/types";
 import {
   HOME_INSTRUMENT_PANEL,
-  HOME_PANEL_TITLE,
-  HOME_SECTION_LABEL,
   HOME_SEGMENTED_NAV,
   homeSegmentedTabClasses,
 } from "@/lib/home-ui";
@@ -155,10 +154,10 @@ export function ScreenerHub({
 
   return (
     <div className={HOME_INSTRUMENT_PANEL} data-testid="screener-hub">
-      <header className="mb-4 sm:mb-6">
-        <p className={HOME_SECTION_LABEL}>Discovery</p>
-        <h2 className={`mt-1 ${HOME_PANEL_TITLE}`}>Screener</h2>
-        <p className="mt-1 text-sm text-stone-600 dark:text-stone-300">
+      <header className="mb-4 sm:mb-6" data-testid="screener-hub-header">
+        <p className={DNA_EYEBROW}>Discovery</p>
+        <h2 className={`mt-1 ${DNA_SUBHEADING}`}>Screener</h2>
+        <p className={`mt-1 ${DNA_BODY}`}>
           Build a thesis with filters on the left, then inspect results in a
           table or heatmap canvas.
         </p>
@@ -181,8 +180,8 @@ export function ScreenerHub({
         <section className="space-y-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className={HOME_SECTION_LABEL}>Results canvas</p>
-              <p className="mt-1 text-xs text-stone-600 dark:text-stone-300">
+              <p className={DNA_EYEBROW}>Results canvas</p>
+              <p className={`mt-1 ${DNA_CAPTION}`}>
                 {results.length} match{results.length === 1 ? "" : "es"}
               </p>
             </div>

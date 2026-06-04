@@ -8,21 +8,31 @@
  * Requirements: 9.1, 9.2, 9.3, 9.4, 9.5
  */
 
+import {
+  DNA_BODY,
+  DNA_CAPTION,
+  DNA_EYEBROW,
+  DNA_GAUGE_VALUE,
+  DNA_HEADING,
+  DNA_HELP_BUTTON,
+  DNA_SUBHEADING,
+  DNA_TOOLTIP_INVERSE,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { FearGreedData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { DNA_CAPTION, DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
-import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
-  HOME_INSTRUMENT_PANEL,
-  HOME_MUTED_TEXT,
-  HOME_PANEL_TITLE,
-  HOME_RANGE_BUTTON_ACTIVE,
-  HOME_RANGE_BUTTON_IDLE,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+  MARKET_SENTIMENT_HISTORY_BANDS,
+  marketSentimentGaugeArcSegments,
+  marketSentimentGaugeChartStroke,
+  marketSentimentGaugeColor,
+  marketSentimentGaugeTickColor,
+  marketSentimentLegendRanges,
+} from "@/lib/market-semantics";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import { HOME_INSTRUMENT_PANEL, HOME_RANGE_BUTTON_ACTIVE, HOME_RANGE_BUTTON_IDLE } from "@/lib/home-ui";
 
 export interface FearGreedGaugeProps {
   data?: FearGreedData;
@@ -35,15 +45,6 @@ function getLabel(value: number): FearGreedData["label"] {
   if (value <= 55) return "Neutral";
   if (value <= 75) return "Greed";
   return "Extreme Greed";
-}
-
-/** Map a 0-100 value to a color */
-function getColor(value: number): string {
-  if (value <= 25) return "#dc2626";
-  if (value <= 45) return "#f97316";
-  if (value <= 55) return "#eab308";
-  if (value <= 75) return "#84cc16";
-  return "#22c55e";
 }
 
 const TOOLTIP_TEXT =
@@ -133,7 +134,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
 
   const value = Math.max(0, Math.min(100, data.value));
   const label = data.label ?? getLabel(value);
-  const color = getColor(value);
+  const color = marketSentimentGaugeColor(value, isDark);
 
   // Gauge geometry – semi-circle from π to 0 (left to right)
   const cx = 150;
@@ -151,28 +152,22 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
     return `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2}`;
   };
 
-  // Range boundaries (angles in radians, left-to-right)
-  const ranges = [
-    { from: Math.PI, to: Math.PI * 0.75, color: "#dc2626" }, // Extreme Fear 0-25
-    { from: Math.PI * 0.75, to: Math.PI * 0.55, color: "#f97316" }, // Fear 25-45
-    { from: Math.PI * 0.55, to: Math.PI * 0.45, color: "#eab308" }, // Neutral 45-55
-    { from: Math.PI * 0.45, to: Math.PI * 0.25, color: "#84cc16" }, // Greed 55-75
-    { from: Math.PI * 0.25, to: 0, color: "#22c55e" }, // Extreme Greed 75-100
-  ];
+  const ranges = marketSentimentGaugeArcSegments(isDark);
+  const tickColor = marketSentimentGaugeTickColor(isDark);
 
   // Needle tip
   const needleLen = r - 10;
   const nx = cx + needleLen * Math.cos(needleAngle);
   const ny = cy - needleLen * Math.sin(needleAngle);
 
-  const chartStroke = isDark ? "#a8a29e" : "#57534e";
+  const chartStroke = marketSentimentGaugeChartStroke(isDark);
 
   return (
     <div className={HOME_INSTRUMENT_PANEL} data-testid="fear-greed-gauge">
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-5">
         <div>
-          <h3 className={HOME_PANEL_TITLE}>Fear &amp; Greed Index</h3>
-          <p className={`mt-1 text-sm ${HOME_MUTED_TEXT}`}>
+          <h3 className={DNA_HEADING}>Fear &amp; Greed Index</h3>
+          <p className={`mt-1 ${DNA_BODY}`}>
             CNN sentiment gauge — 0 is extreme fear, 100 is extreme greed.
           </p>
         </div>
@@ -184,14 +179,14 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
           <button
             type="button"
             aria-label="What is the Fear and Greed Index?"
-            className="flex h-7 w-7 items-center justify-center rounded-full border border-stone-300 text-xs font-semibold text-stone-700 transition-colors hover:border-stone-500 dark:border-stone-600 dark:text-stone-200 dark:hover:border-stone-400"
+            className={DNA_HELP_BUTTON}
           >
             ?
           </button>
           {showTooltip && (
             <div
               role="tooltip"
-              className="absolute right-0 top-9 z-10 w-64 rounded-lg border border-stone-200 bg-stone-900 p-3 text-sm text-stone-100 shadow-lg dark:border-stone-600"
+              className={`right-0 top-9 ${DNA_TOOLTIP_INVERSE}`}
             >
               {TOOLTIP_TEXT}
             </div>
@@ -230,7 +225,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
                     y1={cy - inner * Math.sin(a)}
                     x2={cx + outer * Math.cos(a)}
                     y2={cy - outer * Math.sin(a)}
-                    stroke={isDark ? "#a8a29e" : "#78716c"}
+                    stroke={tickColor}
                     strokeWidth={2}
                   />
                 );
@@ -246,7 +241,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
                     y={cy - labelR * Math.sin(a) + 4}
                     textAnchor="middle"
                     fontSize="10"
-                    fill={isDark ? "#a8a29e" : "#78716c"}
+                    fill={tickColor}
                   >
                     {tick}
                   </text>
@@ -269,26 +264,17 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
           <div className="text-left pb-1">
             <p className={DNA_EYEBROW}>Today</p>
             <span
-              className="text-4xl font-bold tabular-nums sm:text-5xl"
+              className={DNA_GAUGE_VALUE}
               style={{ color }}
               data-testid="fear-greed-value"
             >
               {Math.round(value)}
             </span>
-            <p
-              className="mt-1 text-sm font-medium text-stone-700 dark:text-stone-300"
-              data-testid="fear-greed-label"
-            >
+            <p className={`mt-1 ${DNA_CAPTION}`} data-testid="fear-greed-label">
               {label}
             </p>
             <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1">
-              {[
-                { label: "Extreme Fear", color: "#e11d48" },
-                { label: "Fear", color: "#f97316" },
-                { label: "Neutral", color: "#eab308" },
-                { label: "Greed", color: "#84cc16" },
-                { label: "Extreme Greed", color: "#059669" },
-              ].map((rangeItem) => (
+              {marketSentimentLegendRanges(isDark).map((rangeItem) => (
                 <span
                   key={rangeItem.label}
                   className={`inline-flex items-center gap-1 ${DNA_CAPTION}`}
@@ -367,11 +353,16 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
                 }}
               >
                 {/* Background bands (top = 100/Extreme Greed, bottom = 0/Extreme Fear) */}
-                <rect x="0" y="0" width="100%" height="25" fill="#22c55e20" />
-                <rect x="0" y="25" width="100%" height="20" fill="#84cc1620" />
-                <rect x="0" y="45" width="100%" height="10" fill="#eab30820" />
-                <rect x="0" y="55" width="100%" height="20" fill="#f9731620" />
-                <rect x="0" y="75" width="100%" height="25" fill="#dc262620" />
+                {MARKET_SENTIMENT_HISTORY_BANDS.map((band) => (
+                  <rect
+                    key={band.y}
+                    x="0"
+                    y={band.y}
+                    width="100%"
+                    height={band.height}
+                    fill={band.fill}
+                  />
+                ))}
 
                 {/* Line chart */}
                 <polyline
@@ -415,7 +406,14 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
                   data-testid="fear-greed-chart-tooltip"
                 >
                   {hoveredPoint.date.toLocaleDateString()} —{" "}
-                  <span style={{ color: getColor(hoveredPoint.value) }}>
+                  <span
+                    style={{
+                      color: marketSentimentGaugeColor(
+                        hoveredPoint.value,
+                        isDark
+                      ),
+                    }}
+                  >
                     {hoveredPoint.value}
                   </span>{" "}
                   ({getLabel(hoveredPoint.value)})
@@ -423,15 +421,15 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
               )}
 
               <div className="pointer-events-none absolute left-0 top-0 flex h-full flex-col justify-between">
-                <span className={`text-[10px] ${HOME_SUBTLE_TEXT}`}>100</span>
-                <span className={`text-[10px] ${HOME_SUBTLE_TEXT}`}>0</span>
+                <span className={`text-[10px] text-stone-600 dark:text-stone-300`}>100</span>
+                <span className={`text-[10px] text-stone-600 dark:text-stone-300`}>0</span>
               </div>
             </div>
             <div className="mt-1 flex justify-between">
-              <span className={`text-[10px] ${HOME_SUBTLE_TEXT}`}>
+              <span className={`text-[10px] text-stone-600 dark:text-stone-300`}>
                 {new Date(data.history[0].date).toLocaleDateString()}
               </span>
-              <span className={`text-[10px] ${HOME_SUBTLE_TEXT}`}>
+              <span className={`text-[10px] text-stone-600 dark:text-stone-300`}>
                 {new Date(
                   data.history[data.history.length - 1].date
                 ).toLocaleDateString()}

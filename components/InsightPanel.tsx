@@ -1,7 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { DNA_BODY, DNA_HEADING } from "@/lib/design-dna";
+import type { ReactNode } from "react";
 
 export function InsightPanel({
   children,

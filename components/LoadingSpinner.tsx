@@ -1,5 +1,7 @@
 "use client";
 
+import { DNA_BODY } from "@/lib/design-dna";
+
 /**
  * LoadingSpinner Component
  * Reusable loading indicator with configurable size and optional message.
@@ -40,7 +42,7 @@ export function LoadingSpinner({
         className={`animate-spin rounded-full border-stone-700 border-b-transparent dark:border-stone-300 ${SIZE_CLASSES[size]}`}
       />
       {message && (
-        <p className={`mt-3 text-sm text-stone-700 dark:text-stone-200`}>
+        <p className={`mt-3 ${DNA_BODY}`}>
           {message}
         </p>
       )}

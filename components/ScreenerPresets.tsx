@@ -9,15 +9,10 @@
  * Requirements: 26.12, 26.13, 26.15
  */
 
+import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_LABEL } from "@/lib/design-dna";
 import { useState, useEffect, useCallback } from "react";
 import type { ScreenerFilter, ScreenerPreset } from "@/types";
-import {
-  HOME_INPUT_SM,
-  HOME_MUTED_TEXT,
-  HOME_PRIMARY_BUTTON,
-  HOME_SECONDARY_BUTTON,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_INPUT_SM, HOME_PRIMARY_BUTTON, HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
 import { MARKET_DOWN_TEXT, MARKET_NEUTRAL_BADGE } from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
@@ -118,7 +113,7 @@ export function ScreenerPresets({
   if (loading) {
     return (
       <div
-        className={`text-sm ${HOME_SUBTLE_TEXT}`}
+        className={`${DNA_BODY_SECONDARY}`}
         data-testid="presets-loading"
       >
         Loading presets…
@@ -130,7 +125,7 @@ export function ScreenerPresets({
     <div data-testid="screener-presets" className="space-y-3">
       {/* Preset row */}
       <div className="flex items-center gap-2">
-        <span className={`shrink-0 text-sm font-medium ${HOME_MUTED_TEXT}`}>
+        <span className={`shrink-0 ${DNA_LABEL}`}>
           Presets:
         </span>
         <div
@@ -185,7 +180,7 @@ export function ScreenerPresets({
             <div className="space-y-1">
               <label
                 htmlFor="preset-name"
-                className={`text-xs font-medium ${HOME_SUBTLE_TEXT}`}
+                className={`text-xs font-medium ${DNA_CAPTION}`}
               >
                 Name
               </label>
@@ -202,7 +197,7 @@ export function ScreenerPresets({
             <div className="space-y-1">
               <label
                 htmlFor="preset-description"
-                className={`text-xs font-medium ${HOME_SUBTLE_TEXT}`}
+                className={`text-xs font-medium ${DNA_CAPTION}`}
               >
                 Description
               </label>

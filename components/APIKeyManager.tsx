@@ -7,21 +7,14 @@
  * Requirements: 22.12, 22.13, 22.14, 22.15
  */
 
+import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_LABEL_STRONG, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState, useEffect, useCallback } from "react";
 import {
   apiKeyManagerService,
   saveSelectedBYOKProvider,
   type BYOKProvider,
 } from "@/services/api-key-manager.service";
-import {
-  HOME_INPUT,
-  HOME_INSTRUMENT_PANEL,
-  HOME_MUTED_TEXT,
-  HOME_PRIMARY_BUTTON,
-  HOME_RANGE_BUTTON_ACTIVE,
-  HOME_RANGE_BUTTON_IDLE,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_INPUT, HOME_INSTRUMENT_PANEL, HOME_PRIMARY_BUTTON, HOME_RANGE_BUTTON_ACTIVE, HOME_RANGE_BUTTON_IDLE } from "@/lib/home-ui";
 import { MARKET_DOWN_TEXT, MARKET_UP_TEXT } from "@/lib/market-semantics";
 
 const PROVIDERS: Array<{
@@ -182,10 +175,10 @@ export default function APIKeyManager({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className={`text-base ${HOME_MUTED_TEXT} font-semibold`}>
+        <h3 className={DNA_SUBHEADING}>
           AI Provider API Keys
         </h3>
-        <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
+        <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
           Keys are encrypted and stored in your Appwrite account scope for
           server-side BYOK usage.
         </p>
@@ -206,7 +199,7 @@ export default function APIKeyManager({
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`text-sm font-medium text-stone-900 dark:text-stone-50`}
+                    className={DNA_LABEL_STRONG}
                   >
                     {provider.name}
                   </span>
@@ -249,7 +242,7 @@ export default function APIKeyManager({
                     href={provider.docsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`text-xs ${HOME_MUTED_TEXT} underline-offset-2 hover:underline`}
+                    className={`${DNA_CAPTION} underline-offset-2 hover:underline`}
                     aria-label={`Get ${provider.name} API key`}
                   >
                     Get key
@@ -268,7 +261,7 @@ export default function APIKeyManager({
                   />
                   <button
                     onClick={() => handleEdit(provider.id)}
-                    className={`text-xs ${HOME_MUTED_TEXT} underline-offset-2 hover:underline`}
+                    className={`${DNA_CAPTION} underline-offset-2 hover:underline`}
                     aria-label={`Edit ${provider.name} API key`}
                   >
                     Edit
@@ -311,7 +304,7 @@ export default function APIKeyManager({
                         onClick={() =>
                           updateRow(provider.id, { showKey: !row.showKey })
                         }
-                        className={`absolute right-2 top-1/2 -translate-y-1/2 ${HOME_SUBTLE_TEXT} hover:text-stone-900 dark:hover:text-stone-50`}
+                        className={`absolute right-2 top-1/2 -translate-y-1/2 ${DNA_CAPTION} hover:text-stone-900 dark:hover:text-stone-50`}
                         aria-label={row.showKey ? "Hide key" : "Show key"}
                       >
                         {row.showKey ? (

@@ -12,10 +12,11 @@
  * Requirements: 26.10, 26.11, 26.17
  */
 
+import { DNA_CAPTION } from "@/lib/design-dna";
 import { useCallback, useMemo } from "react";
 import type { ScreenerResult } from "@/types";
 import type { HeatmapData } from "@/types";
-import { HOME_INSTRUMENT_PANEL, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
+import { HOME_INSTRUMENT_PANEL } from "@/lib/home-ui";
 import { HeatmapComponent } from "./HeatmapComponent";
 
 // ---------------------------------------------------------------------------
@@ -62,7 +63,7 @@ export function ScreenerHeatmapView({
   if (results.length === 0) {
     return (
       <div
-        className={`${HOME_INSTRUMENT_PANEL} p-8 text-center ${HOME_SUBTLE_TEXT}`}
+        className={`${HOME_INSTRUMENT_PANEL} p-8 text-center ${DNA_CAPTION}`}
         data-testid="screener-heatmap-empty"
       >
         No results

@@ -1,4 +1,168 @@
-/** Muted up/down/neutral styling for UI chrome (not chart candles or heatmap tiles). */
+/** Muted up/down/neutral styling and chart hex palette (emerald / rose). */
+
+/** Lightweight Charts hex palette (emerald / rose; matches heatmap fills). */
+export const MARKET_CHART_UP_LIGHT = "#059669";
+export const MARKET_CHART_DOWN_LIGHT = "#e11d48";
+export const MARKET_CHART_UP_DARK = "#10b981";
+export const MARKET_CHART_DOWN_DARK = "#f43f5e";
+export const MARKET_CHART_SERIES_LIGHT = "#059669";
+export const MARKET_CHART_SERIES_DARK = "#34d399";
+
+export type MarketChartColors = {
+  up: string;
+  down: string;
+  wickUp: string;
+  wickDown: string;
+  series: string;
+  areaTop: string;
+  areaBottom: string;
+};
+
+export function getMarketChartColors(isDark: boolean): MarketChartColors {
+  const up = isDark ? MARKET_CHART_UP_DARK : MARKET_CHART_UP_LIGHT;
+  const down = isDark ? MARKET_CHART_DOWN_DARK : MARKET_CHART_DOWN_LIGHT;
+  const series = isDark ? MARKET_CHART_SERIES_DARK : MARKET_CHART_SERIES_LIGHT;
+  return {
+    up,
+    down,
+    wickUp: up,
+    wickDown: down,
+    series,
+    areaTop: series,
+    areaBottom: isDark ? "rgba(52, 211, 153, 0.22)" : "rgba(5, 150, 105, 0.22)",
+  };
+}
+
+export function marketChartSignedColor(
+  isPositive: boolean,
+  isDark: boolean
+): string {
+  return isPositive
+    ? isDark
+      ? MARKET_CHART_UP_DARK
+      : MARKET_CHART_UP_LIGHT
+    : isDark
+      ? MARKET_CHART_DOWN_DARK
+      : MARKET_CHART_DOWN_LIGHT;
+}
+
+/** Fear & Greed needle / hover — rose → stone → emerald (matches chart palette). */
+export function marketSentimentGaugeColor(
+  value: number,
+  isDark: boolean
+): string {
+  if (value <= 25) {
+    return isDark ? MARKET_CHART_DOWN_DARK : MARKET_CHART_DOWN_LIGHT;
+  }
+  if (value <= 45) {
+    return isDark ? "#fb7185" : "#f43f5e";
+  }
+  if (value <= 55) {
+    return isDark ? "#a8a29e" : "#78716c";
+  }
+  if (value <= 75) {
+    return isDark ? MARKET_CHART_SERIES_DARK : MARKET_CHART_SERIES_LIGHT;
+  }
+  return isDark ? MARKET_CHART_UP_DARK : MARKET_CHART_UP_LIGHT;
+}
+
+export type MarketSentimentLegendItem = {
+  label: string;
+  color: string;
+};
+
+export type MarketSentimentArcSegment = {
+  from: number;
+  to: number;
+  color: string;
+};
+
+/** Semi-circle gauge arc segments (radians, left → right). */
+export function marketSentimentGaugeArcSegments(
+  isDark: boolean
+): MarketSentimentArcSegment[] {
+  return [
+    { from: Math.PI, to: Math.PI * 0.75, color: "#be123c" },
+    { from: Math.PI * 0.75, to: Math.PI * 0.55, color: "#f43f5e" },
+    {
+      from: Math.PI * 0.55,
+      to: Math.PI * 0.45,
+      color: isDark ? "#a8a29e" : "#78716c",
+    },
+    {
+      from: Math.PI * 0.45,
+      to: Math.PI * 0.25,
+      color: isDark ? "#34d399" : "#059669",
+    },
+    {
+      from: Math.PI * 0.25,
+      to: 0,
+      color: isDark ? MARKET_CHART_UP_DARK : MARKET_CHART_UP_LIGHT,
+    },
+  ];
+}
+
+export function marketSentimentGaugeTickColor(isDark: boolean): string {
+  return isDark ? "#a8a29e" : "#78716c";
+}
+
+export function marketSentimentGaugeChartStroke(isDark: boolean): string {
+  return isDark ? "#a8a29e" : "#57534e";
+}
+
+/** History chart band fills (viewBox 0–100). */
+export const MARKET_SENTIMENT_HISTORY_BANDS = [
+  { y: 0, height: 25, fill: "#05966922" },
+  { y: 25, height: 20, fill: "#34d39922" },
+  { y: 45, height: 10, fill: "#78716c22" },
+  { y: 55, height: 20, fill: "#f43f5e22" },
+  { y: 75, height: 25, fill: "#be123c22" },
+] as const;
+
+/** Distinct overlay line colors (emerald / rose / stone family). */
+export const MARKET_CHART_OVERLAY_COLORS_LIGHT = [
+  MARKET_CHART_UP_LIGHT,
+  MARKET_CHART_DOWN_LIGHT,
+  "#57534e",
+  MARKET_CHART_SERIES_LIGHT,
+  "#f43f5e",
+  "#78716c",
+] as const;
+
+export const MARKET_CHART_OVERLAY_COLORS_DARK = [
+  MARKET_CHART_UP_DARK,
+  MARKET_CHART_DOWN_DARK,
+  "#a8a29e",
+  MARKET_CHART_SERIES_DARK,
+  "#fb7185",
+  "#78716c",
+] as const;
+
+export function marketChartOverlayColor(index: number, isDark: boolean): string {
+  const palette = isDark
+    ? MARKET_CHART_OVERLAY_COLORS_DARK
+    : MARKET_CHART_OVERLAY_COLORS_LIGHT;
+  return palette[index % palette.length]!;
+}
+
+/** Gauge arc legend swatches (aligned with `marketSentimentGaugeColor` bands). */
+export function marketSentimentLegendRanges(
+  isDark: boolean
+): MarketSentimentLegendItem[] {
+  return [
+    { label: "Extreme Fear", color: "#be123c" },
+    { label: "Fear", color: isDark ? "#fb7185" : "#f43f5e" },
+    { label: "Neutral", color: isDark ? "#a8a29e" : "#78716c" },
+    {
+      label: "Greed",
+      color: isDark ? MARKET_CHART_SERIES_DARK : MARKET_CHART_SERIES_LIGHT,
+    },
+    {
+      label: "Extreme Greed",
+      color: isDark ? MARKET_CHART_UP_DARK : MARKET_CHART_UP_LIGHT,
+    },
+  ];
+}
 
 export const MARKET_UP_TEXT = "text-emerald-800 dark:text-emerald-300";
 export const MARKET_DOWN_TEXT = "text-rose-800 dark:text-rose-300";

@@ -5,6 +5,7 @@ import { usePricingTier } from "@/lib/use-pricing-tier";
 import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import { DNA_BODY_SECONDARY, DNA_DISPLAY, DNA_PAGE_STACK } from "@/lib/design-dna";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
 import type { StockOfTheDayResult } from "@/types";
 
@@ -89,13 +90,13 @@ export default function StockOfTheDayPage() {
   }, []);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50 sm:text-3xl">
-        Stock of the day
-      </h1>
-      <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-        AI-ranked daily opportunity across stocks and select liquid assets.
-      </p>
+    <div className={DNA_PAGE_STACK} data-testid="stock-of-the-day-page">
+      <header className="space-y-2">
+        <h1 className={DNA_DISPLAY}>Stock of the day</h1>
+        <p className={DNA_BODY_SECONDARY}>
+          AI-ranked daily opportunity across stocks and select liquid assets.
+        </p>
+      </header>
 
       <StockOfTheDayPanel
         item={item}

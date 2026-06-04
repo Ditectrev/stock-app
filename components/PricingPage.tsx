@@ -6,21 +6,23 @@
  * Requirements: 22.1, 22.2, 22.3, 22.4
  */
 
-import { useState } from "react";
-import { PricingTier, PricingTierInfo } from "@/types";
 import {
+  DNA_BADGE,
+  DNA_BADGE_POPULAR,
   DNA_BODY,
+  DNA_BODY_ON_INVERSE,
+  DNA_BODY_SECONDARY,
+  DNA_BUTTON_LABEL,
+  DNA_CAPTION,
   DNA_DISPLAY,
   DNA_EYEBROW,
   DNA_HEADING,
   DNA_PRICE,
   DNA_SUBHEADING,
 } from "@/lib/design-dna";
-import {
-  HOME_DISABLED_BUTTON,
-  HOME_MUTED_TEXT,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { useState } from "react";
+import { PricingTier, PricingTierInfo } from "@/types";
+import { HOME_DISABLED_BUTTON } from "@/lib/home-ui";
 
 const FEATURE_MARK = (
   <span
@@ -74,7 +76,7 @@ function PricingCard({
     >
       {isPopular && (
         <div className="absolute right-4 top-4">
-          <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-900 dark:bg-stone-900 dark:text-stone-100">
+          <span className={`${DNA_BADGE_POPULAR} ${DNA_BADGE}`}>
             Most Popular
           </span>
         </div>
@@ -92,8 +94,8 @@ function PricingCard({
           {tier.name}
         </h3>
         <p
-          className={`mt-1 h-[5.5rem] overflow-hidden text-sm ${
-            featured ? "text-stone-300 dark:text-stone-600" : HOME_SUBTLE_TEXT
+          className={`mt-1 h-[5.5rem] overflow-hidden ${
+            featured ? DNA_BODY_ON_INVERSE : DNA_BODY_SECONDARY
           }`}
         >
           {tier.description}
@@ -120,11 +122,7 @@ function PricingCard({
               €{tier.price}
             </span>
             <span
-              className={`mb-1 text-sm ${
-                featured
-                  ? "text-stone-300 dark:text-stone-600"
-                  : HOME_SUBTLE_TEXT
-              }`}
+              className={`mb-1 ${featured ? DNA_BODY_ON_INVERSE : DNA_BODY_SECONDARY}`}
             >
               / mo
             </span>
@@ -136,7 +134,7 @@ function PricingCard({
       <button
         onClick={() => onSelect(tier.tier)}
         disabled={isCurrentTier}
-        className={`mb-6 w-full whitespace-nowrap rounded-lg px-4 py-2.5 text-center text-sm font-semibold leading-none tracking-normal transition-colors
+        className={`mb-6 w-full whitespace-nowrap rounded-lg px-4 py-2.5 text-center ${DNA_BUTTON_LABEL} transition-colors
           ${
             isCurrentTier
               ? HOME_DISABLED_BUTTON
@@ -159,11 +157,9 @@ function PricingCard({
           <li key={feature} className="flex items-start gap-2">
             {FEATURE_MARK}
             <span
-              className={`text-sm ${
-                featured
-                  ? "text-stone-200 dark:text-stone-700"
-                  : HOME_MUTED_TEXT
-              }`}
+              className={
+                featured ? "text-sm text-stone-200 dark:text-stone-700" : DNA_BODY
+              }
             >
               {feature}
             </span>
@@ -171,7 +167,7 @@ function PricingCard({
         ))}
         {hiddenCount > 0 && (
           <li
-            className={`pl-6 text-xs ${featured ? "text-stone-300 dark:text-stone-700" : HOME_SUBTLE_TEXT}`}
+            className={`pl-6 text-xs ${featured ? "text-stone-300 dark:text-stone-700" : DNA_BODY_SECONDARY}`}
           >
             +{hiddenCount} more plan details
           </li>
@@ -233,27 +229,23 @@ export function PricingPage({
             <h3 className={`mt-2 ${DNA_HEADING}`}>
               Pick your workflow, not just a price
             </h3>
-            <p className={`mt-2 text-sm ${HOME_MUTED_TEXT}`}>
+            <p className={`mt-2 ${DNA_BODY}`}>
               Free and Local AI fit research-first users. BYOK is best for
               provider flexibility. Ditectrev AI removes setup with hosted
               infrastructure.
             </p>
           </div>
           <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900">
-            <p
-              className={`text-xs font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
-            >
-              Quick compare
-            </p>
-            <div className="mt-3 space-y-3 text-sm">
+            <p className={DNA_EYEBROW}>Quick compare</p>
+            <div className={`mt-3 space-y-3 ${DNA_BODY}`}>
               {COMPARE_CAPABILITIES.map(({ label, needle }) => (
                 <div
                   key={label}
                   className="border-t border-stone-200 pt-3 first:border-t-0 first:pt-0 dark:border-stone-700"
                 >
-                  <p className={`font-medium ${HOME_MUTED_TEXT}`}>{label}</p>
+                  <p className={`font-medium ${DNA_BODY}`}>{label}</p>
                   <p
-                    className={`mt-1 text-xs leading-relaxed ${HOME_SUBTLE_TEXT}`}
+                    className={`mt-1 text-xs leading-relaxed ${DNA_CAPTION}`}
                   >
                     {orderedTiers
                       .map((tier) =>
@@ -296,7 +288,7 @@ export function PricingPage({
       {/* Confirmation feedback */}
       {selectedTier && selectedTier !== currentTier && (
         <p
-          className={`mt-8 text-center text-sm ${HOME_MUTED_TEXT}`}
+          className={`mt-8 text-center ${DNA_BODY}`}
           role="status"
           aria-live="polite"
         >

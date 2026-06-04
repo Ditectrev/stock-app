@@ -1,5 +1,6 @@
 "use client";
 
+import { DNA_ACCENT_BAR, DNA_LABEL, DNA_NAV_BAR, DNA_NAV_BRAND_TAGLINE, DNA_NAV_LINK_ACTIVE, DNA_NAV_LINK_IDLE, DNA_NAV_MOBILE, DNA_NAV_WORDMARK, DNA_NAV_WORDMARK_MOBILE } from "@/lib/design-dna";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -12,13 +13,6 @@ import {
   SITE_NAV_MOBILE_LABEL,
   SITE_SHORT_NAME,
 } from "@/lib/site-seo";
-import {
-  DNA_ACCENT_BAR,
-  DNA_NAV_BAR,
-  DNA_NAV_BRAND_TAGLINE,
-  DNA_NAV_LINK_ACTIVE,
-  DNA_NAV_LINK_IDLE,
-} from "@/lib/design-dna";
 import { HOME_SEGMENTED_NAV } from "@/lib/home-ui";
 
 export interface NavigationProps {
@@ -61,10 +55,10 @@ export function Navigation({
           >
             <span className={DNA_ACCENT_BAR} />
             <span className="leading-tight">
-              <span className="hidden text-lg font-bold sm:inline">
+              <span className={`hidden sm:inline ${DNA_NAV_WORDMARK}`}>
                 {SITE_SHORT_NAME}
               </span>
-              <span className="text-base font-bold sm:hidden">
+              <span className={`sm:hidden ${DNA_NAV_WORDMARK_MOBILE}`}>
                 {SITE_NAV_MOBILE_LABEL}
               </span>
               <span className={`hidden sm:block ${DNA_NAV_BRAND_TAGLINE}`}>
@@ -80,7 +74,7 @@ export function Navigation({
               <Link
                 key={link.id}
                 href={link.href}
-                className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                className={`rounded-lg px-3 py-1.5 transition-colors ${DNA_LABEL} ${
                   activeSection === link.id
                     ? DNA_NAV_LINK_ACTIVE
                     : DNA_NAV_LINK_IDLE
@@ -168,7 +162,7 @@ export function Navigation({
                 key={link.id}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block w-full rounded-md px-3 py-2 text-left text-base font-medium transition-colors ${
+                className={`block w-full rounded-md px-3 py-2 text-left transition-colors ${DNA_NAV_MOBILE} ${
                   activeSection === link.id
                     ? DNA_NAV_LINK_ACTIVE
                     : DNA_NAV_LINK_IDLE

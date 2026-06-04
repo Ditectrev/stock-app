@@ -1,5 +1,6 @@
 "use client";
 
+import { DNA_CAPTION } from "@/lib/design-dna";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import {
@@ -7,7 +8,7 @@ import {
   type AccountNoticeTone,
 } from "@/components/AccountNotice";
 import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
-import { HOME_MUTED_TEXT, HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
+import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 export const BYOK_PROFILE_HINT =
   "Add your key in Profile → API keys, then select the same provider as your explanations model.";
@@ -43,7 +44,7 @@ export function AiFeatureErrorNotice({
       <span>{error}</span>
       {isByok && (
         <div className="mt-3 space-y-2">
-          <p className={`text-xs ${HOME_MUTED_TEXT}`}>{BYOK_PROFILE_HINT}</p>
+          <p className={`${DNA_CAPTION}`}>{BYOK_PROFILE_HINT}</p>
           <Link href="/profile" className={HOME_PRIMARY_BUTTON}>
             Open profile
           </Link>

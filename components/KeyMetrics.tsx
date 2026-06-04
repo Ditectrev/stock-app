@@ -8,12 +8,12 @@
  */
 
 import { SymbolData } from "@/types";
-import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
 import {
   SYMBOL_HELP_BUTTON,
   SYMBOL_INSTRUMENT_PANEL,
   SYMBOL_MUTED_TEXT,
+  SYMBOL_METRIC,
   SYMBOL_PANEL_TITLE,
   SYMBOL_SECTION_LABEL,
   SYMBOL_TOOLTIP_SURFACE,
@@ -30,9 +30,6 @@ interface Metric {
 }
 
 export function KeyMetrics({ symbolData }: KeyMetricsProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const formatMarketCap = (value: number): string => {
     if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
@@ -92,7 +89,6 @@ export function KeyMetrics({ symbolData }: KeyMetricsProps) {
           <MetricStripItem
             key={metric.label}
             metric={metric}
-            isDark={isDark}
             isLast={index === metrics.length - 1}
           />
         ))}
@@ -103,11 +99,9 @@ export function KeyMetrics({ symbolData }: KeyMetricsProps) {
 
 function MetricStripItem({
   metric,
-  isDark,
   isLast,
 }: {
   metric: Metric;
-  isDark: boolean;
   isLast: boolean;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -139,13 +133,7 @@ function MetricStripItem({
             ?
           </button>
         </div>
-        <span
-          className={`font-mono text-lg font-semibold tabular-nums sm:text-xl ${
-            isDark ? "text-stone-100" : "text-stone-900"
-          }`}
-        >
-          {metric.value}
-        </span>
+        <span className={SYMBOL_METRIC}>{metric.value}</span>
         {showTooltip && (
           <div
             role="tooltip"

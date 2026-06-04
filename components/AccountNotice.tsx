@@ -1,7 +1,8 @@
 "use client";
 
+import { DNA_BODY } from "@/lib/design-dna";
 import type { ReactNode } from "react";
-import { HOME_CALLOUT, HOME_MUTED_TEXT } from "@/lib/home-ui";
+import { HOME_CALLOUT } from "@/lib/home-ui";
 
 export type AccountNoticeTone = "error" | "info" | "success" | "warning";
 
@@ -46,8 +47,8 @@ export function AccountNotice({
       <div
         className={
           title
-            ? `mt-1 text-sm ${HOME_MUTED_TEXT}`
-            : `text-sm ${HOME_MUTED_TEXT}`
+            ? `mt-1 ${DNA_BODY}`
+            : `${DNA_BODY}`
         }
       >
         {children}

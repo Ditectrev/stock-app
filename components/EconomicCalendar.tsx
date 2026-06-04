@@ -7,6 +7,7 @@
  * Requirements: 24.4, 24.5, 24.6, 24.7
  */
 
+import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { EconomicEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
@@ -20,20 +21,7 @@ import {
   MARKET_NEUTRAL_TEXT,
   marketChangeTextClass,
 } from "@/lib/market-semantics";
-import {
-  CALENDAR_DAY_HEADER,
-  CALENDAR_CHIP_IDLE,
-  CALENDAR_EMPTY_TEXT,
-  CALENDAR_EVENT_LIST,
-  CALENDAR_EVENT_ROW,
-  CALENDAR_EVENT_TITLE,
-  CALENDAR_FILTER_LABEL,
-  CALENDAR_SELECT,
-  CALENDAR_TODAY_BADGE,
-  CALENDAR_TODAY_HEADER,
-  HOME_PANEL_TITLE,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { CALENDAR_DAY_HEADER, CALENDAR_CHIP_IDLE, CALENDAR_EMPTY_TEXT, CALENDAR_EVENT_LIST, CALENDAR_EVENT_ROW, CALENDAR_EVENT_TITLE, CALENDAR_FILTER_LABEL, CALENDAR_SELECT, CALENDAR_TODAY_BADGE, CALENDAR_TODAY_HEADER, HOME_PANEL_TITLE } from "@/lib/home-ui";
 
 const COUNTRIES = [
   "All",
@@ -256,7 +244,7 @@ export function EconomicCalendar({
       <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 className={HOME_PANEL_TITLE}>Economic Calendar</h3>
-          <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
+          <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
             Macro events ordered by day with country, importance, and release
             values.
           </p>
@@ -343,7 +331,7 @@ export function EconomicCalendar({
               <div key={dateKey} data-testid={`day-group-${dateKey}`}>
                 {/* Day header */}
                 <div
-                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 text-sm font-semibold ${
+                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 ${DNA_SUBHEADING} ${
                     isToday ? CALENDAR_TODAY_HEADER : CALENDAR_DAY_HEADER
                   }`}
                   data-testid={`day-header-${dateKey}`}
@@ -357,7 +345,7 @@ export function EconomicCalendar({
                     </span>
                   )}
                   <span
-                    className={`ml-2 text-xs font-normal ${HOME_SUBTLE_TEXT}`}
+                    className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
                   >
                     ({events.length} event{events.length !== 1 ? "s" : ""})
                   </span>
@@ -373,7 +361,7 @@ export function EconomicCalendar({
                     >
                       {/* Time */}
                       <span
-                        className={`text-xs w-12 shrink-0 pt-0.5 font-mono ${HOME_SUBTLE_TEXT}`}
+                        className={`text-xs w-12 shrink-0 pt-0.5 font-mono ${DNA_CAPTION}`}
                       >
                         {event.time || "—"}
                       </span>
@@ -404,7 +392,7 @@ export function EconomicCalendar({
                         </div>
                         {event.description &&
                           event.description !== event.name && (
-                            <p className={`text-xs mt-0.5 ${HOME_SUBTLE_TEXT}`}>
+                            <p className={`text-xs mt-0.5 ${DNA_CAPTION}`}>
                               {event.description}
                             </p>
                           )}
@@ -413,7 +401,7 @@ export function EconomicCalendar({
                       {/* Values: Prev / Forecast / Actual */}
                       {(event.previous || event.forecast || event.actual) && (
                         <div
-                          className={`flex gap-3 text-xs shrink-0 pt-0.5 ${HOME_SUBTLE_TEXT}`}
+                          className={`flex gap-3 text-xs shrink-0 pt-0.5 ${DNA_CAPTION}`}
                         >
                           {event.previous && (
                             <span>Prev: {event.previous}</span>

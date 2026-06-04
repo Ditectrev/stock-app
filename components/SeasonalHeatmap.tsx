@@ -7,6 +7,7 @@
  * Requirements: 7.1, 7.3, 7.4
  */
 
+import { DNA_BODY, DNA_CAPTION, DNA_LABEL, DNA_PAGE_STACK, DNA_SUBHEADING, DNA_TABLE_HEADER } from "@/lib/design-dna";
 import { SeasonalData } from "@/types";
 import { useTheme } from "@/lib/theme-context";
 import { useState, type ReactNode } from "react";
@@ -22,13 +23,13 @@ import {
   seasonalLegendSwatchClass,
 } from "@/lib/market-semantics";
 import { SymbolTabSkeleton } from "@/components/SymbolTabShell";
-import { DNA_PAGE_STACK, DNA_TABLE_HEADER } from "@/lib/design-dna";
 import {
   SYMBOL_DIVIDER,
+  SYMBOL_HEATMAP_CELL,
+  SYMBOL_HEATMAP_CELL_STRIP,
   SYMBOL_INSTRUMENT_PANEL,
   SYMBOL_PANEL_TITLE,
   SYMBOL_SECTION_LABEL,
-  SYMBOL_SUBTLE_TEXT,
 } from "@/lib/symbol-ui";
 
 export interface SeasonalHeatmapProps {
@@ -89,7 +90,7 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
         aria-label="Seasonal Patterns"
       >
         <SeasonalHeader />
-        <p className={`text-sm ${SYMBOL_SUBTLE_TEXT}`}>
+        <p className={DNA_BODY}>
           No seasonal data available.
         </p>
       </div>
@@ -111,16 +112,14 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
             return (
               <div key={month} className="text-center">
                 <div
-                  className={`rounded px-1 py-2 text-xs font-semibold sm:text-sm ${seasonalHeatmapCellClass(
+                  className={`rounded px-1 py-2 ${SYMBOL_HEATMAP_CELL_STRIP} ${seasonalHeatmapCellClass(
                     avg,
                     isDark
                   )} ${seasonalHeatmapTextClass(avg, isDark)}`}
                 >
                   {avg !== undefined ? `${avg.toFixed(1)}%` : "—"}
                 </div>
-                <span
-                  className={`mt-1 block text-[10px] uppercase tracking-wide ${SYMBOL_SUBTLE_TEXT}`}
-                >
+                <span className={`mt-1 block ${DNA_TABLE_HEADER}`}>
                   {getMonthLabel(month)}
                 </span>
               </div>
@@ -155,9 +154,7 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
               {years.map((year) => (
                 <tr key={year}>
                   <td
-                    className={`px-2 py-1 text-sm font-medium ${
-                      isDark ? "text-stone-300" : "text-stone-700"
-                    }`}
+                    className={`px-2 py-1 ${DNA_LABEL}`}
                   >
                     {year}
                   </td>
@@ -178,7 +175,7 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
                         onMouseLeave={() => setHovered(null)}
                       >
                         <div
-                          className={`relative rounded px-1.5 py-1.5 text-center transition-all sm:px-2 ${seasonalHeatmapCellClass(
+                          className={`relative rounded px-1.5 py-1.5 transition-all sm:px-2 ${SYMBOL_HEATMAP_CELL} ${seasonalHeatmapCellClass(
                             value,
                             isDark
                           )} ${seasonalHeatmapTextClass(value, isDark)} ${
@@ -222,19 +219,13 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
               ))}
 
               <tr className={`border-t-2 ${SYMBOL_DIVIDER}`}>
-                <td
-                  className={`px-2 py-1 text-sm font-semibold ${
-                    isDark ? "text-stone-200" : "text-stone-800"
-                  }`}
-                >
-                  Avg
-                </td>
+                <td className={`px-2 py-1 ${DNA_SUBHEADING}`}>Avg</td>
                 {months.map((month) => {
                   const avg = averageByMonth[month];
                   return (
                     <td key={month} className="px-0.5 py-0.5">
                       <div
-                        className={`rounded px-1.5 py-1.5 text-center text-sm font-semibold sm:px-2 ${seasonalHeatmapCellClass(
+                        className={`rounded px-1.5 py-1.5 sm:px-2 ${SYMBOL_HEATMAP_CELL} ${seasonalHeatmapCellClass(
                           avg,
                           isDark
                         )} ${seasonalHeatmapTextClass(avg, isDark)}`}
@@ -251,34 +242,34 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
       </SeasonalPanel>
 
       <div className="flex flex-wrap items-center gap-3 text-xs sm:gap-4">
-        <span className={SYMBOL_SUBTLE_TEXT}>Legend:</span>
+        <span className={DNA_CAPTION}>Legend:</span>
         <div className="flex items-center gap-1">
           <div
             className={`h-3.5 w-3.5 rounded ${seasonalLegendSwatchClass("strongUp", isDark)}`}
           />
-          <span className={SYMBOL_SUBTLE_TEXT}>Strong positive</span>
+          <span className={DNA_CAPTION}>Strong positive</span>
         </div>
         <div className="flex items-center gap-1">
           <div
             className={`h-3.5 w-3.5 rounded ${seasonalLegendSwatchClass("mildUp", isDark)}`}
           />
-          <span className={SYMBOL_SUBTLE_TEXT}>Mild positive</span>
+          <span className={DNA_CAPTION}>Mild positive</span>
         </div>
         <div className="flex items-center gap-1">
           <div
             className={`h-3.5 w-3.5 rounded ${seasonalLegendSwatchClass("mildDown", isDark)}`}
           />
-          <span className={SYMBOL_SUBTLE_TEXT}>Mild negative</span>
+          <span className={DNA_CAPTION}>Mild negative</span>
         </div>
         <div className="flex items-center gap-1">
           <div
             className={`h-3.5 w-3.5 rounded ${seasonalLegendSwatchClass("strongDown", isDark)}`}
           />
-          <span className={SYMBOL_SUBTLE_TEXT}>Strong negative</span>
+          <span className={DNA_CAPTION}>Strong negative</span>
         </div>
       </div>
 
-      <p className={`text-xs italic ${SYMBOL_SUBTLE_TEXT}`}>
+      <p className={`italic ${DNA_CAPTION}`}>
         Past seasonality does not guarantee future performance
       </p>
     </div>
@@ -290,7 +281,7 @@ function SeasonalHeader() {
     <header>
       <p className={SYMBOL_SECTION_LABEL}>Seasonality</p>
       <h2 className={SYMBOL_PANEL_TITLE}>Monthly return patterns</h2>
-      <p className={`mt-1 text-sm ${SYMBOL_SUBTLE_TEXT}`}>
+      <p className={`mt-1 ${DNA_BODY}`}>
         How this symbol tends to perform by calendar month across years.
       </p>
     </header>

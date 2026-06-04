@@ -7,6 +7,7 @@
  * Requirements: 24.2
  */
 
+import { DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState } from "react";
 import {
   CalendarNavigation,
@@ -16,11 +17,7 @@ import { EconomicCalendar } from "@/components/EconomicCalendar";
 import { EarningsCalendar } from "@/components/EarningsCalendar";
 import { DividendCalendar } from "@/components/DividendCalendar";
 import { IPOCalendar } from "@/components/IPOCalendar";
-import {
-  HOME_INSTRUMENT_PANEL,
-  HOME_PANEL_TITLE,
-  HOME_SECTION_LABEL,
-} from "@/lib/home-ui";
+import { HOME_INSTRUMENT_PANEL } from "@/lib/home-ui";
 
 export interface CalendarHubProps {
   defaultCalendar?: CalendarType;
@@ -36,9 +33,9 @@ export function CalendarHub({
 
   return (
     <div className={HOME_INSTRUMENT_PANEL} data-testid="calendar-hub">
-      <header className="mb-4 sm:mb-6">
-        <p className={HOME_SECTION_LABEL}>Events</p>
-        <h2 className={`mt-1 ${HOME_PANEL_TITLE}`}>Calendars</h2>
+      <header className="mb-4 sm:mb-6" data-testid="calendar-hub-header">
+        <p className={DNA_EYEBROW}>Events</p>
+        <h2 className={`mt-1 ${DNA_SUBHEADING}`}>Calendars</h2>
       </header>
       <CalendarNavigation
         activeCalendar={activeCalendar}

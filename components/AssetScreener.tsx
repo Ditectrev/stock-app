@@ -8,20 +8,12 @@
  * Requirements: 26.1, 26.2, 26.3, 26.4, 26.5, 26.6, 26.7, 26.14, 26.24
  */
 
+import { DNA_BODY, DNA_CAPTION, DNA_LABEL, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type { ScreenerFilter, ScreenerResult } from "@/types";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
-import {
-  HOME_INPUT_SM,
-  HOME_MUTED_TEXT,
-  HOME_PRIMARY_BUTTON,
-  HOME_SECONDARY_BUTTON,
-  HOME_SECTION_LABEL,
-  HOME_SUBTLE_TEXT,
-  HOME_TOOLTIP_POPOVER,
-  homeChipClasses,
-} from "@/lib/home-ui";
+import { HOME_INPUT_SM, HOME_PRIMARY_BUTTON, HOME_SECONDARY_BUTTON, HOME_TOOLTIP_POPOVER, homeChipClasses } from "@/lib/home-ui";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -235,7 +227,7 @@ function Tooltip({ text }: { text: string }) {
         aria-label="More info"
       >
         <svg
-          className={`h-4 w-4 ${HOME_SUBTLE_TEXT}`}
+          className={`h-4 w-4 ${DNA_CAPTION}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -268,7 +260,7 @@ function SectionLabel({
 }) {
   return (
     <label
-      className={`flex items-center text-sm font-medium ${HOME_MUTED_TEXT}`}
+      className={`flex items-center ${DNA_LABEL}`}
     >
       {children}
       {tooltip && <Tooltip text={tooltip} />}
@@ -299,7 +291,7 @@ function RangeInput({
           onChange={(e) => onChange({ ...value, min: e.target.value })}
           className={HOME_INPUT_SM}
         />
-        <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>–</span>
+        <span className={`${DNA_CAPTION}`}>–</span>
         <input
           type="number"
           placeholder="Max"
@@ -474,9 +466,7 @@ export function AssetScreener({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {/* ---- Valuation Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend
-            className={`mb-1 text-sm font-semibold ${HOME_SECTION_LABEL}`}
-          >
+          <legend className={`mb-1 ${DNA_SUBHEADING}`}>
             Valuation Metrics
           </legend>
           <RangeInput
@@ -501,11 +491,7 @@ export function AssetScreener({
 
         {/* ---- Growth Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend
-            className={`mb-1 text-sm font-semibold ${HOME_SECTION_LABEL}`}
-          >
-            Growth Metrics
-          </legend>
+          <legend className={`mb-1 ${DNA_SUBHEADING}`}>Growth Metrics</legend>
           <RangeInput
             label="Revenue Growth (%)"
             tooltip={TOOLTIPS.revenueGrowth}
@@ -522,11 +508,7 @@ export function AssetScreener({
 
         {/* ---- Dividend Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend
-            className={`mb-1 text-sm font-semibold ${HOME_SECTION_LABEL}`}
-          >
-            Dividend Metrics
-          </legend>
+          <legend className={`mb-1 ${DNA_SUBHEADING}`}>Dividend Metrics</legend>
           <RangeInput
             label="Dividend Yield (%)"
             tooltip={TOOLTIPS.dividendYield}
@@ -543,9 +525,7 @@ export function AssetScreener({
 
         {/* ---- Sector ---- */}
         <fieldset className="space-y-2">
-          <legend
-            className={`mb-1 flex items-center text-sm font-semibold ${HOME_SECTION_LABEL}`}
-          >
+          <legend className={`mb-1 flex items-center ${DNA_SUBHEADING}`}>
             Sector
             <Tooltip text={TOOLTIPS.sector} />
           </legend>
@@ -569,9 +549,7 @@ export function AssetScreener({
 
         {/* ---- Market Cap ---- */}
         <fieldset className="space-y-2">
-          <legend
-            className={`mb-1 flex items-center text-sm font-semibold ${HOME_SECTION_LABEL}`}
-          >
+          <legend className={`mb-1 flex items-center ${DNA_SUBHEADING}`}>
             Market Cap
             <Tooltip text={TOOLTIPS.marketCap} />
           </legend>
@@ -595,9 +573,7 @@ export function AssetScreener({
 
         {/* ---- Volume / Liquidity ---- */}
         <fieldset className="space-y-2">
-          <legend
-            className={`mb-1 flex items-center text-sm font-semibold ${HOME_SECTION_LABEL}`}
-          >
+          <legend className={`mb-1 flex items-center ${DNA_SUBHEADING}`}>
             Volume &amp; Liquidity
             <Tooltip text={TOOLTIPS.volume} />
           </legend>
@@ -639,13 +615,13 @@ export function AssetScreener({
         </button>
 
         {resultCount !== null && (
-          <span className={`text-sm ${HOME_MUTED_TEXT}`}>
+          <span className={`${DNA_BODY}`}>
             {resultCount} {resultCount === 1 ? "asset" : "assets"} found
           </span>
         )}
 
         {activeFilters.length > 0 && (
-          <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>
+          <span className={`${DNA_CAPTION}`}>
             ({activeFilters.length}{" "}
             {activeFilters.length === 1 ? "filter" : "filters"} active)
           </span>

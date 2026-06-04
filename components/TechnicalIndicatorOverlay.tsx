@@ -8,16 +8,11 @@
  * Requirements: 5.1, 5.2
  */
 
+import { DNA_BODY, DNA_CAPTION } from "@/lib/design-dna";
+import { MARKET_CHART_OVERLAY_COLORS_LIGHT } from "@/lib/market-semantics";
 import { useState, useCallback } from "react";
 import { ChartIndicator, PriceData } from "@/types";
-import {
-  HOME_CALLOUT,
-  HOME_INPUT_SM,
-  HOME_INSTRUMENT_PANEL,
-  HOME_MUTED_TEXT,
-  HOME_RANGE_BUTTON_ACTIVE,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_CALLOUT, HOME_INPUT_SM, HOME_INSTRUMENT_PANEL, HOME_RANGE_BUTTON_ACTIVE } from "@/lib/home-ui";
 
 export interface TechnicalIndicatorOverlayProps {
   onIndicatorsChange: (indicators: ChartIndicator[]) => void;
@@ -31,36 +26,36 @@ const DEFAULT_INDICATORS: ChartIndicator[] = [
   {
     type: "MA",
     period: 50,
-    color: "#FF6B6B",
+    color: MARKET_CHART_OVERLAY_COLORS_LIGHT[0],
     visible: false,
   },
   {
     type: "MA",
     period: 200,
-    color: "#4ECDC4",
+    color: MARKET_CHART_OVERLAY_COLORS_LIGHT[1],
     visible: false,
   },
   {
     type: "EMA",
     period: 20,
-    color: "#95E1D3",
+    color: MARKET_CHART_OVERLAY_COLORS_LIGHT[2],
     visible: false,
   },
   {
     type: "RSI",
     period: 14,
-    color: "#F38181",
+    color: MARKET_CHART_OVERLAY_COLORS_LIGHT[3],
     visible: false,
   },
   {
     type: "MACD",
-    color: "#AA96DA",
+    color: MARKET_CHART_OVERLAY_COLORS_LIGHT[4],
     visible: false,
   },
   {
     type: "BB",
     period: 20,
-    color: "#FCBAD3",
+    color: MARKET_CHART_OVERLAY_COLORS_LIGHT[5],
     visible: false,
   },
 ];
@@ -152,7 +147,7 @@ export function TechnicalIndicatorOverlay({
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-2">
-          <span className={`font-semibold ${HOME_MUTED_TEXT}`}>
+          <span className={`font-semibold ${DNA_BODY}`}>
             Technical Indicators
           </span>
           {activeCount > 0 && (
@@ -164,7 +159,7 @@ export function TechnicalIndicatorOverlay({
           )}
         </div>
         <svg
-          className={`h-5 w-5 transition-transform ${isExpanded ? "rotate-180" : ""} ${HOME_SUBTLE_TEXT}`}
+          className={`h-5 w-5 transition-transform ${isExpanded ? "rotate-180" : ""} ${DNA_CAPTION}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -194,7 +189,7 @@ export function TechnicalIndicatorOverlay({
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`font-medium transition-colors ${HOME_MUTED_TEXT} group-hover:text-stone-900 dark:group-hover:text-stone-50`}
+                        className={`font-medium transition-colors ${DNA_BODY} group-hover:text-stone-900 dark:group-hover:text-stone-50`}
                       >
                         {getIndicatorName(indicator)}
                       </span>
@@ -203,7 +198,7 @@ export function TechnicalIndicatorOverlay({
                         style={{ backgroundColor: indicator.color }}
                       />
                     </div>
-                    <p className={`mt-0.5 text-xs ${HOME_SUBTLE_TEXT}`}>
+                    <p className={`mt-0.5 ${DNA_CAPTION}`}>
                       {getIndicatorDescription(indicator)}
                     </p>
                   </div>

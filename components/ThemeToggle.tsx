@@ -5,6 +5,7 @@
  * Allows users to switch between light, dark, and system theme
  */
 
+import { DNA_LABEL } from "@/lib/design-dna";
 import { useTheme } from "@/lib/theme-context";
 import { useEffect, useState } from "react";
 
@@ -106,7 +107,7 @@ export function ThemeToggle() {
       aria-label={`Theme: ${getLabel()}. Click to switch theme.`}
     >
       {getIcon()}
-      <span className="text-sm font-medium">{getLabel()}</span>
+      <span className={DNA_LABEL}>{getLabel()}</span>
     </button>
   );
 }

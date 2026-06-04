@@ -7,6 +7,7 @@
  * Requirements: 21.12, 21.13
  */
 
+import { DNA_BODY_SECONDARY, DNA_LABEL } from "@/lib/design-dna";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { TrialTimer } from "@/components/TrialTimer";
 import { AuthPrompt } from "@/components/AuthPrompt";
@@ -17,11 +18,7 @@ import {
 } from "@/lib/auth/trial-auth-navigation";
 import { describeAuthQueryError } from "@/lib/auth/auth-query-messages";
 import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
-import {
-  HOME_CALLOUT,
-  HOME_PRIMARY_BUTTON,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_CALLOUT, HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 /** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
 const TRIAL_STATUS_SYNC_MS = 30_000;
@@ -296,7 +293,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
           aria-label="Trial session active"
           data-testid="trial-banner"
         >
-          <span className={`text-sm font-medium ${HOME_SUBTLE_TEXT}`}>
+          <span className={DNA_LABEL}>
             Trial session
           </span>
           <div className="flex items-center gap-3">
@@ -322,7 +319,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
           role="alert"
           data-testid="trial-expired-banner"
         >
-          <span className={`text-sm ${HOME_SUBTLE_TEXT}`}>
+          <span className={`${DNA_BODY_SECONDARY}`}>
             Trial expired.{" "}
             <button
               type="button"

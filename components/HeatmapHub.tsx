@@ -7,16 +7,13 @@
  * Requirements: 25.2
  */
 
+import { DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState } from "react";
 import { HeatmapNavigation, HeatmapType } from "@/components/HeatmapNavigation";
 import { ETFHeatmap } from "@/components/ETFHeatmap";
 import { CryptoHeatmap } from "@/components/CryptoHeatmap";
 import { StockHeatmap } from "@/components/StockHeatmap";
-import {
-  HOME_INSTRUMENT_PANEL,
-  HOME_PANEL_TITLE,
-  HOME_SECTION_LABEL,
-} from "@/lib/home-ui";
+import { HOME_INSTRUMENT_PANEL } from "@/lib/home-ui";
 
 export interface HeatmapHubProps {
   defaultHeatmap?: HeatmapType;
@@ -34,9 +31,9 @@ export function HeatmapHub({
 
   return (
     <div className={HOME_INSTRUMENT_PANEL} data-testid="heatmap-hub">
-      <header className="mb-4 sm:mb-6">
-        <p className={HOME_SECTION_LABEL}>Market breadth</p>
-        <h2 className={`mt-1 ${HOME_PANEL_TITLE}`}>Heatmaps</h2>
+      <header className="mb-4 sm:mb-6" data-testid="heatmap-hub-header">
+        <p className={DNA_EYEBROW}>Market breadth</p>
+        <h2 className={`mt-1 ${DNA_SUBHEADING}`}>Heatmaps</h2>
       </header>
       <HeatmapNavigation
         activeHeatmap={activeHeatmap}

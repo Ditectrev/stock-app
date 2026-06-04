@@ -8,6 +8,7 @@
  * Requirements: 23.1, 23.2, 23.3, 23.4, 23.5, 23.6, 23.7, 23.8, 23.9, 23.10, 23.11, 23.12
  */
 
+import { DNA_EYEBROW, DNA_LABEL_STRONG, DNA_METRIC_COMPACT, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { SectorData } from "@/types";
@@ -22,8 +23,6 @@ import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_CHIP,
   HOME_INSTRUMENT_PANEL,
-  HOME_PANEL_TITLE,
-  HOME_SECTION_LABEL,
   homeChipClasses,
 } from "@/lib/home-ui";
 
@@ -186,10 +185,13 @@ export function SectorHub({
       role="region"
       aria-label="Sectors Hub"
     >
-      <header className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
+      <header
+        className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between"
+        data-testid="sector-hub-header"
+      >
         <div>
-          <p className={HOME_SECTION_LABEL}>Market structure</p>
-          <h2 className={`mt-1 ${HOME_PANEL_TITLE}`}>Sectors</h2>
+          <p className={DNA_EYEBROW}>Market structure</p>
+          <h2 className={`mt-1 ${DNA_SUBHEADING}`}>Sectors</h2>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -286,12 +288,12 @@ export function SectorHub({
 
               <div className="flex items-center justify-between">
                 <p
-                  className={`text-sm font-medium ${isDark ? "text-stone-100" : "text-stone-900"}`}
+                  className={DNA_LABEL_STRONG}
                 >
                   {sector.sector}
                 </p>
                 <p
-                  className={`text-sm font-semibold ${colorClass}`}
+                  className={`${DNA_METRIC_COMPACT} ${colorClass}`}
                   data-testid={`change-${sector.sector.replace(/\s+/g, "-")}`}
                 >
                   {formatPercent(sector.changePercent)}
@@ -317,11 +319,7 @@ export function SectorHub({
       {comparisonData && comparisonData.length > 0 && (
         <div className="mt-6" data-testid="comparison-view">
           <div className="flex items-center justify-between mb-3">
-            <h4
-              className={`text-sm font-semibold ${isDark ? "text-stone-200" : "text-stone-700"}`}
-            >
-              Sector Comparison
-            </h4>
+            <h4 className={DNA_SUBHEADING}>Sector Comparison</h4>
             <button
               onClick={() => setSelectedSectors([])}
               className={`text-xs text-stone-600 hover:underline dark:text-stone-300`}

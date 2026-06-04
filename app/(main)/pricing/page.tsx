@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import type { PricingTier, PricingTierInfo } from "@/types";
 import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
+import { DNA_BODY } from "@/lib/design-dna";
+import { MARKET_UP_TEXT } from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 const PricingPage = dynamic(
@@ -167,9 +169,9 @@ function PricingRouteContent() {
       />
       {message && (
         <p
-          className={`mt-4 text-center text-sm ${
+          className={`mt-4 text-center ${DNA_BODY} ${
             message.tone === "success"
-              ? "text-emerald-600 dark:text-emerald-400"
+              ? MARKET_UP_TEXT
               : "text-amber-600 dark:text-amber-400"
           }`}
         >

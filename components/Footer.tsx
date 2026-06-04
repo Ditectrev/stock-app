@@ -1,16 +1,16 @@
 "use client";
 
+import { DNA_BODY, DNA_BODY_SECONDARY, DNA_CAPTION } from "@/lib/design-dna";
 import React from "react";
 import GitHubButton from "react-github-btn";
 import packageJson from "../package.json";
-import { HOME_MUTED_TEXT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
     <footer
-      className={`mt-8 border-t border-stone-200 bg-stone-100 py-4 sm:mt-12 sm:py-6 dark:border-stone-800 dark:bg-stone-950 ${HOME_MUTED_TEXT}`}
+      className={`mt-8 border-t border-stone-200 bg-stone-100 py-4 sm:mt-12 sm:py-6 dark:border-stone-800 dark:bg-stone-950 ${DNA_BODY}`}
       aria-label="Site footer"
     >
       <div className="mb-3 flex items-center justify-center">
@@ -26,11 +26,11 @@ export function Footer() {
         </GitHubButton>
       </div>
 
-      <p className={`mb-2 text-center text-xs ${HOME_SUBTLE_TEXT}`}>
+      <p className={`mb-2 text-center ${DNA_CAPTION}`}>
         v{packageJson.version}
       </p>
 
-      <p className="text-center text-sm">
+      <p className={`text-center ${DNA_BODY_SECONDARY}`}>
         © {currentYear} Ditectrev and our contributors
       </p>
     </footer>

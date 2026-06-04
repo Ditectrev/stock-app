@@ -9,7 +9,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ChartComponent } from "../ChartComponent";
 import { ThemeProvider } from "@/lib/theme-context";
+import { marketChartOverlayColor } from "@/lib/market-semantics";
 import { PriceData, ChartIndicator } from "@/types";
+
+const overlay = (index: number) => marketChartOverlayColor(index, false);
 
 // Mock data generator
 const generateMockData = (days: number = 30): PriceData[] => {
@@ -170,7 +173,7 @@ describe("ChartComponent", () => {
   describe("Indicator Toggles", () => {
     it("should render chart with indicators", () => {
       const indicators: ChartIndicator[] = [
-        { type: "MA", period: 50, color: "#FF6B6B", visible: true },
+        { type: "MA", period: 50, color: overlay(0), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -181,8 +184,8 @@ describe("ChartComponent", () => {
 
     it("should handle multiple indicators", () => {
       const indicators: ChartIndicator[] = [
-        { type: "MA", period: 50, color: "#FF6B6B", visible: true },
-        { type: "EMA", period: 20, color: "#4ECDC4", visible: true },
+        { type: "MA", period: 50, color: overlay(0), visible: true },
+        { type: "EMA", period: 20, color: overlay(1), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -192,7 +195,7 @@ describe("ChartComponent", () => {
 
     it("should not render invisible indicators", () => {
       const indicators: ChartIndicator[] = [
-        { type: "MA", period: 50, color: "#FF6B6B", visible: false },
+        { type: "MA", period: 50, color: overlay(0), visible: false },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -203,7 +206,7 @@ describe("ChartComponent", () => {
 
     it("should render RSI indicator without errors", () => {
       const indicators: ChartIndicator[] = [
-        { type: "RSI", period: 14, color: "#F38181", visible: true },
+        { type: "RSI", period: 14, color: overlay(2), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -221,7 +224,7 @@ describe("ChartComponent", () => {
 
     it("should render Bollinger Bands indicator without errors", () => {
       const indicators: ChartIndicator[] = [
-        { type: "BB", period: 20, color: "#FCBAD3", visible: true },
+        { type: "BB", period: 20, color: overlay(3), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -231,11 +234,11 @@ describe("ChartComponent", () => {
 
     it("should render all indicator types simultaneously", () => {
       const indicators: ChartIndicator[] = [
-        { type: "MA", period: 50, color: "#FF6B6B", visible: true },
-        { type: "EMA", period: 20, color: "#4ECDC4", visible: true },
-        { type: "RSI", period: 14, color: "#F38181", visible: true },
+        { type: "MA", period: 50, color: overlay(0), visible: true },
+        { type: "EMA", period: 20, color: overlay(1), visible: true },
+        { type: "RSI", period: 14, color: overlay(2), visible: true },
         { type: "MACD", visible: true },
-        { type: "BB", period: 20, color: "#FCBAD3", visible: true },
+        { type: "BB", period: 20, color: overlay(3), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);

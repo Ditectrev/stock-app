@@ -1,18 +1,14 @@
 "use client";
 
+import { DNA_BODY, DNA_BODY_SECONDARY, DNA_CAPTION, DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import type { PricingTier, StockOfTheDay, StockOfTheDayResult } from "@/types";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
 import { InsightPanel, InsightPanelHeader } from "@/components/InsightPanel";
 import { SubscriptionGate } from "@/components/ProductShell";
 import { AiFeatureErrorNotice } from "@/components/AiFeatureErrorNotice";
-import { DNA_BODY, DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import { MARKET_DOWN_TEXT, MARKET_UP_TEXT } from "@/lib/market-semantics";
-import {
-  HOME_INSTRUMENT_PANEL,
-  HOME_PRIMARY_BUTTON,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_INSTRUMENT_PANEL, HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 interface StockOfTheDayPanelProps {
   item: StockOfTheDayResult | null;
@@ -66,7 +62,7 @@ function PickCard({
           <p className={DNA_EYEBROW}>{title}</p>
           <p className={`mt-1 ${DNA_SUBHEADING}`}>
             <span className="tabular-nums">{pick.symbol}</span>
-            <span className={`font-normal ${HOME_SUBTLE_TEXT}`}>
+            <span className={`font-normal ${DNA_CAPTION}`}>
               {" "}
               · {pick.name}
             </span>
@@ -74,7 +70,7 @@ function PickCard({
         </div>
         <StanceLabel recommendation={pick.recommendation} />
       </div>
-      <p className={`mt-2 flex items-center text-xs ${HOME_SUBTLE_TEXT}`}>
+      <p className={`mt-2 flex items-center ${DNA_CAPTION}`}>
         <span>Confidence {Math.round(pick.confidence * 100)}%</span>
         <ConfidenceInfoTooltip variant="stockOfTheDay" />
       </p>
@@ -99,6 +95,7 @@ export function StockOfTheDayPanel({
   const shell = (
     <div
       className={`relative ${HOME_INSTRUMENT_PANEL} ${showLockedGateOnly ? "" : "min-h-[8rem]"}`}
+      data-testid="stock-of-the-day-panel"
     >
       {showLockedGateOnly ? (
         <SubscriptionGate
@@ -126,7 +123,7 @@ export function StockOfTheDayPanel({
                   }
                   right={
                     item ? (
-                      <p className={`text-xs ${HOME_SUBTLE_TEXT}`}>
+                      <p className={`${DNA_CAPTION}`}>
                         Generated{" "}
                         {new Date(item.generatedAt).toLocaleDateString()}
                       </p>
@@ -137,7 +134,7 @@ export function StockOfTheDayPanel({
             )}
 
             {loading && (
-              <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
+              <p className={`${DNA_BODY_SECONDARY}`}>
                 Computing today&apos;s picks...
               </p>
             )}
@@ -166,7 +163,7 @@ export function StockOfTheDayPanel({
             )}
 
             {!loading && !item && !locked && !error && (
-              <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
+              <p className={`${DNA_BODY_SECONDARY}`}>
                 No stock-of-the-day result yet. Refresh to try again.
               </p>
             )}

@@ -1,12 +1,9 @@
 "use client";
 
+import { DNA_BODY, DNA_CAPTION, DNA_LABEL_STRONG } from "@/lib/design-dna";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  HOME_MUTED_TEXT,
-  HOME_PRIMARY_BUTTON,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 type AuthUser = {
   id: string;
@@ -111,14 +108,14 @@ export function UserProfileMenu() {
   }
 
   if (loading) {
-    return <span className={`px-1 text-xs ${HOME_SUBTLE_TEXT}`}>…</span>;
+    return <span className={`px-1 ${DNA_CAPTION}`}>…</span>;
   }
 
   if (!user) {
     return (
       <Link
         href="/pricing?signin=1"
-        className={`rounded-lg px-2 py-1.5 text-sm ${HOME_MUTED_TEXT} hover:bg-stone-100 dark:hover:bg-stone-800`}
+        className={`rounded-lg px-2 py-1.5 ${DNA_BODY} hover:bg-stone-100 dark:hover:bg-stone-800`}
       >
         Sign in
       </Link>
@@ -144,7 +141,9 @@ export function UserProfileMenu() {
         >
           {initials}
         </span>
-        <span className="hidden max-w-[9rem] truncate text-sm font-medium text-stone-900 dark:text-stone-50 sm:inline">
+        <span
+          className={`hidden max-w-[9rem] truncate sm:inline ${DNA_LABEL_STRONG}`}
+        >
           {label}
         </span>
         <svg
@@ -171,8 +170,8 @@ export function UserProfileMenu() {
           onClick={(event) => event.stopPropagation()}
         >
           <div className="border-b border-stone-200 px-4 py-3 dark:border-stone-700">
-            <p className={`text-xs ${HOME_SUBTLE_TEXT}`}>Signed in as</p>
-            <p className="mt-0.5 break-all text-sm font-medium text-stone-900 dark:text-stone-50">
+            <p className={`${DNA_CAPTION}`}>Signed in as</p>
+            <p className={`mt-0.5 break-all ${DNA_LABEL_STRONG}`}>
               {user.email}
             </p>
           </div>
@@ -181,7 +180,7 @@ export function UserProfileMenu() {
               href="/profile"
               role="menuitem"
               onClick={() => setOpen(false)}
-              className={`block px-4 py-2.5 text-sm ${HOME_MUTED_TEXT} hover:bg-stone-100 dark:hover:bg-stone-800`}
+              className={`block px-4 py-2.5 ${DNA_BODY} hover:bg-stone-100 dark:hover:bg-stone-800`}
             >
               User Profile
             </Link>
@@ -189,7 +188,7 @@ export function UserProfileMenu() {
               type="button"
               role="menuitem"
               onClick={() => void handleSignOut()}
-              className={`block w-full px-4 py-2.5 text-left text-sm ${HOME_MUTED_TEXT} hover:bg-stone-100 dark:hover:bg-stone-800`}
+              className={`block w-full px-4 py-2.5 text-left ${DNA_BODY} hover:bg-stone-100 dark:hover:bg-stone-800`}
             >
               Sign Out
             </button>

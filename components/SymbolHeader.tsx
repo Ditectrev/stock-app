@@ -7,14 +7,14 @@
  * Requirements: 2.4, 4.3
  */
 
+import { DNA_CAPTION, DNA_DISPLAY } from "@/lib/design-dna";
 import { SymbolData } from "@/types";
-import { DNA_DISPLAY } from "@/lib/design-dna";
 import { marketChangeTextClass } from "@/lib/market-semantics";
 import {
+  SYMBOL_CHANGE_LINE,
   SYMBOL_INSTRUMENT_PANEL,
-  SYMBOL_MUTED_TEXT,
   SYMBOL_SECTION_LABEL,
-  SYMBOL_SUBTLE_TEXT,
+  SYMBOL_SUBTITLE,
 } from "@/lib/symbol-ui";
 
 export interface SymbolHeaderProps {
@@ -34,9 +34,7 @@ export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
         <div>
           <p className={SYMBOL_SECTION_LABEL}>Symbol snapshot</p>
           <h1 className={DNA_DISPLAY}>{symbolData.symbol}</h1>
-          <p className={`text-base sm:text-lg ${SYMBOL_MUTED_TEXT}`}>
-            {symbolData.name}
-          </p>
+          <p className={SYMBOL_SUBTITLE}>{symbolData.name}</p>
         </div>
 
         <div
@@ -51,14 +49,14 @@ export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
             ${symbolData.price.toFixed(2)}
           </div>
           <div
-            className={`text-base sm:text-lg font-semibold ${changeColor}`}
+            className={`${SYMBOL_CHANGE_LINE} ${changeColor}`}
             aria-label={`Change: ${isPositive ? "+" : ""}${symbolData.change.toFixed(2)} (${isPositive ? "+" : ""}${symbolData.changePercent.toFixed(2)}%)`}
           >
             {isPositive ? "+" : ""}
             {symbolData.change.toFixed(2)} ({isPositive ? "+" : ""}
             {symbolData.changePercent.toFixed(2)}%)
           </div>
-          <div className={`text-sm ${SYMBOL_SUBTLE_TEXT}`}>
+          <div className={DNA_CAPTION}>
             Last updated: {new Date(symbolData.lastUpdated).toLocaleString()}
           </div>
         </div>

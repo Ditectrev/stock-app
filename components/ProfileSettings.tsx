@@ -1,17 +1,10 @@
 "use client";
 
+import { DNA_BODY, DNA_BODY_SECONDARY, DNA_CALLOUT_WARNING, DNA_CAPTION, DNA_DISPLAY, DNA_EYEBROW, DNA_HEADING, DNA_LABEL_STRONG, DNA_MARKETING_STACK, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import APIKeyManager from "@/components/APIKeyManager";
-import {
-  HOME_INSTRUMENT_PANEL,
-  HOME_MUTED_TEXT,
-  HOME_PANEL_TITLE,
-  HOME_PRIMARY_BUTTON,
-  HOME_SECONDARY_BUTTON,
-  HOME_SECTION_LABEL,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_INSTRUMENT_PANEL, HOME_PRIMARY_BUTTON, HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
 import {
   getDefaultProviderForTier,
   isProviderAllowedForTier,
@@ -37,13 +30,13 @@ type StatusMessage = {
 function StatusNotice({ message }: { message: StatusMessage }) {
   return (
     <p
-      className={`text-sm ${
+      className={
         message.tone === "error"
           ? MARKET_DOWN_TEXT
           : message.tone === "success"
             ? MARKET_UP_TEXT
-            : HOME_MUTED_TEXT
-      }`}
+            : DNA_BODY
+      }
       role="status"
     >
       {message.text}
@@ -266,14 +259,17 @@ export function ProfileSettings() {
   }
 
   if (loading) {
-    return <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>Loading profile…</p>;
+    return <p className={`${DNA_BODY_SECONDARY}`}>Loading profile…</p>;
   }
 
   if (!user) {
     return (
-      <div className={`${HOME_INSTRUMENT_PANEL} space-y-4`}>
-        <h1 className={HOME_PANEL_TITLE}>User Profile</h1>
-        <p className={`text-sm ${HOME_MUTED_TEXT}`}>
+      <div
+        className={`${HOME_INSTRUMENT_PANEL} space-y-4`}
+        data-testid="profile-hub-header"
+      >
+        <h1 className={DNA_DISPLAY}>User Profile</h1>
+        <p className={`${DNA_BODY}`}>
           Sign in to manage your subscription, AI providers, and API keys.
         </p>
         <Link href="/pricing?signin=1" className={HOME_PRIMARY_BUTTON}>
@@ -287,35 +283,33 @@ export function ProfileSettings() {
     "border-l-2 border-stone-900 pl-5 dark:border-stone-100";
 
   return (
-    <div className="space-y-10 max-w-3xl">
+    <div
+      className={`${DNA_MARKETING_STACK} max-w-3xl`}
+      data-testid="profile-hub-signed-in"
+    >
       <header className="space-y-1">
-        <p className={HOME_SECTION_LABEL}>Account</p>
-        <h1 className={`text-2xl ${HOME_PANEL_TITLE}`}>User Profile</h1>
-        <p className={`text-sm ${HOME_MUTED_TEXT}`}>{user.email}</p>
-        {user.name && (
-          <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>{user.name}</p>
-        )}
+        <p className={DNA_EYEBROW}>Account</p>
+        <h1 className={DNA_DISPLAY}>User Profile</h1>
+        <p className={DNA_BODY}>{user.email}</p>
+        {user.name && <p className={DNA_BODY_SECONDARY}>{user.name}</p>}
       </header>
 
       <section
         className={`${profileSectionClass} space-y-3`}
         aria-labelledby="profile-subscription-heading"
       >
-        <p className={HOME_SECTION_LABEL}>Plan</p>
-        <h2
-          id="profile-subscription-heading"
-          className={`text-lg ${HOME_PANEL_TITLE}`}
-        >
+        <p className={DNA_EYEBROW}>Plan</p>
+        <h2 id="profile-subscription-heading" className={DNA_HEADING}>
           Subscription
         </h2>
-        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <dt className={HOME_SUBTLE_TEXT}>Current plan</dt>
-            <dd className={`font-medium ${HOME_MUTED_TEXT}`}>{tier}</dd>
+            <dt className={DNA_BODY_SECONDARY}>Current plan</dt>
+            <dd className={DNA_LABEL_STRONG}>{tier}</dd>
           </div>
           <div>
-            <dt className={HOME_SUBTLE_TEXT}>Active until</dt>
-            <dd className="font-medium text-stone-900 dark:text-stone-50">
+            <dt className={DNA_BODY_SECONDARY}>Active until</dt>
+            <dd className={DNA_LABEL_STRONG}>
               {subscription.activeUntil
                 ? new Date(subscription.activeUntil).toLocaleDateString()
                 : hasPaidPlan
@@ -325,7 +319,7 @@ export function ProfileSettings() {
           </div>
         </dl>
         {subscription.cancelAtPeriodEnd && hasPaidPlan && (
-          <p className="text-sm text-amber-700 dark:text-amber-300">
+          <p className={DNA_CALLOUT_WARNING}>
             Your subscription is set to cancel at the end of this billing
             period.
           </p>
@@ -366,21 +360,18 @@ export function ProfileSettings() {
         className={`${profileSectionClass} space-y-4`}
         aria-labelledby="profile-provider-heading"
       >
-        <p className={HOME_SECTION_LABEL}>AI model</p>
+        <p className={DNA_EYEBROW}>AI model</p>
         <div>
-          <h2
-            id="profile-provider-heading"
-            className={`text-lg ${HOME_PANEL_TITLE}`}
-          >
+          <h2 id="profile-provider-heading" className={DNA_HEADING}>
             Explanations provider
           </h2>
-          <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
+          <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
             Choose which AI powers metric explanations and chart analysis. Your
             selection is saved automatically and applies across the app.
           </p>
         </div>
         {!hasAiTier && (
-          <p className="text-sm text-amber-700 dark:text-amber-300/90 rounded-md border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-3 py-2">
+          <p className={DNA_CALLOUT_WARNING}>
             AI explanations unlock on Local AI, BYOK, or Hosted AI plans.
             Ads-free and Free tiers do not include server-side AI.
           </p>
@@ -406,17 +397,17 @@ export function ProfileSettings() {
                     : "hover:border-stone-400 dark:hover:border-stone-500"
                 }`}
               >
-                <p className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+                <p className={DNA_SUBHEADING}>
                   {provider.name}
                   {isActive && (
                     <span
-                      className={`ml-2 text-xs font-normal ${HOME_SUBTLE_TEXT}`}
+                      className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
                     >
                       Active
                     </span>
                   )}
                 </p>
-                <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
+                <p className={`mt-1 ${DNA_CAPTION}`}>
                   {provider.subtitle}
                 </p>
               </button>
@@ -432,11 +423,8 @@ export function ProfileSettings() {
         className={profileSectionClass}
         aria-labelledby="profile-keys-heading"
       >
-        <p className={HOME_SECTION_LABEL}>BYOK</p>
-        <h2
-          id="profile-keys-heading"
-          className={`mb-3 text-lg ${HOME_PANEL_TITLE}`}
-        >
+        <p className={DNA_EYEBROW}>BYOK</p>
+        <h2 id="profile-keys-heading" className={`mb-3 ${DNA_HEADING}`}>
           API keys
         </h2>
         {canManageApiKeys ? (
@@ -445,7 +433,7 @@ export function ProfileSettings() {
             onProviderSelect={handleBYOKProviderSelect}
           />
         ) : (
-          <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
+          <p className={`${DNA_BODY_SECONDARY}`}>
             API key management is available on the BYOK plan.
           </p>
         )}

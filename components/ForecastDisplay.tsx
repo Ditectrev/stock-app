@@ -20,7 +20,10 @@ import {
   SYMBOL_DIVIDER,
   SYMBOL_HELP_BUTTON,
   SYMBOL_MUTED_TEXT,
-  SYMBOL_PANEL_TITLE,
+  SYMBOL_LABEL,
+  SYMBOL_METRIC,
+  SYMBOL_METRIC_EMPHASIS,
+  SYMBOL_SECTION_TITLE,
   SYMBOL_SUBTLE_TEXT,
   SYMBOL_TOOLTIP_SURFACE,
 } from "@/lib/symbol-ui";
@@ -64,7 +67,7 @@ function SectionLabel({ label, tooltip }: TooltipTriggerProps) {
 
   return (
     <div className="relative flex items-center gap-2">
-      <h3 className={`text-sm font-semibold ${SYMBOL_PANEL_TITLE}`}>{label}</h3>
+      <h3 className={SYMBOL_SECTION_TITLE}>{label}</h3>
       <button
         type="button"
         className={SYMBOL_HELP_BUTTON}
@@ -211,31 +214,19 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
         <div className="mt-4 grid grid-cols-3 gap-4 text-center sm:gap-6">
           <div>
             <p className={`text-xs ${SYMBOL_SUBTLE_TEXT}`}>Low</p>
-            <p
-              className={`mt-1 font-mono text-lg font-semibold tabular-nums ${
-                isDark ? "text-stone-100" : "text-stone-900"
-              }`}
-            >
+            <p className={`mt-1 ${SYMBOL_METRIC}`}>
               ${forecast.priceTargets.low.toFixed(2)}
             </p>
           </div>
           <div>
             <p className={`text-xs ${SYMBOL_SUBTLE_TEXT}`}>Average</p>
-            <p
-              className={`mt-1 font-mono text-xl font-bold tabular-nums ${
-                isDark ? "text-stone-100" : "text-stone-900"
-              }`}
-            >
+            <p className={`mt-1 ${SYMBOL_METRIC_EMPHASIS}`}>
               ${forecast.priceTargets.average.toFixed(2)}
             </p>
           </div>
           <div>
             <p className={`text-xs ${SYMBOL_SUBTLE_TEXT}`}>High</p>
-            <p
-              className={`mt-1 font-mono text-lg font-semibold tabular-nums ${
-                isDark ? "text-stone-100" : "text-stone-900"
-              }`}
-            >
+            <p className={`mt-1 ${SYMBOL_METRIC}`}>
               ${forecast.priceTargets.high.toFixed(2)}
             </p>
           </div>
@@ -300,7 +291,7 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                   i > 0 ? `border-t ${SYMBOL_DIVIDER}` : ""
                 }`}
               >
-                <span className={`text-sm font-medium ${SYMBOL_MUTED_TEXT}`}>
+                <span className={SYMBOL_LABEL}>
                   {eps.quarter}
                 </span>
                 <div className="flex items-center gap-3">
@@ -350,7 +341,7 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                   i > 0 ? `border-t ${SYMBOL_DIVIDER}` : ""
                 }`}
               >
-                <span className={`text-sm font-medium ${SYMBOL_MUTED_TEXT}`}>
+                <span className={SYMBOL_LABEL}>
                   {rev.quarter}
                 </span>
                 <div className="flex items-center gap-3">

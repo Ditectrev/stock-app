@@ -9,6 +9,7 @@
  * Requirements: 25.3, 25.4, 25.5, 25.6, 25.12, 25.13, 25.14, 25.15, 25.16, 25.17, 25.18, 25.19
  */
 
+import { DNA_CAPTION, DNA_HEATMAP_CELL } from "@/lib/design-dna";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
@@ -18,13 +19,7 @@ import {
   getHeatmapNeutralLegendColor,
   getHeatmapTextClass,
 } from "@/lib/heatmap-colors";
-import {
-  HOME_CHIP,
-  HOME_LEGEND_DIVIDER,
-  HOME_LEGEND_TEXT,
-  HOME_SUBTLE_TEXT,
-  homeChipClasses,
-} from "@/lib/home-ui";
+import { HOME_CHIP, HOME_LEGEND_DIVIDER, HOME_LEGEND_TEXT, homeChipClasses } from "@/lib/home-ui";
 
 export type HeatmapTimePeriod =
   | "1D"
@@ -188,7 +183,7 @@ export function HeatmapComponent({
   if (!data || data.length === 0) {
     return (
       <div className="py-8" data-testid="heatmap-empty">
-        <p className={`text-center ${HOME_SUBTLE_TEXT}`}>
+        <p className={`text-center ${DNA_CAPTION}`}>
           No heatmap data available.
         </p>
       </div>
@@ -301,13 +296,13 @@ export function HeatmapComponent({
               }}
             >
               <span
-                className="text-sm font-bold truncate max-w-full"
+                className={`${DNA_HEATMAP_CELL} truncate max-w-full`}
                 data-testid={`heatmap-symbol-${item.symbol}`}
               >
                 {item.symbol}
               </span>
               <span
-                className="text-xs font-medium mt-1"
+                className={`${DNA_CAPTION} mt-1 font-medium`}
                 data-testid={`heatmap-change-${item.symbol}`}
               >
                 {formatPercent(item.changePercent)}

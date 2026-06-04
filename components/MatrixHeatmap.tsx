@@ -9,6 +9,7 @@
  * Requirements: 25.1, 25.10, 25.11
  */
 
+import { DNA_BODY, DNA_CAPTION } from "@/lib/design-dna";
 import { useMemo, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
@@ -18,13 +19,7 @@ import {
   getHeatmapNeutralLegendColor,
   getHeatmapTextClass,
 } from "@/lib/heatmap-colors";
-import {
-  HOME_INSTRUMENT_PANEL,
-  HOME_LEGEND_DIVIDER,
-  HOME_LEGEND_TEXT,
-  HOME_MUTED_TEXT,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_INSTRUMENT_PANEL, HOME_LEGEND_DIVIDER, HOME_LEGEND_TEXT } from "@/lib/home-ui";
 
 export interface MatrixColumn {
   /** Unique key for this column */
@@ -108,7 +103,7 @@ export function MatrixHeatmap({
   if (rows.length === 0 || columns.length === 0) {
     return (
       <div className={HOME_INSTRUMENT_PANEL} data-testid="matrix-heatmap-empty">
-        <p className={`text-center ${HOME_SUBTLE_TEXT}`}>
+        <p className={`text-center ${DNA_CAPTION}`}>
           No matrix data available.
         </p>
       </div>
@@ -133,12 +128,12 @@ export function MatrixHeatmap({
             <tr>
               {/* Top-left corner cell */}
               <th
-                className={`px-3 py-2 text-left text-xs font-medium ${HOME_SUBTLE_TEXT}`}
+                className={`px-3 py-2 text-left text-xs font-medium ${DNA_CAPTION}`}
               />
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`px-3 py-2 text-center text-xs font-medium ${HOME_SUBTLE_TEXT}`}
+                  className={`px-3 py-2 text-center text-xs font-medium ${DNA_CAPTION}`}
                   data-testid={`matrix-col-header-${col.key}`}
                 >
                   {col.label}
@@ -150,7 +145,7 @@ export function MatrixHeatmap({
             {rows.map((row) => (
               <tr key={row.key} data-testid={`matrix-row-${row.key}`}>
                 <td
-                  className={`px-3 py-2 text-xs font-medium whitespace-nowrap ${HOME_MUTED_TEXT}`}
+                  className={`px-3 py-2 text-xs font-medium whitespace-nowrap ${DNA_BODY}`}
                   data-testid={`matrix-row-header-${row.key}`}
                 >
                   {row.label}

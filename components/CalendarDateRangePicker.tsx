@@ -7,12 +7,8 @@
  * Requirements: 24.22, 24.23
  */
 
-import {
-  HOME_CHIP_SM,
-  HOME_INPUT_SM,
-  HOME_MUTED_TEXT,
-  homeChipClasses,
-} from "@/lib/home-ui";
+import { DNA_BODY } from "@/lib/design-dna";
+import { HOME_CHIP_SM, HOME_INPUT_SM, homeChipClasses } from "@/lib/home-ui";
 
 export interface CalendarDateRangePickerProps {
   startDate: string;
@@ -62,7 +58,7 @@ export function CalendarDateRangePicker({
 
       <label
         htmlFor={`${idPrefix}-start-date`}
-        className={`text-sm ${HOME_MUTED_TEXT}`}
+        className={`${DNA_BODY}`}
       >
         From:
       </label>
@@ -77,7 +73,7 @@ export function CalendarDateRangePicker({
 
       <label
         htmlFor={`${idPrefix}-end-date`}
-        className={`text-sm ${HOME_MUTED_TEXT}`}
+        className={`${DNA_BODY}`}
       >
         To:
       </label>

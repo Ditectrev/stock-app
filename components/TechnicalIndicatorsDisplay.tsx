@@ -19,7 +19,9 @@ import {
   SYMBOL_DIVIDER,
   SYMBOL_HELP_BUTTON,
   SYMBOL_MUTED_TEXT,
-  SYMBOL_PANEL_TITLE,
+  SYMBOL_LABEL,
+  SYMBOL_METRIC_COMPACT,
+  SYMBOL_SECTION_TITLE,
   SYMBOL_TOOLTIP_SURFACE,
 } from "@/lib/symbol-ui";
 
@@ -130,9 +132,7 @@ export function TechnicalIndicatorsDisplay({
         data-testid="sentiment-gauge"
         className={`mb-6 flex flex-col gap-3 border-l-4 py-3 pl-4 sm:flex-row sm:items-center sm:justify-between ${sentiment.border}`}
       >
-        <p
-          className={`text-sm font-semibold sm:text-base ${SYMBOL_PANEL_TITLE}`}
-        >
+        <p className={SYMBOL_SECTION_TITLE}>
           {SENTIMENT_LABELS[indicators.overallSentiment]}
         </p>
         <span
@@ -153,7 +153,7 @@ export function TechnicalIndicatorsDisplay({
 
 function IndicatorRow({
   row,
-  isDark,
+  isDark: _isDark,
 }: {
   row: IndicatorRowData;
   isDark: boolean;
@@ -168,9 +168,7 @@ function IndicatorRow({
       <div className="min-w-0 flex-1">
         <div className="relative flex items-center gap-2">
           <span
-            className={`text-sm font-medium ${
-              isDark ? "text-stone-100" : "text-stone-900"
-            }`}
+            className={SYMBOL_LABEL}
           >
             {row.name}
           </span>
@@ -199,13 +197,7 @@ function IndicatorRow({
           {row.values.map((v) => (
             <div key={v.label} className="flex items-baseline gap-2">
               <dt className={`text-xs ${SYMBOL_MUTED_TEXT}`}>{v.label}</dt>
-              <dd
-                className={`font-mono text-sm font-semibold tabular-nums ${
-                  isDark ? "text-stone-100" : "text-stone-900"
-                }`}
-              >
-                {v.value}
-              </dd>
+              <dd className={SYMBOL_METRIC_COMPACT}>{v.value}</dd>
             </div>
           ))}
         </dl>

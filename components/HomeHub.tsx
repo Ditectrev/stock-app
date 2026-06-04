@@ -1,9 +1,15 @@
 "use client";
 
+import {
+  DNA_BODY,
+  DNA_BODY_ON_INVERSE,
+  DNA_CAPTION,
+  DNA_LABEL_STRONG,
+} from "@/lib/design-dna";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { HOME_MUTED_TEXT, HOME_SECTION_LABEL } from "@/lib/home-ui";
+import { HOME_EXPLORE_CARD_TITLE, HOME_HERO, HOME_HERO_LEAD, HOME_MARKETING_STACK, HOME_SECTION_LABEL } from "@/lib/home-ui";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site-seo";
 
 const EXPLORE_LINKS = [
@@ -131,13 +137,14 @@ export function HomeHub({
   const secondary = EXPLORE_LINKS.filter((link) => !link.featured);
 
   return (
-    <div id="section-home" className="space-y-10 sm:space-y-12 lg:space-y-14">
-      <header className="max-w-2xl border-l-2 border-stone-900 pl-5 dark:border-stone-100 sm:pl-6">
+    <div id="section-home" className={HOME_MARKETING_STACK}>
+      <header
+        data-testid="home-dashboard-hero"
+        className="max-w-2xl border-l-2 border-stone-900 pl-5 dark:border-stone-100 sm:pl-6"
+      >
         <p className={SECTION_LABEL_CLASS}>Market dashboard</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 sm:text-4xl">
-          {SITE_NAME}
-        </h1>
-        <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300 sm:text-lg">
+        <h1 className={`mt-2 ${HOME_HERO}`}>{SITE_NAME}</h1>
+        <p className={`mt-3 ${HOME_HERO_LEAD}`}>
           {SITE_TAGLINE}. Search a ticker for charts, fundamentals, and optional
           AI stance — or browse tools below.
         </p>
@@ -163,13 +170,11 @@ export function HomeHub({
               {featured.icon}
             </span>
             <div>
-              <p className="text-sm font-medium text-stone-400 dark:text-stone-500">
-                Start here
-              </p>
-              <p className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+              <p className={DNA_CAPTION}>Start here</p>
+              <p className={`mt-1 ${HOME_EXPLORE_CARD_TITLE}`}>
                 {featured.label}
               </p>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-stone-300 dark:text-stone-600">
+              <p className={`mt-2 max-w-sm ${DNA_BODY_ON_INVERSE}`}>
                 {featured.description}
               </p>
             </div>
@@ -187,12 +192,10 @@ export function HomeHub({
               </span>
               <span className="min-w-0 flex-1 text-left">
                 <span className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-stone-900 dark:text-stone-100">
-                    {link.label}
-                  </span>
-                  <ExploreArrow className="text-sm text-stone-500 dark:text-stone-400" />
+                  <span className={DNA_LABEL_STRONG}>{link.label}</span>
+                  <ExploreArrow className={DNA_CAPTION} />
                 </span>
-                <span className={`mt-0.5 block text-sm ${HOME_MUTED_TEXT}`}>
+                <span className={`mt-0.5 block ${DNA_BODY}`}>
                   {link.description}
                 </span>
               </span>
@@ -209,7 +212,10 @@ export function HomeHub({
         {worldMarkets}
       </section>
 
-      <section aria-labelledby="home-ai-heading">
+      <section
+        aria-labelledby="home-ai-heading"
+        data-testid="home-ai-outlook"
+      >
         <h2
           id="home-ai-heading"
           className={`mb-4 sm:mb-6 ${SECTION_LABEL_CLASS}`}

@@ -7,6 +7,7 @@
  * Requirements: 26.9, 26.16, 26.18, 26.19, 26.21, 26.22
  */
 
+import { DNA_BODY, DNA_CAPTION } from "@/lib/design-dna";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { ScreenerResult } from "@/types";
 import {
@@ -16,11 +17,7 @@ import {
   marketChangeTextClass,
   marketValuationRowBg,
 } from "@/lib/market-semantics";
-import {
-  HOME_MUTED_TEXT,
-  HOME_SECONDARY_BUTTON,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -160,7 +157,7 @@ export function ScreenerTableView({
   if (results.length === 0) {
     return (
       <div
-        className={`rounded-xl border border-stone-200 bg-white p-8 text-center dark:border-stone-700 dark:bg-stone-900 ${HOME_SUBTLE_TEXT}`}
+        className={`rounded-xl border border-stone-200 bg-white p-8 text-center dark:border-stone-700 dark:bg-stone-900 ${DNA_CAPTION}`}
       >
         No results
       </div>
@@ -171,7 +168,7 @@ export function ScreenerTableView({
     <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-700 dark:bg-stone-900">
       <div className="overflow-x-auto -mx-0">
         <table
-          className="w-full text-sm md:text-sm lg:text-base"
+          className={`w-full ${DNA_BODY}`}
           aria-label="Screener results"
         >
           <thead>
@@ -179,7 +176,7 @@ export function ScreenerTableView({
               {COLUMNS.map((col) => (
                 <th
                   key={col.field}
-                  className={`cursor-pointer select-none px-3 py-2 text-left font-medium transition-colors hover:bg-stone-200 dark:hover:bg-stone-800 md:px-4 md:py-3 lg:px-5 ${HOME_MUTED_TEXT}`}
+                  className={`cursor-pointer select-none px-3 py-2 text-left font-medium transition-colors hover:bg-stone-200 dark:hover:bg-stone-800 md:px-4 md:py-3 lg:px-5 ${DNA_BODY}`}
                   onClick={() => handleSort(col.field)}
                   aria-sort={
                     sort.field === col.field
@@ -216,7 +213,7 @@ export function ScreenerTableView({
                     {row.symbol}
                   </td>
                   <td
-                    className={`max-w-[200px] truncate px-3 py-2 ${HOME_MUTED_TEXT}`}
+                    className={`max-w-[200px] truncate px-3 py-2 ${DNA_BODY}`}
                   >
                     {row.name}
                   </td>
@@ -226,22 +223,22 @@ export function ScreenerTableView({
                   <td
                     className={`px-3 py-2 font-medium tabular-nums ${
                       row.changePercent === 0
-                        ? HOME_MUTED_TEXT
+                        ? DNA_BODY
                         : marketChangeTextClass(row.changePercent)
                     }`}
                   >
                     {formatChangePercent(row.changePercent)}
                   </td>
-                  <td className={`px-3 py-2 tabular-nums ${HOME_MUTED_TEXT}`}>
+                  <td className={`px-3 py-2 tabular-nums ${DNA_BODY}`}>
                     {formatVolume(row.volume)}
                   </td>
-                  <td className={`px-3 py-2 tabular-nums ${HOME_MUTED_TEXT}`}>
+                  <td className={`px-3 py-2 tabular-nums ${DNA_BODY}`}>
                     {formatMarketCap(row.marketCap)}
                   </td>
-                  <td className={`px-3 py-2 tabular-nums ${HOME_MUTED_TEXT}`}>
+                  <td className={`px-3 py-2 tabular-nums ${DNA_BODY}`}>
                     {row.peRatio != null ? row.peRatio.toFixed(1) : "—"}
                   </td>
-                  <td className={`px-3 py-2 ${HOME_MUTED_TEXT}`}>
+                  <td className={`px-3 py-2 ${DNA_BODY}`}>
                     {row.sector}
                   </td>
                   <td className="px-3 py-2">
@@ -275,7 +272,7 @@ export function ScreenerTableView({
           >
             Previous
           </button>
-          <span className={`text-sm ${HOME_MUTED_TEXT}`}>
+          <span className={`${DNA_BODY}`}>
             Page {page + 1} of {totalPages}
           </span>
           <button

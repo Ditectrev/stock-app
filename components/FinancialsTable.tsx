@@ -7,8 +7,8 @@
  * Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
  */
 
+import { DNA_LABEL, DNA_SUBHEADING } from "@/lib/design-dna";
 import { FinancialData } from "@/types";
-import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
 import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
 import {
@@ -19,6 +19,8 @@ import {
 import {
   SYMBOL_DIVIDER,
   SYMBOL_HELP_BUTTON,
+  SYMBOL_METRIC,
+  SYMBOL_METRIC_COMPACT,
   SYMBOL_MUTED_TEXT,
   SYMBOL_SUBTLE_TEXT,
   SYMBOL_TOOLTIP_SURFACE,
@@ -228,9 +230,6 @@ function buildSections(data: FinancialData): MetricSection[] {
 }
 
 export function FinancialsTable({ financials }: FinancialsTableProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   if (!financials) {
     return (
       <SymbolTabShell
@@ -257,7 +256,7 @@ export function FinancialsTable({ financials }: FinancialsTableProps) {
         className={`rounded-lg border p-4 sm:p-5 ${SYMBOL_DIVIDER} bg-stone-100 dark:bg-stone-800`}
         aria-label={keyFacts.title}
       >
-        <SectionHeading section={keyFacts} isDark={isDark} compact />
+        <SectionHeading section={keyFacts} compact />
         <dl className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
           {keyFacts.metrics.map((metric) => (
             <MetricCell key={metric.label} metric={metric} withTooltip />
@@ -268,11 +267,7 @@ export function FinancialsTable({ financials }: FinancialsTableProps) {
       {/* Ledger columns for remaining sections */}
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
         {restSections.map((section) => (
-          <LedgerSection
-            key={section.title}
-            section={section}
-            isDark={isDark}
-          />
+          <LedgerSection key={section.title} section={section} />
         ))}
       </div>
     </SymbolTabShell>
@@ -281,11 +276,9 @@ export function FinancialsTable({ financials }: FinancialsTableProps) {
 
 function SectionHeading({
   section,
-  isDark,
   compact = false,
 }: {
   section: MetricSection;
-  isDark: boolean;
   compact?: boolean;
 }) {
   const [showSectionTooltip, setSectionTooltip] = useState(false);
@@ -297,9 +290,7 @@ function SectionHeading({
       onMouseLeave={() => setSectionTooltip(false)}
     >
       <h3
-        className={`font-semibold ${compact ? "text-sm" : "text-base"} ${
-          isDark ? "text-stone-100" : "text-stone-900"
-        }`}
+        className={`font-semibold ${compact ? DNA_LABEL : DNA_SUBHEADING}`}
       >
         {section.title}
       </h3>
@@ -318,19 +309,13 @@ function SectionHeading({
   );
 }
 
-function LedgerSection({
-  section,
-  isDark,
-}: {
-  section: MetricSection;
-  isDark: boolean;
-}) {
+function LedgerSection({ section }: { section: MetricSection }) {
   return (
     <section
       className={`border-t pt-5 lg:border-t-0 lg:pt-0 lg:border-l lg:pl-6 first:lg:border-l-0 first:lg:pl-0 ${SYMBOL_DIVIDER}`}
       aria-label={section.title}
     >
-      <SectionHeading section={section} isDark={isDark} />
+      <SectionHeading section={section} />
       <div className="mt-3 space-y-0">
         {section.metrics.map((metric) => (
           <MetricRow key={metric.label} metric={metric} />
@@ -381,9 +366,7 @@ function MetricCell({
           </>
         )}
       </dt>
-      <dd
-        className={`relative mt-1 font-mono text-lg font-semibold tabular-nums ${colors}`}
-      >
+      <dd className={`relative mt-1 ${SYMBOL_METRIC} ${colors}`}>
         {metric.value}
       </dd>
     </div>
@@ -399,7 +382,7 @@ function MetricRow({ metric }: { metric: MetricItem }) {
       className={`flex items-center justify-between gap-3 border-b py-2.5 last:border-b-0 ${SYMBOL_DIVIDER}`}
     >
       <div className="relative flex min-w-0 items-center gap-2">
-        <span className={`text-sm ${SYMBOL_MUTED_TEXT}`}>{metric.label}</span>
+        <span className={SYMBOL_MUTED_TEXT}>{metric.label}</span>
         <button
           type="button"
           className={`${SYMBOL_HELP_BUTTON} h-4 w-4 text-[10px]`}
@@ -421,9 +404,7 @@ function MetricRow({ metric }: { metric: MetricItem }) {
           </div>
         )}
       </div>
-      <span
-        className={`shrink-0 font-mono text-sm font-semibold tabular-nums ${colors}`}
-      >
+      <span className={`shrink-0 ${SYMBOL_METRIC_COMPACT} ${colors}`}>
         {metric.value}
       </span>
     </div>

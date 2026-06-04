@@ -1,7 +1,8 @@
 "use client";
 
+import { DNA_BODY, DNA_CAPTION, DNA_LABEL_STRONG } from "@/lib/design-dna";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { HOME_INPUT, HOME_MUTED_TEXT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
+import { HOME_INPUT } from "@/lib/home-ui";
 import { AccountNotice } from "@/components/AccountNotice";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
@@ -205,7 +206,7 @@ export function SearchBar({
         {/* Search Icon */}
         {!isLoading && (
           <div
-            className={`absolute right-3 top-1/2 -translate-y-1/2 ${HOME_SUBTLE_TEXT}`}
+            className={`absolute right-3 top-1/2 -translate-y-1/2 ${DNA_CAPTION}`}
             aria-hidden="true"
           >
             <svg
@@ -241,7 +242,7 @@ export function SearchBar({
           )}
 
           {!error && results.length === 0 && !isLoading && (
-            <div className={`px-4 py-3 text-sm ${HOME_MUTED_TEXT}`}>
+            <div className={`px-4 py-3 ${DNA_BODY}`}>
               {MARKET_UI_COPY.search.noResults}
             </div>
           )}
@@ -263,16 +264,14 @@ export function SearchBar({
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-stone-900 dark:text-stone-50">
-                        {result.symbol}
-                      </div>
-                      <div className={`truncate text-sm ${HOME_MUTED_TEXT}`}>
+                      <div className={DNA_LABEL_STRONG}>{result.symbol}</div>
+                      <div className={`truncate ${DNA_BODY}`}>
                         {result.name}
                       </div>
                     </div>
                     <div className="ml-4 flex-shrink-0">
                       <span
-                        className={`rounded px-2 py-1 text-xs ${HOME_SUBTLE_TEXT} bg-stone-100 dark:bg-stone-800`}
+                        className={`rounded px-2 py-1 ${DNA_CAPTION} bg-stone-100 dark:bg-stone-800`}
                       >
                         {result.exchange}
                       </span>

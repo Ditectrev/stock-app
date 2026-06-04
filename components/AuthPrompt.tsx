@@ -8,17 +8,12 @@
  * Requirements: 1.6, 21.13
  */
 
+import { DNA_BODY, DNA_CAPTION, DNA_LABEL } from "@/lib/design-dna";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { AccountNotice } from "@/components/AccountNotice";
 import { ProductOverlay } from "@/components/ProductShell";
 import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
-import {
-  HOME_INPUT,
-  HOME_MUTED_TEXT,
-  HOME_PRIMARY_BUTTON,
-  HOME_SECONDARY_BUTTON,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_INPUT, HOME_PRIMARY_BUTTON, HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
 
 export type AuthView = "providers" | "email";
 
@@ -249,7 +244,7 @@ export function AuthPrompt({
             </button>
             <p
               id="auth-apple-unavailable-note"
-              className={`text-xs ${HOME_SUBTLE_TEXT}`}
+              className={`${DNA_CAPTION}`}
               data-testid="auth-apple-unavailable-note"
             >
               Apple Sign-In is not available yet. Use Google or email below.
@@ -259,7 +254,7 @@ export function AuthPrompt({
           {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
-            <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>or</span>
+            <span className={`${DNA_CAPTION}`}>or</span>
             <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
           </div>
 
@@ -288,7 +283,7 @@ export function AuthPrompt({
               setView("providers");
               setEmailError(null);
             }}
-            className={`mb-2 text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 dark:hover:text-stone-100`}
+            className={`mb-2 ${DNA_BODY} hover:text-stone-900 dark:hover:text-stone-100`}
             data-testid="auth-back"
           >
             ← Back
@@ -296,7 +291,7 @@ export function AuthPrompt({
 
           <label
             htmlFor="auth-email"
-            className="block text-sm font-medium text-stone-700 dark:text-stone-300"
+            className={`block ${DNA_LABEL}`}
           >
             Email address
           </label>
@@ -334,13 +329,13 @@ export function AuthPrompt({
               setPendingUserId(null);
               setOtp("");
             }}
-            className={`mb-2 text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 dark:hover:text-stone-100`}
+            className={`mb-2 ${DNA_BODY} hover:text-stone-900 dark:hover:text-stone-100`}
             data-testid="auth-verify-back"
           >
             ← Change email
           </button>
 
-          <p className={`text-sm ${HOME_MUTED_TEXT}`}>
+          <p className={`${DNA_BODY}`}>
             Enter the 6-digit code sent to{" "}
             <span className="font-medium text-stone-900 dark:text-stone-100">
               {email}
@@ -350,7 +345,7 @@ export function AuthPrompt({
 
           <label
             htmlFor="auth-otp"
-            className="block text-sm font-medium text-stone-700 dark:text-stone-300"
+            className={`block ${DNA_LABEL}`}
           >
             Verification code
           </label>
@@ -397,7 +392,7 @@ export function AuthPrompt({
                 );
               }
             }}
-            className={`w-full text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 disabled:opacity-50 dark:hover:text-stone-100`}
+            className={`w-full ${DNA_BODY} hover:text-stone-900 disabled:opacity-50 dark:hover:text-stone-100`}
             data-testid="auth-resend-code"
           >
             Resend code
@@ -407,7 +402,7 @@ export function AuthPrompt({
 
       {loading && (
         <p
-          className={`mt-3 text-center text-xs ${HOME_SUBTLE_TEXT}`}
+          className={`mt-3 text-center ${DNA_CAPTION}`}
           aria-live="polite"
         >
           Please wait…

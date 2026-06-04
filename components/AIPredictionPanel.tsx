@@ -1,21 +1,22 @@
 "use client";
 
+import {
+  DNA_BADGE,
+  DNA_BODY,
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_EYEBROW,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import type { AIPredictionReport, PricingTier } from "@/types";
 import { AiFeatureErrorNotice } from "@/components/AiFeatureErrorNotice";
 import { AI_PREDICTION_SECTIONS } from "@/lib/ai-prediction";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
 import { InsightPanel, InsightPanelHeader } from "@/components/InsightPanel";
 import { SubscriptionGate } from "@/components/ProductShell";
-import { DNA_BODY } from "@/lib/design-dna";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { marketChangeBadgeClass } from "@/lib/market-semantics";
-import {
-  HOME_CALLOUT,
-  HOME_FACTOR_GROUP,
-  HOME_INSTRUMENT_PANEL,
-  HOME_PRIMARY_BUTTON,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { HOME_CALLOUT, HOME_FACTOR_GROUP, HOME_INSTRUMENT_PANEL, HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 interface AIPredictionPanelProps {
   prediction: AIPredictionReport | null;
@@ -34,7 +35,7 @@ function RecommendationBadge({
   const styles = marketChangeBadgeClass(recommendationValue);
 
   return (
-    <span className={`rounded-md px-2.5 py-1 text-xs font-semibold ${styles}`}>
+    <span className={`rounded-md px-2.5 py-1 ${DNA_BADGE} ${styles}`}>
       {recommendationValue.toUpperCase()}
     </span>
   );
@@ -99,8 +100,8 @@ function FactorGroup({
 
   const headingClass =
     tone === "risk"
-      ? "mb-2 text-sm font-semibold text-amber-900 dark:text-amber-200"
-      : `mb-2 text-sm font-semibold text-stone-900 dark:text-stone-100`;
+      ? `mb-2 ${DNA_SUBHEADING} text-amber-900 dark:text-amber-200`
+      : `mb-2 ${DNA_SUBHEADING}`;
 
   return (
     <div className={shellClass}>
@@ -109,11 +110,7 @@ function FactorGroup({
       <div className="space-y-3">
         {entries.map(({ section, items }) => (
           <div key={section!.id}>
-            <p
-              className={`text-xs font-medium uppercase tracking-wide ${HOME_SUBTLE_TEXT}`}
-            >
-              {section!.label}
-            </p>
+            <p className={DNA_EYEBROW}>{section!.label}</p>
             {(() => {
               const { text, omitted } = editorialExcerpt(
                 items,
@@ -123,7 +120,7 @@ function FactorGroup({
                 <>
                   <p className={`mt-1 ${DNA_BODY}`}>{text}</p>
                   {omitted > 0 && (
-                    <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
+                    <p className={`mt-1 ${DNA_CAPTION}`}>
                       +{omitted} more points in this section
                     </p>
                   )}
@@ -173,7 +170,10 @@ export function AIPredictionPanel({
 
   return (
     <InsightPanel>
-      <div className={`relative ${HOME_INSTRUMENT_PANEL}`}>
+      <div
+        className={`relative ${HOME_INSTRUMENT_PANEL}`}
+        data-testid="ai-prediction-panel"
+      >
         {showLockedGateOnly ? (
           <LockedGate pricingTier={pricingTier} />
         ) : (
@@ -194,7 +194,7 @@ export function AIPredictionPanel({
                         recommendation={prediction.recommendation}
                       />
                       <span
-                        className={`flex items-center text-xs ${HOME_SUBTLE_TEXT}`}
+                        className={`flex items-center ${DNA_CAPTION}`}
                       >
                         <span>
                           Confidence {Math.round(prediction.confidence * 100)}%
@@ -207,14 +207,14 @@ export function AIPredictionPanel({
               />
 
               {loading && (
-                <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
+                <p className={`${DNA_BODY_SECONDARY}`}>
                   Building your AI prediction...
                 </p>
               )}
 
               {!loading && prediction && (
                 <div className="space-y-4">
-                  <div className={`${HOME_CALLOUT} text-sm`}>
+                  <div className={HOME_CALLOUT}>
                     {prediction.summary}
                   </div>
 
@@ -232,7 +232,7 @@ export function AIPredictionPanel({
 
                   {symbolSpecific && symbolSpecific.bullets.length > 0 && (
                     <div className="rounded-lg border border-stone-200 bg-stone-100 p-3 dark:border-stone-700 dark:bg-stone-800">
-                      <p className="mb-1 text-sm font-semibold text-stone-900 dark:text-stone-100">
+                      <p className={`mb-1 ${DNA_SUBHEADING}`}>
                         {symbolSpecific.title}
                       </p>
                       {(() => {
@@ -244,7 +244,7 @@ export function AIPredictionPanel({
                           <>
                             <p className={DNA_BODY}>{text}</p>
                             {omitted > 0 && (
-                              <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
+                              <p className={`mt-1 ${DNA_CAPTION}`}>
                                 +{omitted} more symbol-specific notes
                               </p>
                             )}
@@ -273,7 +273,7 @@ export function AIPredictionPanel({
               )}
 
               {!loading && !prediction && !locked && !error && (
-                <p className={`text-sm ${HOME_SUBTLE_TEXT}`}>
+                <p className={`${DNA_BODY_SECONDARY}`}>
                   No prediction yet. Try another symbol or refresh this panel.
                 </p>
               )}

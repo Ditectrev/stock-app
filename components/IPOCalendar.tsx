@@ -7,6 +7,7 @@
  * Requirements: 24.19, 24.20, 24.21
  */
 
+import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { IPOEvent } from "@/types";
@@ -14,19 +15,7 @@ import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
-import {
-  CALENDAR_DAY_HEADER,
-  CALENDAR_EMPTY_TEXT,
-  CALENDAR_EVENT_LIST,
-  CALENDAR_EVENT_META,
-  CALENDAR_EVENT_ROW,
-  CALENDAR_EVENT_TITLE,
-  CALENDAR_SYMBOL_CHIP,
-  CALENDAR_PAGE_TITLE,
-  CALENDAR_TODAY_BADGE,
-  CALENDAR_TODAY_HEADER,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { CALENDAR_DAY_HEADER, CALENDAR_EMPTY_TEXT, CALENDAR_EVENT_LIST, CALENDAR_EVENT_META, CALENDAR_EVENT_ROW, CALENDAR_EVENT_TITLE, CALENDAR_SYMBOL_CHIP, CALENDAR_PAGE_TITLE, CALENDAR_TODAY_BADGE, CALENDAR_TODAY_HEADER } from "@/lib/home-ui";
 
 export interface IPOCalendarProps {
   data?: IPOEvent[];
@@ -174,7 +163,7 @@ export function IPOCalendar({
       <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 className={CALENDAR_PAGE_TITLE}>IPO Calendar</h3>
-          <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
+          <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
             New listings by date with exchange, range, and offer context.
           </p>
         </div>
@@ -217,7 +206,7 @@ export function IPOCalendar({
               <div key={dateKey} data-testid={`day-group-${dateKey}`}>
                 {/* Day header */}
                 <div
-                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 text-sm font-semibold ${
+                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 ${DNA_SUBHEADING} ${
                     isToday ? CALENDAR_TODAY_HEADER : CALENDAR_DAY_HEADER
                   }`}
                   data-testid={`day-header-${dateKey}`}
@@ -231,7 +220,7 @@ export function IPOCalendar({
                     </span>
                   )}
                   <span
-                    className={`ml-2 text-xs font-normal ${HOME_SUBTLE_TEXT}`}
+                    className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
                   >
                     ({events.length} IPO{events.length !== 1 ? "s" : ""})
                   </span>

@@ -7,6 +7,7 @@
  * Requirements: 24.14, 24.15, 24.16, 24.17, 24.18
  */
 
+import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { DividendEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
@@ -14,21 +15,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import { MARKET_UP_BADGE } from "@/lib/market-semantics";
-import {
-  CALENDAR_CHIP_IDLE,
-  CALENDAR_DAY_HEADER,
-  CALENDAR_EMPTY_TEXT,
-  CALENDAR_EVENT_LIST,
-  CALENDAR_EVENT_META,
-  CALENDAR_EVENT_ROW,
-  CALENDAR_EVENT_TITLE,
-  CALENDAR_FILTER_LABEL,
-  CALENDAR_PAGE_TITLE,
-  CALENDAR_SELECT,
-  CALENDAR_TODAY_BADGE,
-  CALENDAR_TODAY_HEADER,
-  HOME_SUBTLE_TEXT,
-} from "@/lib/home-ui";
+import { CALENDAR_CHIP_IDLE, CALENDAR_DAY_HEADER, CALENDAR_EMPTY_TEXT, CALENDAR_EVENT_LIST, CALENDAR_EVENT_META, CALENDAR_EVENT_ROW, CALENDAR_EVENT_TITLE, CALENDAR_FILTER_LABEL, CALENDAR_PAGE_TITLE, CALENDAR_SELECT, CALENDAR_TODAY_BADGE, CALENDAR_TODAY_HEADER } from "@/lib/home-ui";
 
 export interface DividendCalendarProps {
   data?: DividendEvent[];
@@ -192,7 +179,7 @@ export function DividendCalendar({
       <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h3 className={CALENDAR_PAGE_TITLE}>Dividend Calendar</h3>
-          <p className={`mt-1 text-sm ${HOME_SUBTLE_TEXT}`}>
+          <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
             Upcoming payouts by day with yield, amount, and payment schedule.
           </p>
         </div>
@@ -292,7 +279,7 @@ export function DividendCalendar({
             return (
               <div key={dateKey} data-testid={`day-group-${dateKey}`}>
                 <div
-                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 text-sm font-semibold ${
+                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 ${DNA_SUBHEADING} ${
                     isToday ? CALENDAR_TODAY_HEADER : CALENDAR_DAY_HEADER
                   }`}
                   data-testid={`day-header-${dateKey}`}
@@ -306,7 +293,7 @@ export function DividendCalendar({
                     </span>
                   )}
                   <span
-                    className={`ml-2 text-xs font-normal ${HOME_SUBTLE_TEXT}`}
+                    className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}
                   >
                     ({events.length} event
                     {events.length !== 1 ? "s" : ""})
@@ -354,7 +341,7 @@ export function DividendCalendar({
                               Pay: {toDateString(payDate)}
                             </span>
                             <span
-                              className={`capitalize ${HOME_SUBTLE_TEXT}`}
+                              className={`capitalize ${DNA_CAPTION}`}
                               data-testid={`frequency-${event.id}`}
                             >
                               {event.frequency}

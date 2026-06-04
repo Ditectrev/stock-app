@@ -8,12 +8,19 @@
  * Requirements: 4.2, 11.2, 11.3, 11.4, 11.5
  */
 
+import { DNA_CAPTION } from "@/lib/design-dna";
 import { useState, useCallback } from "react";
 import { ChartWrapper, IChartApi } from "./ChartWrapper";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
-import { homeChipClasses, HOME_CALLOUT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
-import { MARKET_DOWN_TEXT, MARKET_ERROR_SURFACE } from "@/lib/market-semantics";
+import { homeChipClasses, HOME_CALLOUT } from "@/lib/home-ui";
+import {
+  getMarketChartColors,
+  marketChartOverlayColor,
+  marketChartSignedColor,
+  MARKET_DOWN_TEXT,
+  MARKET_ERROR_SURFACE,
+} from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   calculateRSI,
@@ -169,10 +176,10 @@ export function ChartComponent({
       return priceData.map((d) => ({
         time: Math.floor(new Date(d.timestamp).getTime() / 1000) as Time,
         value: d.volume,
-        color: d.close >= d.open ? "#26a69a" : "#ef5350",
+        color: marketChartSignedColor(d.close >= d.open, isDark),
       }));
     },
-    []
+    [isDark]
   );
 
   // Initialize chart with data
@@ -187,6 +194,7 @@ export function ChartComponent({
         setError(null);
         const chartData = convertToChartData(filteredData);
         const volumeData = convertVolumeData(filteredData);
+        const chartColors = getMarketChartColors(isDark);
 
         // Create main series based on chart type
         let mainSeries:
@@ -196,23 +204,23 @@ export function ChartComponent({
 
         if (chartType === "candlestick") {
           mainSeries = chart.addSeries(CandlestickSeries, {
-            upColor: "#26a69a",
-            downColor: "#ef5350",
+            upColor: chartColors.up,
+            downColor: chartColors.down,
             borderVisible: false,
-            wickUpColor: "#26a69a",
-            wickDownColor: "#ef5350",
+            wickUpColor: chartColors.wickUp,
+            wickDownColor: chartColors.wickDown,
           });
         } else if (chartType === "area") {
           mainSeries = chart.addSeries(AreaSeries, {
-            lineColor: "#2962FF",
-            topColor: "#2962FF",
-            bottomColor: "rgba(41, 98, 255, 0.28)",
+            lineColor: chartColors.series,
+            topColor: chartColors.areaTop,
+            bottomColor: chartColors.areaBottom,
             lineWidth: 2,
           });
         } else {
           // line chart
           mainSeries = chart.addSeries(LineSeries, {
-            color: "#2962FF",
+            color: chartColors.series,
             lineWidth: 2,
           });
         }
@@ -221,7 +229,7 @@ export function ChartComponent({
 
         // Add volume histogram
         const volumeSeries = chart.addSeries(HistogramSeries, {
-          color: "#26a69a",
+          color: chartColors.up,
           priceFormat: {
             type: "volume",
           },
@@ -247,7 +255,7 @@ export function ChartComponent({
               indicator.period || 50
             );
             const maSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#FF6B6B",
+              color: indicator.color || marketChartOverlayColor(0, isDark),
               lineWidth: 1,
               title: `MA(${indicator.period || 50})`,
             });
@@ -259,7 +267,7 @@ export function ChartComponent({
               value: d.value,
             }));
             const emaSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#95E1D3",
+              color: indicator.color || marketChartOverlayColor(2, isDark),
               lineWidth: 1,
               title: `EMA(${indicator.period || 20})`,
             });
@@ -271,7 +279,7 @@ export function ChartComponent({
               value: d.value,
             }));
             const rsiSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#F38181",
+              color: indicator.color || marketChartOverlayColor(3, isDark),
               lineWidth: 2,
               title: `RSI(${indicator.period || 14})`,
               priceScaleId: "rsi",
@@ -296,11 +304,11 @@ export function ChartComponent({
             const histogramData: HistogramData[] = macdData.map((d) => ({
               time: Math.floor(new Date(d.timestamp).getTime() / 1000) as Time,
               value: d.histogram,
-              color: d.histogram >= 0 ? "#26a69a" : "#ef5350",
+              color: marketChartSignedColor(d.histogram >= 0, isDark),
             }));
 
             const macdSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#AA96DA",
+              color: indicator.color || marketChartOverlayColor(4, isDark),
               lineWidth: 2,
               title: "MACD",
               priceScaleId: "macd",
@@ -314,7 +322,7 @@ export function ChartComponent({
             macdSeries.setData(macdLineData);
 
             const signalSeries = chart.addSeries(LineSeries, {
-              color: "#FF6B6B",
+              color: marketChartOverlayColor(1, isDark),
               lineWidth: 1,
               title: "Signal",
               priceScaleId: "macd",
@@ -344,14 +352,14 @@ export function ChartComponent({
             }));
 
             const upperSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#FCBAD3",
+              color: indicator.color || marketChartOverlayColor(5, isDark),
               lineWidth: 1,
               title: `BB Upper(${indicator.period || 20})`,
             });
             upperSeries.setData(upperBandData);
 
             const middleSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#FCBAD3",
+              color: indicator.color || marketChartOverlayColor(5, isDark),
               lineWidth: 1,
               lineStyle: 2, // Dashed
               title: `BB Middle(${indicator.period || 20})`,
@@ -359,7 +367,7 @@ export function ChartComponent({
             middleSeries.setData(middleBandData);
 
             const lowerSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#FCBAD3",
+              color: indicator.color || marketChartOverlayColor(5, isDark),
               lineWidth: 1,
               title: `BB Lower(${indicator.period || 20})`,
             });
@@ -400,6 +408,7 @@ export function ChartComponent({
       convertToChartData,
       convertVolumeData,
       onDataPointHover,
+      isDark,
     ]
   );
 
@@ -452,7 +461,7 @@ export function ChartComponent({
   }
 
   return (
-    <div className="chart-container w-full">
+    <div className="chart-container w-full" data-testid="price-chart-panel">
       {/* Chart Controls */}
       <div className="chart-controls mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <TimeRangeSelector
@@ -497,7 +506,7 @@ export function ChartComponent({
       </ChartWrapper>
 
       {/* Chart Instructions */}
-      <div className={`mt-2 text-xs ${HOME_SUBTLE_TEXT}`}>
+      <div className={`mt-2 ${DNA_CAPTION}`}>
         <p className="hidden sm:block">
           💡 Use mouse wheel to zoom, drag to pan, hover for details
         </p>

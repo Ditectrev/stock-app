@@ -7,10 +7,10 @@
  * Requirements: 4.1, 4.2, 4.3, 4.4, 4.5
  */
 
+import { DNA_PAGE_STACK } from "@/lib/design-dna";
 import { SymbolData, PriceData, TimeRange } from "@/types";
 import { ChartComponent } from "@/components/ChartComponent";
 import { KeyMetrics } from "@/components/KeyMetrics";
-import { DNA_PAGE_STACK } from "@/lib/design-dna";
 import {
   SYMBOL_INSTRUMENT_PANEL,
   SYMBOL_PANEL_TITLE,
@@ -36,7 +36,7 @@ export function OverviewTab({
       <div className={`${SYMBOL_INSTRUMENT_PANEL} lg:p-8`}>
         <p className={`mb-2 ${SYMBOL_SECTION_LABEL}`}>Price trend</p>
         <h2 className={`mb-2 sm:mb-3 ${SYMBOL_PANEL_TITLE}`}>Chart</h2>
-        <p className={`mb-3 text-sm sm:mb-4 ${SYMBOL_SUBTLE_TEXT}`}>
+        <p className={`mb-3 sm:mb-4 ${SYMBOL_SUBTLE_TEXT}`}>
           Adjust the range to compare price action. Headline price is in the
           symbol header.
         </p>
