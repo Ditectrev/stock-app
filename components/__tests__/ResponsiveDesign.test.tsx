@@ -142,10 +142,10 @@ describe("Responsive Design", () => {
       expect(footer!.className).toContain("py-4");
     });
 
-    it("should render SymbolHeader text at base size (text-2xl)", () => {
+    it("should render SymbolHeader text at base size (text-3xl)", () => {
       render(<SymbolHeader symbolData={mockSymbolData} />);
       const heading = screen.getByText("AAPL");
-      expect(heading.className).toContain("text-2xl");
+      expect(heading.className).toContain("text-3xl");
     });
 
     it("should render search input with base text size on mobile", () => {
@@ -248,10 +248,10 @@ describe("Responsive Design", () => {
       expect(grid!.className).toContain("lg:divide-x");
     });
 
-    it("should render SymbolHeader heading at sm:text-3xl for desktop", () => {
+    it("should render SymbolHeader heading at sm:text-4xl for desktop", () => {
       render(<SymbolHeader symbolData={mockSymbolData} />);
       const heading = screen.getByText("AAPL");
-      expect(heading.className).toContain("sm:text-3xl");
+      expect(heading.className).toContain("sm:text-4xl");
     });
 
     it("should render all metric cards on desktop", () => {
@@ -448,9 +448,9 @@ describe("Responsive Design", () => {
       render(<SymbolHeader symbolData={mockSymbolData} />);
 
       const heading = screen.getByText("AAPL");
-      // Base: text-2xl, sm: text-3xl
-      expect(heading.className).toContain("text-2xl");
-      expect(heading.className).toContain("sm:text-3xl");
+      // DNA_DISPLAY: text-3xl, sm: text-4xl
+      expect(heading.className).toContain("text-3xl");
+      expect(heading.className).toContain("sm:text-4xl");
 
       const subtitle = screen.getByText("Apple Inc.");
       // Base: text-base, sm: text-lg
