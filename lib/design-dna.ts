@@ -13,9 +13,9 @@ export const DNA_ACCENT_BAR =
 export const DNA_EYEBROW =
   "font-sans text-xs font-semibold uppercase tracking-[0.2em] text-stone-600 dark:text-stone-300 sm:text-[0.8125rem] sm:tracking-[0.22em]";
 
-/** Suffix beside tier prices (e.g. “/ mo”). */
+/** Suffix beside tier prices (e.g. “/ mo”) — baseline-aligned with `DNA_PRICE`. */
 export const DNA_PRICE_SUFFIX =
-  "font-sans text-base font-medium text-stone-600 dark:text-stone-400";
+  "font-sans text-lg font-medium text-stone-600 dark:text-stone-400 sm:text-xl";
 
 /** Page hero / marketing headline. */
 export const DNA_DISPLAY =

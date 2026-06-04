@@ -10,6 +10,7 @@ import {
   DNA_BADGE,
   DNA_BADGE_POPULAR,
   DNA_BODY,
+  DNA_BODY_ON_INVERSE,
   DNA_BODY_SECONDARY,
   DNA_BUTTON_LABEL,
   DNA_CAPTION,
@@ -59,10 +60,26 @@ function PricingCard({
     0,
     tier.features.length - visibleFeatures.length
   );
+  const titleClass = featured
+    ? "text-stone-100 dark:text-stone-900"
+    : "text-stone-900 dark:text-stone-50";
+  const descriptionClass = featured ? DNA_BODY_ON_INVERSE : DNA_BODY;
+  const featureTextClass = featured
+    ? "font-sans text-base leading-relaxed text-stone-200 dark:text-stone-700"
+    : `font-sans ${DNA_BODY}`;
+  const priceMutedClass = featured
+    ? "text-stone-300 dark:text-stone-600"
+    : "text-stone-600 dark:text-stone-400";
+  const priceNumeralClass = featured
+    ? "text-stone-100 dark:text-stone-900"
+    : "text-stone-900 dark:text-stone-50";
+  const dividerClass = featured
+    ? "border-stone-700/60 dark:border-stone-300/60"
+    : "border-stone-200 dark:border-stone-700";
 
   return (
     <div
-      className={`relative flex h-full flex-col rounded-2xl border p-6 transition-shadow
+      className={`relative flex h-full flex-col rounded-2xl border p-6 transition-shadow sm:p-7
         ${
           isPopular
             ? "border-stone-900 shadow-lg shadow-stone-400/20 dark:border-stone-100 dark:shadow-stone-900/40"
@@ -82,63 +99,59 @@ function PricingCard({
         </div>
       )}
 
-      {/* Header */}
-      <div className="mb-4 pr-24">
-        <h3
-          className={`h-[3.5rem] ${DNA_SUBHEADING} ${
-            featured
-              ? "text-stone-100 dark:text-stone-900"
-              : "text-stone-900 dark:text-stone-50"
-          }`}
+      <div
+        className={
+          featured
+            ? "flex flex-1 flex-col gap-6 lg:flex-row lg:items-start lg:gap-10"
+            : "flex flex-1 flex-col"
+        }
+      >
+        <div
+          className={
+            featured ? "lg:min-w-[16rem] lg:flex-1" : "flex flex-1 flex-col"
+          }
         >
-          {tier.name}
-        </h3>
-        <p
-          className={`mt-1 h-[5.5rem] overflow-hidden ${
-            featured
-              ? "text-sm leading-relaxed text-stone-300 dark:text-stone-600"
-              : DNA_BODY_SECONDARY
-          }`}
-        >
-          {tier.description}
-        </p>
-      </div>
+          <div className="pr-24">
+            <h3 className={`font-sans ${DNA_SUBHEADING} ${titleClass}`}>
+              {tier.name}
+            </h3>
+            <p className={`mt-2 font-sans ${descriptionClass}`}>
+              {tier.description}
+            </p>
+          </div>
 
-      {/* Price */}
-      <div className="mb-6 min-h-[3.5rem]">
-        {isFree ? (
-          <span
-            className={`${DNA_PRICE} ${
-              featured ? "text-stone-100 dark:text-stone-900" : ""
+          <div
+            className={`mt-6 border-t pt-6 ${dividerClass} ${
+              featured ? "lg:mt-8" : ""
             }`}
           >
-            Free
-          </span>
-        ) : (
-          <div className="flex items-end gap-1">
-            <span
-              className={`${DNA_PRICE} ${
-                featured ? "text-stone-100 dark:text-stone-900" : ""
-              }`}
-            >
-              €{tier.price}
-            </span>
-            <span
-              className={`mb-1.5 ${DNA_PRICE_SUFFIX} ${
-                featured ? "dark:text-stone-600" : ""
-              }`}
-            >
-              / mo
-            </span>
+            {isFree ? (
+              <div>
+                <p className={`font-sans ${DNA_PRICE} ${priceNumeralClass}`}>
+                  Included
+                </p>
+                <p
+                  className={`mt-1 font-sans ${DNA_CAPTION} ${priceMutedClass}`}
+                >
+                  No monthly charge
+                </p>
+              </div>
+            ) : (
+              <p className="font-sans leading-none">
+                <span className={`${DNA_PRICE} ${priceNumeralClass}`}>
+                  €{tier.price}
+                </span>
+                <span className={`ml-2 ${DNA_PRICE_SUFFIX} ${priceMutedClass}`}>
+                  / mo
+                </span>
+              </p>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* CTA button */}
-      <button
-        onClick={() => onSelect(tier.tier)}
-        disabled={isCurrentTier}
-        className={`mb-6 w-full whitespace-nowrap rounded-lg px-4 py-2.5 text-center ${DNA_BUTTON_LABEL} transition-colors
+          <button
+            onClick={() => onSelect(tier.tier)}
+            disabled={isCurrentTier}
+            className={`mt-4 w-full whitespace-nowrap rounded-lg px-4 py-2.5 text-center ${DNA_BUTTON_LABEL} transition-colors
           ${
             isCurrentTier
               ? HOME_DISABLED_BUTTON
@@ -146,39 +159,39 @@ function PricingCard({
                 ? "bg-stone-100 text-stone-900 hover:bg-stone-200 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
                 : "bg-stone-900 hover:bg-stone-700 text-stone-100 dark:bg-stone-100 dark:hover:bg-stone-300 dark:text-stone-900"
           }`}
-        aria-label={
-          isCurrentTier
-            ? `Current plan: ${tier.name}`
-            : `Get started with ${tier.name}`
-        }
-      >
-        {isCurrentTier ? "Current" : isFree ? "Start" : "Subscribe"}
-      </button>
-
-      {/* Feature list */}
-      <ul className="space-y-2.5 flex-1" aria-label={`${tier.name} features`}>
-        {visibleFeatures.map((feature) => (
-          <li key={feature} className="flex items-start gap-2">
-            {FEATURE_MARK}
-            <span
-              className={
-                featured
-                  ? "text-sm text-stone-200 dark:text-stone-700"
-                  : DNA_BODY
-              }
-            >
-              {feature}
-            </span>
-          </li>
-        ))}
-        {hiddenCount > 0 && (
-          <li
-            className={`pl-6 text-xs ${featured ? "text-stone-300 dark:text-stone-700" : DNA_BODY_SECONDARY}`}
+            aria-label={
+              isCurrentTier
+                ? `Current plan: ${tier.name}`
+                : `Get started with ${tier.name}`
+            }
           >
-            +{hiddenCount} more plan details
-          </li>
-        )}
-      </ul>
+            {isCurrentTier ? "Current" : isFree ? "Start" : "Subscribe"}
+          </button>
+        </div>
+
+        <ul
+          className={`space-y-2.5 ${
+            featured
+              ? "flex-1 border-t pt-6 lg:mt-0 lg:border-t-0 lg:pt-0"
+              : "mt-6 flex-1 border-t pt-6"
+          } ${dividerClass}`}
+          aria-label={`${tier.name} features`}
+        >
+          {visibleFeatures.map((feature) => (
+            <li key={feature} className="flex items-start gap-2">
+              {FEATURE_MARK}
+              <span className={featureTextClass}>{feature}</span>
+            </li>
+          ))}
+          {hiddenCount > 0 && (
+            <li
+              className={`pl-6 font-sans ${featured ? DNA_BODY_ON_INVERSE : DNA_BODY_SECONDARY}`}
+            >
+              +{hiddenCount} more plan details
+            </li>
+          )}
+        </ul>
+      </div>
     </div>
   );
 }
@@ -250,7 +263,7 @@ export function PricingPage({
                   className="border-t border-stone-200 pt-3 first:border-t-0 first:pt-0 dark:border-stone-700"
                 >
                   <p className={DNA_EYEBROW}>{label}</p>
-                  <p className={`mt-1 text-xs leading-relaxed ${DNA_CAPTION}`}>
+                  <p className={`mt-1 leading-relaxed ${DNA_CAPTION}`}>
                     {orderedTiers
                       .map((tier) =>
                         hasFeature(tier, needle)

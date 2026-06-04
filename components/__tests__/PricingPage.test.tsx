@@ -132,12 +132,11 @@ describe("PricingPage", () => {
       expect(screen.getByText("Priority support")).toBeInTheDocument();
     });
 
-    it("should display 'Free' label for the free tier instead of a price", () => {
+    it("should show included pricing for the free tier instead of a euro amount", () => {
       renderPricingPage();
-      // The free tier shows "Free" as the price text
-      const freePriceLabels = screen.getAllByText("Free");
-      // One is the tier name heading, one is the price display
-      expect(freePriceLabels.length).toBeGreaterThanOrEqual(2);
+      expect(screen.getByRole("heading", { name: "Free" })).toBeInTheDocument();
+      expect(screen.getByText("Included")).toBeInTheDocument();
+      expect(screen.getByText("No monthly charge")).toBeInTheDocument();
     });
 
     it("should display monthly prices for paid tiers", () => {
