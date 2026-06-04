@@ -129,22 +129,20 @@ describe("MatrixHeatmap", () => {
 
   // --- Cell color coding (Req 25.11) ---
 
-  it("should apply green background for positive values", () => {
+  it("should apply emerald background for positive values", () => {
     render(
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-AAPL-1D");
-    // Positive → green (light mode: green-600 base)
-    expect(cell.style.backgroundColor).toContain("22, 163, 74");
+    expect(cell.style.backgroundColor).toMatch(/5,\s*150,\s*105/);
   });
 
-  it("should apply red background for negative values", () => {
+  it("should apply rose background for negative values", () => {
     render(
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-MSFT-1D");
-    // Negative → red (light mode: red-600 base)
-    expect(cell.style.backgroundColor).toContain("220, 38, 38");
+    expect(cell.style.backgroundColor).toMatch(/225,\s*29,\s*72/);
   });
 
   it("should apply neutral background for zero values", () => {

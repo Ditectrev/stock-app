@@ -186,20 +186,16 @@ describe("StockHeatmap", () => {
 
   // --- TradingView style ---
 
-  it("should apply green color for positive change tiles", () => {
+  it("should apply emerald fill for positive change tiles", () => {
     render(<StockHeatmap />);
     const tile = screen.getByTestId("heatmap-tile-AAPL");
-    const style = tile.getAttribute("style") || tile.className;
-    // Positive stocks should have green-tinted background
-    expect(style).toBeTruthy();
+    expect(tile.style.backgroundColor).toMatch(/5,\s*150,\s*105/);
   });
 
-  it("should apply red color for negative change tiles", () => {
+  it("should apply rose fill for negative change tiles", () => {
     render(<StockHeatmap />);
     const tile = screen.getByTestId("heatmap-tile-MSFT");
-    const style = tile.getAttribute("style") || tile.className;
-    // Negative stocks should have red-tinted background
-    expect(style).toBeTruthy();
+    expect(tile.style.backgroundColor).toMatch(/225,\s*29,\s*72/);
   });
 
   // --- Error state ---

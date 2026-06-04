@@ -122,18 +122,16 @@ describe("HeatmapComponent", () => {
 
   // --- Color coding (Req 25.4, 25.5) ---
 
-  it("should apply green background for positive change", () => {
+  it("should apply emerald background for positive change", () => {
     render(<HeatmapComponent data={mockData} />);
     const tile = screen.getByTestId("heatmap-tile-AAPL");
-    // Positive → green (light mode: green-600 base)
-    expect(tile.style.backgroundColor).toContain("22, 163, 74");
+    expect(tile.style.backgroundColor).toMatch(/5,\s*150,\s*105/);
   });
 
-  it("should apply red background for negative change", () => {
+  it("should apply rose background for negative change", () => {
     render(<HeatmapComponent data={mockData} />);
     const tile = screen.getByTestId("heatmap-tile-MSFT");
-    // Negative → red (light mode: red-600 base)
-    expect(tile.style.backgroundColor).toContain("220, 38, 38");
+    expect(tile.style.backgroundColor).toMatch(/225,\s*29,\s*72/);
   });
 
   it("should apply neutral background for zero change", () => {

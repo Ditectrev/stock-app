@@ -166,7 +166,8 @@ describe("Home Page", () => {
       });
       render(<HomePageClient />);
       await waitFor(() => {
-        expect(screen.getByText("Error Loading Symbol")).toBeInTheDocument();
+        expect(screen.getByTestId("symbol-load-error")).toBeInTheDocument();
+        expect(screen.getByText("Couldn't load symbol")).toBeInTheDocument();
       });
     });
 
@@ -209,10 +210,12 @@ describe("Home Page", () => {
       render(<HomePageClient />);
 
       await waitFor(() => {
-        expect(screen.getByText("Clear Selection")).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: "Clear selection" })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByText("Clear Selection"));
+      fireEvent.click(screen.getByRole("button", { name: "Clear selection" }));
 
       await waitFor(() => {
         expect(

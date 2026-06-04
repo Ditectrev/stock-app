@@ -1,11 +1,18 @@
 /**
  * Shared fill + text colors for performance heatmaps (tiles and matrix cells).
+ * Uses emerald/rose hues aligned with lib/market-semantics.ts.
  * Light mode uses a higher opacity floor and dark text on pale tiles for WCAG contrast.
  */
 
 function fillRgba(r: number, g: number, b: number, intensity: number): string {
   return `rgba(${r},${g},${b},${intensity})`;
 }
+
+/** Tailwind emerald-600 / rose-600 approximations for heatmap fills. */
+const EMERALD_LIGHT = { r: 5, g: 150, b: 105 };
+const ROSE_LIGHT = { r: 225, g: 29, b: 72 };
+const EMERALD_DARK = { r: 16, g: 185, b: 129 };
+const ROSE_DARK = { r: 244, g: 63, b: 94 };
 
 /** Background for a signed performance value (e.g. % change). */
 export function getHeatmapFillColor(value: number, isDark: boolean): string {
@@ -17,14 +24,27 @@ export function getHeatmapFillColor(value: number, isDark: boolean): string {
 
   if (isDark) {
     const intensity = 0.2 + (magnitude / 10) * 0.75;
-    if (value > 0) return fillRgba(34, 197, 94, intensity);
-    return fillRgba(239, 68, 68, intensity);
+    if (value > 0) {
+      return fillRgba(
+        EMERALD_DARK.r,
+        EMERALD_DARK.g,
+        EMERALD_DARK.b,
+        intensity
+      );
+    }
+    return fillRgba(ROSE_DARK.r, ROSE_DARK.g, ROSE_DARK.b, intensity);
   }
 
-  // Light mode: deeper base hues + higher minimum alpha (pale tiles stay readable)
   const intensity = 0.42 + (magnitude / 10) * 0.52;
-  if (value > 0) return fillRgba(22, 163, 74, intensity);
-  return fillRgba(220, 38, 38, intensity);
+  if (value > 0) {
+    return fillRgba(
+      EMERALD_LIGHT.r,
+      EMERALD_LIGHT.g,
+      EMERALD_LIGHT.b,
+      intensity
+    );
+  }
+  return fillRgba(ROSE_LIGHT.r, ROSE_LIGHT.g, ROSE_LIGHT.b, intensity);
 }
 
 /** Tailwind text classes for labels on heatmap fills. */

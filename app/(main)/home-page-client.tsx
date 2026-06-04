@@ -16,7 +16,7 @@ import {
 } from "@/types";
 import { SymbolHeader } from "@/components/SymbolHeader";
 import { TabNavigation } from "@/components/TabNavigation";
-import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
+import { ProductGate } from "@/components/ProductShell";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { usePricingTier } from "@/lib/use-pricing-tier";
 import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
@@ -384,16 +384,17 @@ export function HomePageClient() {
           )}
 
           {error && !loading && (
-            <div className="text-center py-12">
-              <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 max-w-md mx-auto">
-                <h2 className="text-xl font-semibold mb-2">
-                  Error Loading Symbol
-                </h2>
-                <p className="mb-4">{error}</p>
-                <button onClick={clearSymbol} className={HOME_PRIMARY_BUTTON}>
-                  Clear Selection
-                </button>
-              </div>
+            <div className="py-12">
+              <ProductGate
+                eyebrow="Symbol"
+                title="Couldn't load symbol"
+                message={error}
+                onRetry={clearSymbol}
+                retryLabel="Clear selection"
+                align="center"
+                className="mx-auto max-w-md"
+                testId="symbol-load-error"
+              />
             </div>
           )}
 

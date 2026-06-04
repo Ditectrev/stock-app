@@ -24,15 +24,26 @@ test.describe("Sectors Hub", () => {
     await expect(changeLocator).toBeVisible();
   });
 
-  test("should color-code positive green and negative red (Req 23.4)", async ({
+  test("should color-code performance with emerald and rose semantics (Req 23.4)", async ({
     page,
   }) => {
     const sectorHub = page.getByTestId("sector-hub");
     await expect(sectorHub).toBeVisible({ timeout: 15000 });
 
-    const greenCount = await sectorHub.locator(".text-green-500").count();
-    const redCount = await sectorHub.locator(".text-red-500").count();
-    expect(greenCount + redCount).toBeGreaterThan(0);
+    const changeCells = sectorHub.locator('[data-testid^="change-"]');
+    await expect(changeCells.first()).toBeVisible();
+    const count = await changeCells.count();
+    expect(count).toBeGreaterThan(0);
+
+    let hasSemanticColor = false;
+    for (let i = 0; i < count; i++) {
+      const cls = (await changeCells.nth(i).getAttribute("class")) ?? "";
+      if (cls.includes("emerald") || cls.includes("rose")) {
+        hasSemanticColor = true;
+        break;
+      }
+    }
+    expect(hasSemanticColor).toBe(true);
   });
 
   test("should display time period selector (Req 23.7)", async ({ page }) => {

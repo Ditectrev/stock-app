@@ -9,6 +9,8 @@ import {
   InsightPanelHeader,
 } from "@/components/InsightPanel";
 import { AiFeatureErrorNotice } from "@/components/AiFeatureErrorNotice";
+import { DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
+import { MARKET_DOWN_TEXT, MARKET_UP_TEXT } from "@/lib/market-semantics";
 import {
   HOME_INSTRUMENT_PANEL,
   HOME_PRIMARY_BUTTON,
@@ -35,10 +37,8 @@ function StanceLabel({
   const isBuy = recommendation === "buy";
   return (
     <span
-      className={`text-[0.65rem] font-bold uppercase tracking-[0.16em] ${
-        isBuy
-          ? "text-emerald-700 dark:text-emerald-400"
-          : "text-rose-700 dark:text-rose-400"
+      className={`${DNA_EYEBROW} font-bold ${
+        isBuy ? MARKET_UP_TEXT : MARKET_DOWN_TEXT
       }`}
     >
       {recommendation}
@@ -66,12 +66,8 @@ function PickCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p
-            className={`text-[0.65rem] font-semibold uppercase tracking-[0.14em] ${HOME_SUBTLE_TEXT}`}
-          >
-            {title}
-          </p>
-          <p className="mt-1 font-semibold text-stone-900 dark:text-stone-100">
+          <p className={DNA_EYEBROW}>{title}</p>
+          <p className={`mt-1 ${DNA_SUBHEADING}`}>
             <span className="tabular-nums">{pick.symbol}</span>
             <span className={`font-normal ${HOME_SUBTLE_TEXT}`}>
               {" "}
@@ -189,16 +185,15 @@ export function StockOfTheDayPanel({
           </div>
 
           {showLockedOverlay && (
-            <div className="absolute inset-0 rounded-xl bg-stone-100 text-stone-900 dark:bg-stone-950 dark:text-stone-50">
-              <InsightPanelGate
-                message={gateMessage}
-                ctaHref="/pricing"
-                ctaLabel="View AI plans"
-                align="center"
-                overlay
-                buttonClassName={HOME_PRIMARY_BUTTON}
-              />
-            </div>
+            <InsightPanelGate
+              title={!showTitle ? "Daily AI stock ideas" : "Stock of the day"}
+              message={gateMessage}
+              ctaHref="/pricing"
+              ctaLabel="View AI plans"
+              align="center"
+              overlay
+              buttonClassName={HOME_PRIMARY_BUTTON}
+            />
           )}
         </>
       )}

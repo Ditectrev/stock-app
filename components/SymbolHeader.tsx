@@ -8,6 +8,7 @@
  */
 
 import { SymbolData } from "@/types";
+import { DNA_DISPLAY } from "@/lib/design-dna";
 import { marketChangeTextClass } from "@/lib/market-semantics";
 import {
   SYMBOL_INSTRUMENT_PANEL,
@@ -32,9 +33,7 @@ export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
           <p className={SYMBOL_SECTION_LABEL}>Symbol snapshot</p>
-          <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-50">
-            {symbolData.symbol}
-          </h1>
+          <h1 className={DNA_DISPLAY}>{symbolData.symbol}</h1>
           <p className={`text-base sm:text-lg ${SYMBOL_MUTED_TEXT}`}>
             {symbolData.name}
           </p>
@@ -46,7 +45,7 @@ export function SymbolHeader({ symbolData }: SymbolHeaderProps) {
           aria-atomic="true"
         >
           <div
-            className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-stone-50"
+            className={DNA_DISPLAY}
             aria-label={`Current price: $${symbolData.price.toFixed(2)}`}
           >
             ${symbolData.price.toFixed(2)}

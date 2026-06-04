@@ -131,6 +131,7 @@ export interface ProductGateProps {
   ctaHref?: string;
   ctaLabel?: string;
   onRetry?: () => void;
+  retryLabel?: string;
   overlay?: boolean;
   align?: "start" | "center";
   buttonClassName?: string;
@@ -147,6 +148,7 @@ export function ProductGate({
   ctaHref,
   ctaLabel,
   onRetry,
+  retryLabel = "Try again",
   overlay = false,
   align = "start",
   buttonClassName = HOME_PRIMARY_BUTTON,
@@ -177,7 +179,7 @@ export function ProductGate({
           ) : null}
           {onRetry ? (
             <button type="button" onClick={onRetry} className={buttonClassName}>
-              Try again
+              {retryLabel}
             </button>
           ) : null}
         </div>

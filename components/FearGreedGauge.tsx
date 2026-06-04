@@ -13,6 +13,7 @@ import { useTheme } from "@/lib/theme-context";
 import { FearGreedData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_INSTRUMENT_PANEL,
@@ -266,11 +267,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
           </div>
 
           <div className="text-left pb-1">
-            <p
-              className={`text-[0.65rem] font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
-            >
-              Today
-            </p>
+            <p className={DNA_EYEBROW}>Today</p>
             <span
               className="text-4xl font-bold tabular-nums sm:text-5xl"
               style={{ color }}
@@ -286,11 +283,11 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
             </p>
             <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1">
               {[
-                { label: "Extreme Fear", color: "#dc2626" },
+                { label: "Extreme Fear", color: "#e11d48" },
                 { label: "Fear", color: "#f97316" },
                 { label: "Neutral", color: "#eab308" },
                 { label: "Greed", color: "#84cc16" },
-                { label: "Extreme Greed", color: "#22c55e" },
+                { label: "Extreme Greed", color: "#059669" },
               ].map((rangeItem) => (
                 <span
                   key={rangeItem.label}
@@ -310,9 +307,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
         {data.history && data.history.length > 0 && (
           <div data-testid="fear-greed-history" className="min-w-0">
             <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <h4 className="text-sm font-semibold text-stone-700 dark:text-stone-300">
-                Historical timeline
-              </h4>
+              <h4 className={DNA_SUBHEADING}>Historical timeline</h4>
               {!externalData && (
                 <div
                   className="flex flex-wrap gap-1"

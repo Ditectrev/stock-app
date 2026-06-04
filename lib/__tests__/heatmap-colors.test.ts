@@ -22,4 +22,12 @@ describe("heatmap-colors", () => {
     expect(match).not.toBeNull();
     expect(Number(match![1])).toBeGreaterThanOrEqual(0.42);
   });
+
+  it("uses emerald RGB for positive light-mode fills", () => {
+    expect(getHeatmapFillColor(2, false)).toMatch(/5,\s*150,\s*105/);
+  });
+
+  it("uses rose RGB for negative light-mode fills", () => {
+    expect(getHeatmapFillColor(-2, false)).toMatch(/225,\s*29,\s*72/);
+  });
 });

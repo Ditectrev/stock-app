@@ -9,9 +9,15 @@
 import { useState } from "react";
 import { PricingTier, PricingTierInfo } from "@/types";
 import {
+  DNA_BODY,
+  DNA_DISPLAY,
+  DNA_EYEBROW,
+  DNA_HEADING,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
+import {
   HOME_DISABLED_BUTTON,
   HOME_MUTED_TEXT,
-  HOME_PANEL_TITLE,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
 
@@ -76,7 +82,7 @@ function PricingCard({
       {/* Header */}
       <div className="mb-4 pr-24">
         <h3
-          className={`h-[3.5rem] text-lg font-bold ${
+          className={`h-[3.5rem] ${DNA_SUBHEADING} ${
             featured
               ? "text-stone-100 dark:text-stone-900"
               : "text-stone-900 dark:text-stone-50"
@@ -212,16 +218,11 @@ export function PricingPage({
     >
       {/* Header */}
       <div className="mb-10 max-w-3xl lg:mb-12">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
-          Pricing
-        </p>
-        <h2
-          id="pricing-heading"
-          className={`mt-2 text-3xl font-extrabold sm:text-4xl ${HOME_PANEL_TITLE}`}
-        >
+        <p className={DNA_EYEBROW}>Pricing</p>
+        <h2 id="pricing-heading" className={`mt-2 ${DNA_DISPLAY}`}>
           Simple, transparent pricing
         </h2>
-        <p className={`mt-3 max-w-2xl text-lg ${HOME_SUBTLE_TEXT}`}>
+        <p className={`mt-3 max-w-2xl ${DNA_BODY}`}>
           Start free. Upgrade when you need AI features or an ad-free
           experience.
         </p>
@@ -231,12 +232,8 @@ export function PricingPage({
       <div className="space-y-6">
         <div className="grid gap-4 lg:grid-cols-[1.15fr_1.85fr]">
           <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900">
-            <p
-              className={`text-xs font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
-            >
-              Plan guide
-            </p>
-            <h3 className={`mt-2 text-xl font-semibold ${HOME_PANEL_TITLE}`}>
+            <p className={DNA_EYEBROW}>Plan guide</p>
+            <h3 className={`mt-2 ${DNA_HEADING}`}>
               Pick your workflow, not just a price
             </h3>
             <p className={`mt-2 text-sm ${HOME_MUTED_TEXT}`}>
