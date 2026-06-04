@@ -196,7 +196,7 @@ describe("ScreenerTableView", () => {
       />
     );
     const row = screen.getByTestId("row-AAPL");
-    expect(row.className).toContain("bg-red-50");
+    expect(row.className).toContain("bg-rose-50");
   });
 
   it("should apply green tint to underpriced rows", () => {
@@ -206,7 +206,7 @@ describe("ScreenerTableView", () => {
       />
     );
     const row = screen.getByTestId("row-AAPL");
-    expect(row.className).toContain("bg-green-50");
+    expect(row.className).toContain("bg-emerald-50");
   });
 
   it("should not apply tint to fair rows", () => {
@@ -214,8 +214,8 @@ describe("ScreenerTableView", () => {
       <ScreenerTableView results={[makeResult({ valuationContext: "fair" })]} />
     );
     const row = screen.getByTestId("row-AAPL");
-    expect(row.className).not.toContain("bg-red-50");
-    expect(row.className).not.toContain("bg-green-50");
+    expect(row.className).not.toContain("bg-rose-50");
+    expect(row.className).not.toContain("bg-emerald-50");
   });
 
   // --- Change % color coding ---

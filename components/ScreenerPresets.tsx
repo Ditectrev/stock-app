@@ -18,6 +18,7 @@ import {
   HOME_SECONDARY_BUTTON,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
+import { MARKET_DOWN_TEXT, MARKET_NEUTRAL_BADGE } from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 export interface ScreenerPresetsProps {
@@ -153,7 +154,7 @@ export function ScreenerPresets({
               {preset.name}
               {!preset.isDefault && (
                 <span
-                  className="ml-1.5 inline-block rounded bg-purple-100 px-1 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
+                  className={`ml-1.5 inline-block px-1 py-0.5 text-[10px] font-semibold ${MARKET_NEUTRAL_BADGE}`}
                   data-testid={`custom-badge-${preset.id}`}
                 >
                   Custom
@@ -243,7 +244,7 @@ export function ScreenerPresets({
       {/* Error */}
       {error && (
         <div
-          className="text-sm text-red-600 dark:text-red-400"
+          className={`text-sm ${MARKET_DOWN_TEXT}`}
           data-testid="presets-error"
         >
           {error}

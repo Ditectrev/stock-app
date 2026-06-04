@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import type { AIPredictionReport, PricingTier } from "@/types";
+import { AiFeatureErrorNotice } from "@/components/AiFeatureErrorNotice";
 import { AI_PREDICTION_SECTIONS } from "@/lib/ai-prediction";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
 import {
@@ -10,9 +10,7 @@ import {
   InsightPanelHeader,
 } from "@/components/InsightPanel";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
-import { AccountNotice } from "@/components/AccountNotice";
 import { marketChangeBadgeClass } from "@/lib/market-semantics";
-import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
 import {
   HOME_CALLOUT,
   HOME_FACTOR_GROUP,
@@ -250,33 +248,19 @@ export function AIPredictionPanel({
               )}
 
               {!loading && !prediction && !locked && error && (
-                <AccountNotice
-                  tone={isHostedSetupMessage(error) ? "warning" : "error"}
-                  title={
-                    isHostedSetupMessage(error)
-                      ? "Ditectrev AI configuration needed"
-                      : "AI prediction unavailable"
-                  }
-                >
-                  <span>{error}</span>
-                  {isMissingByokApiKeyMessage(error) && (
-                    <div className="mt-3 space-y-2">
-                      <p className="text-xs">
-                        Add your key in Profile → API keys, then select the same
-                        provider as your explanations model.
+                <AiFeatureErrorNotice
+                  error={error}
+                  title="AI prediction unavailable"
+                  isHostedSetup={isHostedSetupMessage(error)}
+                  hostedSetupHint={
+                    isHostedSetupMessage(error) ? (
+                      <p>
+                        If you are on the Ditectrev AI plan, ask support to
+                        verify deployment env setup for this region.
                       </p>
-                      <Link href="/profile" className={HOME_PRIMARY_BUTTON}>
-                        Open profile
-                      </Link>
-                    </div>
-                  )}
-                  {isHostedSetupMessage(error) && (
-                    <p className="mt-2 text-xs">
-                      If you are on the Ditectrev AI plan, ask support to verify
-                      deployment env setup for this region.
-                    </p>
-                  )}
-                </AccountNotice>
+                    ) : undefined
+                  }
+                />
               )}
 
               {!loading && !prediction && !locked && !error && (

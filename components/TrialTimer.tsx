@@ -1,5 +1,7 @@
 "use client";
 
+import { MARKET_DOWN_TEXT } from "@/lib/market-semantics";
+
 /**
  * TrialTimer Component
  * Displays a countdown timer for the trial session.
@@ -70,13 +72,13 @@ export function TrialTimer({ remainingSeconds, onExpired }: TrialTimerProps) {
     >
       <ClockIcon
         className={
-          isLow ? "text-red-500" : "text-stone-600 dark:text-stone-300"
+          isLow ? MARKET_DOWN_TEXT : "text-stone-600 dark:text-stone-300"
         }
       />
       <span
         className={
           isLow
-            ? "font-mono font-semibold text-red-500"
+            ? `font-mono font-semibold ${MARKET_DOWN_TEXT}`
             : "font-mono text-stone-700 dark:text-stone-200"
         }
         data-testid="trial-timer-display"

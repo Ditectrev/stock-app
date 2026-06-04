@@ -21,6 +21,7 @@ import {
   type ExplanationProvider,
   type Tier,
 } from "@/lib/explanation-provider";
+import { MARKET_DOWN_TEXT, MARKET_UP_TEXT } from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   readSelectedBYOKProvider,
@@ -38,9 +39,9 @@ function StatusNotice({ message }: { message: StatusMessage }) {
     <p
       className={`text-sm ${
         message.tone === "error"
-          ? "text-red-600 dark:text-red-400"
+          ? MARKET_DOWN_TEXT
           : message.tone === "success"
-            ? "text-green-700 dark:text-green-400"
+            ? MARKET_UP_TEXT
             : HOME_MUTED_TEXT
       }`}
       role="status"
@@ -348,7 +349,7 @@ export function ProfileSettings() {
                   type="button"
                   onClick={() => void handleCancelSubscription()}
                   disabled={cancelling}
-                  className="inline-flex items-center rounded-md border border-red-500 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
+                  className={`${HOME_SECONDARY_BUTTON} border-rose-300/90 text-rose-800 hover:bg-rose-50 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-950/30 disabled:opacity-50`}
                 >
                   {cancelling ? "Cancelling…" : "Cancel subscription"}
                 </button>

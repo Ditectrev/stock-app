@@ -21,6 +21,7 @@ import {
   CALENDAR_EVENT_META,
   CALENDAR_EVENT_ROW,
   CALENDAR_EVENT_TITLE,
+  CALENDAR_SYMBOL_CHIP,
   CALENDAR_PAGE_TITLE,
   CALENDAR_TODAY_BADGE,
   CALENDAR_TODAY_HEADER,
@@ -251,11 +252,7 @@ export function IPOCalendar({
                       >
                         {/* Exchange badge */}
                         <span
-                          className={`text-xs font-semibold px-2 py-0.5 rounded shrink-0 w-16 text-center inline-block ${
-                            isDark
-                              ? "bg-purple-900/40 text-purple-300"
-                              : "bg-purple-100 text-purple-700"
-                          }`}
+                          className={`${CALENDAR_SYMBOL_CHIP} w-16 shrink-0`}
                           data-testid={`exchange-${event.id}`}
                         >
                           {event.exchange}

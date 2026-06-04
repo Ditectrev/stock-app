@@ -14,6 +14,7 @@ import {
   MARKET_NEUTRAL_BADGE,
   MARKET_UP_BADGE,
   marketChangeTextClass,
+  marketValuationRowBg,
 } from "@/lib/market-semantics";
 import {
   HOME_MUTED_TEXT,
@@ -202,12 +203,7 @@ export function ScreenerTableView({
           </thead>
           <tbody>
             {paged.map((row) => {
-              const rowBg =
-                row.valuationContext === "overpriced"
-                  ? "bg-red-50 dark:bg-red-900/20"
-                  : row.valuationContext === "underpriced"
-                    ? "bg-green-50 dark:bg-green-900/20"
-                    : "";
+              const rowBg = marketValuationRowBg(row.valuationContext);
 
               return (
                 <tr

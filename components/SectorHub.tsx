@@ -13,7 +13,11 @@ import { useTheme } from "@/lib/theme-context";
 import { SectorData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { marketChangeTextClass } from "@/lib/market-semantics";
+import {
+  marketChangeTextClass,
+  marketPerformanceBarClass,
+  marketPerformanceBarTrackClass,
+} from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_CHIP,
@@ -248,7 +252,7 @@ export function SectorHub({
             (Math.abs(sector.changePercent) / maxAbsChange) * 100,
             100
           );
-          const barColor = isPositive ? "bg-green-500/20" : "bg-red-500/20";
+          const barColor = marketPerformanceBarTrackClass(isPositive);
           const isSelected = selectedSectors.includes(sector.sector);
           const isHovered = hoveredSector === sector.sector;
 
@@ -344,7 +348,7 @@ export function SectorHub({
                     className={`h-4 flex-1 rounded ${isDark ? "bg-stone-700" : "bg-stone-100"}`}
                   >
                     <div
-                      className={`h-full rounded ${isPositive ? "bg-green-500" : "bg-red-500"}`}
+                      className={`h-full rounded ${marketPerformanceBarClass(isPositive)}`}
                       style={{ width: `${barWidth}%` }}
                     />
                   </div>

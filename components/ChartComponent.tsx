@@ -13,6 +13,7 @@ import { ChartWrapper, IChartApi } from "./ChartWrapper";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
 import { homeChipClasses, HOME_CALLOUT, HOME_SUBTLE_TEXT } from "@/lib/home-ui";
+import { MARKET_DOWN_TEXT, MARKET_ERROR_SURFACE } from "@/lib/market-semantics";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   calculateRSI,
@@ -439,12 +440,10 @@ export function ChartComponent({
           />
         </div>
         <div
-          className={`flex items-center justify-center rounded-lg ${
-            isDark ? "bg-red-900/20" : "bg-red-50"
-          }`}
+          className={`flex items-center justify-center rounded-lg ${MARKET_ERROR_SURFACE}`}
           style={{ height: `${height}px` }}
         >
-          <div className={isDark ? "text-red-400" : "text-red-600"}>
+          <div className={`px-4 text-center text-sm ${MARKET_DOWN_TEXT}`}>
             {error}
           </div>
         </div>

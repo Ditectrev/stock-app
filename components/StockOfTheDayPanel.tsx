@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { PricingTier, StockOfTheDay, StockOfTheDayResult } from "@/types";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
@@ -9,13 +8,12 @@ import {
   InsightPanelGate,
   InsightPanelHeader,
 } from "@/components/InsightPanel";
+import { AiFeatureErrorNotice } from "@/components/AiFeatureErrorNotice";
 import {
   HOME_INSTRUMENT_PANEL,
-  HOME_MUTED_TEXT,
   HOME_PRIMARY_BUTTON,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
-import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
 
 interface StockOfTheDayPanelProps {
   item: StockOfTheDayResult | null;
@@ -176,26 +174,11 @@ export function StockOfTheDayPanel({
             )}
 
             {!loading && !item && !locked && error && (
-              <div
-                className={`rounded-lg border px-3 py-3 text-sm ${
-                  isMissingByokApiKeyMessage(error)
-                    ? "border-stone-300 bg-stone-100 text-stone-900 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100"
-                    : "border-amber-300/80 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100"
-                }`}
-              >
-                <p className="font-medium">{error}</p>
-                {isMissingByokApiKeyMessage(error) && (
-                  <div className="mt-3 space-y-2">
-                    <p className={`text-xs ${HOME_MUTED_TEXT}`}>
-                      Add your API key on the Profile page under API keys, then
-                      pick the same provider as your explanation model.
-                    </p>
-                    <Link href="/profile" className={HOME_PRIMARY_BUTTON}>
-                      Open profile
-                    </Link>
-                  </div>
-                )}
-              </div>
+              <AiFeatureErrorNotice
+                error={error}
+                title="Stock of the day unavailable"
+                defaultTone="warning"
+              />
             )}
 
             {!loading && !item && !locked && !error && (

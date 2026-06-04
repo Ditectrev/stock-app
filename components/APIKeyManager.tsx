@@ -22,6 +22,7 @@ import {
   HOME_RANGE_BUTTON_IDLE,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
+import { MARKET_DOWN_TEXT, MARKET_UP_TEXT } from "@/lib/market-semantics";
 
 const PROVIDERS: Array<{
   id: BYOKProvider;
@@ -210,7 +211,9 @@ export default function APIKeyManager({
                     {provider.name}
                   </span>
                   {row.isStored && (
-                    <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                    <span
+                      className={`inline-flex items-center gap-1 text-xs ${MARKET_UP_TEXT}`}
+                    >
                       <svg
                         className="w-3 h-3"
                         fill="currentColor"
@@ -272,7 +275,7 @@ export default function APIKeyManager({
                   </button>
                   <button
                     onClick={() => handleRemove(provider.id)}
-                    className="text-xs text-red-500 hover:underline"
+                    className={`text-xs ${MARKET_DOWN_TEXT} hover:underline`}
                     aria-label={`Remove ${provider.name} API key`}
                   >
                     Remove
@@ -363,7 +366,7 @@ export default function APIKeyManager({
                   {row.validationError && (
                     <p
                       id={`${provider.id}-error`}
-                      className="text-xs text-red-500 dark:text-red-400"
+                      className={`text-xs ${MARKET_DOWN_TEXT}`}
                       role="alert"
                     >
                       {row.validationError}

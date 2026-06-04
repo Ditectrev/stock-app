@@ -275,10 +275,10 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         setShowAuth(false);
         return { ok: true as const };
       } catch {
-        setAuthError("Network error. Please try again.");
+        setAuthError(AUTH_UI_COPY.networkFailed);
         return {
           ok: false as const,
-          error: "Network error. Please try again.",
+          error: AUTH_UI_COPY.networkFailed,
         };
       } finally {
         setAuthLoading(false);

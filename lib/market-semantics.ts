@@ -18,6 +18,19 @@ export const MARKET_DOWN_BADGE =
 export const MARKET_NEUTRAL_BADGE =
   "bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-100";
 
+/** Solid performance bars (sector comparison, etc.). */
+export const MARKET_UP_BAR = "bg-emerald-600";
+export const MARKET_DOWN_BAR = "bg-rose-600";
+export const MARKET_UP_BAR_TRACK = "bg-emerald-500/20";
+export const MARKET_DOWN_BAR_TRACK = "bg-rose-500/20";
+
+/** Subtle table/list row highlights. */
+export const MARKET_UP_ROW_BG = "bg-emerald-50 dark:bg-emerald-950/25";
+export const MARKET_DOWN_ROW_BG = "bg-rose-50 dark:bg-rose-950/25";
+
+/** Chart or panel error surfaces (no border). */
+export const MARKET_ERROR_SURFACE = "bg-rose-50 dark:bg-rose-950/35";
+
 export const CALENDAR_IMPORTANCE_HIGH =
   "bg-rose-100 text-rose-900 dark:bg-rose-950/50 dark:text-rose-300";
 export const CALENDAR_IMPORTANCE_MEDIUM =
@@ -35,6 +48,22 @@ export function marketChangeBgClass(change: number): string {
   if (change > 0) return MARKET_UP_BG;
   if (change < 0) return MARKET_DOWN_BG;
   return MARKET_NEUTRAL_BG;
+}
+
+export function marketValuationRowBg(
+  context: "overpriced" | "underpriced" | "fair" | string
+): string {
+  if (context === "overpriced") return MARKET_DOWN_ROW_BG;
+  if (context === "underpriced") return MARKET_UP_ROW_BG;
+  return "";
+}
+
+export function marketPerformanceBarClass(isPositive: boolean): string {
+  return isPositive ? MARKET_UP_BAR : MARKET_DOWN_BAR;
+}
+
+export function marketPerformanceBarTrackClass(isPositive: boolean): string {
+  return isPositive ? MARKET_UP_BAR_TRACK : MARKET_DOWN_BAR_TRACK;
 }
 
 export function marketChangeBadgeClass(
