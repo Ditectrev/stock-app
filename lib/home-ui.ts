@@ -62,6 +62,12 @@ export const HOME_CHIP = DNA_CHIP;
 
 export const HOME_CHIP_SM = DNA_CHIP_SM;
 
+/** Body on panels — readable contrast (Hallmark cd4d762). */
+export const HOME_MUTED_TEXT = "text-stone-700 dark:text-stone-200";
+
+/** Captions, legends, de-emphasized lines. */
+export const HOME_SUBTLE_TEXT = "text-stone-600 dark:text-stone-300";
+
 export const HOME_INPUT = DNA_INPUT;
 
 export const HOME_INPUT_SM = DNA_INPUT_SM;

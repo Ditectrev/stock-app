@@ -14,6 +14,7 @@ import {
 } from "@/lib/design-dna";
 import Link from "next/link";
 import { createPortal } from "react-dom";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
@@ -49,7 +50,7 @@ export interface ProductOverlayProps {
   closeTestId?: string;
 }
 
-/** Right-rail overlay (auth, account flows). */
+/** Centered modal overlay (auth, account flows). */
 export function ProductOverlay({
   open,
   onClose,
@@ -61,6 +62,15 @@ export function ProductOverlay({
   ariaLabel,
   closeTestId = "product-overlay-close",
 }: ProductOverlayProps) {
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const panel = (

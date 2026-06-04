@@ -9,17 +9,17 @@ export const DNA_NAV_ARCHETYPE = "terminal" as const;
 export const DNA_ACCENT_BAR =
   "inline-block h-8 w-[2px] shrink-0 rounded-full bg-stone-900 dark:bg-stone-100";
 
-/** Eyebrow / section label (terminal caps — sans for legibility). */
+/** Eyebrow / section label (terminal caps). */
 export const DNA_EYEBROW =
-  "font-sans text-xs font-semibold uppercase tracking-[0.2em] text-stone-600 dark:text-stone-300 sm:text-[0.8125rem] sm:tracking-[0.22em]";
+  "text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-stone-600 dark:text-stone-300";
 
 /** Suffix beside tier prices (e.g. “/ mo”) — baseline-aligned with `DNA_PRICE`. */
 export const DNA_PRICE_SUFFIX =
   "font-sans text-lg font-medium text-stone-600 dark:text-stone-400 sm:text-xl";
 
-/** Page hero / marketing headline. */
+/** Page hero / marketing headline (pricing, profile). */
 export const DNA_DISPLAY =
-  "text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-50 sm:text-3xl";
+  "text-3xl font-extrabold tracking-tight text-stone-900 dark:text-stone-50 sm:text-4xl";
 
 /** Home / marketing page title (dashboard hero). */
 export const DNA_HERO =
@@ -153,7 +153,7 @@ export const DNA_TABLE_HEADER =
 
 /** Pricing numerals on tier cards. */
 export const DNA_PRICE =
-  "font-sans text-5xl font-extrabold leading-none tabular-nums tracking-tight text-stone-900 dark:text-stone-50 sm:text-6xl";
+  "text-4xl font-extrabold leading-none tabular-nums tracking-tight text-stone-900 dark:text-stone-50";
 
 /** Primary mono data value (metrics, targets). */
 export const DNA_METRIC =
@@ -198,11 +198,12 @@ export const DNA_NAV_LINK_ACTIVE =
 export const DNA_NAV_LINK_IDLE =
   "text-stone-700 hover:bg-white hover:text-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-stone-50";
 
+/** Centered modal scrim (auth, account flows). */
 export const DNA_OVERLAY_SCRIM =
-  "fixed inset-0 z-[10000] flex justify-end bg-stone-950/55";
+  "fixed inset-0 z-[10002] flex items-center justify-center bg-stone-950/60 p-4 backdrop-blur-sm";
 
 export const DNA_OVERLAY_PANEL =
-  "relative flex h-full w-full max-w-md flex-col border-stone-200 bg-white shadow-xl dark:border-stone-700 dark:bg-stone-900 sm:m-4 sm:max-h-[calc(100vh-2rem)] sm:rounded-xl sm:border";
+  "relative w-full max-w-md max-h-[min(92dvh,calc(100vh-2rem))] overflow-y-auto rounded-xl border border-stone-200 bg-white shadow-2xl dark:border-stone-700 dark:bg-stone-900";
 
 export const DNA_GATE_SHELL =
   "flex flex-col gap-4 border-stone-200 bg-stone-50/80 dark:border-stone-700 dark:bg-stone-900/40";

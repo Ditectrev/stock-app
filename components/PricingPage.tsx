@@ -6,24 +6,14 @@
  * Requirements: 22.1, 22.2, 22.3, 22.4
  */
 
-import {
-  DNA_BADGE,
-  DNA_BADGE_POPULAR,
-  DNA_BODY,
-  DNA_BODY_ON_INVERSE,
-  DNA_BODY_SECONDARY,
-  DNA_BUTTON_LABEL,
-  DNA_CAPTION,
-  DNA_DISPLAY,
-  DNA_EYEBROW,
-  DNA_HEADING,
-  DNA_PRICE,
-  DNA_PRICE_SUFFIX,
-  DNA_SUBHEADING,
-} from "@/lib/design-dna";
 import { useState } from "react";
 import { PricingTier, PricingTierInfo } from "@/types";
-import { HOME_DISABLED_BUTTON } from "@/lib/home-ui";
+import {
+  HOME_DISABLED_BUTTON,
+  HOME_MUTED_TEXT,
+  HOME_PANEL_TITLE,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 const FEATURE_MARK = (
   <span
@@ -60,26 +50,10 @@ function PricingCard({
     0,
     tier.features.length - visibleFeatures.length
   );
-  const titleClass = featured
-    ? "text-stone-100 dark:text-stone-900"
-    : "text-stone-900 dark:text-stone-50";
-  const descriptionClass = featured ? DNA_BODY_ON_INVERSE : DNA_BODY;
-  const featureTextClass = featured
-    ? "font-sans text-base leading-relaxed text-stone-200 dark:text-stone-700"
-    : `font-sans ${DNA_BODY}`;
-  const priceMutedClass = featured
-    ? "text-stone-300 dark:text-stone-600"
-    : "text-stone-600 dark:text-stone-400";
-  const priceNumeralClass = featured
-    ? "text-stone-100 dark:text-stone-900"
-    : "text-stone-900 dark:text-stone-50";
-  const dividerClass = featured
-    ? "border-stone-700/60 dark:border-stone-300/60"
-    : "border-stone-200 dark:border-stone-700";
 
   return (
     <div
-      className={`relative flex h-full flex-col rounded-2xl border p-6 transition-shadow sm:p-7
+      className={`relative flex h-full flex-col rounded-2xl border p-6 transition-shadow
         ${
           isPopular
             ? "border-stone-900 shadow-lg shadow-stone-400/20 dark:border-stone-100 dark:shadow-stone-900/40"
@@ -93,65 +67,73 @@ function PricingCard({
     >
       {isPopular && (
         <div className="absolute right-4 top-4">
-          <span className={`${DNA_BADGE_POPULAR} ${DNA_BADGE}`}>
+          <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-900 dark:bg-stone-900 dark:text-stone-100">
             Most Popular
           </span>
         </div>
       )}
 
-      <div
-        className={
-          featured
-            ? "flex flex-1 flex-col gap-6 lg:flex-row lg:items-start lg:gap-10"
-            : "flex flex-1 flex-col"
-        }
-      >
-        <div
-          className={
-            featured ? "lg:min-w-[16rem] lg:flex-1" : "flex flex-1 flex-col"
-          }
+      {/* Header */}
+      <div className="mb-4 pr-24">
+        <h3
+          className={`h-[3.5rem] text-lg font-bold ${
+            featured
+              ? "text-stone-100 dark:text-stone-900"
+              : "text-stone-900 dark:text-stone-50"
+          }`}
         >
-          <div className="pr-24">
-            <h3 className={`font-sans ${DNA_SUBHEADING} ${titleClass}`}>
-              {tier.name}
-            </h3>
-            <p className={`mt-2 font-sans ${descriptionClass}`}>
-              {tier.description}
-            </p>
-          </div>
+          {tier.name}
+        </h3>
+        <p
+          className={`mt-1 h-[5.5rem] overflow-hidden text-sm ${
+            featured ? "text-stone-300 dark:text-stone-600" : HOME_SUBTLE_TEXT
+          }`}
+        >
+          {tier.description}
+        </p>
+      </div>
 
-          <div
-            className={`mt-6 border-t pt-6 ${dividerClass} ${
-              featured ? "lg:mt-8" : ""
+      {/* Price */}
+      <div className="mb-6 h-[3.5rem]">
+        {isFree ? (
+          <span
+            className={`text-4xl font-extrabold ${
+              featured
+                ? "text-stone-100 dark:text-stone-900"
+                : "text-stone-900 dark:text-stone-50"
             }`}
           >
-            {isFree ? (
-              <div>
-                <p className={`font-sans ${DNA_PRICE} ${priceNumeralClass}`}>
-                  Included
-                </p>
-                <p
-                  className={`mt-1 font-sans ${DNA_CAPTION} ${priceMutedClass}`}
-                >
-                  No monthly charge
-                </p>
-              </div>
-            ) : (
-              <p className="font-sans leading-none">
-                <span className={`${DNA_PRICE} ${priceNumeralClass}`}>
-                  €{tier.price}
-                </span>
-                <span className={`ml-2 ${DNA_PRICE_SUFFIX} ${priceMutedClass}`}>
-                  / mo
-                </span>
-              </p>
-            )}
+            Free
+          </span>
+        ) : (
+          <div className="flex items-end gap-1">
+            <span
+              className={`text-4xl font-extrabold ${
+                featured
+                  ? "text-stone-100 dark:text-stone-900"
+                  : "text-stone-900 dark:text-stone-50"
+              }`}
+            >
+              €{tier.price}
+            </span>
+            <span
+              className={`mb-1 text-sm ${
+                featured
+                  ? "text-stone-300 dark:text-stone-600"
+                  : HOME_SUBTLE_TEXT
+              }`}
+            >
+              / mo
+            </span>
           </div>
+        )}
+      </div>
 
-          <button
-            onClick={() => onSelect(tier.tier)}
-            disabled={isCurrentTier}
-            className={`mt-4 w-full whitespace-nowrap rounded-lg px-4 py-2.5 text-center ${DNA_BUTTON_LABEL} transition-colors
+      {/* CTA button */}
+      <button
+        onClick={() => onSelect(tier.tier)}
+        disabled={isCurrentTier}
+        className={`mb-6 w-full whitespace-nowrap rounded-lg px-4 py-2.5 text-center text-sm font-semibold leading-none tracking-normal transition-colors
           ${
             isCurrentTier
               ? HOME_DISABLED_BUTTON
@@ -159,39 +141,39 @@ function PricingCard({
                 ? "bg-stone-100 text-stone-900 hover:bg-stone-200 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
                 : "bg-stone-900 hover:bg-stone-700 text-stone-100 dark:bg-stone-100 dark:hover:bg-stone-300 dark:text-stone-900"
           }`}
-            aria-label={
-              isCurrentTier
-                ? `Current plan: ${tier.name}`
-                : `Get started with ${tier.name}`
-            }
-          >
-            {isCurrentTier ? "Current" : isFree ? "Start" : "Subscribe"}
-          </button>
-        </div>
+        aria-label={
+          isCurrentTier
+            ? `Current plan: ${tier.name}`
+            : `Get started with ${tier.name}`
+        }
+      >
+        {isCurrentTier ? "Current" : isFree ? "Start" : "Subscribe"}
+      </button>
 
-        <ul
-          className={`space-y-2.5 ${
-            featured
-              ? "flex-1 border-t pt-6 lg:mt-0 lg:border-t-0 lg:pt-0"
-              : "mt-6 flex-1 border-t pt-6"
-          } ${dividerClass}`}
-          aria-label={`${tier.name} features`}
-        >
-          {visibleFeatures.map((feature) => (
-            <li key={feature} className="flex items-start gap-2">
-              {FEATURE_MARK}
-              <span className={featureTextClass}>{feature}</span>
-            </li>
-          ))}
-          {hiddenCount > 0 && (
-            <li
-              className={`pl-6 font-sans ${featured ? DNA_BODY_ON_INVERSE : DNA_BODY_SECONDARY}`}
+      {/* Feature list */}
+      <ul className="space-y-2.5 flex-1" aria-label={`${tier.name} features`}>
+        {visibleFeatures.map((feature) => (
+          <li key={feature} className="flex items-start gap-2">
+            {FEATURE_MARK}
+            <span
+              className={`text-sm ${
+                featured
+                  ? "text-stone-200 dark:text-stone-700"
+                  : HOME_MUTED_TEXT
+              }`}
             >
-              +{hiddenCount} more plan details
-            </li>
-          )}
-        </ul>
-      </div>
+              {feature}
+            </span>
+          </li>
+        ))}
+        {hiddenCount > 0 && (
+          <li
+            className={`pl-6 text-xs ${featured ? "text-stone-300 dark:text-stone-700" : HOME_SUBTLE_TEXT}`}
+          >
+            +{hiddenCount} more plan details
+          </li>
+        )}
+      </ul>
     </div>
   );
 }
@@ -230,11 +212,16 @@ export function PricingPage({
     >
       {/* Header */}
       <div className="mb-10 max-w-3xl lg:mb-12">
-        <p className={DNA_EYEBROW}>Pricing</p>
-        <h2 id="pricing-heading" className={`mt-2 ${DNA_DISPLAY}`}>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
+          Pricing
+        </p>
+        <h2
+          id="pricing-heading"
+          className={`mt-2 text-3xl font-extrabold sm:text-4xl ${HOME_PANEL_TITLE}`}
+        >
           Simple, transparent pricing
         </h2>
-        <p className={`mt-3 max-w-2xl ${DNA_BODY}`}>
+        <p className={`mt-3 max-w-2xl text-lg ${HOME_SUBTLE_TEXT}`}>
           Start free. Upgrade when you need AI features or an ad-free
           experience.
         </p>
@@ -244,26 +231,36 @@ export function PricingPage({
       <div className="space-y-6">
         <div className="grid gap-4 lg:grid-cols-[1.15fr_1.85fr]">
           <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900">
-            <p className={DNA_EYEBROW}>Plan guide</p>
-            <h3 className={`mt-2 ${DNA_HEADING}`}>
+            <p
+              className={`text-xs font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
+            >
+              Plan guide
+            </p>
+            <h3 className={`mt-2 text-xl font-semibold ${HOME_PANEL_TITLE}`}>
               Pick your workflow, not just a price
             </h3>
-            <p className={`mt-2 ${DNA_BODY}`}>
+            <p className={`mt-2 text-sm ${HOME_MUTED_TEXT}`}>
               Free and Local AI fit research-first users. BYOK is best for
               provider flexibility. Ditectrev AI removes setup with hosted
               infrastructure.
             </p>
           </div>
           <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900">
-            <p className={DNA_EYEBROW}>Quick compare</p>
-            <div className={`mt-3 space-y-3 ${DNA_BODY}`}>
+            <p
+              className={`text-xs font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
+            >
+              Quick compare
+            </p>
+            <div className="mt-3 space-y-3 text-sm">
               {COMPARE_CAPABILITIES.map(({ label, needle }) => (
                 <div
                   key={label}
                   className="border-t border-stone-200 pt-3 first:border-t-0 first:pt-0 dark:border-stone-700"
                 >
-                  <p className={DNA_EYEBROW}>{label}</p>
-                  <p className={`mt-1 leading-relaxed ${DNA_CAPTION}`}>
+                  <p className={`font-medium ${HOME_MUTED_TEXT}`}>{label}</p>
+                  <p
+                    className={`mt-1 text-xs leading-relaxed ${HOME_SUBTLE_TEXT}`}
+                  >
                     {orderedTiers
                       .map((tier) =>
                         hasFeature(tier, needle)
@@ -305,7 +302,7 @@ export function PricingPage({
       {/* Confirmation feedback */}
       {selectedTier && selectedTier !== currentTier && (
         <p
-          className={`mt-8 text-center ${DNA_BODY}`}
+          className={`mt-8 text-center text-sm ${HOME_MUTED_TEXT}`}
           role="status"
           aria-live="polite"
         >

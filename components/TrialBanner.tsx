@@ -7,7 +7,6 @@
  * Requirements: 21.12, 21.13
  */
 
-import { DNA_BODY_SECONDARY, DNA_LABEL } from "@/lib/design-dna";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { TrialTimer } from "@/components/TrialTimer";
 import { AuthPrompt } from "@/components/AuthPrompt";
@@ -19,7 +18,11 @@ import {
 import { describeAuthQueryError } from "@/lib/auth/auth-query-messages";
 import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import { OPEN_AUTH_PROMPT_EVENT } from "@/lib/open-auth-prompt";
-import { HOME_CALLOUT, HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
+import {
+  HOME_CALLOUT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 /** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
 const TRIAL_STATUS_SYNC_MS = 30_000;
@@ -40,7 +43,6 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authInfo, setAuthInfo] = useState<string | null>(null);
   const requiresAuthLock = !isActive && hasUsedTrial && !isAuthenticated;
-  const showExpiredBanner = requiresAuthLock;
 
   const openAuthModal = useCallback((clearMessages = true) => {
     if (clearMessages) {
@@ -274,10 +276,10 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         setShowAuth(false);
         return { ok: true as const };
       } catch {
-        setAuthError(AUTH_UI_COPY.networkFailed);
+        setAuthError("Network error. Please try again.");
         return {
           ok: false as const,
-          error: AUTH_UI_COPY.networkFailed,
+          error: "Network error. Please try again.",
         };
       } finally {
         setAuthLoading(false);
@@ -295,7 +297,9 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
           aria-label="Trial session active"
           data-testid="trial-banner"
         >
-          <span className={DNA_LABEL}>Trial session</span>
+          <span className={`text-sm font-medium ${HOME_SUBTLE_TEXT}`}>
+            Trial session
+          </span>
           <div className="flex items-center gap-3">
             <TrialTimer
               remainingSeconds={remainingSeconds}
@@ -313,18 +317,18 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         </div>
       )}
 
-      {showExpiredBanner && (
+      {!isActive && hasUsedTrial && !isAuthenticated && !showAuth && (
         <div
-          className="sticky top-0 z-[10001] flex w-full items-center justify-center border-b border-stone-300 bg-stone-100 px-4 py-2 dark:border-stone-600 dark:bg-stone-900"
+          className={`sticky top-0 z-[10001] flex w-full items-center justify-center border-b border-stone-300 px-4 py-2 ${HOME_CALLOUT}`}
           role="alert"
           data-testid="trial-expired-banner"
         >
-          <span className={DNA_BODY_SECONDARY}>
+          <span className={`text-sm ${HOME_SUBTLE_TEXT}`}>
             Trial expired.{" "}
             <button
               type="button"
               onClick={() => openAuthModal(true)}
-              className="font-medium text-stone-900 underline hover:no-underline dark:text-stone-100"
+              className="font-medium underline hover:no-underline"
               data-testid="trial-expired-sign-in"
             >
               Sign in
