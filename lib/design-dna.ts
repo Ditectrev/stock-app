@@ -9,9 +9,13 @@ export const DNA_NAV_ARCHETYPE = "terminal" as const;
 export const DNA_ACCENT_BAR =
   "inline-block h-8 w-[2px] shrink-0 rounded-full bg-stone-900 dark:bg-stone-100";
 
-/** Eyebrow / section label (one size app-wide). */
+/** Eyebrow / section label (terminal caps — sans for legibility). */
 export const DNA_EYEBROW =
-  "text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-stone-600 dark:text-stone-300";
+  "font-sans text-xs font-semibold uppercase tracking-[0.2em] text-stone-600 dark:text-stone-300 sm:text-[0.8125rem] sm:tracking-[0.22em]";
+
+/** Suffix beside tier prices (e.g. “/ mo”). */
+export const DNA_PRICE_SUFFIX =
+  "font-sans text-base font-medium text-stone-600 dark:text-stone-400";
 
 /** Page hero / marketing headline. */
 export const DNA_DISPLAY =
@@ -50,7 +54,7 @@ export const DNA_SUBHEADING =
 
 /** Default body copy. */
 export const DNA_BODY =
-  "text-sm leading-relaxed text-stone-700 dark:text-stone-200";
+  "text-base leading-relaxed text-stone-700 dark:text-stone-200";
 
 /** Form labels, nav tabs, and compact row titles. */
 export const DNA_LABEL =
@@ -82,8 +86,9 @@ export const DNA_HELP_BUTTON =
 export const DNA_TOOLTIP_INVERSE =
   "absolute z-10 w-64 rounded-lg border border-stone-200 bg-stone-900 p-3 text-sm text-stone-100 shadow-lg dark:border-stone-600";
 
-/** Secondary body at sm size (helper lines, de-emphasized copy). */
-export const DNA_BODY_SECONDARY = "text-sm text-stone-600 dark:text-stone-300";
+/** Secondary body (helper lines, de-emphasized copy). */
+export const DNA_BODY_SECONDARY =
+  "text-sm leading-relaxed text-stone-600 dark:text-stone-300 sm:text-base";
 
 /** Body on inverted surfaces (dark explore hero card). */
 export const DNA_BODY_ON_INVERSE =
@@ -148,7 +153,7 @@ export const DNA_TABLE_HEADER =
 
 /** Pricing numerals on tier cards. */
 export const DNA_PRICE =
-  "text-4xl font-extrabold tabular-nums tracking-tight text-stone-900 dark:text-stone-50";
+  "font-sans text-5xl font-extrabold leading-none tabular-nums tracking-tight text-stone-900 dark:text-stone-50 sm:text-6xl";
 
 /** Primary mono data value (metrics, targets). */
 export const DNA_METRIC =
@@ -185,7 +190,7 @@ export const DNA_NAV_BAR =
   "border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950";
 
 export const DNA_NAV_BRAND_TAGLINE =
-  "text-[0.65rem] uppercase tracking-[0.16em] text-stone-600 dark:text-stone-300";
+  "font-sans text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-stone-600 dark:text-stone-300 sm:text-xs sm:tracking-[0.2em]";
 
 export const DNA_NAV_LINK_ACTIVE =
   "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900";

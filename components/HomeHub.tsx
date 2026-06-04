@@ -164,9 +164,9 @@ export function HomeHub({
       </header>
 
       <section aria-labelledby="home-explore-heading">
-        <h2 id="home-explore-heading" className={`mb-4 ${SECTION_LABEL_CLASS}`}>
+        <p id="home-explore-heading" className={`mb-4 ${SECTION_LABEL_CLASS}`}>
           Explore
-        </h2>
+        </p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-3">
           <Link
             href={featured.href}
@@ -211,20 +211,20 @@ export function HomeHub({
       </section>
 
       <section aria-labelledby="home-pulse-heading" className="space-y-5">
-        <h2 id="home-pulse-heading" className={SECTION_LABEL_CLASS}>
+        <p id="home-pulse-heading" className={SECTION_LABEL_CLASS}>
           Market pulse
-        </h2>
+        </p>
         {fearGreed}
         {worldMarkets}
       </section>
 
       <section aria-labelledby="home-ai-heading" data-testid="home-ai-outlook">
-        <h2
+        <p
           id="home-ai-heading"
           className={`mb-4 sm:mb-6 ${SECTION_LABEL_CLASS}`}
         >
           AI outlook
-        </h2>
+        </p>
         {stockOfTheDay}
       </section>
     </div>

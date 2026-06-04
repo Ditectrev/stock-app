@@ -3,6 +3,7 @@
 import { DNA_BODY, DNA_CAPTION, DNA_LABEL_STRONG } from "@/lib/design-dna";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { openAuthPrompt } from "@/lib/open-auth-prompt";
 import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 type AuthUser = {
@@ -113,12 +114,14 @@ export function UserProfileMenu() {
 
   if (!user) {
     return (
-      <Link
-        href="/pricing?signin=1"
+      <button
+        type="button"
+        onClick={() => openAuthPrompt()}
         className={`rounded-lg px-2 py-1.5 ${DNA_BODY} hover:bg-stone-100 dark:hover:bg-stone-800`}
+        data-testid="nav-sign-in"
       >
         Sign in
-      </Link>
+      </button>
     );
   }
 

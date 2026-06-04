@@ -18,6 +18,7 @@ import {
 } from "@/lib/auth/trial-auth-navigation";
 import { describeAuthQueryError } from "@/lib/auth/auth-query-messages";
 import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
+import { OPEN_AUTH_PROMPT_EVENT } from "@/lib/open-auth-prompt";
 import { HOME_CALLOUT, HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
 
 /** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
@@ -39,6 +40,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authInfo, setAuthInfo] = useState<string | null>(null);
   const requiresAuthLock = !isActive && hasUsedTrial && !isAuthenticated;
+  const showExpiredBanner = requiresAuthLock;
 
   const openAuthModal = useCallback((clearMessages = true) => {
     if (clearMessages) {
@@ -110,11 +112,11 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   useEffect(() => {
     const openAuth = () => openAuthModal(true);
     if (typeof window !== "undefined") {
-      window.addEventListener("open-auth-prompt", openAuth);
+      window.addEventListener(OPEN_AUTH_PROMPT_EVENT, openAuth);
     }
     return () => {
       if (typeof window !== "undefined") {
-        window.removeEventListener("open-auth-prompt", openAuth);
+        window.removeEventListener(OPEN_AUTH_PROMPT_EVENT, openAuth);
       }
     };
   }, [openAuthModal]);
@@ -288,7 +290,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
     <>
       {isActive && !isAuthenticated && (
         <div
-          className={`flex items-center justify-between border-b border-stone-200 px-4 py-2 ${HOME_CALLOUT}`}
+          className={`sticky top-0 z-[10001] flex w-full items-center justify-between border-b border-stone-200 px-4 py-2 ${HOME_CALLOUT}`}
           role="status"
           aria-label="Trial session active"
           data-testid="trial-banner"
@@ -311,18 +313,18 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         </div>
       )}
 
-      {!isActive && hasUsedTrial && !isAuthenticated && (
+      {showExpiredBanner && (
         <div
-          className={`flex items-center justify-center border-b border-stone-300 px-4 py-2 ${HOME_CALLOUT}`}
+          className="sticky top-0 z-[10001] flex w-full items-center justify-center border-b border-stone-300 bg-stone-100 px-4 py-2 dark:border-stone-600 dark:bg-stone-900"
           role="alert"
           data-testid="trial-expired-banner"
         >
-          <span className={`${DNA_BODY_SECONDARY}`}>
+          <span className={DNA_BODY_SECONDARY}>
             Trial expired.{" "}
             <button
               type="button"
               onClick={() => openAuthModal(true)}
-              className="font-medium underline hover:no-underline"
+              className="font-medium text-stone-900 underline hover:no-underline dark:text-stone-100"
               data-testid="trial-expired-sign-in"
             >
               Sign in
@@ -336,6 +338,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         open={showAuth}
         onClose={handleAuthClose}
         dismissible={!requiresAuthLock}
+        trialExpired={requiresAuthLock}
         onEmailSubmit={handleEmailSubmit}
         onEmailVerify={handleEmailVerify}
         loading={authLoading}

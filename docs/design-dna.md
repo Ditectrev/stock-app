@@ -12,38 +12,38 @@ Constants: `DNA_NAV_*` in `lib/design-dna.ts`, used by `Navigation.tsx`.
 
 ## Typography ladder
 
-| Role            | Token                    | Use                                                  |
-| --------------- | ------------------------ | ---------------------------------------------------- |
-| Eyebrow         | `DNA_EYEBROW`            | Section context (`Markets · AI`, `Account`)          |
-| Display         | `DNA_DISPLAY`            | Page heroes, profile title                           |
-| Hero            | `DNA_HERO`               | Home dashboard title                                 |
-| Hero lead       | `DNA_HERO_LEAD`          | Tagline under home hero                              |
-| Explore card    | `DNA_EXPLORE_CARD_TITLE` | Featured home explore tile                           |
-| Nav wordmark    | `DNA_NAV_WORDMARK`       | Desktop/mobile brand in nav bar                      |
-| Nav mobile link | `DNA_NAV_MOBILE`         | Mobile drawer section links                          |
-| Heading         | `DNA_HEADING`            | Panel titles, symbol tabs                            |
-| Subheading      | `DNA_SUBHEADING`         | Filter groups, calendar day headers, in-panel titles |
-| Body            | `DNA_BODY`               | Paragraphs, gate copy, AI rationale excerpts         |
-| Body secondary  | `DNA_BODY_SECONDARY`     | Helper lines, de-emphasized sm copy                  |
-| Body on inverse | `DNA_BODY_ON_INVERSE`    | Copy on dark explore hero cards                      |
-| Caption         | `DNA_CAPTION`            | Legends, footnotes, meta                             |
-| Table header    | `DNA_TABLE_HEADER`       | Dense uppercase month/year grid headers              |
-| Price numeral   | `DNA_PRICE`              | Tier card prices (€ amounts, “Free”)                 |
-| Metric          | `DNA_METRIC`             | Mono quote values (key metrics, price targets)       |
-| Metric emphasis | `DNA_METRIC_EMPHASIS`    | Highlighted mono value (e.g. average target)         |
-| Metric compact  | `DNA_METRIC_COMPACT`     | Table/indicator mono values                          |
-| Change line     | `DNA_CHANGE_LINE`        | Symbol % change (pair with `marketChangeTextClass`)  |
-| Symbol subtitle | `DNA_SYMBOL_SUBTITLE`    | Company name under ticker                            |
-| Gauge value     | `DNA_GAUGE_VALUE`        | Large gauge score (Fear & Greed); add inline color   |
-| Heatmap cell    | `DNA_HEATMAP_CELL`       | Heatmap tile symbol numerals                         |
-| Heatmap strip   | `DNA_HEATMAP_CELL_STRIP` | Month-average strip cells                            |
-| Label           | `DNA_LABEL`              | Form labels, nav tabs, compact titles                |
-| Label strong    | `DNA_LABEL_STRONG`       | Index names, provider titles                         |
-| Button label    | `DNA_BUTTON_LABEL`       | Tier card CTA typography                             |
-| Badge label     | `DNA_BADGE`              | Compact pills (pair with semantic bg)                |
-| Badge popular   | `DNA_BADGE_POPULAR`      | “Most popular” chip on featured tier                 |
-| Help control    | `DNA_HELP_BUTTON`        | Round “?” info buttons                               |
-| Tooltip inverse | `DNA_TOOLTIP_INVERSE`    | Dark tooltip panels                                  |
+| Role            | Token                            | Use                                                                    |
+| --------------- | -------------------------------- | ---------------------------------------------------------------------- |
+| Eyebrow         | `DNA_EYEBROW`                    | Section context (`PRICING`, `MARKET PULSE`) — sans, uppercase, tracked |
+| Display         | `DNA_DISPLAY`                    | Page heroes, profile title                                             |
+| Hero            | `DNA_HERO`                       | Home dashboard title                                                   |
+| Hero lead       | `DNA_HERO_LEAD`                  | Tagline under home hero                                                |
+| Explore card    | `DNA_EXPLORE_CARD_TITLE`         | Featured home explore tile                                             |
+| Nav wordmark    | `DNA_NAV_WORDMARK`               | Desktop/mobile brand in nav bar                                        |
+| Nav mobile link | `DNA_NAV_MOBILE`                 | Mobile drawer section links                                            |
+| Heading         | `DNA_HEADING`                    | Panel titles, symbol tabs                                              |
+| Subheading      | `DNA_SUBHEADING`                 | Filter groups, calendar day headers, in-panel titles                   |
+| Body            | `DNA_BODY`                       | Paragraphs, gate copy (`text-base`, not `text-sm`)                     |
+| Body secondary  | `DNA_BODY_SECONDARY`             | Helper lines, de-emphasized sm copy                                    |
+| Body on inverse | `DNA_BODY_ON_INVERSE`            | Copy on dark explore hero cards                                        |
+| Caption         | `DNA_CAPTION`                    | Legends, footnotes, meta                                               |
+| Table header    | `DNA_TABLE_HEADER`               | Dense uppercase month/year grid headers                                |
+| Price numeral   | `DNA_PRICE` / `DNA_PRICE_SUFFIX` | Tier card prices (large sans numerals + “/ mo”)                        |
+| Metric          | `DNA_METRIC`                     | Mono quote values (key metrics, price targets)                         |
+| Metric emphasis | `DNA_METRIC_EMPHASIS`            | Highlighted mono value (e.g. average target)                           |
+| Metric compact  | `DNA_METRIC_COMPACT`             | Table/indicator mono values                                            |
+| Change line     | `DNA_CHANGE_LINE`                | Symbol % change (pair with `marketChangeTextClass`)                    |
+| Symbol subtitle | `DNA_SYMBOL_SUBTITLE`            | Company name under ticker                                              |
+| Gauge value     | `DNA_GAUGE_VALUE`                | Large gauge score (Fear & Greed); add inline color                     |
+| Heatmap cell    | `DNA_HEATMAP_CELL`               | Heatmap tile symbol numerals                                           |
+| Heatmap strip   | `DNA_HEATMAP_CELL_STRIP`         | Month-average strip cells                                              |
+| Label           | `DNA_LABEL`                      | Form labels, nav tabs, compact titles                                  |
+| Label strong    | `DNA_LABEL_STRONG`               | Index names, provider titles                                           |
+| Button label    | `DNA_BUTTON_LABEL`               | Tier card CTA typography                                               |
+| Badge label     | `DNA_BADGE`                      | Compact pills (pair with semantic bg)                                  |
+| Badge popular   | `DNA_BADGE_POPULAR`              | “Most popular” chip on featured tier                                   |
+| Help control    | `DNA_HELP_BUTTON`                | Round “?” info buttons                                                 |
+| Tooltip inverse | `DNA_TOOLTIP_INVERSE`            | Dark tooltip panels                                                    |
 
 **Charts:** `getMarketChartColors()` / `marketChartSignedColor()` / `marketChartOverlayColor()` / `marketSentimentGaugeColor()` / `marketSentimentGaugeArcSegments()` / `marketSentimentLegendRanges()` from `lib/market-semantics.ts` (emerald/rose; neutral band is stone).
 

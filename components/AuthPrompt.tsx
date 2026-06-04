@@ -52,6 +52,8 @@ export interface AuthPromptProps {
   infoMessage?: string | null;
   /** Whether an auth action is in progress */
   loading?: boolean;
+  /** Trial ended — show expired copy in the shell header */
+  trialExpired?: boolean;
 }
 
 export function AuthPrompt({
@@ -64,6 +66,7 @@ export function AuthPrompt({
   error,
   infoMessage,
   loading = false,
+  trialExpired = false,
 }: AuthPromptProps) {
   const [view, setView] = useState<AuthView>("providers");
   const [emailSubStep, setEmailSubStep] = useState<"request" | "verify">(
@@ -196,8 +199,12 @@ export function AuthPrompt({
       open={open}
       onClose={onClose}
       dismissible={dismissible}
-      eyebrow="Account"
-      title={AUTH_UI_COPY.signInTitle}
+      eyebrow={trialExpired ? "Trial ended" : "Account"}
+      title={
+        trialExpired
+          ? "Trial expired. Sign in to continue."
+          : AUTH_UI_COPY.signInTitle
+      }
       testId="auth-prompt"
       closeTestId="auth-close"
       ariaLabel="Sign in"

@@ -10,7 +10,6 @@ import {
   DNA_BADGE,
   DNA_BADGE_POPULAR,
   DNA_BODY,
-  DNA_BODY_ON_INVERSE,
   DNA_BODY_SECONDARY,
   DNA_BUTTON_LABEL,
   DNA_CAPTION,
@@ -18,6 +17,7 @@ import {
   DNA_EYEBROW,
   DNA_HEADING,
   DNA_PRICE,
+  DNA_PRICE_SUFFIX,
   DNA_SUBHEADING,
 } from "@/lib/design-dna";
 import { useState } from "react";
@@ -95,7 +95,9 @@ function PricingCard({
         </h3>
         <p
           className={`mt-1 h-[5.5rem] overflow-hidden ${
-            featured ? DNA_BODY_ON_INVERSE : DNA_BODY_SECONDARY
+            featured
+              ? "text-sm leading-relaxed text-stone-300 dark:text-stone-600"
+              : DNA_BODY_SECONDARY
           }`}
         >
           {tier.description}
@@ -103,7 +105,7 @@ function PricingCard({
       </div>
 
       {/* Price */}
-      <div className="mb-6 h-[3.5rem]">
+      <div className="mb-6 min-h-[3.5rem]">
         {isFree ? (
           <span
             className={`${DNA_PRICE} ${
@@ -122,7 +124,9 @@ function PricingCard({
               €{tier.price}
             </span>
             <span
-              className={`mb-1 ${featured ? DNA_BODY_ON_INVERSE : DNA_BODY_SECONDARY}`}
+              className={`mb-1.5 ${DNA_PRICE_SUFFIX} ${
+                featured ? "dark:text-stone-600" : ""
+              }`}
             >
               / mo
             </span>
@@ -245,7 +249,7 @@ export function PricingPage({
                   key={label}
                   className="border-t border-stone-200 pt-3 first:border-t-0 first:pt-0 dark:border-stone-700"
                 >
-                  <p className={`font-medium ${DNA_BODY}`}>{label}</p>
+                  <p className={DNA_EYEBROW}>{label}</p>
                   <p className={`mt-1 text-xs leading-relaxed ${DNA_CAPTION}`}>
                     {orderedTiers
                       .map((tier) =>

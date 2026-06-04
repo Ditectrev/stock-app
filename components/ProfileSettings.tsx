@@ -14,6 +14,7 @@ import {
 } from "@/lib/design-dna";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { openAuthPrompt } from "@/lib/open-auth-prompt";
 import APIKeyManager from "@/components/APIKeyManager";
 import {
   HOME_INSTRUMENT_PANEL,
@@ -287,9 +288,14 @@ export function ProfileSettings() {
         <p className={`${DNA_BODY}`}>
           Sign in to manage your subscription, AI providers, and API keys.
         </p>
-        <Link href="/pricing?signin=1" className={HOME_PRIMARY_BUTTON}>
+        <button
+          type="button"
+          onClick={() => openAuthPrompt()}
+          className={HOME_PRIMARY_BUTTON}
+          data-testid="profile-sign-in"
+        >
           Sign in
-        </Link>
+        </button>
       </div>
     );
   }

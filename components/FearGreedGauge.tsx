@@ -324,8 +324,8 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
             </div>
             <div className="relative h-52 sm:h-64 lg:h-full lg:min-h-[16rem]">
               <svg
-                viewBox={`0 0 ${Math.max(data.history.length * 4, 100)} 100`}
-                className="w-full h-full"
+                viewBox="0 0 100 100"
+                className="h-full w-full"
                 preserveAspectRatio="none"
                 aria-label="Fear and Greed historical timeline"
                 role="img"
@@ -341,11 +341,9 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
                   );
                   const point = data.history[clamped];
                   if (point) {
-                    // Snap X to the data point's position
                     const snapX =
                       (clamped / Math.max(data.history.length - 1, 1)) *
                       rect.width;
-                    // Snap Y to the data value (0 at bottom, 100 at top)
                     const snapY = ((100 - point.value) / 100) * rect.height;
                     setHoveredPoint({
                       x: snapX,
@@ -362,27 +360,31 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
                     key={band.y}
                     x="0"
                     y={band.y}
-                    width="100%"
+                    width="100"
                     height={band.height}
                     fill={band.fill}
                   />
                 ))}
 
-                {/* Line chart */}
+                {/* Line chart (0–100 viewBox; duplicate point when only one sample) */}
                 <polyline
                   fill="none"
                   stroke={chartStroke}
                   strokeWidth="2"
                   vectorEffect="non-scaling-stroke"
-                  points={data.history
-                    .map((h, i) => {
-                      const x =
-                        (i / Math.max(data.history.length - 1, 1)) *
-                        Math.max(data.history.length * 4, 100);
+                  points={(() => {
+                    const history = data.history;
+                    const lastIndex = Math.max(history.length - 1, 1);
+                    const coords = history.map((h, i) => {
+                      const x = (i / lastIndex) * 100;
                       const y = 100 - h.value;
                       return `${x},${y}`;
-                    })
-                    .join(" ")}
+                    });
+                    if (history.length === 1) {
+                      coords.push(coords[0]!);
+                    }
+                    return coords.join(" ");
+                  })()}
                 />
               </svg>
 

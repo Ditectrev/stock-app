@@ -122,8 +122,9 @@ describe("TrialBanner", () => {
     });
 
     await renderBanner();
-    expect(screen.getByTestId("trial-expired-banner")).toBeDefined();
-    expect(screen.getByText(/Trial expired/)).toBeDefined();
+    const banner = screen.getByTestId("trial-expired-banner");
+    expect(banner).toBeDefined();
+    expect(banner.textContent).toMatch(/Trial expired/);
   });
 
   it("should show expired banner with sign-in link after timer expires", async () => {
@@ -171,6 +172,23 @@ describe("TrialBanner", () => {
 
     await renderBanner();
     fireEvent.click(screen.getByTestId("trial-sign-in-btn"));
+
+    expect(screen.getByTestId("auth-prompt")).toBeDefined();
+  });
+
+  it("should open auth prompt when open-auth-prompt event is dispatched", async () => {
+    mockGetTrialStatus.mockReturnValue({
+      isActive: true,
+      remainingSeconds: 600,
+      hasUsedTrial: true,
+    });
+
+    await renderBanner();
+    expect(screen.queryByTestId("auth-prompt")).toBeNull();
+
+    act(() => {
+      window.dispatchEvent(new Event("open-auth-prompt"));
+    });
 
     expect(screen.getByTestId("auth-prompt")).toBeDefined();
   });
@@ -228,6 +246,24 @@ describe("TrialBanner", () => {
     fireEvent.click(screen.getByTestId("trial-expired-sign-in"));
     expect(screen.getByTestId("auth-prompt")).toBeDefined();
     expect(screen.queryByTestId("auth-close")).toBeNull();
+  });
+
+  it("should keep expired banner visible when auth prompt auto-opens", async () => {
+    mockGetTrialStatus.mockReturnValue({
+      isActive: false,
+      remainingSeconds: 0,
+      hasUsedTrial: true,
+    });
+
+    await renderBanner();
+    expect(screen.getByTestId("trial-expired-banner")).toBeDefined();
+    expect(screen.getByTestId("auth-prompt")).toBeDefined();
+    expect(screen.getByTestId("auth-prompt")).toBeDefined();
+    expect(
+      screen.getByRole("heading", {
+        name: /Trial expired\. Sign in to continue/i,
+      })
+    ).toBeDefined();
   });
 
   // --- onAuthenticated callback ---
