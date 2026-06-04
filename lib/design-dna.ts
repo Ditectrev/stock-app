@@ -32,6 +32,14 @@ export const DNA_BODY =
 /** Captions, legends, meta. */
 export const DNA_CAPTION = "text-xs text-stone-600 dark:text-stone-300";
 
+/** Compact uppercase table headers (month grids, dense tables). */
+export const DNA_TABLE_HEADER =
+  "text-[0.65rem] font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-300";
+
+/** Pricing numerals on tier cards. */
+export const DNA_PRICE =
+  "text-4xl font-extrabold tabular-nums tracking-tight text-stone-900 dark:text-stone-50";
+
 /** Vertical rhythm between major page blocks. */
 export const DNA_PAGE_STACK = "space-y-6 sm:space-y-8";
 

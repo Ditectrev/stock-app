@@ -13,7 +13,7 @@ import { useTheme } from "@/lib/theme-context";
 import { FearGreedData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
-import { DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
+import { DNA_CAPTION, DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   HOME_INSTRUMENT_PANEL,
@@ -291,7 +291,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
               ].map((rangeItem) => (
                 <span
                   key={rangeItem.label}
-                  className={`inline-flex items-center gap-1 text-[0.65rem] ${HOME_SUBTLE_TEXT}`}
+                  className={`inline-flex items-center gap-1 ${DNA_CAPTION}`}
                 >
                   <span
                     className="inline-block h-1.5 w-1.5 rounded-full"

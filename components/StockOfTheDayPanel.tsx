@@ -3,13 +3,10 @@
 import type { PricingTier, StockOfTheDay, StockOfTheDayResult } from "@/types";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
-import {
-  InsightPanel,
-  InsightPanelGate,
-  InsightPanelHeader,
-} from "@/components/InsightPanel";
+import { InsightPanel, InsightPanelHeader } from "@/components/InsightPanel";
+import { SubscriptionGate } from "@/components/ProductShell";
 import { AiFeatureErrorNotice } from "@/components/AiFeatureErrorNotice";
-import { DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
+import { DNA_BODY, DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import { MARKET_DOWN_TEXT, MARKET_UP_TEXT } from "@/lib/market-semantics";
 import {
   HOME_INSTRUMENT_PANEL,
@@ -81,16 +78,7 @@ function PickCard({
         <span>Confidence {Math.round(pick.confidence * 100)}%</span>
         <ConfidenceInfoTooltip variant="stockOfTheDay" />
       </p>
-      <ol className="mt-3 space-y-2 text-sm text-stone-600 dark:text-stone-300">
-        {pick.rationale.map((reason, index) => (
-          <li key={reason} className="flex gap-2">
-            <span className={`flex-shrink-0 tabular-nums ${HOME_SUBTLE_TEXT}`}>
-              {index + 1}.
-            </span>
-            <span>{reason}</span>
-          </li>
-        ))}
-      </ol>
+      <p className={`mt-3 ${DNA_BODY}`}>{pick.rationale.join(" ")}</p>
     </article>
   );
 }
@@ -113,7 +101,7 @@ export function StockOfTheDayPanel({
       className={`relative ${HOME_INSTRUMENT_PANEL} ${showLockedGateOnly ? "" : "min-h-[8rem]"}`}
     >
       {showLockedGateOnly ? (
-        <InsightPanelGate
+        <SubscriptionGate
           title={!showTitle ? "Daily AI stock ideas" : undefined}
           message={gateMessage}
           ctaHref="/pricing"
@@ -185,7 +173,7 @@ export function StockOfTheDayPanel({
           </div>
 
           {showLockedOverlay && (
-            <InsightPanelGate
+            <SubscriptionGate
               title={!showTitle ? "Daily AI stock ideas" : "Stock of the day"}
               message={gateMessage}
               ctaHref="/pricing"

@@ -22,7 +22,7 @@ import {
   seasonalLegendSwatchClass,
 } from "@/lib/market-semantics";
 import { SymbolTabSkeleton } from "@/components/SymbolTabShell";
-import { DNA_PAGE_STACK } from "@/lib/design-dna";
+import { DNA_PAGE_STACK, DNA_TABLE_HEADER } from "@/lib/design-dna";
 import {
   SYMBOL_DIVIDER,
   SYMBOL_INSTRUMENT_PANEL,
@@ -138,15 +138,13 @@ export function SeasonalHeatmap({ data }: SeasonalHeatmapProps) {
           >
             <thead>
               <tr>
-                <th
-                  className={`px-2 py-2 text-left text-[0.65rem] font-semibold uppercase tracking-wider ${SYMBOL_SUBTLE_TEXT}`}
-                >
+                <th className={`px-2 py-2 text-left ${DNA_TABLE_HEADER}`}>
                   Year
                 </th>
                 {months.map((m) => (
                   <th
                     key={m}
-                    className={`px-1 py-2 text-center text-[0.65rem] font-semibold uppercase tracking-wider ${SYMBOL_SUBTLE_TEXT}`}
+                    className={`px-1 py-2 text-center ${DNA_TABLE_HEADER}`}
                   >
                     {getMonthLabel(m)}
                   </th>

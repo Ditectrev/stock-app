@@ -4,18 +4,15 @@ import type { AIPredictionReport, PricingTier } from "@/types";
 import { AiFeatureErrorNotice } from "@/components/AiFeatureErrorNotice";
 import { AI_PREDICTION_SECTIONS } from "@/lib/ai-prediction";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
-import {
-  InsightPanel,
-  InsightPanelGate,
-  InsightPanelHeader,
-} from "@/components/InsightPanel";
+import { InsightPanel, InsightPanelHeader } from "@/components/InsightPanel";
+import { SubscriptionGate } from "@/components/ProductShell";
+import { DNA_BODY } from "@/lib/design-dna";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
 import { marketChangeBadgeClass } from "@/lib/market-semantics";
 import {
   HOME_CALLOUT,
   HOME_FACTOR_GROUP,
   HOME_INSTRUMENT_PANEL,
-  HOME_MUTED_TEXT,
   HOME_PRIMARY_BUTTON,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
@@ -45,8 +42,22 @@ function RecommendationBadge({
 
 type FactorId = (typeof AI_PREDICTION_SECTIONS)[number]["id"];
 
-const MAX_FACTOR_BULLETS = 2;
-const MAX_SYMBOL_BULLETS = 3;
+const MAX_FACTOR_SENTENCES = 2;
+const MAX_SYMBOL_SENTENCES = 3;
+
+function editorialExcerpt(
+  items: string[],
+  max: number
+): {
+  text: string;
+  omitted: number;
+} {
+  const slice = items.slice(0, max);
+  return {
+    text: slice.join(" "),
+    omitted: Math.max(0, items.length - max),
+  };
+}
 
 const FACTOR_GROUPS: ReadonlyArray<{
   title: string;
@@ -103,21 +114,22 @@ function FactorGroup({
             >
               {section!.label}
             </p>
-            <ul className={`mt-1 space-y-1 text-sm ${HOME_MUTED_TEXT}`}>
-              {items.slice(0, MAX_FACTOR_BULLETS).map((item, index) => (
-                <li key={`${section!.id}-${index}`} className="flex gap-2">
-                  <span aria-hidden="true" className="mt-1 text-xs">
-                    •
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-            {items.length > MAX_FACTOR_BULLETS && (
-              <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
-                +{items.length - MAX_FACTOR_BULLETS} more points in this section
-              </p>
-            )}
+            {(() => {
+              const { text, omitted } = editorialExcerpt(
+                items,
+                MAX_FACTOR_SENTENCES
+              );
+              return (
+                <>
+                  <p className={`mt-1 ${DNA_BODY}`}>{text}</p>
+                  {omitted > 0 && (
+                    <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
+                      +{omitted} more points in this section
+                    </p>
+                  )}
+                </>
+              );
+            })()}
           </div>
         ))}
       </div>
@@ -127,7 +139,7 @@ function FactorGroup({
 
 function LockedGate({ pricingTier }: { pricingTier?: PricingTier | null }) {
   return (
-    <InsightPanelGate
+    <SubscriptionGate
       title="AI Prediction"
       message={getAiSubscriptionGateMessage(pricingTier ?? undefined)}
       ctaHref="/pricing"
@@ -223,25 +235,22 @@ export function AIPredictionPanel({
                       <p className="mb-1 text-sm font-semibold text-stone-900 dark:text-stone-100">
                         {symbolSpecific.title}
                       </p>
-                      <ul className={`space-y-1 text-sm ${HOME_MUTED_TEXT}`}>
-                        {symbolSpecific.bullets
-                          .slice(0, MAX_SYMBOL_BULLETS)
-                          .map((item, index) => (
-                            <li
-                              key={`${symbolSpecific.title}-${index}`}
-                              className="flex gap-2"
-                            >
-                              <span aria-hidden="true">•</span>
-                              <span>{item}</span>
-                            </li>
-                          ))}
-                      </ul>
-                      {symbolSpecific.bullets.length > MAX_SYMBOL_BULLETS && (
-                        <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
-                          +{symbolSpecific.bullets.length - MAX_SYMBOL_BULLETS}{" "}
-                          more symbol-specific notes
-                        </p>
-                      )}
+                      {(() => {
+                        const { text, omitted } = editorialExcerpt(
+                          symbolSpecific.bullets,
+                          MAX_SYMBOL_SENTENCES
+                        );
+                        return (
+                          <>
+                            <p className={DNA_BODY}>{text}</p>
+                            {omitted > 0 && (
+                              <p className={`mt-1 text-xs ${HOME_SUBTLE_TEXT}`}>
+                                +{omitted} more symbol-specific notes
+                              </p>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   )}
                 </div>
@@ -271,7 +280,7 @@ export function AIPredictionPanel({
             </div>
 
             {showLockedOverlay && (
-              <InsightPanelGate
+              <SubscriptionGate
                 title="AI Prediction"
                 message={gateMessage}
                 ctaHref="/pricing"

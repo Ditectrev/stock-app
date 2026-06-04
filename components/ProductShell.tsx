@@ -141,6 +141,49 @@ export interface ProductGateProps {
 }
 
 /** Inline or overlay gate (AI lock, errors, upgrade prompts). */
+const SUBSCRIPTION_GATE_INLINE_CLASS = "min-h-[11rem] py-2 sm:min-h-[12rem]";
+const SUBSCRIPTION_GATE_OVERLAY_CLASS =
+  "absolute inset-0 z-10 min-h-[11rem] justify-center sm:min-h-[12rem]";
+
+export type SubscriptionGateProps = {
+  message: ReactNode;
+  ctaHref: string;
+  ctaLabel: string;
+  title?: ReactNode;
+  overlay?: boolean;
+  align?: "start" | "center";
+  buttonClassName?: string;
+};
+
+/** AI subscription paywall (inline or blurred overlay). */
+export function SubscriptionGate({
+  message,
+  ctaHref,
+  ctaLabel,
+  title,
+  overlay = false,
+  align = "start",
+  buttonClassName = HOME_PRIMARY_BUTTON,
+}: SubscriptionGateProps) {
+  return (
+    <ProductGate
+      eyebrow="Subscription"
+      title={title ?? "Upgrade to continue"}
+      message={message}
+      ctaHref={ctaHref}
+      ctaLabel={ctaLabel}
+      overlay={overlay}
+      align={align}
+      buttonClassName={buttonClassName}
+      className={
+        overlay
+          ? SUBSCRIPTION_GATE_OVERLAY_CLASS
+          : SUBSCRIPTION_GATE_INLINE_CLASS
+      }
+    />
+  );
+}
+
 export function ProductGate({
   eyebrow,
   title,

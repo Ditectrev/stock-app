@@ -12,14 +12,16 @@ Constants: `DNA_NAV_*` in `lib/design-dna.ts`, used by `Navigation.tsx`.
 
 ## Typography ladder
 
-| Role       | Token            | Use                                                        |
-| ---------- | ---------------- | ---------------------------------------------------------- |
-| Eyebrow    | `DNA_EYEBROW`    | Section context (`Markets · AI`, `Account`, `Seasonality`) |
-| Display    | `DNA_DISPLAY`    | Page heroes                                                |
-| Heading    | `DNA_HEADING`    | Panel titles, symbol tabs                                  |
-| Subheading | `DNA_SUBHEADING` | Compact panel titles                                       |
-| Body       | `DNA_BODY`       | Paragraphs, gate copy                                      |
-| Caption    | `DNA_CAPTION`    | Legends, footnotes                                         |
+| Role          | Token              | Use                                                        |
+| ------------- | ------------------ | ---------------------------------------------------------- |
+| Eyebrow       | `DNA_EYEBROW`      | Section context (`Markets · AI`, `Account`, `Seasonality`) |
+| Display       | `DNA_DISPLAY`      | Page heroes                                                |
+| Heading       | `DNA_HEADING`      | Panel titles, symbol tabs                                  |
+| Subheading    | `DNA_SUBHEADING`   | Compact panel titles                                       |
+| Body          | `DNA_BODY`         | Paragraphs, gate copy, AI rationale excerpts               |
+| Caption       | `DNA_CAPTION`      | Legends, footnotes                                         |
+| Table header  | `DNA_TABLE_HEADER` | Dense uppercase month/year grid headers                    |
+| Price numeral | `DNA_PRICE`        | Tier card prices (€ amounts, “Free”)                       |
 
 Do not add ad-hoc `text-sm` / `text-lg` on product surfaces—use the ladder.
 
@@ -35,7 +37,7 @@ Page background: `DNA_PAGE_BACKGROUND`. Panels: `DNA_INSTRUMENT_PANEL`.
 
 ## Overlay & gate archetype
 
-All blocking UI (sign-in, AI paywall, inline errors) uses **`ProductOverlay`** / **`ProductGate`**:
+All blocking UI (sign-in, AI paywall, inline errors) uses **`ProductOverlay`** / **`ProductGate`** / **`SubscriptionGate`** (AI upgrade):
 
 - Left **accent bar** + eyebrow + title + body (asymmetric, not centered SaaS modal).
 - Overlays slide from the **right** on desktop; full-height sheet on small screens.

@@ -13,6 +13,7 @@ import {
   DNA_DISPLAY,
   DNA_EYEBROW,
   DNA_HEADING,
+  DNA_PRICE,
   DNA_SUBHEADING,
 } from "@/lib/design-dna";
 import {
@@ -103,10 +104,8 @@ function PricingCard({
       <div className="mb-6 h-[3.5rem]">
         {isFree ? (
           <span
-            className={`text-4xl font-extrabold ${
-              featured
-                ? "text-stone-100 dark:text-stone-900"
-                : "text-stone-900 dark:text-stone-50"
+            className={`${DNA_PRICE} ${
+              featured ? "text-stone-100 dark:text-stone-900" : ""
             }`}
           >
             Free
@@ -114,10 +113,8 @@ function PricingCard({
         ) : (
           <div className="flex items-end gap-1">
             <span
-              className={`text-4xl font-extrabold ${
-                featured
-                  ? "text-stone-100 dark:text-stone-900"
-                  : "text-stone-900 dark:text-stone-50"
+              className={`${DNA_PRICE} ${
+                featured ? "text-stone-100 dark:text-stone-900" : ""
               }`}
             >
               €{tier.price}

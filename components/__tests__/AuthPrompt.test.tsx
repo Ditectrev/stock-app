@@ -7,6 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { AuthPrompt, AuthPromptProps } from "../AuthPrompt";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 
 const defaultProps: AuthPromptProps = {
   open: true,
@@ -170,13 +171,11 @@ describe("AuthPrompt", () => {
   // --- External error display (Req 1.6) ---
 
   it("should display external error message", () => {
-    renderAuthPrompt({ error: "Authentication failed. Please try again." });
+    renderAuthPrompt({ error: AUTH_UI_COPY.signInFailed });
 
     const errorEl = screen.getByTestId("auth-error");
     expect(errorEl).toBeDefined();
-    expect(errorEl.textContent).toBe(
-      "Authentication failed. Please try again."
-    );
+    expect(errorEl.textContent).toBe(AUTH_UI_COPY.signInFailed);
   });
 
   it("should have role=alert on error element for accessibility", () => {
