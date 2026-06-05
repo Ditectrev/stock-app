@@ -190,10 +190,11 @@ export const DNA_NAV_BAR =
   "border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950";
 
 export const DNA_NAV_BRAND_TAGLINE =
-  "font-sans text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-stone-600 dark:text-stone-300 sm:text-xs sm:tracking-[0.2em]";
+  "font-sans text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-stone-600 dark:text-stone-300";
 
+/** Active tab inside segmented nav — white lift in light mode, inverted in dark. */
 export const DNA_NAV_LINK_ACTIVE =
-  "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900";
+  "bg-white text-stone-900 shadow-sm ring-1 ring-stone-200/80 dark:bg-stone-100 dark:text-stone-900 dark:shadow-none dark:ring-0";
 
 export const DNA_NAV_LINK_IDLE =
   "text-stone-700 hover:bg-white hover:text-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 dark:hover:text-stone-50";

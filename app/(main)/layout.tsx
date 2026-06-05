@@ -16,7 +16,7 @@ function NavigationFallback() {
       className="border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950"
       aria-hidden
     >
-      <div className="mx-auto h-16 max-w-7xl px-4 xl:max-w-[1400px] sm:px-6" />
+      <div className="mx-auto h-16 w-full max-w-[1800px] px-4 sm:px-6 lg:px-8" />
     </nav>
   );
 }
@@ -32,7 +32,7 @@ export default function MainLayout({
         <Navigation />
       </Suspense>
 
-      <div className="max-w-7xl xl:max-w-[1400px] mx-auto p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12">
+      <div className="mx-auto w-full max-w-[1800px] px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
         {children}
       </div>
 

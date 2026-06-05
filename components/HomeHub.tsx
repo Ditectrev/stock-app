@@ -146,7 +146,7 @@ export function HomeHub({
     <div id="section-home" className={HOME_MARKETING_STACK}>
       <header
         data-testid="home-dashboard-hero"
-        className="max-w-2xl border-l-2 border-stone-900 pl-5 dark:border-stone-100 sm:pl-6"
+        className="border-l-2 border-stone-900 pl-5 dark:border-stone-100 sm:pl-6 lg:max-w-4xl"
       >
         <p className={SECTION_LABEL_CLASS}>Market dashboard</p>
         <h1 className={`mt-2 ${HOME_HERO}`}>{SITE_NAME}</h1>

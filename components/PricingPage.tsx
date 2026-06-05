@@ -76,7 +76,7 @@ function PricingCard({
       {/* Header */}
       <div className="mb-4 pr-24">
         <h3
-          className={`h-[3.5rem] text-lg font-bold ${
+          className={`min-h-[2.75rem] text-lg font-bold leading-snug ${
             featured
               ? "text-stone-100 dark:text-stone-900"
               : "text-stone-900 dark:text-stone-50"
@@ -85,7 +85,7 @@ function PricingCard({
           {tier.name}
         </h3>
         <p
-          className={`mt-1 h-[5.5rem] overflow-hidden text-sm ${
+          className={`mt-1 min-h-[5.5rem] text-sm leading-relaxed ${
             featured ? "text-stone-300 dark:text-stone-600" : HOME_SUBTLE_TEXT
           }`}
         >
@@ -206,10 +206,7 @@ export function PricingPage({
     tier.features.some((feature) => feature.toLowerCase().includes(needle));
 
   return (
-    <section
-      className="py-12 px-4 max-w-7xl mx-auto"
-      aria-labelledby="pricing-heading"
-    >
+    <section className="py-8 sm:py-12" aria-labelledby="pricing-heading">
       {/* Header */}
       <div className="mb-10 max-w-3xl lg:mb-12">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
