@@ -23,8 +23,6 @@ import {
   HOME_PRIMARY_BUTTON,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
-import { resetBodyScrollLock } from "@/lib/scroll-lock";
-
 /** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
 const TRIAL_STATUS_SYNC_MS = 30_000;
 
@@ -43,12 +41,9 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authInfo, setAuthInfo] = useState<string | null>(null);
-  const [trialInitialized, setTrialInitialized] = useState(false);
   const requiresAuthLock = !isActive && hasUsedTrial && !isAuthenticated;
-  const forceAuthRef = useRef(false);
 
   const openAuthModal = useCallback((clearMessages = true) => {
-    forceAuthRef.current = false;
     if (clearMessages) {
       setAuthError(null);
       setAuthInfo(null);
@@ -86,18 +81,10 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         setRemainingSeconds(0);
         setIsActive(false);
         setHasUsedTrial(true);
-      } finally {
-        setTrialInitialized(true);
       }
     };
 
     init();
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      resetBodyScrollLock();
-    };
   }, []);
 
   useEffect(() => {
@@ -210,20 +197,16 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   }, []);
 
   useEffect(() => {
-    if (!trialInitialized || !authChecked || isAuthenticated) return;
-
-    if (!isActive && hasUsedTrial) {
-      forceAuthRef.current = true;
+    if (requiresAuthLock) {
       setShowAuth(true);
-      return;
     }
+  }, [requiresAuthLock]);
 
-    if (isActive && forceAuthRef.current) {
-      forceAuthRef.current = false;
-      setShowAuth(false);
-      resetBodyScrollLock();
+  useEffect(() => {
+    if (authChecked && !isAuthenticated && !isActive && hasUsedTrial) {
+      setShowAuth(true);
     }
-  }, [trialInitialized, authChecked, isAuthenticated, isActive, hasUsedTrial]);
+  }, [authChecked, isAuthenticated, isActive, hasUsedTrial]);
 
   const prevShowAuthRef = useRef(showAuth);
   useEffect(() => {
@@ -237,12 +220,8 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   const handleExpired = useCallback(() => {
     setIsActive(false);
     void trialApiService.endTrial();
-    setAuthError(null);
-    setAuthInfo(null);
-    setAuthLoading(false);
-    forceAuthRef.current = true;
-    setShowAuth(true);
-  }, []);
+    openAuthModal(true);
+  }, [openAuthModal]);
 
   const handleAuthClose = useCallback(() => {
     if (requiresAuthLock) {
