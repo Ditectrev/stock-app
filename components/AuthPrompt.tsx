@@ -188,8 +188,6 @@ export function AuthPrompt({
     [otp, pendingUserId, onEmailVerify]
   );
 
-  if (!open) return null;
-
   const displayError = error || emailError;
 
   const isBusy = loading || localSubmitting;

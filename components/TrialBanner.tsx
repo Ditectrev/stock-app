@@ -23,6 +23,7 @@ import {
   HOME_PRIMARY_BUTTON,
   HOME_SUBTLE_TEXT,
 } from "@/lib/home-ui";
+import { resetBodyScrollLock } from "@/lib/scroll-lock";
 
 /** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
 const TRIAL_STATUS_SYNC_MS = 30_000;
@@ -42,9 +43,12 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   const [authLoading, setAuthLoading] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [authInfo, setAuthInfo] = useState<string | null>(null);
+  const [trialInitialized, setTrialInitialized] = useState(false);
   const requiresAuthLock = !isActive && hasUsedTrial && !isAuthenticated;
+  const forceAuthRef = useRef(false);
 
   const openAuthModal = useCallback((clearMessages = true) => {
+    forceAuthRef.current = false;
     if (clearMessages) {
       setAuthError(null);
       setAuthInfo(null);
@@ -82,10 +86,18 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         setRemainingSeconds(0);
         setIsActive(false);
         setHasUsedTrial(true);
+      } finally {
+        setTrialInitialized(true);
       }
     };
 
     init();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      resetBodyScrollLock();
+    };
   }, []);
 
   useEffect(() => {
@@ -198,10 +210,20 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   }, []);
 
   useEffect(() => {
-    if (authChecked && !isAuthenticated && !isActive && hasUsedTrial) {
+    if (!trialInitialized || !authChecked || isAuthenticated) return;
+
+    if (!isActive && hasUsedTrial) {
+      forceAuthRef.current = true;
       setShowAuth(true);
+      return;
     }
-  }, [authChecked, isAuthenticated, isActive, hasUsedTrial]);
+
+    if (isActive && forceAuthRef.current) {
+      forceAuthRef.current = false;
+      setShowAuth(false);
+      resetBodyScrollLock();
+    }
+  }, [trialInitialized, authChecked, isAuthenticated, isActive, hasUsedTrial]);
 
   const prevShowAuthRef = useRef(showAuth);
   useEffect(() => {
@@ -215,8 +237,12 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   const handleExpired = useCallback(() => {
     setIsActive(false);
     void trialApiService.endTrial();
-    openAuthModal(true);
-  }, [openAuthModal]);
+    setAuthError(null);
+    setAuthInfo(null);
+    setAuthLoading(false);
+    forceAuthRef.current = true;
+    setShowAuth(true);
+  }, []);
 
   const handleAuthClose = useCallback(() => {
     if (requiresAuthLock) {
@@ -317,7 +343,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         </div>
       )}
 
-      {!isActive && hasUsedTrial && !isAuthenticated && !showAuth && (
+      {!isActive && hasUsedTrial && !isAuthenticated && (
         <div
           className={`sticky top-0 z-[10001] flex w-full items-center justify-center border-b border-stone-300 px-4 py-2 ${HOME_CALLOUT}`}
           role="alert"

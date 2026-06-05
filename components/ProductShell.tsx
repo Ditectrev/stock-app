@@ -14,9 +14,10 @@ import {
 } from "@/lib/design-dna";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import { HOME_PRIMARY_BUTTON } from "@/lib/home-ui";
+import { lockBodyScroll, unlockBodyScroll } from "@/lib/scroll-lock";
 
 function ProductShellHeader({
   eyebrow,
@@ -62,14 +63,34 @@ export function ProductOverlay({
   ariaLabel,
   closeTestId = "product-overlay-close",
 }: ProductOverlayProps) {
+  // Ensure lock/unlock pairing even if open toggles rapidly.
+  const didLockRef = useRef(false);
+
   useEffect(() => {
-    if (!open || typeof document === "undefined") return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    if (open) {
+      if (!didLockRef.current) {
+        lockBodyScroll();
+        didLockRef.current = true;
+      }
+      return;
+    }
+
+    // open === false
+    if (didLockRef.current) {
+      unlockBodyScroll();
+      didLockRef.current = false;
+    }
   }, [open]);
+
+  useEffect(() => {
+    // Unmount safety.
+    return () => {
+      if (didLockRef.current) {
+        unlockBodyScroll();
+        didLockRef.current = false;
+      }
+    };
+  }, []);
 
   if (!open) return null;
 

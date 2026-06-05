@@ -122,7 +122,7 @@ describe("TrialBanner", () => {
     });
 
     await renderBanner();
-    expect(screen.queryByTestId("trial-expired-banner")).toBeNull();
+    expect(screen.getByTestId("trial-expired-banner")).toBeDefined();
     expect(screen.getByTestId("auth-prompt")).toBeDefined();
     expect(screen.getByText(/Trial ended/i)).toBeDefined();
   });
@@ -245,7 +245,7 @@ describe("TrialBanner", () => {
     expect(screen.queryByTestId("auth-close")).toBeNull();
   });
 
-  it("should hide expired banner while auth prompt is open", async () => {
+  it("should show expired banner alongside auth prompt when trial is expired", async () => {
     mockGetTrialStatus.mockReturnValue({
       isActive: false,
       remainingSeconds: 0,
@@ -253,7 +253,7 @@ describe("TrialBanner", () => {
     });
 
     await renderBanner();
-    expect(screen.queryByTestId("trial-expired-banner")).toBeNull();
+    expect(screen.getByTestId("trial-expired-banner")).toBeDefined();
     expect(screen.getByTestId("auth-prompt")).toBeDefined();
     expect(screen.getByText(/Trial ended/i)).toBeDefined();
     expect(
