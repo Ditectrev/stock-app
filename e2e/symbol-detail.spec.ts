@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("Symbol Detail on Home Page", () => {
   test.beforeEach(async ({ page }) => {

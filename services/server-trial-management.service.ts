@@ -1,6 +1,9 @@
 import { ID, Query } from "node-appwrite";
 import { createServerClient } from "@/lib/appwrite";
-import { assertAppwriteTrialEnv } from "@/lib/appwrite-trial-env";
+import {
+  assertAppwriteTrialEnv,
+  isAppwriteTrialConfigured,
+} from "@/lib/appwrite-trial-env";
 import { env } from "@/lib/env";
 import type { TrialSession, TrialStatus } from "@/types";
 
@@ -32,9 +35,38 @@ export class ServerTrialManagementService {
     this.durationMs = env.trial.durationMinutes * 60 * 1000;
   }
 
+  /** Local dev / CI when Appwrite trial collections are not configured. */
+  private offlineTrialStatus(): TrialStatus {
+    return {
+      isActive: true,
+      remainingSeconds: Math.floor(this.durationMs / 1000),
+      hasUsedTrial: false,
+    };
+  }
+
+  private offlineTrialSession(identity: TrialIdentity): TrialSession {
+    const now = new Date();
+    const endTime = new Date(now.getTime() + this.durationMs);
+    return {
+      id: "offline-trial",
+      deviceFingerprint: identity.fingerprint,
+      ipAddress: identity.ipAddress,
+      startTime: now,
+      endTime,
+      isActive: true,
+      userAgent: identity.userAgent,
+      screenResolution: identity.screenResolution,
+      timezone: identity.timezone,
+      createdAt: now,
+    };
+  }
+
   async startTrial(identity: TrialIdentity): Promise<TrialSession> {
     if (!identity.fingerprint) {
       throw new Error("Missing trial fingerprint.");
+    }
+    if (!isAppwriteTrialConfigured()) {
+      return this.offlineTrialSession(identity);
     }
     const eligible = await this.checkTrialEligibility(identity);
     if (!eligible) {
@@ -66,6 +98,10 @@ export class ServerTrialManagementService {
   }
 
   async getTrialStatus(identity: TrialIdentity): Promise<TrialStatus> {
+    if (!isAppwriteTrialConfigured()) {
+      return this.offlineTrialStatus();
+    }
+
     const session = await this.getSessionByFingerprint(identity.fingerprint);
 
     if (!session) {
@@ -94,6 +130,10 @@ export class ServerTrialManagementService {
   }
 
   async endTrial(identity: TrialIdentity): Promise<void> {
+    if (!isAppwriteTrialConfigured()) {
+      return;
+    }
+
     const session = await this.getSessionByFingerprint(identity.fingerprint);
     if (!session || !session.isActive) return;
     await this.updateSessionActiveFlag(session.$id, false);
@@ -101,6 +141,9 @@ export class ServerTrialManagementService {
 
   async checkTrialEligibility(identity: TrialIdentity): Promise<boolean> {
     if (!identity.fingerprint) return false;
+    if (!isAppwriteTrialConfigured()) {
+      return true;
+    }
 
     const [fingerprintUsed, ipUsed] = await Promise.all([
       this.hasSessionForFingerprint(identity.fingerprint),

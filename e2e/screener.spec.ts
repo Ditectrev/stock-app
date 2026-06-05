@@ -6,7 +6,7 @@
  * Requirements: 26.1, 26.9, 26.10, 26.12, 26.15, 26.23
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("Asset Screener", () => {
   test.beforeEach(async ({ page }) => {

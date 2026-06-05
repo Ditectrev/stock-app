@@ -5,7 +5,7 @@
  * Tests layout, visibility, and touch targets across mobile, tablet, and desktop viewports.
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 // ─── Mobile viewport (375×667) — Requirement 13.1 ───
 

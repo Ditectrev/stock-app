@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("World Markets", () => {
   test.beforeEach(async ({ page }) => {

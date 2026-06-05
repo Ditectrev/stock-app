@@ -4,7 +4,7 @@
  * Playwright E2E tests for Task 6
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("Chart Component E2E Tests", () => {
   test.beforeEach(async ({ page }) => {

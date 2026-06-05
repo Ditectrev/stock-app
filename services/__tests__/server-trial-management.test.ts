@@ -23,6 +23,7 @@ vi.mock("@/lib/appwrite-trial-env", () => ({
     databaseId: "db",
     sessionsCollectionId: "trials",
   }),
+  isAppwriteTrialConfigured: () => true,
 }));
 
 vi.mock("@/lib/env", () => ({
