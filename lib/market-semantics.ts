@@ -314,26 +314,6 @@ export function seasonalLegendSwatchClass(
   }
 }
 
-/** Analyst rating bar fills — distinct steps with contrast on stone-200 / stone-700 tracks. */
-export function forecastRatingBarClass(index: number, isDark: boolean): string {
-  const lightBars = [
-    "bg-emerald-700",
-    "bg-emerald-600",
-    "bg-amber-600",
-    "bg-rose-600",
-    "bg-rose-700",
-  ] as const;
-  const darkBars = [
-    "bg-emerald-400",
-    "bg-emerald-500",
-    "bg-amber-400",
-    "bg-rose-400",
-    "bg-rose-500",
-  ] as const;
-  const palette = isDark ? darkBars : lightBars;
-  return palette[index] ?? palette[2];
-}
-
 export type TechnicalSignal = "overpriced" | "underpriced" | "fair";
 
 export function technicalSignalStyles(signal: TechnicalSignal): {

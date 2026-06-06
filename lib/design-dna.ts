@@ -13,6 +13,10 @@ export const DNA_ACCENT_BAR =
 export const DNA_NAV_ACCENT_BAR =
   "w-[2px] shrink-0 self-stretch rounded-full bg-stone-900 dark:bg-stone-100 min-h-[2rem]";
 
+/** Left rule wrapping nav wordmark + tagline (preferred over accent bar span). */
+export const DNA_NAV_LOGO_RULE =
+  "border-l-2 border-stone-900 pl-3 dark:border-stone-100 sm:pl-3.5";
+
 /** Left accent rule for marketing / hub section blocks. */
 export const DNA_SECTION_RULE =
   "border-l-2 border-stone-900 pl-5 dark:border-stone-100 sm:pl-6";
@@ -50,6 +54,9 @@ export const DNA_HOME_SECTION = "pt-10 sm:pt-12 lg:pt-14";
 
 /** Looser vertical rhythm for marketing pages (profile, etc.). */
 export const DNA_MARKETING_STACK = "flex flex-col gap-10 sm:gap-12 lg:gap-14";
+
+/** Marketing section block — left rule + top divider (profile plan / AI / BYOK). */
+export const DNA_MARKETING_SECTION = `${DNA_SECTION_RULE} border-t border-stone-200 pt-10 sm:pt-12 lg:pt-14 dark:border-stone-700/90`;
 
 /** Home hub section eyebrow spacing (no left rule — accent is hero-only). */
 export const DNA_HOME_SECTION_HEADING = "mb-4 sm:mb-5";
@@ -208,7 +215,7 @@ export const DNA_NAV_BAR =
   "border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950";
 
 export const DNA_NAV_BRAND_TAGLINE =
-  "mt-0.5 block font-sans text-[0.5625rem] font-medium uppercase leading-none tracking-[0.18em] text-stone-500 dark:text-stone-400 sm:text-[0.6rem]";
+  "mt-1 block font-sans text-[0.5rem] font-medium uppercase leading-none tracking-[0.2em] text-stone-500 dark:text-stone-400 sm:text-[0.5625rem]";
 
 /** Active tab inside segmented nav — white lift in light mode, inverted in dark. */
 export const DNA_NAV_LINK_ACTIVE =

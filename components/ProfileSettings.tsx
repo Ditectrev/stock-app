@@ -9,7 +9,7 @@ import {
   DNA_EYEBROW,
   DNA_HEADING,
   DNA_LABEL_STRONG,
-  DNA_MARKETING_STACK,
+  DNA_MARKETING_SECTION,
   DNA_SUBHEADING,
 } from "@/lib/design-dna";
 import { useCallback, useEffect, useState } from "react";
@@ -300,12 +300,9 @@ export function ProfileSettings() {
     );
   }
 
-  const profileSectionClass =
-    "border-l-2 border-stone-900 pl-5 dark:border-stone-100";
-
   return (
     <div
-      className={`${DNA_MARKETING_STACK} max-w-3xl`}
+      className="flex max-w-3xl flex-col"
       data-testid="profile-hub-signed-in"
     >
       <header className="space-y-1">
@@ -316,7 +313,7 @@ export function ProfileSettings() {
       </header>
 
       <section
-        className={`${profileSectionClass} space-y-3`}
+        className={`${DNA_MARKETING_SECTION} space-y-3`}
         aria-labelledby="profile-subscription-heading"
       >
         <p className={DNA_EYEBROW}>Plan</p>
@@ -378,7 +375,7 @@ export function ProfileSettings() {
       </section>
 
       <section
-        className={`${profileSectionClass} space-y-4`}
+        className={`${DNA_MARKETING_SECTION} space-y-4`}
         aria-labelledby="profile-provider-heading"
       >
         <p className={DNA_EYEBROW}>AI model</p>
@@ -437,7 +434,7 @@ export function ProfileSettings() {
       </section>
 
       <section
-        className={profileSectionClass}
+        className={`${DNA_MARKETING_SECTION} space-y-4`}
         aria-labelledby="profile-keys-heading"
       >
         <p className={DNA_EYEBROW}>BYOK</p>

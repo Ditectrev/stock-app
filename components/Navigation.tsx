@@ -2,12 +2,12 @@
 
 import {
   DNA_LABEL,
-  DNA_NAV_ACCENT_BAR,
   DNA_NAV_BAR,
   DNA_NAV_BRAND_TAGLINE,
   DNA_NAV_DIVIDER,
   DNA_NAV_LINK_ACTIVE,
   DNA_NAV_LINK_IDLE,
+  DNA_NAV_LOGO_RULE,
   DNA_NAV_MOBILE,
   DNA_NAV_WORDMARK,
   DNA_NAV_WORDMARK_MOBILE,
@@ -61,11 +61,10 @@ export function Navigation({
         <div className="flex h-16 items-center justify-between gap-4 overflow-visible">
           <Link
             href="/"
-            className="flex shrink-0 items-stretch gap-3 text-stone-900 dark:text-stone-100"
+            className="flex shrink-0 items-center text-stone-900 dark:text-stone-100"
             aria-label={`${SITE_NAME} home`}
           >
-            <span className={DNA_NAV_ACCENT_BAR} aria-hidden />
-            <span className="leading-tight">
+            <span className={`leading-tight ${DNA_NAV_LOGO_RULE}`}>
               <span className={`hidden sm:inline ${DNA_NAV_WORDMARK}`}>
                 {SITE_SHORT_NAME}
               </span>

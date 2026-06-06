@@ -12,7 +12,6 @@ import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
 import { SymbolTabShell, SymbolTabSkeleton } from "@/components/SymbolTabShell";
 import {
-  forecastRatingBarClass,
   marketChangeBgClass,
   marketChangeTextClass,
 } from "@/lib/market-semantics";
@@ -61,6 +60,23 @@ const RATING_KEYS: Array<keyof ForecastData["analystRatings"]> = [
   "sell",
   "strongSell",
 ];
+
+/** Bar fills live here (not lib/) so Tailwind always emits them. */
+const RATING_BAR_FILL_LIGHT = [
+  "bg-emerald-700",
+  "bg-emerald-600",
+  "bg-amber-700",
+  "bg-rose-600",
+  "bg-rose-800",
+] as const;
+
+const RATING_BAR_FILL_DARK = [
+  "bg-emerald-400",
+  "bg-emerald-500",
+  "bg-amber-400",
+  "bg-rose-400",
+  "bg-rose-500",
+] as const;
 
 function SectionLabel({ label, tooltip }: TooltipTriggerProps) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -263,7 +279,12 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                     }`}
                   >
                     <div
-                      className={`h-full rounded-full ${forecastRatingBarClass(index, isDark)}`}
+                      data-testid={`rating-bar-fill-${index}`}
+                      className={`h-full rounded-full ${
+                        isDark
+                          ? RATING_BAR_FILL_DARK[index]
+                          : RATING_BAR_FILL_LIGHT[index]
+                      }`}
                       style={{
                         width: `${pct}%`,
                         minWidth: count > 0 ? "0.625rem" : undefined,
