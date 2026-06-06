@@ -5,6 +5,7 @@ import {
   DNA_BODY_ON_INVERSE,
   DNA_CAPTION,
   DNA_LABEL_STRONG,
+  DNA_SECTION_RULE,
 } from "@/lib/design-dna";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -14,6 +15,7 @@ import {
   HOME_HERO,
   HOME_HERO_LEAD,
   HOME_MARKETING_STACK,
+  HOME_SECTION_HEADING,
   HOME_SECTION_LABEL,
 } from "@/lib/home-ui";
 import { SITE_NAME, SITE_TAGLINE } from "@/lib/site-seo";
@@ -146,7 +148,7 @@ export function HomeHub({
     <div id="section-home" className={HOME_MARKETING_STACK}>
       <header
         data-testid="home-dashboard-hero"
-        className="border-l-2 border-stone-900 pl-5 dark:border-stone-100 sm:pl-6 lg:max-w-4xl"
+        className={`max-w-2xl ${DNA_SECTION_RULE}`}
       >
         <p className={SECTION_LABEL_CLASS}>Market dashboard</p>
         <h1 className={`mt-2 ${HOME_HERO}`}>{SITE_NAME}</h1>
@@ -164,9 +166,11 @@ export function HomeHub({
       </header>
 
       <section aria-labelledby="home-explore-heading">
-        <p id="home-explore-heading" className={`mb-4 ${SECTION_LABEL_CLASS}`}>
-          Explore
-        </p>
+        <div className={HOME_SECTION_HEADING}>
+          <p id="home-explore-heading" className={SECTION_LABEL_CLASS}>
+            Explore
+          </p>
+        </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-3">
           <Link
             href={featured.href}
@@ -211,20 +215,21 @@ export function HomeHub({
       </section>
 
       <section aria-labelledby="home-pulse-heading" className="space-y-5">
-        <p id="home-pulse-heading" className={SECTION_LABEL_CLASS}>
-          Market pulse
-        </p>
+        <div className={HOME_SECTION_HEADING}>
+          <p id="home-pulse-heading" className={SECTION_LABEL_CLASS}>
+            Market pulse
+          </p>
+        </div>
         {fearGreed}
         {worldMarkets}
       </section>
 
       <section aria-labelledby="home-ai-heading" data-testid="home-ai-outlook">
-        <p
-          id="home-ai-heading"
-          className={`mb-4 sm:mb-6 ${SECTION_LABEL_CLASS}`}
-        >
-          AI outlook
-        </p>
+        <div className={HOME_SECTION_HEADING}>
+          <p id="home-ai-heading" className={SECTION_LABEL_CLASS}>
+            AI outlook
+          </p>
+        </div>
         {stockOfTheDay}
       </section>
     </div>

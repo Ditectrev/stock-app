@@ -442,7 +442,7 @@ export function HomePageClient() {
       )}
 
       {!selectedSymbol && (
-        <div className="mt-4 sm:mt-6">
+        <div className="mt-6 sm:mt-8 md:mt-10 lg:mt-12">
           <HomeHub
             onSymbolSelect={(symbol) =>
               router.push(`/?symbol=${encodeURIComponent(symbol)}`)

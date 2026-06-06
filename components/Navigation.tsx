@@ -1,17 +1,18 @@
 "use client";
 
 import {
-  DNA_ACCENT_BAR,
   DNA_LABEL,
+  DNA_NAV_ACCENT_BAR,
   DNA_NAV_BAR,
   DNA_NAV_BRAND_TAGLINE,
+  DNA_NAV_DIVIDER,
   DNA_NAV_LINK_ACTIVE,
   DNA_NAV_LINK_IDLE,
   DNA_NAV_MOBILE,
   DNA_NAV_WORDMARK,
   DNA_NAV_WORDMARK_MOBILE,
 } from "@/lib/design-dna";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SearchBar } from "@/components/SearchBar";
@@ -56,14 +57,14 @@ export function Navigation({
       data-testid="navigation"
       data-active-section={activeSection}
     >
-      <div className="mx-auto w-full max-w-[1800px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 xl:max-w-[1400px] sm:px-6">
         <div className="flex h-16 items-center justify-between gap-4 overflow-visible">
           <Link
             href="/"
-            className="flex shrink-0 items-center gap-3 text-stone-900 dark:text-stone-100"
+            className="flex shrink-0 items-stretch gap-3 text-stone-900 dark:text-stone-100"
             aria-label={`${SITE_NAME} home`}
           >
-            <span className={DNA_ACCENT_BAR} />
+            <span className={DNA_NAV_ACCENT_BAR} aria-hidden />
             <span className="leading-tight">
               <span className={`hidden sm:inline ${DNA_NAV_WORDMARK}`}>
                 {SITE_SHORT_NAME}
@@ -80,19 +81,23 @@ export function Navigation({
           <div
             className={`hidden items-center gap-1 md:flex ${HOME_SEGMENTED_NAV}`}
           >
-            {MAIN_NAV.map((link) => (
-              <Link
-                key={link.id}
-                href={link.href}
-                className={`rounded-lg px-3 py-1.5 transition-colors ${DNA_LABEL} ${
-                  activeSection === link.id
-                    ? DNA_NAV_LINK_ACTIVE
-                    : DNA_NAV_LINK_IDLE
-                }`}
-                aria-current={activeSection === link.id ? "page" : undefined}
-              >
-                {link.label}
-              </Link>
+            {MAIN_NAV.map((link, index) => (
+              <Fragment key={link.id}>
+                {index > 0 ? (
+                  <span className={DNA_NAV_DIVIDER} aria-hidden />
+                ) : null}
+                <Link
+                  href={link.href}
+                  className={`rounded-lg px-3 py-1.5 transition-colors ${DNA_LABEL} ${
+                    activeSection === link.id
+                      ? DNA_NAV_LINK_ACTIVE
+                      : DNA_NAV_LINK_IDLE
+                  }`}
+                  aria-current={activeSection === link.id ? "page" : undefined}
+                >
+                  {link.label}
+                </Link>
+              </Fragment>
             ))}
           </div>
 

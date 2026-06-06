@@ -9,6 +9,18 @@ export const DNA_NAV_ARCHETYPE = "terminal" as const;
 export const DNA_ACCENT_BAR =
   "inline-block h-8 w-[2px] shrink-0 rounded-full bg-stone-900 dark:bg-stone-100";
 
+/** Full-height vertical rule beside nav wordmark (two-line logo block). */
+export const DNA_NAV_ACCENT_BAR =
+  "w-[2px] shrink-0 self-stretch rounded-full bg-stone-900 dark:bg-stone-100 min-h-[2rem]";
+
+/** Left accent rule for marketing / hub section blocks. */
+export const DNA_SECTION_RULE =
+  "border-l-2 border-stone-900 pl-5 dark:border-stone-100 sm:pl-6";
+
+/** Vertical separator between segmented nav links. */
+export const DNA_NAV_DIVIDER =
+  "mx-0.5 hidden h-5 w-px shrink-0 bg-stone-300/90 dark:bg-stone-600 md:block";
+
 /** Eyebrow / section label (terminal caps). */
 export const DNA_EYEBROW =
   "text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-stone-600 dark:text-stone-300";
@@ -34,7 +46,10 @@ export const DNA_EXPLORE_CARD_TITLE =
   "text-2xl font-bold tracking-tight sm:text-3xl";
 
 /** Looser vertical rhythm for marketing dashboard sections. */
-export const DNA_MARKETING_STACK = "space-y-10 sm:space-y-12 lg:space-y-14";
+export const DNA_MARKETING_STACK = "space-y-12 sm:space-y-14 lg:space-y-16";
+
+/** Home hub section eyebrow + left rule (Explore, Market pulse, …). */
+export const DNA_HOME_SECTION_HEADING = `${DNA_SECTION_RULE} mb-4 pt-2 sm:mb-5 sm:pt-3`;
 
 /** Nav wordmark (desktop). */
 export const DNA_NAV_WORDMARK =
@@ -190,7 +205,7 @@ export const DNA_NAV_BAR =
   "border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950";
 
 export const DNA_NAV_BRAND_TAGLINE =
-  "font-sans text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-stone-600 dark:text-stone-300";
+  "mt-0.5 block font-sans text-[0.5625rem] font-medium uppercase leading-none tracking-[0.18em] text-stone-500 dark:text-stone-400 sm:text-[0.6rem]";
 
 /** Active tab inside segmented nav — white lift in light mode, inverted in dark. */
 export const DNA_NAV_LINK_ACTIVE =
