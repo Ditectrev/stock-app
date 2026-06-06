@@ -106,7 +106,7 @@ describe("EconomicCalendar", () => {
 
     const lowBadge = screen.getByTestId("badge-4");
     expect(lowBadge.textContent).toBe("low");
-    expect(lowBadge.className).toContain("bg-stone-100");
+    expect(lowBadge.className).toContain("bg-stone-200");
   });
 
   it("should display previous, forecast, and actual values when available", () => {

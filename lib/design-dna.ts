@@ -51,8 +51,8 @@ export const DNA_HOME_SECTION = "pt-10 sm:pt-12 lg:pt-14";
 /** Looser vertical rhythm for marketing pages (profile, etc.). */
 export const DNA_MARKETING_STACK = "flex flex-col gap-10 sm:gap-12 lg:gap-14";
 
-/** Home hub section eyebrow + left rule (Explore, Market pulse, …). */
-export const DNA_HOME_SECTION_HEADING = `${DNA_SECTION_RULE} mb-4 sm:mb-5`;
+/** Home hub section eyebrow spacing (no left rule — accent is hero-only). */
+export const DNA_HOME_SECTION_HEADING = "mb-4 sm:mb-5";
 
 /** Nav wordmark (desktop). */
 export const DNA_NAV_WORDMARK =

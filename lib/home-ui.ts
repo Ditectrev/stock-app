@@ -89,10 +89,10 @@ export const HOME_NAV_BAR = DNA_NAV_BAR;
 
 /** Calendar “today” highlights — stone accent, not blue. */
 export const CALENDAR_TODAY_HEADER =
-  "border-b border-stone-400 bg-stone-200 text-stone-900 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100";
+  "border-b border-stone-400 bg-stone-200 text-stone-900 dark:border-stone-500 dark:bg-stone-700 dark:text-stone-50";
 
 export const CALENDAR_TODAY_BADGE =
-  "bg-stone-300 text-stone-900 dark:bg-stone-600 dark:text-stone-100";
+  "rounded bg-stone-900 px-1.5 py-0.5 text-xs font-semibold text-stone-50 dark:bg-stone-100 dark:text-stone-900";
 
 export const CALENDAR_TODAY_CELL =
   "bg-stone-100 hover:bg-stone-200 dark:bg-stone-800/80 dark:hover:bg-stone-700/80";
@@ -120,7 +120,7 @@ export const CALENDAR_TIME_BADGE =
 export const CALENDAR_NEUTRAL_TEXT = DNA_CAPTION;
 
 export const CALENDAR_IMPORTANCE_LOW =
-  "bg-stone-100 text-stone-700 dark:bg-stone-700 dark:text-stone-300";
+  "bg-stone-200 text-stone-800 dark:bg-stone-500 dark:text-stone-50";
 
 export const CALENDAR_FILTER_LABEL = DNA_LABEL;
 
@@ -128,7 +128,7 @@ export const CALENDAR_SELECT =
   "rounded-lg border text-sm focus:outline-none focus:ring-1 focus:ring-stone-600 dark:focus:ring-stone-400 border-stone-300 bg-white text-stone-800 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100";
 
 export const CALENDAR_CHIP_IDLE =
-  "rounded px-2 py-0.5 text-xs bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300";
+  "rounded px-2 py-0.5 text-xs bg-stone-100 text-stone-700 ring-1 ring-stone-200 dark:bg-stone-700 dark:text-stone-100 dark:ring-stone-500";
 
 export const CALENDAR_SYMBOL_CHIP =
   "inline-block shrink-0 cursor-pointer rounded px-2 py-0.5 text-center text-xs font-semibold transition-colors bg-stone-100 text-stone-800 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700";

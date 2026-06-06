@@ -207,7 +207,7 @@ export function ScreenerTableView({
               return (
                 <tr
                   key={row.symbol}
-                  className={`cursor-pointer border-b border-stone-200 text-stone-800 transition-colors hover:bg-stone-100 dark:border-stone-800 dark:text-stone-100 dark:hover:bg-stone-900/80 ${rowBg} ${rowAccent}`}
+                  className={`cursor-pointer border-b border-stone-200 text-stone-800 transition-colors hover:bg-stone-100 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:hover:bg-stone-900 ${rowBg} ${rowAccent}`}
                   onClick={() => onSymbolClick?.(row.symbol)}
                   data-testid={`row-${row.symbol}`}
                 >
@@ -221,7 +221,7 @@ export function ScreenerTableView({
                   <td
                     className={`px-3 py-2 font-medium tabular-nums ${
                       row.changePercent === 0
-                        ? DNA_BODY
+                        ? "text-stone-600 dark:text-stone-300"
                         : marketChangeTextClass(row.changePercent)
                     }`}
                   >

@@ -228,9 +228,7 @@ export function IPOCalendar({
                 >
                   {formatDayHeader(dateKey)}
                   {isToday && (
-                    <span
-                      className={`ml-2 rounded px-1.5 py-0.5 text-xs font-normal ${CALENDAR_TODAY_BADGE}`}
-                    >
+                    <span className={`ml-2 ${CALENDAR_TODAY_BADGE}`}>
                       Today
                     </span>
                   )}

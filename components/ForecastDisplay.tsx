@@ -264,7 +264,10 @@ export function ForecastDisplay({ forecast }: ForecastDisplayProps) {
                   >
                     <div
                       className={`h-full rounded-full ${forecastRatingBarClass(index, isDark)}`}
-                      style={{ width: `${pct}%` }}
+                      style={{
+                        width: `${pct}%`,
+                        minWidth: count > 0 ? "0.625rem" : undefined,
+                      }}
                     />
                   </div>
                   <span
