@@ -179,11 +179,11 @@ export const MARKET_NEUTRAL_BG =
   "bg-stone-100 border border-stone-200 dark:bg-stone-800 dark:border-stone-600";
 
 export const MARKET_UP_BADGE =
-  "bg-emerald-100 text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200";
+  "bg-emerald-100 text-emerald-900 dark:bg-emerald-900/70 dark:text-emerald-50";
 export const MARKET_DOWN_BADGE =
-  "bg-rose-100 text-rose-900 dark:bg-rose-950/50 dark:text-rose-200";
+  "bg-rose-100 text-rose-900 dark:bg-rose-900/70 dark:text-rose-50";
 export const MARKET_NEUTRAL_BADGE =
-  "bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-100";
+  "bg-stone-200 text-stone-800 dark:bg-stone-600 dark:text-stone-50";
 
 /** Solid performance bars (sector comparison, etc.). */
 export const MARKET_UP_BAR = "bg-emerald-600";
@@ -191,9 +191,24 @@ export const MARKET_DOWN_BAR = "bg-rose-600";
 export const MARKET_UP_BAR_TRACK = "bg-emerald-500/20";
 export const MARKET_DOWN_BAR_TRACK = "bg-rose-500/20";
 
-/** Subtle table/list row highlights. */
-export const MARKET_UP_ROW_BG = "bg-emerald-50 dark:bg-emerald-950/25";
-export const MARKET_DOWN_ROW_BG = "bg-rose-50 dark:bg-rose-950/25";
+/** Subtle table/list row highlights (dark-mode safe). */
+export const MARKET_UP_ROW_BG =
+  "bg-emerald-50 dark:bg-emerald-950/45 dark:ring-1 dark:ring-inset dark:ring-emerald-800/50";
+export const MARKET_DOWN_ROW_BG =
+  "bg-rose-50 dark:bg-rose-950/45 dark:ring-1 dark:ring-inset dark:ring-rose-800/50";
+
+/** Left accent for screener valuation rows (readable in light + dark). */
+export function marketValuationRowAccent(
+  context: "overpriced" | "underpriced" | "fair" | string
+): string {
+  if (context === "overpriced") {
+    return "border-l-[3px] border-l-rose-500 dark:border-l-rose-400";
+  }
+  if (context === "underpriced") {
+    return "border-l-[3px] border-l-emerald-600 dark:border-l-emerald-400";
+  }
+  return "border-l-[3px] border-l-transparent";
+}
 
 /** Chart or panel error surfaces (no border). */
 export const MARKET_ERROR_SURFACE = "bg-rose-50 dark:bg-rose-950/35";

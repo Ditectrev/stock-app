@@ -168,8 +168,8 @@ export function ScreenerHub({
         </p>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-[1.1fr_1.9fr]">
-        <aside className="space-y-4 rounded-xl border border-stone-200 bg-stone-100 p-3 dark:border-stone-700 dark:bg-stone-800">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start">
+        <aside className="min-w-0 space-y-4 rounded-xl border border-stone-200 bg-stone-100 p-3 dark:border-stone-700 dark:bg-stone-800">
           <AssetScreener
             onResultsChange={handleResultsChange}
             onFiltersChange={handleFiltersChange}
@@ -182,7 +182,7 @@ export function ScreenerHub({
           />
         </aside>
 
-        <section className="space-y-4">
+        <section className="min-w-0 space-y-4">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className={DNA_EYEBROW}>Results canvas</p>

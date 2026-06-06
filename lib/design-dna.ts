@@ -45,11 +45,14 @@ export const DNA_HERO_LEAD =
 export const DNA_EXPLORE_CARD_TITLE =
   "text-2xl font-bold tracking-tight sm:text-3xl";
 
-/** Looser vertical rhythm for marketing dashboard sections. */
-export const DNA_MARKETING_STACK = "space-y-12 sm:space-y-14 lg:space-y-16";
+/** Home hub block spacing (padding avoids margin collapse). */
+export const DNA_HOME_SECTION = "pt-10 sm:pt-12 lg:pt-14";
+
+/** Looser vertical rhythm for marketing pages (profile, etc.). */
+export const DNA_MARKETING_STACK = "flex flex-col gap-10 sm:gap-12 lg:gap-14";
 
 /** Home hub section eyebrow + left rule (Explore, Market pulse, …). */
-export const DNA_HOME_SECTION_HEADING = `${DNA_SECTION_RULE} mb-4 pt-2 sm:mb-5 sm:pt-3`;
+export const DNA_HOME_SECTION_HEADING = `${DNA_SECTION_RULE} mb-4 sm:mb-5`;
 
 /** Nav wordmark (desktop). */
 export const DNA_NAV_WORDMARK =

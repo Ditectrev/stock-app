@@ -15,6 +15,7 @@ import {
   MARKET_NEUTRAL_BADGE,
   MARKET_UP_BADGE,
   marketChangeTextClass,
+  marketValuationRowAccent,
   marketValuationRowBg,
 } from "@/lib/market-semantics";
 import { HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
@@ -157,7 +158,7 @@ export function ScreenerTableView({
   if (results.length === 0) {
     return (
       <div
-        className={`rounded-xl border border-stone-200 bg-white p-8 text-center dark:border-stone-700 dark:bg-stone-900 ${DNA_CAPTION}`}
+        className={`rounded-xl border border-stone-200 bg-stone-50 p-8 text-center dark:border-stone-700 dark:bg-stone-950 ${DNA_CAPTION}`}
       >
         No results
       </div>
@@ -165,15 +166,18 @@ export function ScreenerTableView({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm dark:border-stone-700 dark:bg-stone-900">
-      <div className="overflow-x-auto -mx-0">
-        <table className={`w-full ${DNA_BODY}`} aria-label="Screener results">
+    <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm dark:border-stone-700 dark:bg-stone-950">
+      <div className="overflow-x-auto">
+        <table
+          className={`w-full min-w-[720px] ${DNA_BODY}`}
+          aria-label="Screener results"
+        >
           <thead>
-            <tr className="border-b border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-950">
+            <tr className="border-b border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-900">
               {COLUMNS.map((col) => (
                 <th
                   key={col.field}
-                  className={`cursor-pointer select-none px-3 py-2 text-left font-medium transition-colors hover:bg-stone-200 dark:hover:bg-stone-800 md:px-4 md:py-3 lg:px-5 ${DNA_BODY}`}
+                  className={`cursor-pointer select-none px-3 py-2 text-left font-medium text-stone-900 transition-colors hover:bg-stone-200 dark:text-stone-100 dark:hover:bg-stone-800 md:px-4 md:py-3 lg:px-5`}
                   onClick={() => handleSort(col.field)}
                   aria-sort={
                     sort.field === col.field
@@ -198,23 +202,20 @@ export function ScreenerTableView({
           <tbody>
             {paged.map((row) => {
               const rowBg = marketValuationRowBg(row.valuationContext);
+              const rowAccent = marketValuationRowAccent(row.valuationContext);
 
               return (
                 <tr
                   key={row.symbol}
-                  className={`cursor-pointer border-b border-stone-100 transition-colors hover:bg-stone-50 dark:border-stone-800 dark:hover:bg-stone-800/80 ${rowBg}`}
+                  className={`cursor-pointer border-b border-stone-200 text-stone-800 transition-colors hover:bg-stone-100 dark:border-stone-800 dark:text-stone-100 dark:hover:bg-stone-900/80 ${rowBg} ${rowAccent}`}
                   onClick={() => onSymbolClick?.(row.symbol)}
                   data-testid={`row-${row.symbol}`}
                 >
-                  <td className="px-3 py-2 font-medium text-stone-900 dark:text-stone-50">
-                    {row.symbol}
-                  </td>
-                  <td
-                    className={`max-w-[200px] truncate px-3 py-2 ${DNA_BODY}`}
-                  >
+                  <td className="px-3 py-2 font-medium">{row.symbol}</td>
+                  <td className={`max-w-[200px] truncate px-3 py-2`}>
                     {row.name}
                   </td>
-                  <td className="px-3 py-2 tabular-nums text-stone-900 dark:text-stone-50">
+                  <td className="px-3 py-2 tabular-nums">
                     {formatPrice(row.price)}
                   </td>
                   <td
@@ -226,16 +227,16 @@ export function ScreenerTableView({
                   >
                     {formatChangePercent(row.changePercent)}
                   </td>
-                  <td className={`px-3 py-2 tabular-nums ${DNA_BODY}`}>
+                  <td className="px-3 py-2 tabular-nums">
                     {formatVolume(row.volume)}
                   </td>
-                  <td className={`px-3 py-2 tabular-nums ${DNA_BODY}`}>
+                  <td className="px-3 py-2 tabular-nums">
                     {formatMarketCap(row.marketCap)}
                   </td>
-                  <td className={`px-3 py-2 tabular-nums ${DNA_BODY}`}>
+                  <td className="px-3 py-2 tabular-nums">
                     {row.peRatio != null ? row.peRatio.toFixed(1) : "—"}
                   </td>
-                  <td className={`px-3 py-2 ${DNA_BODY}`}>{row.sector}</td>
+                  <td className="px-3 py-2">{row.sector}</td>
                   <td className="px-3 py-2">
                     <span
                       className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${

@@ -15,6 +15,7 @@ import {
   HOME_HERO,
   HOME_HERO_LEAD,
   HOME_MARKETING_STACK,
+  HOME_SECTION,
   HOME_SECTION_HEADING,
   HOME_SECTION_LABEL,
 } from "@/lib/home-ui";
@@ -165,12 +166,16 @@ export function HomeHub({
         </div>
       </header>
 
-      <section aria-labelledby="home-explore-heading">
-        <div className={HOME_SECTION_HEADING}>
-          <p id="home-explore-heading" className={SECTION_LABEL_CLASS}>
-            Explore
-          </p>
-        </div>
+      <section
+        aria-labelledby="home-explore-heading"
+        className={`${HOME_SECTION} flex flex-col`}
+      >
+        <h2
+          id="home-explore-heading"
+          className={`${HOME_SECTION_HEADING} ${SECTION_LABEL_CLASS}`}
+        >
+          Explore
+        </h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-3">
           <Link
             href={featured.href}
@@ -214,22 +219,31 @@ export function HomeHub({
         </div>
       </section>
 
-      <section aria-labelledby="home-pulse-heading" className="space-y-5">
-        <div className={HOME_SECTION_HEADING}>
-          <p id="home-pulse-heading" className={SECTION_LABEL_CLASS}>
-            Market pulse
-          </p>
-        </div>
+      <section
+        aria-labelledby="home-pulse-heading"
+        className={`${HOME_SECTION} flex flex-col gap-5`}
+      >
+        <h2
+          id="home-pulse-heading"
+          className={`${HOME_SECTION_HEADING} ${SECTION_LABEL_CLASS}`}
+        >
+          Market pulse
+        </h2>
         {fearGreed}
         {worldMarkets}
       </section>
 
-      <section aria-labelledby="home-ai-heading" data-testid="home-ai-outlook">
-        <div className={HOME_SECTION_HEADING}>
-          <p id="home-ai-heading" className={SECTION_LABEL_CLASS}>
-            AI outlook
-          </p>
-        </div>
+      <section
+        aria-labelledby="home-ai-heading"
+        data-testid="home-ai-outlook"
+        className={`${HOME_SECTION} flex flex-col`}
+      >
+        <h2
+          id="home-ai-heading"
+          className={`${HOME_SECTION_HEADING} ${SECTION_LABEL_CLASS}`}
+        >
+          AI outlook
+        </h2>
         {stockOfTheDay}
       </section>
     </div>
