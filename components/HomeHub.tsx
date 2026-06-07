@@ -4,6 +4,7 @@ import {
   DNA_BODY,
   DNA_BODY_ON_INVERSE,
   DNA_CAPTION,
+  DNA_CAPTION_ON_INVERSE,
   DNA_LABEL_STRONG,
   DNA_SECTION_RULE,
 } from "@/lib/design-dna";
@@ -185,7 +186,7 @@ export function HomeHub({
               {featured.icon}
             </span>
             <div>
-              <p className={DNA_CAPTION}>Start here</p>
+              <p className={DNA_CAPTION_ON_INVERSE}>Start here</p>
               <p className={`mt-1 ${HOME_EXPLORE_CARD_TITLE}`}>
                 {featured.label}
               </p>
@@ -221,7 +222,7 @@ export function HomeHub({
 
       <section
         aria-labelledby="home-pulse-heading"
-        className={`${HOME_SECTION} flex flex-col gap-5`}
+        className={`${HOME_SECTION} flex min-w-0 flex-col gap-5`}
       >
         <h2
           id="home-pulse-heading"

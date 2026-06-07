@@ -27,11 +27,11 @@ export function Footer() {
       </div>
 
       <p className={`mb-2 text-center ${DNA_CAPTION}`}>
-        v{packageJson.version}
+        v{packageJson.version} (open alpha, might contain bugs)
       </p>
 
       <p className={`text-center ${DNA_BODY_SECONDARY}`}>
-        © {currentYear} Ditectrev and our contributors
+        © {currentYear} The Open Stock
       </p>
     </footer>
   );

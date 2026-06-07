@@ -26,15 +26,10 @@ type Region = "Americas" | "Europe" | "Asia-Pacific";
 const REGIONS: ReadonlyArray<{
   id: Region;
   label: string;
-  gridClass: string;
 }> = [
-  { id: "Americas", label: "Americas", gridClass: "lg:col-span-6" },
-  { id: "Europe", label: "Europe", gridClass: "lg:col-span-3" },
-  {
-    id: "Asia-Pacific",
-    label: "Asia-Pacific",
-    gridClass: "lg:col-span-3",
-  },
+  { id: "Americas", label: "Americas" },
+  { id: "Europe", label: "Europe" },
+  { id: "Asia-Pacific", label: "Asia-Pacific" },
 ];
 
 const DEFAULT_REFRESH_INTERVAL = 60_000; // 60 seconds
@@ -167,7 +162,7 @@ export function WorldMarkets({
         Major indices by region — refreshed every minute.
       </p>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-12 lg:gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-6">
         {REGIONS.map((region) => {
           const indices = grouped[region.id];
           if (indices.length === 0) return null;
@@ -175,7 +170,7 @@ export function WorldMarkets({
           return (
             <div
               key={region.id}
-              className={region.gridClass}
+              className="min-w-0"
               data-testid={`region-${region.id}`}
               role="region"
               aria-label={`${region.label} markets`}

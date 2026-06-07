@@ -274,17 +274,26 @@ export function HeatmapComponent({
 
       {/* Tile grid */}
       <div
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 sm:gap-2 lg:gap-3"
+        className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
         data-testid="heatmap-grid"
       >
         {processedData.map((item) => {
           const bgColor = getHeatmapFillColor(item.changePercent, isDark);
           const textColor = getHeatmapTextClass(item.changePercent, isDark);
+          const isHovered = hoveredSymbol === item.symbol;
+          const detailLines = [
+            item.name,
+            item.sector ? `Sector: ${item.sector}` : null,
+            item.marketCap != null
+              ? `Mkt Cap: ${formatMarketCap(item.marketCap)}`
+              : null,
+            `Value: ${formatValue(item.value)}`,
+          ].filter(Boolean);
 
           return (
             <div
               key={item.symbol}
-              className={`rounded-lg p-2 sm:p-3 md:p-3 lg:p-4 flex flex-col items-center justify-center min-h-[70px] sm:min-h-[80px] md:min-h-[90px] lg:min-h-[100px] cursor-pointer transition-all duration-150 hover:scale-[1.03] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1 ${textColor}`}
+              className={`relative flex min-h-[70px] cursor-pointer flex-col rounded-lg p-2 transition-colors duration-150 hover:ring-2 hover:ring-stone-900/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1 dark:hover:ring-stone-100/25 sm:min-h-[80px] sm:p-3 md:min-h-[90px] lg:min-h-[100px] lg:p-4 ${textColor}`}
               style={{ backgroundColor: bgColor }}
               data-testid={`heatmap-tile-${item.symbol}`}
               aria-label={`${item.symbol}: ${formatPercent(item.changePercent)}`}
@@ -300,29 +309,31 @@ export function HeatmapComponent({
                 }
               }}
             >
-              <span
-                className={`${DNA_HEATMAP_CELL} truncate max-w-full`}
-                data-testid={`heatmap-symbol-${item.symbol}`}
-              >
-                {item.symbol}
-              </span>
-              <span
-                className={`${DNA_CAPTION} mt-1 font-medium`}
-                data-testid={`heatmap-change-${item.symbol}`}
-              >
-                {formatPercent(item.changePercent)}
-              </span>
-              {hoveredSymbol === item.symbol && (
+              <div className="flex w-full items-start justify-between gap-2">
+                <span
+                  className={`${DNA_HEATMAP_CELL} min-w-0 truncate`}
+                  data-testid={`heatmap-symbol-${item.symbol}`}
+                >
+                  {item.symbol}
+                </span>
+                <span
+                  className={`${DNA_CAPTION} shrink-0 font-medium`}
+                  data-testid={`heatmap-change-${item.symbol}`}
+                >
+                  {formatPercent(item.changePercent)}
+                </span>
+              </div>
+              {isHovered && detailLines.length > 0 && (
                 <div
-                  className="mt-1 w-full rounded border border-stone-600 bg-stone-900 px-2 py-1 text-center text-xs text-stone-100 dark:border-stone-500 dark:bg-stone-800 dark:text-stone-100"
+                  className="mt-2 w-full space-y-0.5 text-xs leading-snug opacity-90"
+                  role="tooltip"
                   data-testid={`heatmap-tooltip-${item.symbol}`}
                 >
-                  <div className="font-medium truncate">{item.name}</div>
-                  {item.sector && <div>Sector: {item.sector}</div>}
-                  {item.marketCap != null && (
-                    <div>Mkt Cap: {formatMarketCap(item.marketCap)}</div>
-                  )}
-                  <div>Value: {formatValue(item.value)}</div>
+                  {detailLines.map((line) => (
+                    <div key={line} className="truncate">
+                      {line}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

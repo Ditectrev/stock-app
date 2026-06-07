@@ -167,7 +167,10 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
   const chartStroke = marketSentimentGaugeChartStroke(isDark);
 
   return (
-    <div className={HOME_INSTRUMENT_PANEL} data-testid="fear-greed-gauge">
+    <div
+      className={`${HOME_INSTRUMENT_PANEL} min-w-0 overflow-hidden`}
+      data-testid="fear-greed-gauge"
+    >
       <div className="flex items-start justify-between gap-3 mb-4 sm:mb-5">
         <div>
           <h3 className={DNA_HEADING}>Fear &amp; Greed Index</h3>
@@ -198,12 +201,12 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,17rem)_1fr] lg:gap-8">
-        <div className="flex flex-col sm:flex-row lg:flex-col sm:items-end lg:items-start gap-4">
-          <div className="flex-shrink-0">
+      <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] lg:gap-8">
+        <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-end lg:flex-col lg:items-start">
+          <div className="min-w-0 flex-shrink-0">
             <svg
               viewBox="0 0 300 160"
-              className="h-auto w-full max-w-[17rem]"
+              className="mx-auto h-auto w-full max-w-[17rem]"
               aria-label={`Fear and Greed gauge showing ${value} - ${label}`}
               role="img"
             >
@@ -322,7 +325,7 @@ export function FearGreedGauge({ data: externalData }: FearGreedGaugeProps) {
                 </div>
               )}
             </div>
-            <div className="relative h-52 sm:h-64 lg:h-full lg:min-h-[16rem]">
+            <div className="relative h-52 min-w-0 overflow-hidden rounded-md sm:h-64 lg:h-64">
               <svg
                 viewBox="0 0 100 100"
                 className="h-full w-full"

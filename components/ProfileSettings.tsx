@@ -9,7 +9,7 @@ import {
   DNA_EYEBROW,
   DNA_HEADING,
   DNA_LABEL_STRONG,
-  DNA_MARKETING_SECTION,
+  DNA_MARKETING_STACK,
   DNA_SUBHEADING,
 } from "@/lib/design-dna";
 import { useCallback, useEffect, useState } from "react";
@@ -302,7 +302,7 @@ export function ProfileSettings() {
 
   return (
     <div
-      className="flex max-w-3xl flex-col"
+      className={`${DNA_MARKETING_STACK} max-w-3xl`}
       data-testid="profile-hub-signed-in"
     >
       <header className="space-y-1">
@@ -313,7 +313,7 @@ export function ProfileSettings() {
       </header>
 
       <section
-        className={`${DNA_MARKETING_SECTION} space-y-3`}
+        className="space-y-3"
         aria-labelledby="profile-subscription-heading"
       >
         <p className={DNA_EYEBROW}>Plan</p>
@@ -374,10 +374,7 @@ export function ProfileSettings() {
         )}
       </section>
 
-      <section
-        className={`${DNA_MARKETING_SECTION} space-y-4`}
-        aria-labelledby="profile-provider-heading"
-      >
+      <section className="space-y-4" aria-labelledby="profile-provider-heading">
         <p className={DNA_EYEBROW}>AI model</p>
         <div>
           <h2 id="profile-provider-heading" className={DNA_HEADING}>
@@ -433,10 +430,7 @@ export function ProfileSettings() {
         )}
       </section>
 
-      <section
-        className={`${DNA_MARKETING_SECTION} space-y-4`}
-        aria-labelledby="profile-keys-heading"
-      >
+      <section className="space-y-4" aria-labelledby="profile-keys-heading">
         <p className={DNA_EYEBROW}>BYOK</p>
         <h2 id="profile-keys-heading" className={`mb-3 ${DNA_HEADING}`}>
           API keys

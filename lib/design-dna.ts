@@ -55,9 +55,6 @@ export const DNA_HOME_SECTION = "pt-10 sm:pt-12 lg:pt-14";
 /** Looser vertical rhythm for marketing pages (profile, etc.). */
 export const DNA_MARKETING_STACK = "flex flex-col gap-10 sm:gap-12 lg:gap-14";
 
-/** Marketing section block — left rule + top divider (profile plan / AI / BYOK). */
-export const DNA_MARKETING_SECTION = `${DNA_SECTION_RULE} border-t border-stone-200 pt-10 sm:pt-12 lg:pt-14 dark:border-stone-700/90`;
-
 /** Home hub section eyebrow spacing (no left rule — accent is hero-only). */
 export const DNA_HOME_SECTION_HEADING = "mb-4 sm:mb-5";
 
@@ -118,6 +115,10 @@ export const DNA_BODY_SECONDARY =
 /** Body on inverted surfaces (dark explore hero card). */
 export const DNA_BODY_ON_INVERSE =
   "text-sm leading-relaxed text-stone-300 dark:text-stone-600";
+
+/** Caption / eyebrow on inverted explore hero card. */
+export const DNA_CAPTION_ON_INVERSE =
+  "text-xs text-stone-300 dark:text-stone-600";
 
 /** Mobile nav drawer links (touch-sized). */
 export const DNA_NAV_MOBILE =
