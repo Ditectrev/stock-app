@@ -16,6 +16,15 @@ import {
   postEmailOtpVerify,
 } from "@/lib/auth/trial-auth-navigation";
 import { describeAuthQueryError } from "@/lib/auth/auth-query-messages";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
+import { OPEN_AUTH_PROMPT_EVENT } from "@/lib/open-auth-prompt";
+import {
+  HOME_CALLOUT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
+/** Re-sync countdown with server so tab background / clock skew cannot shorten the trial. */
+const TRIAL_STATUS_SYNC_MS = 30_000;
 
 export interface TrialBannerProps {
   /** Called when user successfully authenticates */
@@ -79,13 +88,36 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   }, []);
 
   useEffect(() => {
+    if (!isActive || isAuthenticated) return;
+
+    const syncStatus = async () => {
+      try {
+        const status = await trialApiService.getTrialStatus();
+        setRemainingSeconds(status.remainingSeconds);
+        setIsActive(status.isActive);
+        setHasUsedTrial(status.hasUsedTrial);
+      } catch (err) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[trial] periodic status sync failed:", err);
+        }
+      }
+    };
+
+    const interval = setInterval(() => {
+      void syncStatus();
+    }, TRIAL_STATUS_SYNC_MS);
+
+    return () => clearInterval(interval);
+  }, [isActive, isAuthenticated]);
+
+  useEffect(() => {
     const openAuth = () => openAuthModal(true);
     if (typeof window !== "undefined") {
-      window.addEventListener("open-auth-prompt", openAuth);
+      window.addEventListener(OPEN_AUTH_PROMPT_EVENT, openAuth);
     }
     return () => {
       if (typeof window !== "undefined") {
-        window.removeEventListener("open-auth-prompt", openAuth);
+        window.removeEventListener(OPEN_AUTH_PROMPT_EVENT, openAuth);
       }
     };
   }, [openAuthModal]);
@@ -165,6 +197,12 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
   }, []);
 
   useEffect(() => {
+    if (requiresAuthLock) {
+      setShowAuth(true);
+    }
+  }, [requiresAuthLock]);
+
+  useEffect(() => {
     if (authChecked && !isAuthenticated && !isActive && hasUsedTrial) {
       setShowAuth(true);
     }
@@ -202,24 +240,22 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
     try {
       const result = await postEmailOtpSend(email);
       if (!result.ok) {
-        const err = result.error ?? "Something went wrong. Please try again.";
+        const err = result.error ?? AUTH_UI_COPY.genericFailed;
         setAuthError(err);
         return { ok: false as const, error: err };
       }
       if (!result.userId) {
-        const err = "Could not start verification. Please try again.";
+        const err = AUTH_UI_COPY.verificationStartFailed;
         setAuthError(err);
         return { ok: false as const, error: err };
       }
-      setAuthInfo(
-        "We sent a verification email. Check your inbox (and spam) for the 6-digit code."
-      );
+      setAuthInfo(AUTH_UI_COPY.emailSentInfo);
       return { ok: true as const, userId: result.userId };
     } catch {
-      setAuthError("Network error. Please try again.");
+      setAuthError(AUTH_UI_COPY.networkFailed);
       return {
         ok: false as const,
-        error: "Network error. Please try again.",
+        error: AUTH_UI_COPY.networkFailed,
       };
     } finally {
       setAuthLoading(false);
@@ -233,8 +269,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
       try {
         const result = await postEmailOtpVerify(userId, secret);
         if (!result.ok) {
-          const err =
-            result.error ?? "Invalid or expired code. Please try again.";
+          const err = result.error ?? AUTH_UI_COPY.invalidCode;
           setAuthError(err);
           return { ok: false as const, error: err };
         }
@@ -262,12 +297,12 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
     <>
       {isActive && !isAuthenticated && (
         <div
-          className="flex items-center justify-between border-b border-yellow-200 bg-yellow-50 px-4 py-2 dark:border-yellow-800 dark:bg-yellow-900/30"
+          className={`sticky top-0 z-[10001] flex w-full items-center justify-between border-b border-stone-200 px-4 py-2 ${HOME_CALLOUT}`}
           role="status"
           aria-label="Trial session active"
           data-testid="trial-banner"
         >
-          <span className="text-sm text-yellow-800 dark:text-yellow-200">
+          <span className={`text-sm font-medium ${HOME_SUBTLE_TEXT}`}>
             Trial session
           </span>
           <div className="flex items-center gap-3">
@@ -278,7 +313,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
             <button
               type="button"
               onClick={() => openAuthModal(true)}
-              className="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-700"
+              className={`${HOME_PRIMARY_BUTTON} px-3 py-1 text-xs`}
               data-testid="trial-sign-in-btn"
             >
               Sign in
@@ -289,11 +324,11 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
 
       {!isActive && hasUsedTrial && !isAuthenticated && (
         <div
-          className="flex items-center justify-center border-b border-red-200 bg-red-50 px-4 py-2 dark:border-red-800 dark:bg-red-900/30"
+          className={`sticky top-0 z-[10001] flex w-full items-center justify-center border-b border-stone-300 px-4 py-2 ${HOME_CALLOUT}`}
           role="alert"
           data-testid="trial-expired-banner"
         >
-          <span className="text-sm text-red-700 dark:text-red-300">
+          <span className={`text-sm ${HOME_SUBTLE_TEXT}`}>
             Trial expired.{" "}
             <button
               type="button"
@@ -312,6 +347,7 @@ export function TrialBanner({ onAuthenticated }: TrialBannerProps) {
         open={showAuth}
         onClose={handleAuthClose}
         dismissible={!requiresAuthLock}
+        trialExpired={requiresAuthLock}
         onEmailSubmit={handleEmailSubmit}
         onEmailVerify={handleEmailVerify}
         loading={authLoading}

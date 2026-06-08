@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { screenerService } from "@/services/screener.service";
 import { logger } from "@/lib/logger";
 import type { ScreenerFilter } from "@/types";
@@ -43,8 +44,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error ? error.message : "Failed to search screener",
+        error: userFacingApiError(error, MARKET_UI_COPY.load.screenerResults),
         timestamp: new Date(),
       },
       { status: 500 }

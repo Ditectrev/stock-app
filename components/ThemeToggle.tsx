@@ -5,6 +5,7 @@
  * Allows users to switch between light, dark, and system theme
  */
 
+import { DNA_LABEL } from "@/lib/design-dna";
 import { useTheme } from "@/lib/theme-context";
 import { useEffect, useState } from "react";
 
@@ -19,7 +20,7 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse" />
+      <div className="h-10 w-10 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
     );
   }
 
@@ -101,12 +102,12 @@ export function ThemeToggle() {
   return (
     <button
       onClick={cycleTheme}
-      className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-200 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+      className="flex items-center gap-2 rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-stone-800 transition-colors hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white min-h-[44px] dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700 dark:focus-visible:ring-offset-stone-950"
       title={`Current theme: ${getLabel()}. Click to cycle.`}
       aria-label={`Theme: ${getLabel()}. Click to switch theme.`}
     >
       {getIcon()}
-      <span className="text-sm font-medium">{getLabel()}</span>
+      <span className={DNA_LABEL}>{getLabel()}</span>
     </button>
   );
 }

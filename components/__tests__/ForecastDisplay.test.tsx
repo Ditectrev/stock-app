@@ -4,13 +4,15 @@
  * Requirements: 6.1, 6.2, 6.3, 6.4, 6.5
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ForecastDisplay } from "../ForecastDisplay";
 import { ForecastData } from "@/types";
 
+let mockResolvedTheme: "light" | "dark" = "light";
+
 vi.mock("@/lib/theme-context", () => ({
-  useTheme: () => ({ resolvedTheme: "light" }),
+  useTheme: () => ({ resolvedTheme: mockResolvedTheme }),
 }));
 
 const mockForecast: ForecastData = {
@@ -41,6 +43,10 @@ const mockForecast: ForecastData = {
 };
 
 describe("ForecastDisplay", () => {
+  beforeEach(() => {
+    mockResolvedTheme = "light";
+  });
+
   // Requirement 6.1: Display analyst price targets
   it("should display price target values (low, average, high)", () => {
     render(<ForecastDisplay forecast={mockForecast} />);
@@ -56,15 +62,6 @@ describe("ForecastDisplay", () => {
   });
 
   // Requirement 6.2: Display analyst rating distribution
-  it("should display all analyst rating labels", () => {
-    render(<ForecastDisplay forecast={mockForecast} />);
-    expect(screen.getByText("Strong Buy")).toBeInTheDocument();
-    expect(screen.getByText("Buy")).toBeInTheDocument();
-    expect(screen.getByText("Hold")).toBeInTheDocument();
-    expect(screen.getByText("Sell")).toBeInTheDocument();
-    expect(screen.getByText("Strong Sell")).toBeInTheDocument();
-  });
-
   it("should display analyst rating counts", () => {
     render(<ForecastDisplay forecast={mockForecast} />);
     expect(screen.getByText("10")).toBeInTheDocument();
@@ -72,6 +69,19 @@ describe("ForecastDisplay", () => {
     expect(screen.getByText("5")).toBeInTheDocument();
     expect(screen.getByText("2")).toBeInTheDocument();
     expect(screen.getByText("1")).toBeInTheDocument();
+  });
+
+  it("should use high-contrast bar fills for Hold and Strong Sell in light mode", () => {
+    render(<ForecastDisplay forecast={mockForecast} />);
+    expect(screen.getByTestId("rating-bar-fill-2")).toHaveClass("bg-amber-700");
+    expect(screen.getByTestId("rating-bar-fill-4")).toHaveClass("bg-rose-800");
+  });
+
+  it("should use high-contrast bar fills for Hold and Strong Sell in dark mode", () => {
+    mockResolvedTheme = "dark";
+    render(<ForecastDisplay forecast={mockForecast} />);
+    expect(screen.getByTestId("rating-bar-fill-2")).toHaveClass("bg-amber-400");
+    expect(screen.getByTestId("rating-bar-fill-4")).toHaveClass("bg-rose-500");
   });
 
   // Requirement 6.3: Display EPS and revenue forecasts

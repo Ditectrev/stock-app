@@ -7,8 +7,18 @@
  * Requirements: 26.9, 26.16, 26.18, 26.19, 26.21, 26.22
  */
 
+import { DNA_BODY, DNA_CAPTION } from "@/lib/design-dna";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import type { ScreenerResult } from "@/types";
+import {
+  MARKET_DOWN_BADGE,
+  MARKET_NEUTRAL_BADGE,
+  MARKET_UP_BADGE,
+  marketChangeTextClass,
+  marketValuationRowAccent,
+  marketValuationRowBg,
+} from "@/lib/market-semantics";
+import { HOME_SECONDARY_BUTTON } from "@/lib/home-ui";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -147,25 +157,27 @@ export function ScreenerTableView({
 
   if (results.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 text-center text-gray-500 dark:text-gray-300">
+      <div
+        className={`rounded-xl border border-stone-200 bg-stone-50 p-8 text-center dark:border-stone-700 dark:bg-stone-950 ${DNA_CAPTION}`}
+      >
         No results
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden">
-      <div className="overflow-x-auto -mx-0">
+    <div className="overflow-hidden rounded-xl border border-stone-200 bg-stone-50 shadow-sm dark:border-stone-700 dark:bg-stone-950">
+      <div className="overflow-x-auto">
         <table
-          className="w-full text-sm md:text-sm lg:text-base"
+          className={`w-full min-w-[720px] ${DNA_BODY}`}
           aria-label="Screener results"
         >
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <tr className="border-b border-stone-200 bg-stone-100 dark:border-stone-700 dark:bg-stone-900">
               {COLUMNS.map((col) => (
                 <th
                   key={col.field}
-                  className="px-3 md:px-4 lg:px-5 py-2 md:py-3 text-left font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className={`cursor-pointer select-none px-3 py-2 text-left font-medium text-stone-900 transition-colors hover:bg-stone-200 dark:text-stone-100 dark:hover:bg-stone-800 md:px-4 md:py-3 lg:px-5`}
                   onClick={() => handleSort(col.field)}
                   aria-sort={
                     sort.field === col.field
@@ -189,60 +201,50 @@ export function ScreenerTableView({
           </thead>
           <tbody>
             {paged.map((row) => {
-              const rowBg =
-                row.valuationContext === "overpriced"
-                  ? "bg-red-50 dark:bg-red-900/20"
-                  : row.valuationContext === "underpriced"
-                    ? "bg-green-50 dark:bg-green-900/20"
-                    : "";
+              const rowBg = marketValuationRowBg(row.valuationContext);
+              const rowAccent = marketValuationRowAccent(row.valuationContext);
 
               return (
                 <tr
                   key={row.symbol}
-                  className={`border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${rowBg}`}
+                  className={`cursor-pointer border-b border-stone-200 text-stone-800 transition-colors hover:bg-stone-100 dark:border-stone-800 dark:bg-stone-950 dark:text-stone-100 dark:hover:bg-stone-900 ${rowBg} ${rowAccent}`}
                   onClick={() => onSymbolClick?.(row.symbol)}
                   data-testid={`row-${row.symbol}`}
                 >
-                  <td className="px-3 py-2 font-medium text-gray-900 dark:text-gray-100">
-                    {row.symbol}
-                  </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300 max-w-[200px] truncate">
+                  <td className="px-3 py-2 font-medium">{row.symbol}</td>
+                  <td className={`max-w-[200px] truncate px-3 py-2`}>
                     {row.name}
                   </td>
-                  <td className="px-3 py-2 text-gray-900 dark:text-gray-100 tabular-nums">
+                  <td className="px-3 py-2 tabular-nums">
                     {formatPrice(row.price)}
                   </td>
                   <td
                     className={`px-3 py-2 font-medium tabular-nums ${
-                      row.changePercent > 0
-                        ? "text-green-600 dark:text-green-400"
-                        : row.changePercent < 0
-                          ? "text-red-600 dark:text-red-400"
-                          : "text-gray-600 dark:text-gray-300"
+                      row.changePercent === 0
+                        ? "text-stone-600 dark:text-stone-300"
+                        : marketChangeTextClass(row.changePercent)
                     }`}
                   >
                     {formatChangePercent(row.changePercent)}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300 tabular-nums">
+                  <td className="px-3 py-2 tabular-nums">
                     {formatVolume(row.volume)}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300 tabular-nums">
+                  <td className="px-3 py-2 tabular-nums">
                     {formatMarketCap(row.marketCap)}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300 tabular-nums">
+                  <td className="px-3 py-2 tabular-nums">
                     {row.peRatio != null ? row.peRatio.toFixed(1) : "—"}
                   </td>
-                  <td className="px-3 py-2 text-gray-700 dark:text-gray-300">
-                    {row.sector}
-                  </td>
+                  <td className="px-3 py-2">{row.sector}</td>
                   <td className="px-3 py-2">
                     <span
                       className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
                         row.valuationContext === "overpriced"
-                          ? "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300"
+                          ? MARKET_DOWN_BADGE
                           : row.valuationContext === "underpriced"
-                            ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300"
-                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                            ? MARKET_UP_BADGE
+                            : MARKET_NEUTRAL_BADGE
                       }`}
                     >
                       {row.valuationContext}
@@ -257,23 +259,23 @@ export function ScreenerTableView({
 
       {/* Pagination */}
       {sorted.length > PAGE_SIZE && (
-        <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-3">
+        <div className="flex items-center justify-between border-t border-stone-200 px-3 py-3 sm:px-4 dark:border-stone-700">
           <button
             type="button"
             disabled={page === 0}
             onClick={() => setPage((p) => p - 1)}
-            className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+            className={`${HOME_SECONDARY_BUTTON} min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50`}
           >
             Previous
           </button>
-          <span className="text-sm text-gray-600 dark:text-gray-300">
+          <span className={`${DNA_BODY}`}>
             Page {page + 1} of {totalPages}
           </span>
           <button
             type="button"
             disabled={page >= totalPages - 1}
             onClick={() => setPage((p) => p + 1)}
-            className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
+            className={`${HOME_SECONDARY_BUTTON} min-h-[44px] disabled:cursor-not-allowed disabled:opacity-50`}
           >
             Next
           </button>

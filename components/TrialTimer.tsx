@@ -1,5 +1,7 @@
 "use client";
 
+import { MARKET_DOWN_TEXT } from "@/lib/market-semantics";
+
 /**
  * TrialTimer Component
  * Displays a countdown timer for the trial session.
@@ -7,7 +9,7 @@
  * Requirements: 21.9, 21.10, 21.12
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export interface TrialTimerProps {
   /** Remaining seconds when the component mounts */
@@ -24,37 +26,39 @@ function formatTime(totalSeconds: number): string {
 
 export function TrialTimer({ remainingSeconds, onExpired }: TrialTimerProps) {
   const [seconds, setSeconds] = useState(Math.max(0, remainingSeconds));
+  const expiredRef = useRef(false);
 
   const handleExpiry = useCallback(() => {
+    if (expiredRef.current) return;
+    expiredRef.current = true;
     onExpired();
   }, [onExpired]);
 
   useEffect(() => {
-    setSeconds(Math.max(0, remainingSeconds));
+    const initial = Math.max(0, remainingSeconds);
+    setSeconds(initial);
+    if (initial > 0) {
+      expiredRef.current = false;
+    }
   }, [remainingSeconds]);
 
-  const isExpired = seconds <= 0;
+  const timerRunning = seconds > 0;
 
   useEffect(() => {
-    if (isExpired) {
-      handleExpiry();
-      return;
-    }
+    if (!timerRunning) return;
 
     const interval = setInterval(() => {
-      setSeconds((prev) => {
-        const next = prev - 1;
-        if (next <= 0) {
-          clearInterval(interval);
-          handleExpiry();
-          return 0;
-        }
-        return next;
-      });
+      setSeconds((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isExpired, handleExpiry]);
+  }, [timerRunning]);
+
+  useEffect(() => {
+    if (seconds <= 0) {
+      handleExpiry();
+    }
+  }, [seconds, handleExpiry]);
 
   const isLow = seconds <= 60;
 
@@ -67,13 +71,15 @@ export function TrialTimer({ remainingSeconds, onExpired }: TrialTimerProps) {
       data-testid="trial-timer"
     >
       <ClockIcon
-        className={isLow ? "text-red-500" : "text-gray-500 dark:text-gray-400"}
+        className={
+          isLow ? MARKET_DOWN_TEXT : "text-stone-600 dark:text-stone-300"
+        }
       />
       <span
         className={
           isLow
-            ? "font-mono font-semibold text-red-500"
-            : "font-mono text-gray-700 dark:text-gray-300"
+            ? `font-mono font-semibold ${MARKET_DOWN_TEXT}`
+            : "font-mono text-stone-700 dark:text-stone-200"
         }
         data-testid="trial-timer-display"
       >

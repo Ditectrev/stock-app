@@ -4,11 +4,15 @@
  * Task 6.4 - Requirements: 4.2, 11.2, 11.4
  */
 
+import type { ComponentProps } from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ChartComponent } from "../ChartComponent";
 import { ThemeProvider } from "@/lib/theme-context";
+import { marketChartOverlayColor } from "@/lib/market-semantics";
 import { PriceData, ChartIndicator } from "@/types";
+
+const overlay = (index: number) => marketChartOverlayColor(index, false);
 
 // Mock data generator
 const generateMockData = (days: number = 30): PriceData[] => {
@@ -42,7 +46,7 @@ const generateMockData = (days: number = 30): PriceData[] => {
 };
 
 // Wrapper component with ThemeProvider
-const ChartWithTheme = (props: any) => (
+const ChartWithTheme = (props: ComponentProps<typeof ChartComponent>) => (
   <ThemeProvider>
     <ChartComponent {...props} />
   </ThemeProvider>
@@ -60,7 +64,7 @@ describe("ChartComponent", () => {
       render(<ChartWithTheme data={mockData} type="line" />);
 
       const lineButton = screen.getByText("Line");
-      expect(lineButton).toHaveClass("bg-blue-600");
+      expect(lineButton).toHaveClass("bg-stone-900");
     });
 
     it("should switch to area chart when Area button is clicked", async () => {
@@ -70,7 +74,7 @@ describe("ChartComponent", () => {
       fireEvent.click(areaButton);
 
       await waitFor(() => {
-        expect(areaButton).toHaveClass("bg-blue-600");
+        expect(areaButton).toHaveClass("bg-stone-900");
       });
     });
 
@@ -81,7 +85,7 @@ describe("ChartComponent", () => {
       fireEvent.click(candlesButton);
 
       await waitFor(() => {
-        expect(candlesButton).toHaveClass("bg-blue-600");
+        expect(candlesButton).toHaveClass("bg-stone-900");
       });
     });
 
@@ -92,23 +96,23 @@ describe("ChartComponent", () => {
       fireEvent.click(areaButton);
 
       await waitFor(() => {
-        expect(areaButton).toHaveClass("bg-blue-600");
-        expect(screen.getByText("Line")).not.toHaveClass("bg-blue-600");
+        expect(areaButton).toHaveClass("bg-stone-900");
+        expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
       });
     });
 
     it("should render with area chart as initial type", () => {
       render(<ChartWithTheme data={mockData} type="area" />);
 
-      expect(screen.getByText("Area")).toHaveClass("bg-blue-600");
-      expect(screen.getByText("Line")).not.toHaveClass("bg-blue-600");
+      expect(screen.getByText("Area")).toHaveClass("bg-stone-900");
+      expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
     });
 
     it("should render with candlestick chart as initial type", () => {
       render(<ChartWithTheme data={mockData} type="candlestick" />);
 
-      expect(screen.getByText("Candles")).toHaveClass("bg-blue-600");
-      expect(screen.getByText("Line")).not.toHaveClass("bg-blue-600");
+      expect(screen.getByText("Candles")).toHaveClass("bg-stone-900");
+      expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
     });
   });
 
@@ -117,7 +121,7 @@ describe("ChartComponent", () => {
       render(<ChartWithTheme data={mockData} initialTimeRange="1M" />);
 
       const oneMonthButton = screen.getByText("1M");
-      expect(oneMonthButton).toHaveClass("bg-blue-600");
+      expect(oneMonthButton).toHaveClass("bg-stone-900");
     });
 
     it("should switch time range when button is clicked", async () => {
@@ -134,7 +138,7 @@ describe("ChartComponent", () => {
       fireEvent.click(oneWeekButton);
 
       await waitFor(() => {
-        expect(oneWeekButton).toHaveClass("bg-blue-600");
+        expect(oneWeekButton).toHaveClass("bg-stone-900");
         expect(onTimeRangeChange).toHaveBeenCalledWith("1W");
       });
     });
@@ -169,7 +173,7 @@ describe("ChartComponent", () => {
   describe("Indicator Toggles", () => {
     it("should render chart with indicators", () => {
       const indicators: ChartIndicator[] = [
-        { type: "MA", period: 50, color: "#FF6B6B", visible: true },
+        { type: "MA", period: 50, color: overlay(0), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -180,8 +184,8 @@ describe("ChartComponent", () => {
 
     it("should handle multiple indicators", () => {
       const indicators: ChartIndicator[] = [
-        { type: "MA", period: 50, color: "#FF6B6B", visible: true },
-        { type: "EMA", period: 20, color: "#4ECDC4", visible: true },
+        { type: "MA", period: 50, color: overlay(0), visible: true },
+        { type: "EMA", period: 20, color: overlay(1), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -191,7 +195,7 @@ describe("ChartComponent", () => {
 
     it("should not render invisible indicators", () => {
       const indicators: ChartIndicator[] = [
-        { type: "MA", period: 50, color: "#FF6B6B", visible: false },
+        { type: "MA", period: 50, color: overlay(0), visible: false },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -202,7 +206,7 @@ describe("ChartComponent", () => {
 
     it("should render RSI indicator without errors", () => {
       const indicators: ChartIndicator[] = [
-        { type: "RSI", period: 14, color: "#F38181", visible: true },
+        { type: "RSI", period: 14, color: overlay(2), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -220,7 +224,7 @@ describe("ChartComponent", () => {
 
     it("should render Bollinger Bands indicator without errors", () => {
       const indicators: ChartIndicator[] = [
-        { type: "BB", period: 20, color: "#FCBAD3", visible: true },
+        { type: "BB", period: 20, color: overlay(3), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -230,11 +234,11 @@ describe("ChartComponent", () => {
 
     it("should render all indicator types simultaneously", () => {
       const indicators: ChartIndicator[] = [
-        { type: "MA", period: 50, color: "#FF6B6B", visible: true },
-        { type: "EMA", period: 20, color: "#4ECDC4", visible: true },
-        { type: "RSI", period: 14, color: "#F38181", visible: true },
+        { type: "MA", period: 50, color: overlay(0), visible: true },
+        { type: "EMA", period: 20, color: overlay(1), visible: true },
+        { type: "RSI", period: 14, color: overlay(2), visible: true },
         { type: "MACD", visible: true },
-        { type: "BB", period: 20, color: "#FCBAD3", visible: true },
+        { type: "BB", period: 20, color: overlay(3), visible: true },
       ];
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
@@ -247,13 +251,17 @@ describe("ChartComponent", () => {
     it("should display error message when data is empty", () => {
       render(<ChartWithTheme data={[]} />);
 
-      expect(screen.getByText("No data available")).toBeInTheDocument();
+      expect(
+        screen.getByText("No price data for this range.")
+      ).toBeInTheDocument();
     });
 
     it("should display error message when data is invalid", () => {
-      render(<ChartWithTheme data={null as any} />);
+      render(<ChartWithTheme data={null as unknown as typeof mockData} />);
 
-      expect(screen.getByText("No data available")).toBeInTheDocument();
+      expect(
+        screen.getByText("No price data for this range.")
+      ).toBeInTheDocument();
     });
   });
 

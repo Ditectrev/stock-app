@@ -119,10 +119,10 @@ describe("SectorHub", () => {
   it("should color-code positive green and negative red (Req 23.4)", () => {
     render(<SectorHub data={mockData} />);
     const techChange = screen.getByTestId("change-Technology");
-    expect(techChange.className).toContain("text-green-500");
+    expect(techChange.className).toContain("text-emerald-800");
 
     const finChange = screen.getByTestId("change-Financial");
-    expect(finChange.className).toContain("text-red-500");
+    expect(finChange.className).toContain("text-rose-800");
   });
 
   it("should show comparison view when sectors are selected (Req 23.5, 23.6)", () => {
@@ -208,13 +208,13 @@ describe("SectorHub", () => {
   });
 
   it("should show loading state when fetching", () => {
-    (global.fetch as any).mockImplementation(() => new Promise(() => {}));
+    vi.mocked(global.fetch).mockImplementation(() => new Promise(() => {}));
     render(<SectorHub />);
     expect(screen.getByTestId("sector-hub-loading")).toBeDefined();
   });
 
   it("should show error state on fetch failure with retry", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: async () => ({ success: false, error: "API error" }),
     });
@@ -228,7 +228,7 @@ describe("SectorHub", () => {
   });
 
   it("should fetch data from API when no data prop provided", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockData }),
     });

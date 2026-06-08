@@ -113,7 +113,7 @@ describe("FearGreedGauge", () => {
   });
 
   it("should show loading state when fetching data", () => {
-    (global.fetch as any).mockImplementation(
+    vi.mocked(global.fetch).mockImplementation(
       () => new Promise(() => {}) // never resolves
     );
     render(<FearGreedGauge />);
@@ -121,7 +121,7 @@ describe("FearGreedGauge", () => {
   });
 
   it("should show error state on fetch failure", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: async () => ({ success: false, error: "API error" }),
     });
@@ -131,13 +131,13 @@ describe("FearGreedGauge", () => {
     await waitFor(() => {
       expect(screen.getByTestId("fear-greed-error")).toBeDefined();
       expect(
-        screen.getByText("Failed to fetch Fear & Greed data")
+        screen.getByText("We couldn't load the Fear & Greed index. Try again.")
       ).toBeDefined();
     });
   });
 
   it("should fetch data from API when no data prop is provided", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockData }),
     });
@@ -196,7 +196,7 @@ describe("FearGreedGauge", () => {
   });
 
   it("should have retry button on error", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: async () => ({ success: false }),
     });

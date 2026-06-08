@@ -10,6 +10,18 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { AccountNotice } from "@/components/AccountNotice";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
+import { DNA_BODY } from "@/lib/design-dna";
+import {
+  HOME_INPUT,
+  HOME_INSTRUMENT_PANEL,
+  HOME_MUTED_TEXT,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+  HOME_SECTION_LABEL,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
 export type AuthView = "providers" | "email";
 
@@ -44,19 +56,21 @@ export interface AuthPromptProps {
   infoMessage?: string | null;
   /** Whether an auth action is in progress */
   loading?: boolean;
+  /** Trial ended — trial copy in overlay header */
+  trialExpired?: boolean;
 }
 
 export function AuthPrompt({
   open,
   onClose,
   dismissible = true,
-  onAppleSignIn: _onAppleSignIn,
   onGoogleSignIn,
   onEmailSubmit,
   onEmailVerify,
   error,
   infoMessage,
   loading = false,
+  trialExpired = false,
 }: AuthPromptProps) {
   const [view, setView] = useState<AuthView>("providers");
   const [emailSubStep, setEmailSubStep] = useState<"request" | "verify">(
@@ -98,17 +112,17 @@ export function AuthPrompt({
       }
 
       if (!trimmed) {
-        setEmailError("Please enter your email address.");
+        setEmailError(AUTH_UI_COPY.emailRequired);
         return;
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-        setEmailError("Please enter a valid email address.");
+        setEmailError(AUTH_UI_COPY.emailInvalid);
         return;
       }
 
       const result = await onEmailSubmit(trimmed);
       if (!result || typeof result.ok !== "boolean") {
-        setEmailError("Could not start verification. Please try again.");
+        setEmailError(AUTH_UI_COPY.verificationStartFailed);
         return;
       }
       if (result.ok && result.userId) {
@@ -116,15 +130,13 @@ export function AuthPrompt({
         setEmailSubStep("verify");
         setOtp("");
       } else if (result.ok && !result.userId) {
-        setEmailError("Could not start verification. Please try again.");
+        setEmailError(AUTH_UI_COPY.verificationStartFailed);
       } else if (!result.ok && result.error) {
         setEmailError(result.error);
       }
     } catch (err) {
       const message =
-        err instanceof Error
-          ? err.message
-          : "Something went wrong. Please try again.";
+        err instanceof Error ? err.message : AUTH_UI_COPY.genericFailed;
       setEmailError(message);
     } finally {
       setLocalSubmitting(false);
@@ -152,30 +164,26 @@ export function AuthPrompt({
       const digits = (fromInput || fromFormData || otp).replace(/\D/g, "");
 
       if (!pendingUserId) {
-        setEmailError("Session expired. Go back and request a new code.");
+        setEmailError(AUTH_UI_COPY.sessionExpired);
         return;
       }
       if (digits.length < 6) {
-        setEmailError("Enter the 6-digit code from your email.");
+        setEmailError(AUTH_UI_COPY.codeLength);
         return;
       }
 
       try {
         const result = await onEmailVerify(pendingUserId, digits);
         if (!result || typeof result.ok !== "boolean") {
-          setEmailError("Verification failed. Please try again.");
+          setEmailError(AUTH_UI_COPY.verificationFailed);
           return;
         }
         if (!result.ok) {
-          setEmailError(
-            result.error ?? "Invalid or expired code. Please try again."
-          );
+          setEmailError(result.error ?? AUTH_UI_COPY.invalidCode);
         }
       } catch (err) {
         const message =
-          err instanceof Error
-            ? err.message
-            : "Something went wrong. Please try again.";
+          err instanceof Error ? err.message : AUTH_UI_COPY.genericFailed;
         setEmailError(message);
       }
     },
@@ -188,24 +196,32 @@ export function AuthPrompt({
 
   const isBusy = loading || localSubmitting;
 
-  const oauthLinkClass =
-    "flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors no-underline";
+  const oauthLinkClass = `${HOME_SECONDARY_BUTTON} w-full justify-center gap-2 py-3 no-underline`;
 
   const modal = (
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Sign in"
+      className="fixed inset-0 z-[10050] flex items-start justify-center bg-stone-950/50 p-4 pt-[12vh] backdrop-blur-sm sm:items-center sm:pt-4"
       data-testid="auth-prompt"
+      onClick={
+        dismissible
+          ? (e) => {
+              if (e.target === e.currentTarget) onClose();
+            }
+          : undefined
+      }
     >
-      <div className="relative w-full max-w-sm rounded-xl bg-white p-6 shadow-xl dark:bg-gray-800">
-        {/* Close button */}
-        {dismissible && (
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Sign in"
+        className={`relative w-full max-w-sm ${HOME_INSTRUMENT_PANEL}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {dismissible ? (
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-3 top-3 rounded-md p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            className={`absolute right-3 top-3 rounded-md p-1 ${HOME_SUBTLE_TEXT} hover:text-stone-900 dark:hover:text-stone-50`}
             aria-label="Close"
             data-testid="auth-close"
           >
@@ -224,40 +240,32 @@ export function AuthPrompt({
               />
             </svg>
           </button>
-        )}
+        ) : null}
 
-        <h2 className="mb-4 text-center text-xl font-semibold text-gray-900 dark:text-gray-100">
-          Sign in to continue
+        <p className={HOME_SECTION_LABEL}>
+          {trialExpired ? "Trial ended" : "Account"}
+        </p>
+        <h2 className="mb-4 text-xl font-semibold text-stone-900 dark:text-stone-100">
+          {trialExpired ? "Sign in to continue" : AUTH_UI_COPY.signInTitle}
         </h2>
 
-        {/* Error display (Req 1.6) */}
-        {displayError && (
-          <div
-            className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-300"
-            role="alert"
-            aria-live="assertive"
-            data-testid="auth-error"
-          >
+        {displayError ? (
+          <AccountNotice tone="error" testId="auth-error">
             {displayError}
-          </div>
-        )}
+          </AccountNotice>
+        ) : null}
 
-        {infoMessage && (
-          <div
-            className="mb-4 rounded-md bg-green-50 p-3 text-sm text-green-800 dark:bg-green-900/30 dark:text-green-200"
-            role="status"
-            aria-live="polite"
-            data-testid="auth-info"
-          >
+        {infoMessage ? (
+          <AccountNotice tone="success" testId="auth-info">
             {infoMessage}
-          </div>
-        )}
+          </AccountNotice>
+        ) : null}
 
         {view === "providers" ? (
           <div className="space-y-3">
             <a
               href="/api/auth/oauth/google"
-              className={`${oauthLinkClass} border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 ${
+              className={`${oauthLinkClass} ${
                 loading ? "pointer-events-none opacity-50" : ""
               }`}
               data-testid="auth-google"
@@ -278,7 +286,7 @@ export function AuthPrompt({
               <button
                 type="button"
                 disabled
-                className={`${oauthLinkClass} cursor-not-allowed bg-black/60 text-white opacity-60 dark:bg-white/20 dark:text-white`}
+                className={`${oauthLinkClass} cursor-not-allowed bg-stone-200 text-stone-500 opacity-60 dark:bg-stone-800 dark:text-stone-400`}
                 data-testid="auth-apple-disabled"
                 aria-describedby="auth-apple-unavailable-note"
               >
@@ -287,7 +295,7 @@ export function AuthPrompt({
               </button>
               <p
                 id="auth-apple-unavailable-note"
-                className="text-xs text-gray-500 dark:text-gray-400"
+                className={`text-xs ${HOME_SUBTLE_TEXT}`}
                 data-testid="auth-apple-unavailable-note"
               >
                 Apple Sign-In is not available yet. Use Google or email below.
@@ -296,11 +304,9 @@ export function AuthPrompt({
 
             {/* Divider */}
             <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-600" />
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                or
-              </span>
-              <div className="h-px flex-1 bg-gray-200 dark:bg-gray-600" />
+              <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
+              <span className={`text-xs ${HOME_SUBTLE_TEXT}`}>or</span>
+              <div className="h-px flex-1 bg-stone-200 dark:bg-stone-700" />
             </div>
 
             {/* Email OTP */}
@@ -308,7 +314,7 @@ export function AuthPrompt({
               type="button"
               onClick={() => setView("email")}
               disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              className={`${HOME_SECONDARY_BUTTON} w-full justify-center gap-2 py-3 disabled:opacity-50`}
               data-testid="auth-email-btn"
             >
               <EmailIcon />
@@ -328,7 +334,7 @@ export function AuthPrompt({
                 setView("providers");
                 setEmailError(null);
               }}
-              className="mb-2 text-sm text-blue-600 hover:underline dark:text-blue-400"
+              className={`mb-2 ${DNA_BODY} hover:text-stone-900 dark:hover:text-stone-100`}
               data-testid="auth-back"
             >
               ← Back
@@ -336,7 +342,7 @@ export function AuthPrompt({
 
             <label
               htmlFor="auth-email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-stone-700 dark:text-stone-300"
             >
               Email address
             </label>
@@ -349,7 +355,7 @@ export function AuthPrompt({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+              className={HOME_INPUT}
               data-testid="auth-email-input"
             />
 
@@ -359,7 +365,7 @@ export function AuthPrompt({
                 void submitEmailRequest();
               }}
               disabled={isBusy}
-              className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+              className={`${HOME_PRIMARY_BUTTON} w-full justify-center py-2.5 disabled:opacity-50`}
               data-testid="auth-email-submit"
             >
               {isBusy ? "Sending…" : "Send verification code"}
@@ -374,15 +380,15 @@ export function AuthPrompt({
                 setPendingUserId(null);
                 setOtp("");
               }}
-              className="mb-2 text-sm text-blue-600 hover:underline dark:text-blue-400"
+              className={`mb-2 ${DNA_BODY} hover:text-stone-900 dark:hover:text-stone-100`}
               data-testid="auth-verify-back"
             >
               ← Change email
             </button>
 
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className={DNA_BODY}>
               Enter the 6-digit code sent to{" "}
-              <span className="font-medium text-gray-900 dark:text-gray-100">
+              <span className="font-medium text-stone-900 dark:text-stone-100">
                 {email}
               </span>
               .
@@ -390,7 +396,7 @@ export function AuthPrompt({
 
             <label
               htmlFor="auth-otp"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              className="block text-sm font-medium text-stone-700 dark:text-stone-300"
             >
               Verification code
             </label>
@@ -404,14 +410,14 @@ export function AuthPrompt({
               value={otp}
               onChange={(e) => setOtp(e.target.value.replace(/[^\d\s]/g, ""))}
               placeholder="e.g. 512646"
-              className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-center font-mono text-lg tracking-widest text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+              className={`${HOME_INPUT} text-center font-mono text-lg tracking-widest`}
               data-testid="auth-otp-input"
             />
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+              className={`${HOME_PRIMARY_BUTTON} w-full justify-center py-2.5 disabled:opacity-50`}
               data-testid="auth-verify-submit"
             >
               {loading ? "Verifying…" : "Verify and sign in"}
@@ -423,7 +429,7 @@ export function AuthPrompt({
               onClick={async () => {
                 setEmailError(null);
                 if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                  setEmailError("Invalid email. Go back and re-enter it.");
+                  setEmailError(AUTH_UI_COPY.invalidEmailBack);
                   return;
                 }
                 try {
@@ -435,11 +441,11 @@ export function AuthPrompt({
                   setEmailError(
                     err instanceof Error
                       ? err.message
-                      : "Could not resend. Try again."
+                      : AUTH_UI_COPY.resendFailed
                   );
                 }
               }}
-              className="w-full text-sm text-blue-600 hover:underline disabled:opacity-50 dark:text-blue-400"
+              className={`w-full text-sm ${HOME_MUTED_TEXT} hover:text-stone-900 disabled:opacity-50 dark:hover:text-stone-100`}
               data-testid="auth-resend-code"
             >
               Resend code
@@ -447,14 +453,14 @@ export function AuthPrompt({
           </form>
         )}
 
-        {loading && (
+        {loading ? (
           <p
-            className="mt-3 text-center text-xs text-gray-500 dark:text-gray-400"
+            className={`mt-3 text-center text-xs ${HOME_SUBTLE_TEXT}`}
             aria-live="polite"
           >
             Please wait…
           </p>
-        )}
+        ) : null}
       </div>
     </div>
   );

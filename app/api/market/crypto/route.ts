@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { marketDataService } from "@/services/market-data.service";
 import { logger } from "@/lib/logger";
 
@@ -38,10 +39,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch crypto performance",
+        error: userFacingApiError(error, MARKET_UI_COPY.load.cryptoPerformance),
         timestamp: new Date(),
       },
       { status: 500 }

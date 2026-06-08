@@ -169,14 +169,14 @@ describe("StockHeatmap", () => {
     render(<StockHeatmap />);
     const allBtn = screen.getByTestId("stock-sector-all");
     expect(allBtn.getAttribute("aria-pressed")).toBe("true");
-    expect(allBtn.className).toContain("bg-blue-600");
+    expect(allBtn.className).toContain("bg-stone-900");
 
     fireEvent.click(screen.getByTestId("stock-sector-financial"));
 
     await waitFor(() => {
       const finBtn = screen.getByTestId("stock-sector-financial");
       expect(finBtn.getAttribute("aria-pressed")).toBe("true");
-      expect(finBtn.className).toContain("bg-blue-600");
+      expect(finBtn.className).toContain("bg-stone-900");
     });
 
     expect(
@@ -186,20 +186,16 @@ describe("StockHeatmap", () => {
 
   // --- TradingView style ---
 
-  it("should apply green color for positive change tiles", () => {
+  it("should apply emerald fill for positive change tiles", () => {
     render(<StockHeatmap />);
     const tile = screen.getByTestId("heatmap-tile-AAPL");
-    const style = tile.getAttribute("style") || tile.className;
-    // Positive stocks should have green-tinted background
-    expect(style).toBeTruthy();
+    expect(tile.style.backgroundColor).toMatch(/5,\s*150,\s*105/);
   });
 
-  it("should apply red color for negative change tiles", () => {
+  it("should apply rose fill for negative change tiles", () => {
     render(<StockHeatmap />);
     const tile = screen.getByTestId("heatmap-tile-MSFT");
-    const style = tile.getAttribute("style") || tile.className;
-    // Negative stocks should have red-tinted background
-    expect(style).toBeTruthy();
+    expect(tile.style.backgroundColor).toMatch(/225,\s*29,\s*72/);
   });
 
   // --- Error state ---
@@ -210,7 +206,7 @@ describe("StockHeatmap", () => {
     render(<StockHeatmap />);
     expect(screen.getByTestId("stock-heatmap-error")).toBeDefined();
     expect(
-      screen.getByText("Failed to load stock data. Please try again later.")
+      screen.getByText("We couldn't load the stock heatmap. Try again.")
     ).toBeDefined();
   });
 

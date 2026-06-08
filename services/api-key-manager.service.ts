@@ -10,6 +10,30 @@ export type BYOKProvider = Extract<
   "OPENAI" | "GEMINI" | "MISTRAL" | "DEEPSEEK"
 >;
 
+const BYOK_SELECTED_PROVIDER_KEY = "byok_selected_provider";
+
+const BYOK_PROVIDERS: BYOKProvider[] = [
+  "OPENAI",
+  "GEMINI",
+  "MISTRAL",
+  "DEEPSEEK",
+];
+
+export function isBYOKProvider(value: string | null): value is BYOKProvider {
+  return BYOK_PROVIDERS.includes(value as BYOKProvider);
+}
+
+export function readSelectedBYOKProvider(): BYOKProvider {
+  if (typeof window === "undefined") return "OPENAI";
+  const stored = localStorage.getItem(BYOK_SELECTED_PROVIDER_KEY);
+  return isBYOKProvider(stored) ? stored : "OPENAI";
+}
+
+export function saveSelectedBYOKProvider(provider: BYOKProvider): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(BYOK_SELECTED_PROVIDER_KEY, provider);
+}
+
 export interface StoredAPIKey {
   provider: BYOKProvider;
   addedAt: Date;
@@ -244,10 +268,13 @@ export class APIKeyManagerService {
   }
 
   getStoredProviders(): BYOKProvider[] {
-    const all: BYOKProvider[] = ["OPENAI", "GEMINI", "MISTRAL", "DEEPSEEK"];
-    return all.filter((provider) =>
+    return BYOK_PROVIDERS.filter((provider) =>
       localStorage.getItem(this.getStorageKey(provider))
     );
+  }
+
+  hasLocalKey(provider: BYOKProvider): boolean {
+    return Boolean(localStorage.getItem(this.getStorageKey(provider)));
   }
 }
 

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("World Markets", () => {
   test.beforeEach(async ({ page }) => {
@@ -44,11 +44,12 @@ test.describe("World Markets", () => {
     const worldMarkets = page.getByTestId("world-markets");
     await expect(worldMarkets).toBeVisible({ timeout: 10000 });
 
-    // Check that at least one element has the green or red color class
-    const greenCount = await worldMarkets.locator(".text-green-500").count();
-    const redCount = await worldMarkets.locator(".text-red-500").count();
+    const emeraldCount = await worldMarkets
+      .locator(".text-emerald-600")
+      .count();
+    const roseCount = await worldMarkets.locator(".text-rose-600").count();
 
-    expect(greenCount + redCount).toBeGreaterThan(0);
+    expect(emeraldCount + roseCount).toBeGreaterThan(0);
   });
 
   test("should show loading state before data arrives", async ({ page }) => {

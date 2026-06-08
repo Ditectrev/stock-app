@@ -8,10 +8,20 @@
  * Requirements: 4.2, 11.2, 11.3, 11.4, 11.5
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { DNA_CAPTION } from "@/lib/design-dna";
+import { useState, useCallback } from "react";
 import { ChartWrapper, IChartApi } from "./ChartWrapper";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
+import { homeChipClasses, HOME_CALLOUT } from "@/lib/home-ui";
+import {
+  getMarketChartColors,
+  marketChartOverlayColor,
+  marketChartSignedColor,
+  MARKET_DOWN_TEXT,
+  MARKET_ERROR_SURFACE,
+} from "@/lib/market-semantics";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   calculateRSI,
   calculateMACD,
@@ -63,7 +73,6 @@ export function ChartComponent({
   indicators = [],
   onTimeRangeChange,
   onDataPointHover,
-  responsive = true,
   height = 400,
 }: ChartComponentProps) {
   const [selectedTimeRange, setSelectedTimeRange] =
@@ -167,17 +176,17 @@ export function ChartComponent({
       return priceData.map((d) => ({
         time: Math.floor(new Date(d.timestamp).getTime() / 1000) as Time,
         value: d.volume,
-        color: d.close >= d.open ? "#26a69a" : "#ef5350",
+        color: marketChartSignedColor(d.close >= d.open, isDark),
       }));
     },
-    []
+    [isDark]
   );
 
   // Initialize chart with data
   const initializeChart = useCallback(
     (chart: IChartApi) => {
       if (!filteredData || filteredData.length === 0) {
-        setError("No data available");
+        setError(MARKET_UI_COPY.chart.noData);
         return;
       }
 
@@ -185,6 +194,7 @@ export function ChartComponent({
         setError(null);
         const chartData = convertToChartData(filteredData);
         const volumeData = convertVolumeData(filteredData);
+        const chartColors = getMarketChartColors(isDark);
 
         // Create main series based on chart type
         let mainSeries:
@@ -194,23 +204,23 @@ export function ChartComponent({
 
         if (chartType === "candlestick") {
           mainSeries = chart.addSeries(CandlestickSeries, {
-            upColor: "#26a69a",
-            downColor: "#ef5350",
+            upColor: chartColors.up,
+            downColor: chartColors.down,
             borderVisible: false,
-            wickUpColor: "#26a69a",
-            wickDownColor: "#ef5350",
+            wickUpColor: chartColors.wickUp,
+            wickDownColor: chartColors.wickDown,
           });
         } else if (chartType === "area") {
           mainSeries = chart.addSeries(AreaSeries, {
-            lineColor: "#2962FF",
-            topColor: "#2962FF",
-            bottomColor: "rgba(41, 98, 255, 0.28)",
+            lineColor: chartColors.series,
+            topColor: chartColors.areaTop,
+            bottomColor: chartColors.areaBottom,
             lineWidth: 2,
           });
         } else {
           // line chart
           mainSeries = chart.addSeries(LineSeries, {
-            color: "#2962FF",
+            color: chartColors.series,
             lineWidth: 2,
           });
         }
@@ -219,7 +229,7 @@ export function ChartComponent({
 
         // Add volume histogram
         const volumeSeries = chart.addSeries(HistogramSeries, {
-          color: "#26a69a",
+          color: chartColors.up,
           priceFormat: {
             type: "volume",
           },
@@ -245,7 +255,7 @@ export function ChartComponent({
               indicator.period || 50
             );
             const maSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#FF6B6B",
+              color: indicator.color || marketChartOverlayColor(0, isDark),
               lineWidth: 1,
               title: `MA(${indicator.period || 50})`,
             });
@@ -257,7 +267,7 @@ export function ChartComponent({
               value: d.value,
             }));
             const emaSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#95E1D3",
+              color: indicator.color || marketChartOverlayColor(2, isDark),
               lineWidth: 1,
               title: `EMA(${indicator.period || 20})`,
             });
@@ -269,7 +279,7 @@ export function ChartComponent({
               value: d.value,
             }));
             const rsiSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#F38181",
+              color: indicator.color || marketChartOverlayColor(3, isDark),
               lineWidth: 2,
               title: `RSI(${indicator.period || 14})`,
               priceScaleId: "rsi",
@@ -294,11 +304,11 @@ export function ChartComponent({
             const histogramData: HistogramData[] = macdData.map((d) => ({
               time: Math.floor(new Date(d.timestamp).getTime() / 1000) as Time,
               value: d.histogram,
-              color: d.histogram >= 0 ? "#26a69a" : "#ef5350",
+              color: marketChartSignedColor(d.histogram >= 0, isDark),
             }));
 
             const macdSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#AA96DA",
+              color: indicator.color || marketChartOverlayColor(4, isDark),
               lineWidth: 2,
               title: "MACD",
               priceScaleId: "macd",
@@ -312,7 +322,7 @@ export function ChartComponent({
             macdSeries.setData(macdLineData);
 
             const signalSeries = chart.addSeries(LineSeries, {
-              color: "#FF6B6B",
+              color: marketChartOverlayColor(1, isDark),
               lineWidth: 1,
               title: "Signal",
               priceScaleId: "macd",
@@ -342,14 +352,14 @@ export function ChartComponent({
             }));
 
             const upperSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#FCBAD3",
+              color: indicator.color || marketChartOverlayColor(5, isDark),
               lineWidth: 1,
               title: `BB Upper(${indicator.period || 20})`,
             });
             upperSeries.setData(upperBandData);
 
             const middleSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#FCBAD3",
+              color: indicator.color || marketChartOverlayColor(5, isDark),
               lineWidth: 1,
               lineStyle: 2, // Dashed
               title: `BB Middle(${indicator.period || 20})`,
@@ -357,7 +367,7 @@ export function ChartComponent({
             middleSeries.setData(middleBandData);
 
             const lowerSeries = chart.addSeries(LineSeries, {
-              color: indicator.color || "#FCBAD3",
+              color: indicator.color || marketChartOverlayColor(5, isDark),
               lineWidth: 1,
               title: `BB Lower(${indicator.period || 20})`,
             });
@@ -373,7 +383,6 @@ export function ChartComponent({
             return;
           }
 
-          const timestamp = (param.time as number) * 1000;
           const point = filteredData.find(
             (d) =>
               Math.floor(new Date(d.timestamp).getTime() / 1000) === param.time
@@ -389,7 +398,7 @@ export function ChartComponent({
         chart.timeScale().fitContent();
       } catch (err) {
         console.error("Error initializing chart:", err);
-        setError("Failed to initialize chart");
+        setError(MARKET_UI_COPY.chart.initFailed);
       }
     },
     [
@@ -399,6 +408,7 @@ export function ChartComponent({
       convertToChartData,
       convertVolumeData,
       onDataPointHover,
+      isDark,
     ]
   );
 
@@ -439,12 +449,10 @@ export function ChartComponent({
           />
         </div>
         <div
-          className={`flex items-center justify-center rounded-lg ${
-            isDark ? "bg-red-900/20" : "bg-red-50"
-          }`}
+          className={`flex items-center justify-center rounded-lg ${MARKET_ERROR_SURFACE}`}
           style={{ height: `${height}px` }}
         >
-          <div className={isDark ? "text-red-400" : "text-red-600"}>
+          <div className={`px-4 text-center text-sm ${MARKET_DOWN_TEXT}`}>
             {error}
           </div>
         </div>
@@ -453,7 +461,7 @@ export function ChartComponent({
   }
 
   return (
-    <div className="chart-container w-full">
+    <div className="chart-container w-full" data-testid="price-chart-panel">
       {/* Chart Controls */}
       <div className="chart-controls mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <TimeRangeSelector
@@ -468,11 +476,7 @@ export function ChartComponent({
 
       {/* Hovered Point Info */}
       {hoveredPoint && (
-        <div
-          className={`mb-2 p-2 rounded text-xs sm:text-sm ${
-            isDark ? "bg-gray-800 text-gray-200" : "bg-gray-50 text-gray-900"
-          }`}
-        >
+        <div className={`mb-2 rounded p-2 text-xs sm:text-sm ${HOME_CALLOUT}`}>
           <span className="font-semibold">
             {new Date(hoveredPoint.timestamp).toLocaleDateString()}
           </span>
@@ -502,9 +506,7 @@ export function ChartComponent({
       </ChartWrapper>
 
       {/* Chart Instructions */}
-      <div
-        className={`mt-2 text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-      >
+      <div className={`mt-2 ${DNA_CAPTION}`}>
         <p className="hidden sm:block">
           💡 Use mouse wheel to zoom, drag to pan, hover for details
         </p>
@@ -536,8 +538,8 @@ function TimeRangeSelector({
           onClick={() => onRangeChange(range)}
           className={`px-3 py-2 text-sm rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center ${
             selectedRange === range
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              ? homeChipClasses(true)
+              : homeChipClasses(false)
           }`}
         >
           {range}
@@ -573,8 +575,8 @@ function ChartTypeSelector({
           onClick={() => onTypeChange(type.value)}
           className={`px-3 py-2 text-sm rounded transition-colors min-h-[44px] flex items-center justify-center ${
             selectedType === type.value
-              ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+              ? homeChipClasses(true)
+              : homeChipClasses(false)
           }`}
         >
           {type.label}

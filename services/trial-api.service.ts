@@ -1,3 +1,4 @@
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import {
   generateDeviceFingerprint,
   getBrowserCharacteristics,
@@ -64,7 +65,7 @@ export class TrialApiService {
     });
     const data = await parseJson<TrialSession>(res);
     if (!res.ok || !data.success || !data.data) {
-      throw new Error(data.error ?? "Failed to start trial session");
+      throw new Error(data.error ?? AUTH_UI_COPY.trialStartFailed);
     }
     return data.data;
   }
@@ -82,7 +83,7 @@ export class TrialApiService {
     });
     const data = await parseJson<TrialStatus>(res);
     if (!res.ok || !data.success || !data.data) {
-      throw new Error(data.error ?? "Failed to get trial status");
+      throw new Error(data.error ?? AUTH_UI_COPY.trialStatusFailed);
     }
     return data.data;
   }
@@ -96,7 +97,7 @@ export class TrialApiService {
     });
     const data = await parseJson<{ ended: boolean }>(res);
     if (!res.ok || !data.success) {
-      throw new Error(data.error ?? "Failed to end trial session");
+      throw new Error(data.error ?? AUTH_UI_COPY.trialEndFailed);
     }
   }
 
@@ -113,7 +114,7 @@ export class TrialApiService {
     });
     const data = await parseJson<{ eligible: boolean }>(res);
     if (!res.ok || !data.success || !data.data) {
-      throw new Error(data.error ?? "Failed to check trial eligibility");
+      throw new Error(data.error ?? AUTH_UI_COPY.trialEligibilityFailed);
     }
     return Boolean(data.data.eligible);
   }

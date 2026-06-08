@@ -2,14 +2,22 @@
 
 /**
  * KeyMetrics Component
- * Displays key financial metrics with tooltips
+ * Horizontal metric strip for overview tab.
  *
  * Requirements: 4.4, 4.5
  */
 
 import { SymbolData } from "@/types";
-import { useTheme } from "@/lib/theme-context";
 import { useState } from "react";
+import {
+  SYMBOL_HELP_BUTTON,
+  SYMBOL_INSTRUMENT_PANEL,
+  SYMBOL_MUTED_TEXT,
+  SYMBOL_METRIC,
+  SYMBOL_PANEL_TITLE,
+  SYMBOL_SECTION_LABEL,
+  SYMBOL_TOOLTIP_SURFACE,
+} from "@/lib/symbol-ui";
 
 export interface KeyMetricsProps {
   symbolData: SymbolData;
@@ -22,10 +30,6 @@ interface Metric {
 }
 
 export function KeyMetrics({ symbolData }: KeyMetricsProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
-  // Format large numbers
   const formatMarketCap = (value: number): string => {
     if (value >= 1e12) return `$${(value / 1e12).toFixed(2)}T`;
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
@@ -74,110 +78,77 @@ export function KeyMetrics({ symbolData }: KeyMetricsProps) {
   ];
 
   return (
-    <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${
-        isDark ? "bg-gray-800" : "bg-white"
-      }`}
-    >
-      <h2
-        className={`text-lg font-semibold mb-3 sm:mb-4 lg:mb-5 ${
-          isDark ? "text-white" : "text-gray-900"
-        }`}
+    <div className={SYMBOL_INSTRUMENT_PANEL} aria-label="Key metrics">
+      <p className={SYMBOL_SECTION_LABEL}>At a glance</p>
+      <h2 className={`mt-1 mb-4 ${SYMBOL_PANEL_TITLE}`}>Key Metrics</h2>
+      <ul
+        className="grid grid-cols-1 divide-y sm:grid-cols-2 sm:divide-y-0 lg:flex lg:divide-x lg:divide-y-0 border-stone-200 dark:border-stone-700"
+        role="list"
       >
-        Key Metrics
-      </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-        {metrics.map((metric) => (
-          <MetricCard key={metric.label} metric={metric} isDark={isDark} />
+        {metrics.map((metric, index) => (
+          <MetricStripItem
+            key={metric.label}
+            metric={metric}
+            isLast={index === metrics.length - 1}
+          />
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
 
-interface MetricCardProps {
+function MetricStripItem({
+  metric,
+  isLast,
+}: {
   metric: Metric;
-  isDark: boolean;
-}
-
-function MetricCard({ metric, isDark }: MetricCardProps) {
+  isLast: boolean;
+}) {
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div
-      className={`relative p-3 sm:p-4 rounded-lg border ${
-        isDark
-          ? "bg-gray-700/50 border-gray-600 hover:bg-gray-700"
-          : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-      } transition-colors`}
-      onMouseEnter={() => setShowTooltip(true)}
-      onMouseLeave={() => setShowTooltip(false)}
+    <li
+      className={`flex flex-1 py-3 sm:px-4 sm:py-0 lg:px-5 ${
+        !isLast
+          ? "border-stone-200 dark:border-stone-700 sm:border-b lg:border-b-0 lg:border-r"
+          : ""
+      }`}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div
-            className={`text-xs sm:text-sm font-medium ${
-              isDark ? "text-gray-300" : "text-gray-600"
-            }`}
-          >
+      <div
+        className="relative flex flex-1 flex-col gap-1"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <span className={`text-xs font-medium ${SYMBOL_MUTED_TEXT}`}>
             {metric.label}
-          </div>
-          <div
-            className={`text-lg sm:text-xl font-bold mt-1 ${
-              isDark ? "text-white" : "text-gray-900"
-            }`}
+          </span>
+          <button
+            type="button"
+            aria-label={`More info about ${metric.label}`}
+            className={SYMBOL_HELP_BUTTON}
+            onFocus={() => setShowTooltip(true)}
+            onBlur={() => setShowTooltip(false)}
           >
-            {metric.value}
-          </div>
+            ?
+          </button>
         </div>
-        <button
-          type="button"
-          aria-label={`More info about ${metric.label}`}
-          onFocus={() => setShowTooltip(true)}
-          onBlur={() => setShowTooltip(false)}
-          className={`ml-2 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-              isDark ? "bg-gray-600 text-gray-300" : "bg-gray-200 text-gray-600"
-            }`}
-        >
-          ?
-        </button>
-      </div>
-
-      {/* Tooltip */}
-      {showTooltip && (
-        <div
-          role="tooltip"
-          className={`absolute z-10 w-64 p-3 rounded-lg shadow-lg text-sm ${
-            isDark
-              ? "bg-gray-900 text-gray-200 border border-gray-700"
-              : "bg-white text-gray-700 border border-gray-200"
-          }`}
-          style={{
-            top: "100%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            marginTop: "8px",
-          }}
-        >
-          <div className="relative">
-            {/* Arrow */}
-            <div
-              className={`absolute w-3 h-3 transform rotate-45 ${
-                isDark
-                  ? "bg-gray-900 border-l border-t border-gray-700"
-                  : "bg-white border-l border-t border-gray-200"
-              }`}
-              style={{
-                top: "-7px",
-                left: "50%",
-                marginLeft: "-6px",
-              }}
-            />
+        <span className={SYMBOL_METRIC}>{metric.value}</span>
+        {showTooltip && (
+          <div
+            role="tooltip"
+            className={SYMBOL_TOOLTIP_SURFACE}
+            style={{
+              top: "100%",
+              left: 0,
+              marginTop: "8px",
+              zIndex: 10,
+            }}
+          >
             <div className="relative">{metric.tooltip}</div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </li>
   );
 }

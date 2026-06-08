@@ -147,7 +147,9 @@ describe("Lazy loading behavior (Req 15.2)", () => {
       "AdBanner",
       "LazySection",
       "AIPredictionPanel",
+      "HomeHub",
       "StockOfTheDayPanel",
+      "ProductShell",
     ];
 
     for (const imp of staticImports!) {

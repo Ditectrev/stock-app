@@ -8,9 +8,23 @@
  * Requirements: 26.1, 26.2, 26.3, 26.4, 26.5, 26.6, 26.7, 26.14, 26.24
  */
 
+import {
+  DNA_BODY,
+  DNA_CAPTION,
+  DNA_LABEL,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useCallback, useMemo, useEffect } from "react";
 import type { ScreenerFilter, ScreenerResult } from "@/types";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import {
+  HOME_INPUT_SM,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+  HOME_TOOLTIP_POPOVER,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -220,11 +234,11 @@ function Tooltip({ text }: { text: string }) {
     <span className="group relative ml-1 inline-flex">
       <button
         type="button"
-        className="cursor-help focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-full"
+        className="cursor-help rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-600 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-stone-400 dark:focus-visible:ring-offset-stone-900"
         aria-label="More info"
       >
         <svg
-          className="h-4 w-4 text-gray-400 dark:text-gray-300"
+          className={`h-4 w-4 ${DNA_CAPTION}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -240,7 +254,7 @@ function Tooltip({ text }: { text: string }) {
       </button>
       <span
         role="tooltip"
-        className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 w-56 -translate-x-1/2 rounded bg-gray-900 dark:bg-gray-700 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
+        className={`${HOME_TOOLTIP_POPOVER} opacity-0 group-hover:opacity-100 group-focus-within:opacity-100`}
       >
         {text}
       </span>
@@ -256,7 +270,7 @@ function SectionLabel({
   tooltip?: string;
 }) {
   return (
-    <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label className={`flex items-center ${DNA_LABEL}`}>
       {children}
       {tooltip && <Tooltip text={tooltip} />}
     </label>
@@ -284,16 +298,16 @@ function RangeInput({
           aria-label={`${label} minimum`}
           value={value.min}
           onChange={(e) => onChange({ ...value, min: e.target.value })}
-          className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className={HOME_INPUT_SM}
         />
-        <span className="text-gray-400 dark:text-gray-300 text-xs">–</span>
+        <span className={`${DNA_CAPTION}`}>–</span>
         <input
           type="number"
           placeholder="Max"
           aria-label={`${label} maximum`}
           value={value.max}
           onChange={(e) => onChange({ ...value, max: e.target.value })}
-          className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className={HOME_INPUT_SM}
         />
       </div>
     </div>
@@ -429,7 +443,7 @@ export function AssetScreener({
       });
 
       if (!res.ok) {
-        throw new Error("Failed to fetch screener results");
+        throw new Error(MARKET_UI_COPY.load.screenerResults);
       }
 
       const json = await res.json();
@@ -439,7 +453,7 @@ export function AssetScreener({
       onFiltersChange?.(filters);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "An unexpected error occurred"
+        err instanceof Error ? err.message : MARKET_UI_COPY.load.screenerResults
       );
     } finally {
       setLoading(false);
@@ -457,15 +471,11 @@ export function AssetScreener({
   // ------ render ------
 
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 sm:p-6 lg:p-8 shadow-sm">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 lg:mb-5">
-        Asset Screener
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="border-t border-stone-200 pt-4 dark:border-stone-700">
+      <div className="grid grid-cols-1 gap-5">
         {/* ---- Valuation Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
+          <legend className={`mb-1 ${DNA_SUBHEADING}`}>
             Valuation Metrics
           </legend>
           <RangeInput
@@ -490,9 +500,7 @@ export function AssetScreener({
 
         {/* ---- Growth Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
-            Growth Metrics
-          </legend>
+          <legend className={`mb-1 ${DNA_SUBHEADING}`}>Growth Metrics</legend>
           <RangeInput
             label="Revenue Growth (%)"
             tooltip={TOOLTIPS.revenueGrowth}
@@ -509,9 +517,7 @@ export function AssetScreener({
 
         {/* ---- Dividend Metrics ---- */}
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1">
-            Dividend Metrics
-          </legend>
+          <legend className={`mb-1 ${DNA_SUBHEADING}`}>Dividend Metrics</legend>
           <RangeInput
             label="Dividend Yield (%)"
             tooltip={TOOLTIPS.dividendYield}
@@ -528,7 +534,7 @@ export function AssetScreener({
 
         {/* ---- Sector ---- */}
         <fieldset className="space-y-2">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 flex items-center">
+          <legend className={`mb-1 flex items-center ${DNA_SUBHEADING}`}>
             Sector
             <Tooltip text={TOOLTIPS.sector} />
           </legend>
@@ -541,11 +547,7 @@ export function AssetScreener({
                   type="button"
                   onClick={() => toggleSector(sector)}
                   aria-pressed={selected}
-                  className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                    selected
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  }`}
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${homeChipClasses(selected)}`}
                 >
                   {sector}
                 </button>
@@ -556,7 +558,7 @@ export function AssetScreener({
 
         {/* ---- Market Cap ---- */}
         <fieldset className="space-y-2">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 flex items-center">
+          <legend className={`mb-1 flex items-center ${DNA_SUBHEADING}`}>
             Market Cap
             <Tooltip text={TOOLTIPS.marketCap} />
           </legend>
@@ -569,11 +571,7 @@ export function AssetScreener({
                   type="button"
                   onClick={() => toggleMarketCap(opt.value)}
                   aria-pressed={selected}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                    selected
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  }`}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${homeChipClasses(selected)}`}
                 >
                   {opt.label}
                 </button>
@@ -584,7 +582,7 @@ export function AssetScreener({
 
         {/* ---- Volume / Liquidity ---- */}
         <fieldset className="space-y-2">
-          <legend className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1 flex items-center">
+          <legend className={`mb-1 flex items-center ${DNA_SUBHEADING}`}>
             Volume &amp; Liquidity
             <Tooltip text={TOOLTIPS.volume} />
           </legend>
@@ -601,7 +599,7 @@ export function AssetScreener({
                   minVolume: e.target.value,
                 }))
               }
-              className="w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className={HOME_INPUT_SM}
             />
           </div>
         </fieldset>
@@ -613,26 +611,26 @@ export function AssetScreener({
           type="button"
           onClick={handleApply}
           disabled={loading}
-          className="rounded bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors min-h-[44px]"
+          className={`${HOME_PRIMARY_BUTTON} min-h-[44px] disabled:opacity-50`}
         >
           {loading ? "Searching…" : "Apply Filters"}
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors min-h-[44px]"
+          className={`${HOME_SECONDARY_BUTTON} min-h-[44px]`}
         >
           Clear All
         </button>
 
         {resultCount !== null && (
-          <span className="text-sm text-gray-600 dark:text-gray-300">
+          <span className={`${DNA_BODY}`}>
             {resultCount} {resultCount === 1 ? "asset" : "assets"} found
           </span>
         )}
 
         {activeFilters.length > 0 && (
-          <span className="text-xs text-gray-500 dark:text-gray-300">
+          <span className={`${DNA_CAPTION}`}>
             ({activeFilters.length}{" "}
             {activeFilters.length === 1 ? "filter" : "filters"} active)
           </span>

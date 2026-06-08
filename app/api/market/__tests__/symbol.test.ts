@@ -147,7 +147,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/symbol/[symbol]", () => {
     it("should return symbol data with success shape", async () => {
-      (marketDataService.getSymbolData as any).mockResolvedValue(
+      vi.mocked(marketDataService.getSymbolData).mockResolvedValue(
         mockSymbolData
       );
 
@@ -164,7 +164,7 @@ describe("Successful Data Retrieval", () => {
     });
 
     it("should call marketDataService.getSymbolData with correct symbol", async () => {
-      (marketDataService.getSymbolData as any).mockResolvedValue(
+      vi.mocked(marketDataService.getSymbolData).mockResolvedValue(
         mockSymbolData
       );
 
@@ -178,7 +178,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/historical/[symbol]", () => {
     it("should return historical data for valid symbol", async () => {
-      (marketDataService.getHistoricalPrices as any).mockResolvedValue(
+      vi.mocked(marketDataService.getHistoricalPrices).mockResolvedValue(
         mockHistoricalData
       );
 
@@ -197,7 +197,7 @@ describe("Successful Data Retrieval", () => {
     });
 
     it("should pass range parameter to service", async () => {
-      (marketDataService.getHistoricalPrices as any).mockResolvedValue(
+      vi.mocked(marketDataService.getHistoricalPrices).mockResolvedValue(
         mockHistoricalData
       );
 
@@ -215,7 +215,7 @@ describe("Successful Data Retrieval", () => {
     });
 
     it("should default range to 1Y when not provided", async () => {
-      (marketDataService.getHistoricalPrices as any).mockResolvedValue(
+      vi.mocked(marketDataService.getHistoricalPrices).mockResolvedValue(
         mockHistoricalData
       );
 
@@ -235,7 +235,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/fear-greed", () => {
     it("should return fear and greed data", async () => {
-      (marketDataService.getFearGreedIndex as any).mockResolvedValue(
+      vi.mocked(marketDataService.getFearGreedIndex).mockResolvedValue(
         mockFearGreedData
       );
 
@@ -251,7 +251,7 @@ describe("Successful Data Retrieval", () => {
     });
 
     it("should pass limit parameter", async () => {
-      (marketDataService.getFearGreedIndex as any).mockResolvedValue(
+      vi.mocked(marketDataService.getFearGreedIndex).mockResolvedValue(
         mockFearGreedData
       );
 
@@ -267,7 +267,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/world-markets", () => {
     it("should return world markets data", async () => {
-      (marketDataService.getWorldMarkets as any).mockResolvedValue(
+      vi.mocked(marketDataService.getWorldMarkets).mockResolvedValue(
         mockWorldMarketsData
       );
 
@@ -284,7 +284,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/sectors", () => {
     it("should return sector performance data", async () => {
-      (marketDataService.getSectorPerformance as any).mockResolvedValue(
+      vi.mocked(marketDataService.getSectorPerformance).mockResolvedValue(
         mockSectorData
       );
 
@@ -299,7 +299,7 @@ describe("Successful Data Retrieval", () => {
     });
 
     it("should pass period parameter to service", async () => {
-      (marketDataService.getSectorPerformance as any).mockResolvedValue(
+      vi.mocked(marketDataService.getSectorPerformance).mockResolvedValue(
         mockSectorData
       );
 
@@ -317,7 +317,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/indicators/[symbol]", () => {
     it("should return technical indicators", async () => {
-      (marketDataService.getTechnicalIndicators as any).mockResolvedValue(
+      vi.mocked(marketDataService.getTechnicalIndicators).mockResolvedValue(
         mockIndicatorsData
       );
 
@@ -337,7 +337,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/forecast/[symbol]", () => {
     it("should return forecast data", async () => {
-      (marketDataService.getForecastData as any).mockResolvedValue(
+      vi.mocked(marketDataService.getForecastData).mockResolvedValue(
         mockForecastData
       );
 
@@ -354,7 +354,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/seasonal/[symbol]", () => {
     it("should return seasonal pattern data", async () => {
-      (marketDataService.getSeasonalPatterns as any).mockResolvedValue(
+      vi.mocked(marketDataService.getSeasonalPatterns).mockResolvedValue(
         mockSeasonalData
       );
 
@@ -371,7 +371,7 @@ describe("Successful Data Retrieval", () => {
 
   describe("GET /api/market/financials/[symbol]", () => {
     it("should return financial data", async () => {
-      (marketDataService.getFinancials as any).mockResolvedValue(
+      vi.mocked(marketDataService.getFinancials).mockResolvedValue(
         mockFinancialsData
       );
 
@@ -402,7 +402,9 @@ describe("Caching Behavior", () => {
   it("should serve cached data when service returns cached result", async () => {
     // The service layer handles caching internally. When called twice,
     // the route should return the same data shape both times.
-    (marketDataService.getSymbolData as any).mockResolvedValue(mockSymbolData);
+    vi.mocked(marketDataService.getSymbolData).mockResolvedValue(
+      mockSymbolData
+    );
 
     const { GET } = await import("@/app/api/market/symbol/[symbol]/route");
     const req1 = makeRequest("http://localhost:3000/api/market/symbol/AAPL");
@@ -420,7 +422,7 @@ describe("Caching Behavior", () => {
   });
 
   it("should include timestamp in every response for cache freshness", async () => {
-    (marketDataService.getFearGreedIndex as any).mockResolvedValue(
+    vi.mocked(marketDataService.getFearGreedIndex).mockResolvedValue(
       mockFearGreedData
     );
 
@@ -435,7 +437,7 @@ describe("Caching Behavior", () => {
   });
 
   it("should return consistent data shape across multiple calls", async () => {
-    (marketDataService.getWorldMarkets as any).mockResolvedValue(
+    vi.mocked(marketDataService.getWorldMarkets).mockResolvedValue(
       mockWorldMarketsData
     );
 
@@ -469,7 +471,7 @@ describe("Rate Limiting", () => {
   });
 
   it("should propagate rate limit error from service as 502", async () => {
-    (marketDataService.getSymbolData as any).mockRejectedValue(
+    vi.mocked(marketDataService.getSymbolData).mockRejectedValue(
       new Error("Rate limit exceeded and no cached data available")
     );
 
@@ -484,7 +486,7 @@ describe("Rate Limiting", () => {
   });
 
   it("should return 500 with rate limit error for fear-greed route", async () => {
-    (marketDataService.getFearGreedIndex as any).mockRejectedValue(
+    vi.mocked(marketDataService.getFearGreedIndex).mockRejectedValue(
       new Error("Rate limit exceeded and no cached data available")
     );
 
@@ -499,7 +501,7 @@ describe("Rate Limiting", () => {
   });
 
   it("should return 500 with rate limit error for world-markets route", async () => {
-    (marketDataService.getWorldMarkets as any).mockRejectedValue(
+    vi.mocked(marketDataService.getWorldMarkets).mockRejectedValue(
       new Error("Rate limit exceeded and no cached data available")
     );
 
@@ -514,7 +516,7 @@ describe("Rate Limiting", () => {
   });
 
   it("should return 500 with rate limit error for sectors route", async () => {
-    (marketDataService.getSectorPerformance as any).mockRejectedValue(
+    vi.mocked(marketDataService.getSectorPerformance).mockRejectedValue(
       new Error("Rate limit exceeded and no cached data available")
     );
 
@@ -529,7 +531,7 @@ describe("Rate Limiting", () => {
   });
 
   it("should return 500 with rate limit error for indicators route", async () => {
-    (marketDataService.getTechnicalIndicators as any).mockRejectedValue(
+    vi.mocked(marketDataService.getTechnicalIndicators).mockRejectedValue(
       new Error("Rate limit exceeded and no cached data available")
     );
 
@@ -555,7 +557,7 @@ describe("Error Responses", () => {
 
   describe("User-friendly error messages (Req 3.5, 14.2)", () => {
     it("should return descriptive error for fear-greed API failure", async () => {
-      (marketDataService.getFearGreedIndex as any).mockRejectedValue(
+      vi.mocked(marketDataService.getFearGreedIndex).mockRejectedValue(
         new Error("Network timeout")
       );
 
@@ -571,7 +573,7 @@ describe("Error Responses", () => {
     });
 
     it("should return descriptive error for world-markets API failure", async () => {
-      (marketDataService.getWorldMarkets as any).mockRejectedValue(
+      vi.mocked(marketDataService.getWorldMarkets).mockRejectedValue(
         new Error("Service unavailable")
       );
 
@@ -586,7 +588,7 @@ describe("Error Responses", () => {
     });
 
     it("should return descriptive error for sectors API failure", async () => {
-      (marketDataService.getSectorPerformance as any).mockRejectedValue(
+      vi.mocked(marketDataService.getSectorPerformance).mockRejectedValue(
         new Error("External API error")
       );
 
@@ -601,7 +603,7 @@ describe("Error Responses", () => {
     });
 
     it("should return descriptive error for indicators API failure", async () => {
-      (marketDataService.getTechnicalIndicators as any).mockRejectedValue(
+      vi.mocked(marketDataService.getTechnicalIndicators).mockRejectedValue(
         new Error("Failed to calculate indicators")
       );
 
@@ -615,11 +617,13 @@ describe("Error Responses", () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Failed to calculate indicators");
+      expect(data.error).toBe(
+        "We couldn't load technical indicators. Try again."
+      );
     });
 
     it("should return descriptive error for forecast API failure", async () => {
-      (marketDataService.getForecastData as any).mockRejectedValue(
+      vi.mocked(marketDataService.getForecastData).mockRejectedValue(
         new Error("Forecast data unavailable")
       );
 
@@ -634,7 +638,7 @@ describe("Error Responses", () => {
     });
 
     it("should return descriptive error for seasonal API failure", async () => {
-      (marketDataService.getSeasonalPatterns as any).mockRejectedValue(
+      vi.mocked(marketDataService.getSeasonalPatterns).mockRejectedValue(
         new Error("Seasonal data unavailable")
       );
 
@@ -649,7 +653,7 @@ describe("Error Responses", () => {
     });
 
     it("should return descriptive error for financials API failure", async () => {
-      (marketDataService.getFinancials as any).mockRejectedValue(
+      vi.mocked(marketDataService.getFinancials).mockRejectedValue(
         new Error("Financial data unavailable")
       );
 
@@ -669,7 +673,7 @@ describe("Error Responses", () => {
 
   describe("Non-Error object handling", () => {
     it("should return fallback message for non-Error throws in fear-greed", async () => {
-      (marketDataService.getFearGreedIndex as any).mockRejectedValue(
+      vi.mocked(marketDataService.getFearGreedIndex).mockRejectedValue(
         "string error"
       );
 
@@ -680,11 +684,13 @@ describe("Error Responses", () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Failed to fetch Fear & Greed Index");
+      expect(data.error).toBe(
+        "We couldn't load the Fear & Greed index. Try again."
+      );
     });
 
     it("should return fallback message for non-Error throws in world-markets", async () => {
-      (marketDataService.getWorldMarkets as any).mockRejectedValue(42);
+      vi.mocked(marketDataService.getWorldMarkets).mockRejectedValue(42);
 
       const { GET } = await import("@/app/api/market/world-markets/route");
       const req = makeRequest("http://localhost:3000/api/market/world-markets");
@@ -693,11 +699,11 @@ describe("Error Responses", () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Failed to fetch world markets");
+      expect(data.error).toBe("We couldn't load world markets. Try again.");
     });
 
     it("should return fallback message for non-Error throws in sectors", async () => {
-      (marketDataService.getSectorPerformance as any).mockRejectedValue(null);
+      vi.mocked(marketDataService.getSectorPerformance).mockRejectedValue(null);
 
       const { GET } = await import("@/app/api/market/sectors/route");
       const req = makeRequest("http://localhost:3000/api/market/sectors");
@@ -706,13 +712,15 @@ describe("Error Responses", () => {
 
       expect(response.status).toBe(500);
       expect(data.success).toBe(false);
-      expect(data.error).toBe("Failed to fetch sector performance");
+      expect(data.error).toBe(
+        "We couldn't load sector performance. Try again."
+      );
     });
   });
 
   describe("Symbol route live data errors", () => {
     it("should return a 502 when symbol API fails", async () => {
-      (marketDataService.getSymbolData as any).mockRejectedValue(
+      vi.mocked(marketDataService.getSymbolData).mockRejectedValue(
         new Error("API unavailable")
       );
 
@@ -727,7 +735,7 @@ describe("Error Responses", () => {
     });
 
     it("should return a 502 when historical API fails", async () => {
-      (marketDataService.getHistoricalPrices as any).mockRejectedValue(
+      vi.mocked(marketDataService.getHistoricalPrices).mockRejectedValue(
         new Error("API unavailable")
       );
 
@@ -747,7 +755,7 @@ describe("Error Responses", () => {
 
   describe("Response shape consistency", () => {
     it("should always include success, data, and timestamp on success", async () => {
-      (marketDataService.getSectorPerformance as any).mockResolvedValue(
+      vi.mocked(marketDataService.getSectorPerformance).mockResolvedValue(
         mockSectorData
       );
 
@@ -762,7 +770,7 @@ describe("Error Responses", () => {
     });
 
     it("should always include success, error, and timestamp on failure", async () => {
-      (marketDataService.getFearGreedIndex as any).mockRejectedValue(
+      vi.mocked(marketDataService.getFearGreedIndex).mockRejectedValue(
         new Error("Failure")
       );
 

@@ -1,10 +1,27 @@
 "use client";
 
+import {
+  DNA_BODY,
+  DNA_BODY_SECONDARY,
+  DNA_CALLOUT_WARNING,
+  DNA_CAPTION,
+  DNA_DISPLAY,
+  DNA_EYEBROW,
+  DNA_HEADING,
+  DNA_LABEL_STRONG,
+  DNA_MARKETING_STACK,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { openAuthPrompt } from "@/lib/open-auth-prompt";
 import APIKeyManager from "@/components/APIKeyManager";
 import {
-  EXPLANATIONS_PROVIDER_STORAGE_KEY,
+  HOME_INSTRUMENT_PANEL,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+} from "@/lib/home-ui";
+import {
   getDefaultProviderForTier,
   isProviderAllowedForTier,
   PROVIDER_OPTIONS,
@@ -13,26 +30,29 @@ import {
   type ExplanationProvider,
   type Tier,
 } from "@/lib/explanation-provider";
+import { MARKET_DOWN_TEXT, MARKET_UP_TEXT } from "@/lib/market-semantics";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import {
+  readSelectedBYOKProvider,
+  saveSelectedBYOKProvider,
+  type BYOKProvider,
+} from "@/services/api-key-manager.service";
 
 type StatusMessage = {
   text: string;
   tone: "success" | "error" | "info";
 };
 
-function loadStoredProvider(): ExplanationProvider {
-  return readStoredExplanationProvider() ?? "OLLAMA";
-}
-
 function StatusNotice({ message }: { message: StatusMessage }) {
   return (
     <p
-      className={`text-sm ${
+      className={
         message.tone === "error"
-          ? "text-red-600 dark:text-red-400"
+          ? MARKET_DOWN_TEXT
           : message.tone === "success"
-            ? "text-green-700 dark:text-green-400"
-            : "text-gray-600 dark:text-gray-300"
-      }`}
+            ? MARKET_UP_TEXT
+            : DNA_BODY
+      }
       role="status"
     >
       {message.text}
@@ -64,9 +84,9 @@ export function ProfileSettings() {
     useState<ExplanationProvider>("OLLAMA");
   const [pendingExplanationProvider, setPendingExplanationProvider] =
     useState<ExplanationProvider>("OLLAMA");
-  const [selectedProvider, setSelectedProvider] = useState<
-    "OPENAI" | "GEMINI" | "MISTRAL" | "DEEPSEEK"
-  >("OPENAI");
+  const [selectedProvider, setSelectedProvider] = useState<BYOKProvider>(() =>
+    typeof window === "undefined" ? "OPENAI" : readSelectedBYOKProvider()
+  );
   const [providerStatusMessage, setProviderStatusMessage] =
     useState<StatusMessage | null>(null);
   const [subscriptionStatusMessage, setSubscriptionStatusMessage] =
@@ -142,39 +162,47 @@ export function ProfileSettings() {
       window.removeEventListener("auth-state-changed", onAuthChanged);
   }, [refreshAuthState]);
 
-  useEffect(() => {
-    const stored = loadStoredProvider();
-    setSavedExplanationProvider(stored);
-    setPendingExplanationProvider(stored);
-  }, []);
+  const applyStoredExplanationProvider = useCallback(() => {
+    const tier = subscription.tier;
+    const stored = readStoredExplanationProvider() ?? "OLLAMA";
 
-  useEffect(() => {
-    const { tier } = subscription;
-    const syncForTier = (current: ExplanationProvider): ExplanationProvider => {
-      if (isProviderAllowedForTier(current, tier)) return current;
-      const next = getDefaultProviderForTier(tier);
-      if (!next) {
-        localStorage.removeItem(EXPLANATIONS_PROVIDER_STORAGE_KEY);
-        return current;
+    let resolved = stored;
+    if (!isProviderAllowedForTier(stored, tier)) {
+      const fallback = getDefaultProviderForTier(tier);
+      if (fallback) {
+        resolved = fallback;
+        saveExplanationProvider(fallback);
       }
-      return next;
-    };
+    }
 
-    setSavedExplanationProvider((saved) => {
-      const next = syncForTier(saved);
-      if (next !== saved) saveExplanationProvider(next);
-      return next;
-    });
-    setPendingExplanationProvider((pending) => syncForTier(pending));
+    setSavedExplanationProvider(resolved);
+    setPendingExplanationProvider(resolved);
   }, [subscription.tier]);
+
+  useEffect(() => {
+    if (loading) return;
+    applyStoredExplanationProvider();
+  }, [loading, applyStoredExplanationProvider]);
+
+  useEffect(() => {
+    const onProviderChanged = () => applyStoredExplanationProvider();
+    window.addEventListener("explanations-provider-changed", onProviderChanged);
+    return () =>
+      window.removeEventListener(
+        "explanations-provider-changed",
+        onProviderChanged
+      );
+  }, [applyStoredExplanationProvider]);
+
+  function handleBYOKProviderSelect(provider: BYOKProvider) {
+    setSelectedProvider(provider);
+    saveSelectedBYOKProvider(provider);
+  }
 
   const tier = subscription.tier;
   const hasPaidPlan = tier !== "FREE";
   const canManageApiKeys = tier === "BYOK";
   const hasAiTier = ["LOCAL", "BYOK", "HOSTED_AI"].includes(tier);
-
-  const hasUnsavedProvider =
-    pendingExplanationProvider !== savedExplanationProvider;
 
   function handleSelectProvider(provider: ExplanationProvider) {
     if (!isProviderAllowedForTier(provider, tier)) {
@@ -184,24 +212,11 @@ export function ProfileSettings() {
       });
       return;
     }
+    saveExplanationProvider(provider);
+    setSavedExplanationProvider(provider);
     setPendingExplanationProvider(provider);
-    if (providerStatusMessage?.tone === "success") {
-      setProviderStatusMessage(null);
-    }
-  }
-
-  function handleSaveExplanationProvider() {
-    if (!isProviderAllowedForTier(pendingExplanationProvider, tier)) {
-      setProviderStatusMessage({
-        text: "This provider is not available on your current plan.",
-        tone: "error",
-      });
-      return;
-    }
-    saveExplanationProvider(pendingExplanationProvider);
-    setSavedExplanationProvider(pendingExplanationProvider);
     setProviderStatusMessage({
-      text: `Saved ${PROVIDER_OPTIONS.find((p) => p.id === pendingExplanationProvider)?.name ?? pendingExplanationProvider} as your explanations provider.`,
+      text: `${PROVIDER_OPTIONS.find((p) => p.id === provider)?.name ?? provider} is now your explanations provider.`,
       tone: "success",
     });
   }
@@ -218,7 +233,7 @@ export function ProfileSettings() {
       const data = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) {
         setSubscriptionStatusMessage({
-          text: data.error ?? "Failed to cancel subscription.",
+          text: data.error ?? MARKET_UI_COPY.billing.cancelFailed,
           tone: "error",
         });
         return;
@@ -248,7 +263,7 @@ export function ProfileSettings() {
       };
       if (!res.ok || !data.data?.url) {
         setSubscriptionStatusMessage({
-          text: data.error ?? "Failed to open billing portal.",
+          text: data.error ?? MARKET_UI_COPY.billing.portalFailed,
           tone: "error",
         });
         return;
@@ -260,60 +275,59 @@ export function ProfileSettings() {
   }
 
   if (loading) {
-    return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        Loading profile…
-      </p>
-    );
+    return <p className={`${DNA_BODY_SECONDARY}`}>Loading profile…</p>;
   }
 
   if (!user) {
     return (
-      <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 space-y-4">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          User Profile
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+      <div
+        className={`${HOME_INSTRUMENT_PANEL} space-y-4`}
+        data-testid="profile-hub-header"
+      >
+        <h1 className={DNA_DISPLAY}>User Profile</h1>
+        <p className={`${DNA_BODY}`}>
           Sign in to manage your subscription, AI providers, and API keys.
         </p>
-        <Link
-          href="/pricing?signin=1"
-          className="inline-flex rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        <button
+          type="button"
+          onClick={() => openAuthPrompt()}
+          className={HOME_PRIMARY_BUTTON}
+          data-testid="profile-sign-in"
         >
           Sign in
-        </Link>
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div
+      className={`${DNA_MARKETING_STACK} max-w-3xl`}
+      data-testid="profile-hub-signed-in"
+    >
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-          User Profile
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-300">{user.email}</p>
-        {user.name && (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {user.name}
-          </p>
-        )}
+        <p className={DNA_EYEBROW}>Account</p>
+        <h1 className={DNA_DISPLAY}>User Profile</h1>
+        <p className={DNA_BODY}>{user.email}</p>
+        {user.name && <p className={DNA_BODY_SECONDARY}>{user.name}</p>}
       </header>
 
-      <section className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-3">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+      <section
+        className="space-y-3"
+        aria-labelledby="profile-subscription-heading"
+      >
+        <p className={DNA_EYEBROW}>Plan</p>
+        <h2 id="profile-subscription-heading" className={DNA_HEADING}>
           Subscription
         </h2>
-        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <dt className="text-gray-500 dark:text-gray-400">Current plan</dt>
-            <dd className="font-medium text-blue-600 dark:text-blue-400">
-              {tier}
-            </dd>
+            <dt className={DNA_BODY_SECONDARY}>Current plan</dt>
+            <dd className={DNA_LABEL_STRONG}>{tier}</dd>
           </div>
           <div>
-            <dt className="text-gray-500 dark:text-gray-400">Active until</dt>
-            <dd className="font-medium text-gray-900 dark:text-gray-100">
+            <dt className={DNA_BODY_SECONDARY}>Active until</dt>
+            <dd className={DNA_LABEL_STRONG}>
               {subscription.activeUntil
                 ? new Date(subscription.activeUntil).toLocaleDateString()
                 : hasPaidPlan
@@ -323,16 +337,13 @@ export function ProfileSettings() {
           </div>
         </dl>
         {subscription.cancelAtPeriodEnd && hasPaidPlan && (
-          <p className="text-sm text-amber-700 dark:text-amber-300">
+          <p className={DNA_CALLOUT_WARNING}>
             Your subscription is set to cancel at the end of this billing
             period.
           </p>
         )}
         <div className="flex flex-wrap gap-2 pt-1">
-          <Link
-            href="/pricing"
-            className="inline-flex items-center rounded-md border border-blue-500 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-          >
+          <Link href="/pricing" className={HOME_SECONDARY_BUTTON}>
             Change plan
           </Link>
           {hasPaidPlan && (
@@ -341,7 +352,7 @@ export function ProfileSettings() {
                 type="button"
                 onClick={() => void handleOpenBillingPortal()}
                 disabled={openingBilling}
-                className="inline-flex items-center rounded-md border border-blue-500 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-50"
+                className={`${HOME_SECONDARY_BUTTON} disabled:opacity-50`}
               >
                 {openingBilling ? "Opening…" : "Manage billing"}
               </button>
@@ -350,7 +361,7 @@ export function ProfileSettings() {
                   type="button"
                   onClick={() => void handleCancelSubscription()}
                   disabled={cancelling}
-                  className="inline-flex items-center rounded-md border border-red-500 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
+                  className={`${HOME_SECONDARY_BUTTON} border-rose-300/90 text-rose-800 hover:bg-rose-50 dark:border-rose-700 dark:text-rose-300 dark:hover:bg-rose-950/30 disabled:opacity-50`}
                 >
                   {cancelling ? "Cancelling…" : "Cancel subscription"}
                 </button>
@@ -363,18 +374,19 @@ export function ProfileSettings() {
         )}
       </section>
 
-      <section className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 space-y-4">
+      <section className="space-y-4" aria-labelledby="profile-provider-heading">
+        <p className={DNA_EYEBROW}>AI model</p>
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <h2 id="profile-provider-heading" className={DNA_HEADING}>
             Explanations provider
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Choose which AI powers metric explanations and chart analysis, then
-            click Save to apply your choice across the app.
+          <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
+            Choose which AI powers metric explanations and chart analysis. Your
+            selection is saved automatically and applies across the app.
           </p>
         </div>
         {!hasAiTier && (
-          <p className="text-sm text-amber-700 dark:text-amber-300/90 rounded-md border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 px-3 py-2">
+          <p className={DNA_CALLOUT_WARNING}>
             AI explanations unlock on Local AI, BYOK, or Hosted AI plans.
             Ads-free and Free tiers do not include server-side AI.
           </p>
@@ -392,62 +404,44 @@ export function ProfileSettings() {
                 onClick={() => handleSelectProvider(provider.id)}
                 className={`rounded-lg border p-4 text-left transition-colors ${
                   isPending
-                    ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30 ring-1 ring-blue-500"
-                    : "border-gray-200 dark:border-gray-700"
+                    ? "border-stone-600 bg-stone-100 ring-1 ring-stone-600 dark:border-stone-400 dark:bg-stone-800 dark:ring-stone-400"
+                    : "border-stone-200 dark:border-stone-700"
                 } ${
                   !allowed
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:border-blue-400"
+                    ? "cursor-not-allowed opacity-50"
+                    : "hover:border-stone-400 dark:hover:border-stone-500"
                 }`}
               >
-                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <p className={DNA_SUBHEADING}>
                   {provider.name}
                   {isActive && (
-                    <span className="ml-2 text-xs font-normal text-blue-600 dark:text-blue-400">
+                    <span className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}>
                       Active
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  {provider.subtitle}
-                </p>
+                <p className={`mt-1 ${DNA_CAPTION}`}>{provider.subtitle}</p>
               </button>
             );
           })}
         </div>
-        {hasAiTier && (
-          <div className="flex flex-wrap items-center gap-3 pt-1">
-            <button
-              type="button"
-              onClick={handleSaveExplanationProvider}
-              disabled={!hasUnsavedProvider}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Save explanations provider
-            </button>
-            {hasUnsavedProvider && (
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                You have unsaved changes.
-              </p>
-            )}
-          </div>
-        )}
         {providerStatusMessage && (
           <StatusNotice message={providerStatusMessage} />
         )}
       </section>
 
-      <section className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+      <section className="space-y-4" aria-labelledby="profile-keys-heading">
+        <p className={DNA_EYEBROW}>BYOK</p>
+        <h2 id="profile-keys-heading" className={`mb-3 ${DNA_HEADING}`}>
           API keys
         </h2>
         {canManageApiKeys ? (
           <APIKeyManager
             selectedProvider={selectedProvider}
-            onProviderSelect={setSelectedProvider}
+            onProviderSelect={handleBYOKProviderSelect}
           />
         ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className={`${DNA_BODY_SECONDARY}`}>
             API key management is available on the BYOK plan.
           </p>
         )}

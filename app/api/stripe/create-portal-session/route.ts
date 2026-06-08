@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { getAuthenticatedUser } from "@/lib/server-auth";
 import { stripeBillingService } from "@/services/stripe-billing.service";
 
@@ -33,10 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to create billing portal session",
+        error: userFacingApiError(error, MARKET_UI_COPY.billing.portalFailed),
         timestamp: new Date(),
       },
       { status: 500 }

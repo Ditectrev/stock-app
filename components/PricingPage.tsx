@@ -8,29 +8,33 @@
 
 import { useState } from "react";
 import { PricingTier, PricingTierInfo } from "@/types";
+import {
+  HOME_DISABLED_BUTTON,
+  HOME_MUTED_TEXT,
+  HOME_PANEL_TITLE,
+  HOME_SUBTLE_TEXT,
+} from "@/lib/home-ui";
 
-const CHECK_ICON = (
-  <svg
-    className="w-4 h-4 text-green-500 flex-shrink-0"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
+const FEATURE_MARK = (
+  <span
+    className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-stone-500 dark:bg-stone-400"
     aria-hidden="true"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M5 13l4 4L19 7"
-    />
-  </svg>
+  />
 );
+
+const COMPARE_CAPABILITIES = [
+  { label: "AI explanations", needle: "ai metric explanations" },
+  { label: "Chart analysis", needle: "ai chart analysis" },
+  { label: "Bring your own keys", needle: "api q&a" },
+  { label: "No ads", needle: "ads-free" },
+] as const;
 
 interface PricingCardProps {
   tier: PricingTierInfo;
   isPopular?: boolean;
   onSelect: (tier: PricingTier) => void;
   isCurrentTier?: boolean;
+  featured?: boolean;
 }
 
 function PricingCard({
@@ -38,49 +42,87 @@ function PricingCard({
   isPopular,
   onSelect,
   isCurrentTier,
+  featured,
 }: PricingCardProps) {
   const isFree = tier.price === 0;
+  const visibleFeatures = tier.features.slice(0, 5);
+  const hiddenCount = Math.max(
+    0,
+    tier.features.length - visibleFeatures.length
+  );
 
   return (
     <div
-      className={`relative flex flex-col rounded-2xl border p-6 transition-shadow
+      className={`relative flex h-full flex-col rounded-2xl border p-6 transition-shadow
         ${
           isPopular
-            ? "border-blue-500 shadow-lg shadow-blue-500/10 dark:shadow-blue-500/20"
-            : "border-gray-200 dark:border-gray-700"
+            ? "border-stone-900 shadow-lg shadow-stone-400/20 dark:border-stone-100 dark:shadow-stone-900/40"
+            : "border-stone-200 dark:border-stone-700"
         }
-        bg-white dark:bg-gray-900`}
+        ${
+          featured
+            ? "bg-stone-900 text-stone-100 dark:bg-stone-100 dark:text-stone-900"
+            : "bg-white dark:bg-stone-900"
+        }`}
     >
       {isPopular && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+        <div className="absolute right-4 top-4">
+          <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold text-stone-900 dark:bg-stone-900 dark:text-stone-100">
             Most Popular
           </span>
         </div>
       )}
 
       {/* Header */}
-      <div className="mb-4">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+      <div className="mb-4 pr-24">
+        <h3
+          className={`min-h-[2.75rem] text-lg font-bold leading-snug ${
+            featured
+              ? "text-stone-100 dark:text-stone-900"
+              : "text-stone-900 dark:text-stone-50"
+          }`}
+        >
           {tier.name}
         </h3>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 min-h-[40px]">
+        <p
+          className={`mt-1 min-h-[5.5rem] text-sm leading-relaxed ${
+            featured ? "text-stone-300 dark:text-stone-600" : HOME_SUBTLE_TEXT
+          }`}
+        >
           {tier.description}
         </p>
       </div>
 
       {/* Price */}
-      <div className="mb-6">
+      <div className="mb-6 h-[3.5rem]">
         {isFree ? (
-          <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
+          <span
+            className={`text-4xl font-extrabold ${
+              featured
+                ? "text-stone-100 dark:text-stone-900"
+                : "text-stone-900 dark:text-stone-50"
+            }`}
+          >
             Free
           </span>
         ) : (
           <div className="flex items-end gap-1">
-            <span className="text-4xl font-extrabold text-gray-900 dark:text-gray-100">
+            <span
+              className={`text-4xl font-extrabold ${
+                featured
+                  ? "text-stone-100 dark:text-stone-900"
+                  : "text-stone-900 dark:text-stone-50"
+              }`}
+            >
               €{tier.price}
             </span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+            <span
+              className={`mb-1 text-sm ${
+                featured
+                  ? "text-stone-300 dark:text-stone-600"
+                  : HOME_SUBTLE_TEXT
+              }`}
+            >
               / mo
             </span>
           </div>
@@ -91,13 +133,13 @@ function PricingCard({
       <button
         onClick={() => onSelect(tier.tier)}
         disabled={isCurrentTier}
-        className={`w-full py-2.5 px-4 rounded-lg text-sm font-semibold transition-colors mb-6
+        className={`mb-6 w-full whitespace-nowrap rounded-lg px-4 py-2.5 text-center text-sm font-semibold leading-none tracking-normal transition-colors
           ${
             isCurrentTier
-              ? "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-500 cursor-default"
-              : isPopular
-                ? "bg-blue-600 hover:bg-blue-700 text-white"
-                : "bg-gray-900 hover:bg-gray-700 text-white dark:bg-gray-100 dark:hover:bg-gray-300 dark:text-gray-900"
+              ? HOME_DISABLED_BUTTON
+              : featured
+                ? "bg-stone-100 text-stone-900 hover:bg-stone-200 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
+                : "bg-stone-900 hover:bg-stone-700 text-stone-100 dark:bg-stone-100 dark:hover:bg-stone-300 dark:text-stone-900"
           }`}
         aria-label={
           isCurrentTier
@@ -105,19 +147,32 @@ function PricingCard({
             : `Get started with ${tier.name}`
         }
       >
-        {isCurrentTier ? "Current plan" : isFree ? "Get started" : "Subscribe"}
+        {isCurrentTier ? "Current" : isFree ? "Start" : "Subscribe"}
       </button>
 
       {/* Feature list */}
       <ul className="space-y-2.5 flex-1" aria-label={`${tier.name} features`}>
-        {tier.features.map((feature) => (
+        {visibleFeatures.map((feature) => (
           <li key={feature} className="flex items-start gap-2">
-            {CHECK_ICON}
-            <span className="text-sm text-gray-600 dark:text-gray-300">
+            {FEATURE_MARK}
+            <span
+              className={`text-sm ${
+                featured
+                  ? "text-stone-200 dark:text-stone-700"
+                  : HOME_MUTED_TEXT
+              }`}
+            >
               {feature}
             </span>
           </li>
         ))}
+        {hiddenCount > 0 && (
+          <li
+            className={`pl-6 text-xs ${featured ? "text-stone-300 dark:text-stone-700" : HOME_SUBTLE_TEXT}`}
+          >
+            +{hiddenCount} more plan details
+          </li>
+        )}
       </ul>
     </div>
   );
@@ -135,48 +190,116 @@ export function PricingPage({
   onSelectTier,
 }: PricingPageProps) {
   const [selectedTier, setSelectedTier] = useState<PricingTier | null>(null);
+  const featuredTier = tiers.find((tier) => tier.tier === "ADS_FREE");
+  const secondaryTiers = tiers.filter((tier) => tier.tier !== "ADS_FREE");
+  const planOrder = ["FREE", "LOCAL", "BYOK", "HOSTED_AI"] as const;
+  const orderedTiers = planOrder
+    .map((id) => tiers.find((tier) => tier.tier === id))
+    .filter((tier): tier is PricingTierInfo => Boolean(tier));
 
   const handleSelect = (tier: PricingTier) => {
     setSelectedTier(tier);
     onSelectTier?.(tier);
   };
 
+  const hasFeature = (tier: PricingTierInfo, needle: string) =>
+    tier.features.some((feature) => feature.toLowerCase().includes(needle));
+
   return (
-    <section
-      className="py-12 px-4 max-w-7xl mx-auto"
-      aria-labelledby="pricing-heading"
-    >
+    <section className="py-8 sm:py-12" aria-labelledby="pricing-heading">
       {/* Header */}
-      <div className="text-center mb-12">
+      <div className="mb-10 max-w-3xl lg:mb-12">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500 dark:text-stone-400">
+          Pricing
+        </p>
         <h2
           id="pricing-heading"
-          className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 sm:text-4xl"
+          className={`mt-2 text-3xl font-extrabold sm:text-4xl ${HOME_PANEL_TITLE}`}
         >
           Simple, transparent pricing
         </h2>
-        <p className="mt-3 text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+        <p className={`mt-3 max-w-2xl text-lg ${HOME_SUBTLE_TEXT}`}>
           Start free. Upgrade when you need AI features or an ad-free
           experience.
         </p>
       </div>
 
       {/* Tier cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-        {tiers.map((tier) => (
-          <PricingCard
-            key={tier.tier}
-            tier={tier}
-            isPopular={tier.tier === "ADS_FREE"}
-            isCurrentTier={currentTier === tier.tier}
-            onSelect={handleSelect}
-          />
-        ))}
+      <div className="space-y-6">
+        <div className="grid gap-4 lg:grid-cols-[1.15fr_1.85fr]">
+          <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900">
+            <p
+              className={`text-xs font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
+            >
+              Plan guide
+            </p>
+            <h3 className={`mt-2 text-xl font-semibold ${HOME_PANEL_TITLE}`}>
+              Pick your workflow, not just a price
+            </h3>
+            <p className={`mt-2 text-sm ${HOME_MUTED_TEXT}`}>
+              Free and Local AI fit research-first users. BYOK is best for
+              provider flexibility. Ditectrev AI removes setup with hosted
+              infrastructure.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900">
+            <p
+              className={`text-xs font-semibold uppercase tracking-[0.18em] ${HOME_SUBTLE_TEXT}`}
+            >
+              Quick compare
+            </p>
+            <div className="mt-3 space-y-3 text-sm">
+              {COMPARE_CAPABILITIES.map(({ label, needle }) => (
+                <div
+                  key={label}
+                  className="border-t border-stone-200 pt-3 first:border-t-0 first:pt-0 dark:border-stone-700"
+                >
+                  <p className={`font-medium ${HOME_MUTED_TEXT}`}>{label}</p>
+                  <p
+                    className={`mt-1 text-xs leading-relaxed ${HOME_SUBTLE_TEXT}`}
+                  >
+                    {orderedTiers
+                      .map((tier) =>
+                        hasFeature(tier, needle)
+                          ? `${tier.name}: included`
+                          : `${tier.name}: not included`
+                      )
+                      .join(" · ")}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {featuredTier && (
+          <div className="grid grid-cols-1">
+            <PricingCard
+              tier={featuredTier}
+              featured
+              isPopular
+              isCurrentTier={currentTier === featuredTier.tier}
+              onSelect={handleSelect}
+            />
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          {secondaryTiers.map((tier) => (
+            <PricingCard
+              key={tier.tier}
+              tier={tier}
+              isCurrentTier={currentTier === tier.tier}
+              onSelect={handleSelect}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Confirmation feedback */}
       {selectedTier && selectedTier !== currentTier && (
         <p
-          className="mt-8 text-center text-sm text-blue-600 dark:text-blue-400"
+          className={`mt-8 text-center text-sm ${HOME_MUTED_TEXT}`}
           role="status"
           aria-live="polite"
         >

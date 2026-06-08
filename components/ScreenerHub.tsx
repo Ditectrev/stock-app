@@ -9,8 +9,20 @@
  * Requirements: 26.10, 26.11, 26.12, 26.13, 26.15, 26.17, 26.23, 26.25
  */
 
+import {
+  DNA_BODY,
+  DNA_CAPTION,
+  DNA_EYEBROW,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { ScreenerFilter, ScreenerPreset, ScreenerResult } from "@/types";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_SEGMENTED_NAV,
+  homeSegmentedTabClasses,
+} from "@/lib/home-ui";
+import { useTheme } from "@/lib/theme-context";
 import { AssetScreener } from "./AssetScreener";
 import { ScreenerPresets } from "./ScreenerPresets";
 import { ScreenerTableView } from "./ScreenerTableView";
@@ -115,6 +127,8 @@ export function ScreenerHub({
   // Auto-refresh: re-fetch results at a configurable interval (Req 26.25)
   const interval =
     refreshInterval !== undefined ? refreshInterval : DEFAULT_REFRESH_INTERVAL;
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   useEffect(() => {
     if (interval <= 0) return;
@@ -144,65 +158,86 @@ export function ScreenerHub({
   }, [interval]);
 
   return (
-    <div className="space-y-4" data-testid="screener-hub">
-      <AssetScreener
-        onResultsChange={handleResultsChange}
-        onFiltersChange={handleFiltersChange}
-        initialFilters={presetFilters}
-      />
+    <div className={HOME_INSTRUMENT_PANEL} data-testid="screener-hub">
+      <header className="mb-4 sm:mb-6" data-testid="screener-hub-header">
+        <p className={DNA_EYEBROW}>Discovery</p>
+        <h2 className={`mt-1 ${DNA_SUBHEADING}`}>Screener</h2>
+        <p className={`mt-1 ${DNA_BODY}`}>
+          Build a thesis with filters on the left, then inspect results in a
+          table or heatmap canvas.
+        </p>
+      </header>
 
-      {/* Presets */}
-      <ScreenerPresets
-        currentFilters={currentFilters}
-        onPresetSelect={handlePresetSelect}
-      />
-
-      {/* View mode toggle */}
-      <div
-        className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 w-fit"
-        role="tablist"
-        aria-label="Screener view mode"
-      >
-        <button
-          type="button"
-          role="tab"
-          aria-selected={viewMode === "table"}
-          onClick={() => setViewMode("table")}
-          className={`rounded-md px-4 py-2 text-sm font-medium transition-colors min-h-[44px] ${
-            viewMode === "table"
-              ? "bg-blue-600 text-white"
-              : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          }`}
-          data-testid="view-toggle-table"
-        >
-          Table
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={viewMode === "heatmap"}
-          onClick={() => setViewMode("heatmap")}
-          className={`rounded-md px-4 py-2 text-sm font-medium transition-colors min-h-[44px] ${
-            viewMode === "heatmap"
-              ? "bg-blue-600 text-white"
-              : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-          }`}
-          data-testid="view-toggle-heatmap"
-        >
-          Heatmap
-        </button>
-      </div>
-
-      {/* Active view */}
-      <div role="tabpanel">
-        {viewMode === "table" ? (
-          <ScreenerTableView results={results} onSymbolClick={onSymbolClick} />
-        ) : (
-          <ScreenerHeatmapView
-            results={results}
-            onSymbolClick={onSymbolClick}
+      <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start">
+        <aside className="min-w-0 space-y-4 rounded-xl border border-stone-200 bg-stone-100 p-3 dark:border-stone-700 dark:bg-stone-800">
+          <AssetScreener
+            onResultsChange={handleResultsChange}
+            onFiltersChange={handleFiltersChange}
+            initialFilters={presetFilters}
           />
-        )}
+
+          <ScreenerPresets
+            currentFilters={currentFilters}
+            onPresetSelect={handlePresetSelect}
+          />
+        </aside>
+
+        <section className="min-w-0 space-y-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className={DNA_EYEBROW}>Results canvas</p>
+              <p className={`mt-1 ${DNA_CAPTION}`}>
+                {results.length} match{results.length === 1 ? "" : "es"}
+              </p>
+            </div>
+            <div
+              className={`${HOME_SEGMENTED_NAV} w-fit`}
+              role="tablist"
+              aria-label="Screener view mode"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={viewMode === "table"}
+                onClick={() => setViewMode("table")}
+                className={homeSegmentedTabClasses(
+                  viewMode === "table",
+                  isDark
+                )}
+                data-testid="view-toggle-table"
+              >
+                Table
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={viewMode === "heatmap"}
+                onClick={() => setViewMode("heatmap")}
+                className={homeSegmentedTabClasses(
+                  viewMode === "heatmap",
+                  isDark
+                )}
+                data-testid="view-toggle-heatmap"
+              >
+                Heatmap
+              </button>
+            </div>
+          </div>
+
+          <div role="tabpanel">
+            {viewMode === "table" ? (
+              <ScreenerTableView
+                results={results}
+                onSymbolClick={onSymbolClick}
+              />
+            ) : (
+              <ScreenerHeatmapView
+                results={results}
+                onSymbolClick={onSymbolClick}
+              />
+            )}
+          </div>
+        </section>
       </div>
     </div>
   );

@@ -43,8 +43,8 @@ vi.mock("@/lib/theme-context", () => ({
 // Mock next/dynamic to render simple placeholders instead of lazy-loaded components
 vi.mock("next/dynamic", () => ({
   __esModule: true,
-  default: (loader: () => Promise<any>, opts?: any) => {
-    const MockComponent = (props: any) => (
+  default: (_loader: () => Promise<unknown>, _opts?: { ssr?: boolean }) => {
+    const MockComponent = (_props: Record<string, unknown>) => (
       <div data-testid="dynamic-component" />
     );
     MockComponent.displayName = "DynamicMock";
@@ -53,7 +53,7 @@ vi.mock("next/dynamic", () => ({
 }));
 
 vi.mock("@/components/SymbolHeader", () => ({
-  SymbolHeader: ({ symbolData }: any) => (
+  SymbolHeader: ({ symbolData }: { symbolData?: { name?: string } }) => (
     <div data-testid="symbol-header">{symbolData?.name}</div>
   ),
 }));
@@ -109,7 +109,7 @@ describe("Home Page", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     searchParamsState.symbol = null;
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: {} }),
     });
@@ -151,7 +151,7 @@ describe("Home Page", () => {
   describe("Symbol selection", () => {
     it("shows loading state when a symbol is in the URL", async () => {
       searchParamsState.symbol = "AAPL";
-      (global.fetch as any).mockImplementation(() => new Promise(() => {}));
+      vi.mocked(global.fetch).mockImplementation(() => new Promise(() => {}));
       render(<HomePageClient />);
       await waitFor(() => {
         expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
@@ -160,13 +160,14 @@ describe("Home Page", () => {
 
     it("shows error state when symbol fetch fails", async () => {
       searchParamsState.symbol = "AAPL";
-      (global.fetch as any).mockResolvedValue({
+      vi.mocked(global.fetch).mockResolvedValue({
         ok: false,
         json: async () => ({ success: false }),
       });
       render(<HomePageClient />);
       await waitFor(() => {
-        expect(screen.getByText("Error Loading Symbol")).toBeInTheDocument();
+        expect(screen.getByTestId("symbol-load-error")).toBeInTheDocument();
+        expect(screen.getByText("Couldn't load symbol")).toBeInTheDocument();
       });
     });
 
@@ -185,7 +186,7 @@ describe("Home Page", () => {
         lastUpdated: new Date().toISOString(),
       };
 
-      (global.fetch as any).mockResolvedValue({
+      vi.mocked(global.fetch).mockResolvedValue({
         ok: true,
         json: async () => ({ success: true, data: mockSymbolData }),
       });
@@ -201,7 +202,7 @@ describe("Home Page", () => {
 
     it("has a Clear Selection button on error that returns to dashboard", async () => {
       searchParamsState.symbol = "AAPL";
-      (global.fetch as any).mockResolvedValue({
+      vi.mocked(global.fetch).mockResolvedValue({
         ok: false,
         json: async () => ({ success: false }),
       });
@@ -209,10 +210,12 @@ describe("Home Page", () => {
       render(<HomePageClient />);
 
       await waitFor(() => {
-        expect(screen.getByText("Clear Selection")).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: "Clear selection" })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByText("Clear Selection"));
+      fireEvent.click(screen.getByRole("button", { name: "Clear selection" }));
 
       await waitFor(() => {
         expect(

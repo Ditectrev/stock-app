@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/after-file-edit.sh",
+        "timeout": 180
+      }
+    ],
+    "afterTabFileEdit": [
+      {
+        "command": ".cursor/hooks/after-file-edit.sh",
+        "timeout": 180
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/stop-quality-check.sh",
+        "timeout": 600,
+        "loop_limit": 0
+      }
+    ]
+  }
+}

@@ -13,6 +13,11 @@ export function getAppwriteTrialEnv(): {
   };
 }
 
+export function isAppwriteTrialConfigured(): boolean {
+  const trialEnv = getAppwriteTrialEnv();
+  return Boolean(trialEnv.databaseId && trialEnv.sessionsCollectionId);
+}
+
 export function assertAppwriteTrialEnv(): {
   databaseId: string;
   sessionsCollectionId: string;

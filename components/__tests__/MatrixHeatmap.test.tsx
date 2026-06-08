@@ -129,22 +129,20 @@ describe("MatrixHeatmap", () => {
 
   // --- Cell color coding (Req 25.11) ---
 
-  it("should apply green background for positive values", () => {
+  it("should apply emerald background for positive values", () => {
     render(
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-AAPL-1D");
-    // Positive → green rgba(34,197,94,...)
-    expect(cell.style.backgroundColor).toContain("34, 197, 94");
+    expect(cell.style.backgroundColor).toMatch(/5,\s*150,\s*105/);
   });
 
-  it("should apply red background for negative values", () => {
+  it("should apply rose background for negative values", () => {
     render(
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-MSFT-1D");
-    // Negative → red rgba(239,68,68,...)
-    expect(cell.style.backgroundColor).toContain("239, 68, 68");
+    expect(cell.style.backgroundColor).toMatch(/225,\s*29,\s*72/);
   });
 
   it("should apply neutral background for zero values", () => {
@@ -152,8 +150,8 @@ describe("MatrixHeatmap", () => {
       <MatrixHeatmap rows={mockRows} columns={mockColumns} cells={mockCells} />
     );
     const cell = screen.getByTestId("matrix-cell-MSFT-1W");
-    // Zero → gray
-    expect(cell.style.backgroundColor).toContain("156, 163, 175");
+    // Zero → solid stone-200 in light mode
+    expect(cell.style.backgroundColor).toMatch(/231,\s*229,\s*228/);
   });
 
   it("should vary color intensity based on magnitude", () => {
@@ -286,7 +284,7 @@ describe("MatrixHeatmap", () => {
     render(<MatrixHeatmap rows={mockRows} columns={mockColumns} cells={[]} />);
     const cell = screen.getByTestId("matrix-cell-AAPL-1D");
     expect(cell.textContent).toBe("+0.00%");
-    // Should get neutral color
-    expect(cell.style.backgroundColor).toContain("156, 163, 175");
+    // Should get neutral stone color
+    expect(cell.style.backgroundColor).toMatch(/231,\s*229,\s*228/);
   });
 });

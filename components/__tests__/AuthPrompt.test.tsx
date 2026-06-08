@@ -7,6 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { AuthPrompt, AuthPromptProps } from "../AuthPrompt";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 
 const defaultProps: AuthPromptProps = {
   open: true,
@@ -110,7 +111,7 @@ describe("AuthPrompt", () => {
     fireEvent.submit(form);
 
     expect(screen.getByTestId("auth-error")).toBeDefined();
-    expect(screen.getByText("Please enter your email address.")).toBeDefined();
+    expect(screen.getByText("Enter your email address.")).toBeDefined();
   });
 
   it("should show error for invalid email format", () => {
@@ -124,9 +125,7 @@ describe("AuthPrompt", () => {
     const form = screen.getByTestId("auth-email-submit").closest("form")!;
     fireEvent.submit(form);
 
-    expect(
-      screen.getByText("Please enter a valid email address.")
-    ).toBeDefined();
+    expect(screen.getByText("Enter a valid email address.")).toBeDefined();
   });
 
   it("should call onEmailSubmit with trimmed email for valid input", () => {
@@ -172,13 +171,11 @@ describe("AuthPrompt", () => {
   // --- External error display (Req 1.6) ---
 
   it("should display external error message", () => {
-    renderAuthPrompt({ error: "Authentication failed. Please try again." });
+    renderAuthPrompt({ error: AUTH_UI_COPY.signInFailed });
 
     const errorEl = screen.getByTestId("auth-error");
     expect(errorEl).toBeDefined();
-    expect(errorEl.textContent).toBe(
-      "Authentication failed. Please try again."
-    );
+    expect(errorEl.textContent).toBe(AUTH_UI_COPY.signInFailed);
   });
 
   it("should have role=alert on error element for accessibility", () => {
@@ -198,8 +195,8 @@ describe("AuthPrompt", () => {
   it("should have proper dialog role and aria attributes", () => {
     renderAuthPrompt();
 
-    const dialog = screen.getByTestId("auth-prompt");
-    expect(dialog.getAttribute("role")).toBe("dialog");
+    expect(screen.getByTestId("auth-prompt")).toBeDefined();
+    const dialog = screen.getByRole("dialog");
     expect(dialog.getAttribute("aria-modal")).toBe("true");
     expect(dialog.getAttribute("aria-label")).toBe("Sign in");
   });

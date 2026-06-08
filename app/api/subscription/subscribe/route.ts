@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY } from "@/lib/api-user-error";
 import { subscriptionService } from "@/services/subscription.service";
 import { logger } from "@/lib/logger";
 import { PricingTier } from "@/types";
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to create subscription",
+        error: MARKET_UI_COPY.account.subscribe,
         timestamp: new Date(),
       },
       { status: 500 }

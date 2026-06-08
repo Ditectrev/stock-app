@@ -134,9 +134,7 @@ describe("PricingPage", () => {
 
     it("should display 'Free' label for the free tier instead of a price", () => {
       renderPricingPage();
-      // The free tier shows "Free" as the price text
       const freePriceLabels = screen.getAllByText("Free");
-      // One is the tier name heading, one is the price display
       expect(freePriceLabels.length).toBeGreaterThanOrEqual(2);
     });
 

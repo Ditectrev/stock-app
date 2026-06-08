@@ -1,6 +1,6 @@
 {
   "name": "the-open-stock",
-  "version": "0.64.0",
+  "version": "0.65.0",
   "private": true,
   "scripts": {
     "dev": "bun --bun next dev",
@@ -8,6 +8,7 @@
     "start": "bun --bun next start",
     "lint": "bun --bun next lint",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
@@ -50,7 +51,7 @@
     "prettier": "^3.4.2",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
-    "vitest": "^4.0.18",
+    "vitest": "^4.1.8",
     "vitest-axe": "^0.1.0"
   }
 }

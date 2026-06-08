@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { aiMarketInsightsService } from "@/services/ai-market-insights.service";
 import { logger } from "@/lib/logger";
 import { getAuthenticatedUser } from "@/lib/server-auth";
@@ -49,10 +50,10 @@ export async function GET(
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to load AI prediction snapshot",
+        error: userFacingApiError(
+          error,
+          MARKET_UI_COPY.load.aiPredictionSnapshot
+        ),
         timestamp: new Date(),
       },
       { status: 500 }

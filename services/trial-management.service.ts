@@ -1,6 +1,6 @@
 /**
  * Trial Management Service
- * Manages 15-minute trial sessions with device fingerprinting and IP tracking.
+ * Manages trial sessions with device fingerprinting and IP tracking.
  * Stores trial state in browser storage for persistence across page refreshes.
  * Requirements: 21.1, 21.2, 21.4, 21.5, 21.18, 21.19, 21.20
  */
@@ -24,7 +24,7 @@ export class TrialManagementService {
   }
 
   /**
-   * Start a new 15-minute trial session.
+   * Start a new trial session.
    * Throws if the device has already used a trial.
    */
   async startTrial(): Promise<TrialSession> {

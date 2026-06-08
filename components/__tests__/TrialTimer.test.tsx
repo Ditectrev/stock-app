@@ -114,8 +114,8 @@ describe("TrialTimer", () => {
     });
 
     expect(screen.getByTestId("trial-timer-display").textContent).toBe("0:00");
-    // onExpired called once from the countdown reaching 0, and should not keep firing
-    expect(onExpired.mock.calls.length).toBeGreaterThanOrEqual(1);
+    // onExpired called once when countdown reaches 0
+    expect(onExpired).toHaveBeenCalledTimes(1);
   });
 
   // --- Low time styling ---
@@ -123,26 +123,26 @@ describe("TrialTimer", () => {
   it("should apply low-time styling when <= 60 seconds", () => {
     renderTimer({ remainingSeconds: 60 });
     const display = screen.getByTestId("trial-timer-display");
-    expect(display.className).toContain("text-red-500");
+    expect(display.className).toContain("text-rose-800");
   });
 
   it("should not apply low-time styling when > 60 seconds", () => {
     renderTimer({ remainingSeconds: 61 });
     const display = screen.getByTestId("trial-timer-display");
-    expect(display.className).not.toContain("text-red-500");
+    expect(display.className).not.toContain("text-rose-800");
   });
 
   it("should transition to low-time styling as countdown progresses", () => {
     renderTimer({ remainingSeconds: 62 });
 
     const display = screen.getByTestId("trial-timer-display");
-    expect(display.className).not.toContain("text-red-500");
+    expect(display.className).not.toContain("text-rose-800");
 
     act(() => {
       vi.advanceTimersByTime(2000);
     });
 
-    expect(display.className).toContain("text-red-500");
+    expect(display.className).toContain("text-rose-800");
   });
 
   // --- Accessibility ---

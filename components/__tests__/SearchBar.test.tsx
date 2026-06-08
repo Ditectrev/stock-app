@@ -27,7 +27,7 @@ describe("SearchBar", () => {
   });
 
   it("should display loading spinner while searching", async () => {
-    (global.fetch as any).mockImplementation(
+    vi.mocked(global.fetch).mockImplementation(
       () =>
         new Promise((resolve) =>
           setTimeout(
@@ -57,7 +57,7 @@ describe("SearchBar", () => {
   });
 
   it("should debounce search requests", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: [] }),
     });
@@ -97,7 +97,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -127,7 +127,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -165,7 +165,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -208,7 +208,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -261,7 +261,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -299,7 +299,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -326,7 +326,7 @@ describe("SearchBar", () => {
   });
 
   it("should display error message on API failure", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: async () => ({ success: false, error: "API error" }),
     });
@@ -338,14 +338,16 @@ describe("SearchBar", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("Failed to search symbols")).toBeDefined();
+        expect(
+          screen.getByText("We couldn't search symbols right now. Try again.")
+        ).toBeDefined();
       },
       { timeout: 500 }
     );
   });
 
-  it("should display 'No results found' when search returns empty", async () => {
-    (global.fetch as any).mockResolvedValue({
+  it("should display empty search message when search returns empty", async () => {
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: [] }),
     });
@@ -357,7 +359,7 @@ describe("SearchBar", () => {
 
     await waitFor(
       () => {
-        expect(screen.getByText("No results found")).toBeDefined();
+        expect(screen.getByText("No symbols match that search.")).toBeDefined();
       },
       { timeout: 500 }
     );
@@ -373,7 +375,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -423,7 +425,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -464,7 +466,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -531,7 +533,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -569,7 +571,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });
@@ -641,7 +643,7 @@ describe("SearchBar", () => {
       },
     ];
 
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockResults }),
     });

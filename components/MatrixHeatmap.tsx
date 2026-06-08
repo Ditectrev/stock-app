@@ -9,10 +9,21 @@
  * Requirements: 25.1, 25.10, 25.11
  */
 
+import { DNA_BODY, DNA_CAPTION } from "@/lib/design-dna";
 import { useMemo, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import {
+  getHeatmapFillColor,
+  getHeatmapNeutralLegendColor,
+  getHeatmapTextClass,
+} from "@/lib/heatmap-colors";
+import {
+  HOME_INSTRUMENT_PANEL,
+  HOME_LEGEND_DIVIDER,
+  HOME_LEGEND_TEXT,
+} from "@/lib/home-ui";
 
 export interface MatrixColumn {
   /** Unique key for this column */
@@ -54,24 +65,6 @@ export interface MatrixHeatmapProps {
   data?: HeatmapData[];
 }
 
-/**
- * Returns a background color string based on a numeric value.
- * Green for positive, red for negative, intensity scales with magnitude.
- * Requirement 25.11: color-code cells based on return values or metric values.
- */
-function getCellColor(value: number, isDark: boolean): string {
-  const clamped = Math.min(Math.abs(value), 10);
-  const intensity = 0.15 + (clamped / 10) * 0.75;
-
-  if (value === 0) {
-    return isDark ? "rgba(107,114,128,0.3)" : "rgba(156,163,175,0.3)";
-  }
-  if (value > 0) {
-    return `rgba(34,197,94,${intensity})`;
-  }
-  return `rgba(239,68,68,${intensity})`;
-}
-
 function formatCellValue(value: number): string {
   if (value == null || isNaN(value)) return "N/A";
   const sign = value >= 0 ? "+" : "";
@@ -102,7 +95,7 @@ export function MatrixHeatmap({
   if (loading) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className={HOME_INSTRUMENT_PANEL}
         data-testid="matrix-heatmap-loading"
       >
         <LoadingSpinner className="py-8" />
@@ -113,13 +106,8 @@ export function MatrixHeatmap({
   // --- Empty state ---
   if (rows.length === 0 || columns.length === 0) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="matrix-heatmap-empty"
-      >
-        <p
-          className={`text-center ${isDark ? "text-gray-300" : "text-gray-500"}`}
-        >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="matrix-heatmap-empty">
+        <p className={`text-center ${DNA_CAPTION}`}>
           No matrix data available.
         </p>
       </div>
@@ -128,7 +116,7 @@ export function MatrixHeatmap({
 
   return (
     <div
-      className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className={HOME_INSTRUMENT_PANEL}
       data-testid="matrix-heatmap"
       role="region"
       aria-label="Matrix heatmap"
@@ -144,16 +132,12 @@ export function MatrixHeatmap({
             <tr>
               {/* Top-left corner cell */}
               <th
-                className={`px-3 py-2 text-left text-xs font-medium ${
-                  isDark ? "text-gray-300" : "text-gray-500"
-                }`}
+                className={`px-3 py-2 text-left text-xs font-medium ${DNA_CAPTION}`}
               />
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`px-3 py-2 text-center text-xs font-medium ${
-                    isDark ? "text-gray-300" : "text-gray-500"
-                  }`}
+                  className={`px-3 py-2 text-center text-xs font-medium ${DNA_CAPTION}`}
                   data-testid={`matrix-col-header-${col.key}`}
                 >
                   {col.label}
@@ -165,9 +149,7 @@ export function MatrixHeatmap({
             {rows.map((row) => (
               <tr key={row.key} data-testid={`matrix-row-${row.key}`}>
                 <td
-                  className={`px-3 py-2 text-xs font-medium whitespace-nowrap ${
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  }`}
+                  className={`px-3 py-2 text-xs font-medium whitespace-nowrap ${DNA_BODY}`}
                   data-testid={`matrix-row-header-${row.key}`}
                 >
                   {row.label}
@@ -176,20 +158,17 @@ export function MatrixHeatmap({
                   const cellKey = `${row.key}:${col.key}`;
                   const cell = cellMap.get(cellKey);
                   const value = cell?.value ?? 0;
-                  const bgColor = getCellColor(value, isDark);
+                  const bgColor = getHeatmapFillColor(value, isDark);
                   const isHovered = hoveredCell === cellKey;
-                  const textColor =
-                    value === 0
-                      ? isDark
-                        ? "text-gray-300"
-                        : "text-gray-700"
-                      : "text-white";
+                  const textColor = getHeatmapTextClass(value, isDark);
 
                   return (
                     <td
                       key={col.key}
                       className={`px-3 py-2 text-center text-xs font-medium cursor-pointer transition-transform ${textColor} ${
-                        isHovered ? "ring-2 ring-blue-400" : ""
+                        isHovered
+                          ? "ring-2 ring-stone-500 dark:ring-stone-400"
+                          : ""
                       }`}
                       style={{ backgroundColor: bgColor }}
                       data-testid={`matrix-cell-${row.key}-${col.key}`}
@@ -198,11 +177,13 @@ export function MatrixHeatmap({
                       tabIndex={0}
                       onMouseEnter={() => setHoveredCell(cellKey)}
                       onMouseLeave={() => setHoveredCell(null)}
-                      onClick={() => cell && onCellClick?.(cell)}
+                      onClick={() => {
+                        if (cell) onCellClick?.(cell);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          cell && onCellClick?.(cell);
+                          if (cell) onCellClick?.(cell);
                         }
                       }}
                     >
@@ -218,22 +199,18 @@ export function MatrixHeatmap({
 
       {/* Legend */}
       <div
-        className={`mt-4 pt-3 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}
+        className={HOME_LEGEND_DIVIDER}
         data-testid="matrix-heatmap-legend"
         aria-label="Matrix heatmap color legend"
       >
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          <span
-            className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          >
-            Strong decline
-          </span>
+          <span className={HOME_LEGEND_TEXT}>Strong decline</span>
           <div className="flex gap-0.5">
             {[
               "rgba(239,68,68,0.9)",
               "rgba(239,68,68,0.6)",
               "rgba(239,68,68,0.3)",
-              isDark ? "rgba(107,114,128,0.3)" : "rgba(156,163,175,0.3)",
+              getHeatmapNeutralLegendColor(isDark),
               "rgba(34,197,94,0.3)",
               "rgba(34,197,94,0.6)",
               "rgba(34,197,94,0.9)",
@@ -245,11 +222,7 @@ export function MatrixHeatmap({
               />
             ))}
           </div>
-          <span
-            className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          >
-            Strong gain
-          </span>
+          <span className={HOME_LEGEND_TEXT}>Strong gain</span>
         </div>
       </div>
     </div>

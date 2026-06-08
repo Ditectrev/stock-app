@@ -2,15 +2,14 @@
 
 /**
  * CalendarNavigation Component
- * Provides tab-style navigation to switch between calendar types.
- * Supports keyboard navigation per WAI-ARIA tab pattern:
- * Arrow Left/Right to move between tabs, Home/End for first/last tab.
+ * Segmented navigation for calendar types.
  *
  * Requirements: 24.2, 18.2
  */
 
 import { useRef, useCallback } from "react";
 import { useTheme } from "@/lib/theme-context";
+import { HOME_SEGMENTED_NAV, homeSegmentedTabClasses } from "@/lib/home-ui";
 
 export type CalendarType = "economic" | "earnings" | "dividends" | "ipos";
 
@@ -64,7 +63,7 @@ export function CalendarNavigation({
 
   return (
     <nav
-      className="flex gap-1 p-1 rounded-lg overflow-x-auto"
+      className={HOME_SEGMENTED_NAV}
       role="tablist"
       aria-label="Calendar type navigation"
       data-testid="calendar-navigation"
@@ -82,14 +81,7 @@ export function CalendarNavigation({
             tabIndex={isActive ? 0 : -1}
             onClick={() => onCalendarChange(key)}
             onKeyDown={(e) => handleKeyDown(e, index)}
-            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium rounded-md transition-colors whitespace-nowrap min-h-[44px]
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 ${
-                isActive
-                  ? "bg-blue-600 text-white"
-                  : isDark
-                    ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              }`}
+            className={`flex items-center gap-1.5 ${homeSegmentedTabClasses(isActive, isDark)}`}
             data-testid={`calendar-tab-${key}`}
           >
             <span aria-hidden="true">{icon}</span>

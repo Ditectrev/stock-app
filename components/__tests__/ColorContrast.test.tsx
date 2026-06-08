@@ -84,47 +84,45 @@ describe("Color Contrast Compliance (Req 18.3)", () => {
   });
 
   describe("LoadingSpinner", () => {
-    it("uses text-gray-300 (not text-gray-400) for message text in dark mode", () => {
+    it("uses readable stone text (not text-gray-400) for message text in dark mode", () => {
       const { container } = render(
         <LoadingSpinner message="Loading data..." />
       );
       const messageEl = container.querySelector("p");
       expect(messageEl).not.toBeNull();
       const cls = messageEl!.className;
-      // Should use gray-300 in dark mode for sufficient contrast
-      expect(cls).toContain("dark:text-gray-300");
+      expect(cls).toContain("dark:text-stone-200");
       expect(cls).not.toContain("dark:text-gray-400");
     });
   });
 
   describe("ErrorMessage", () => {
-    it("uses text-gray-300 for description text in dark mode", () => {
+    it("uses readable stone text for description in dark mode", () => {
       const { container } = render(<ErrorMessage type="api" />);
       const descEl = container.querySelector("p");
       expect(descEl).not.toBeNull();
       const cls = descEl!.className;
-      expect(cls).toContain("dark:text-gray-300");
+      expect(cls).toContain("dark:text-stone-300");
       expect(cls).not.toContain("dark:text-gray-400");
     });
 
-    it("uses text-gray-100 for title text in dark mode", () => {
+    it("uses readable stone text for title in dark mode", () => {
       const { container } = render(<ErrorMessage type="api" />);
-      const titleEl = container.querySelector("h3");
+      const titleEl = container.querySelector("h2");
       expect(titleEl).not.toBeNull();
       const cls = titleEl!.className;
-      expect(cls).toContain("dark:text-gray-100");
+      expect(cls).toContain("dark:text-stone-50");
     });
   });
 
   describe("Footer", () => {
-    it("uses text-gray-300 (not text-gray-400) on bg-gray-900 in dark mode", () => {
+    it("uses readable stone text on dark background in dark mode", () => {
       const { container } = render(<Footer />);
       const footer = container.querySelector("footer");
       expect(footer).not.toBeNull();
       const cls = footer!.className;
-      // Footer in dark mode should use text-gray-300 for 9.4:1 contrast
-      expect(cls).toContain("text-gray-300");
-      expect(cls).not.toContain("text-gray-400");
+      expect(cls).toContain("dark:text-stone-200");
+      expect(cls).not.toContain("dark:text-stone-400");
     });
   });
 

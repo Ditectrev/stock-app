@@ -7,12 +7,32 @@
  * Requirements: 24.14, 24.15, 24.16, 24.17, 24.18
  */
 
+import {
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useTheme } from "@/lib/theme-context";
 import { DividendEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import { MARKET_UP_BADGE } from "@/lib/market-semantics";
+import {
+  CALENDAR_CHIP_IDLE,
+  CALENDAR_DAY_HEADER,
+  CALENDAR_EMPTY_TEXT,
+  CALENDAR_EVENT_LIST,
+  CALENDAR_EVENT_META,
+  CALENDAR_EVENT_ROW,
+  CALENDAR_EVENT_TITLE,
+  CALENDAR_FILTER_LABEL,
+  CALENDAR_PAGE_TITLE,
+  CALENDAR_SELECT,
+  CALENDAR_TODAY_BADGE,
+  CALENDAR_TODAY_HEADER,
+} from "@/lib/home-ui";
 
 export interface DividendCalendarProps {
   data?: DividendEvent[];
@@ -51,9 +71,6 @@ export function DividendCalendar({
   data: externalData,
   onSymbolClick,
 }: DividendCalendarProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const [data, setData] = useState<DividendEvent[] | null>(
     externalData ?? null
   );
@@ -68,12 +85,16 @@ export function DividendCalendar({
     setError(null);
     try {
       const res = await fetch("/api/calendar/dividends");
-      if (!res.ok) throw new Error("Failed to fetch dividend events");
+      if (!res.ok) throw new Error(MARKET_UI_COPY.load.dividendCalendar);
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "Unknown error");
       setData(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(
+        err instanceof Error
+          ? err.message
+          : MARKET_UI_COPY.load.dividendCalendar
+      );
     } finally {
       setLoading(false);
     }
@@ -139,7 +160,7 @@ export function DividendCalendar({
   if (loading) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className="border-t border-stone-200 pt-4 dark:border-stone-700"
         data-testid="dividend-calendar-loading"
       >
         <LoadingSpinner className="py-8" />
@@ -150,7 +171,7 @@ export function DividendCalendar({
   if (error) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className="border-t border-stone-200 pt-4 dark:border-stone-700"
         data-testid="dividend-calendar-error"
       >
         <ErrorMessage
@@ -167,20 +188,33 @@ export function DividendCalendar({
 
   return (
     <div
-      className={`p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className="border-t border-stone-200 pt-4 sm:pt-6 dark:border-stone-700"
       data-testid="dividend-calendar"
       role="region"
       aria-label="Dividend Calendar"
     >
-      <h3
-        className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        Dividend Calendar
-      </h3>
+      <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h3 className={CALENDAR_PAGE_TITLE}>Dividend Calendar</h3>
+          <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
+            Upcoming payouts by day with yield, amount, and payment schedule.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="rounded-full border border-stone-300 bg-stone-100 px-2.5 py-1 text-stone-700 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200">
+            {filteredEvents.length} matched
+          </span>
+          {countryFilter !== "all" && (
+            <span className={`rounded-full px-2.5 py-1 ${CALENDAR_CHIP_IDLE}`}>
+              {countryFilter}
+            </span>
+          )}
+        </div>
+      </div>
 
       {/* Filters */}
       <div
-        className="flex flex-col sm:flex-row gap-3 mb-4"
+        className="mb-4 flex flex-col gap-3 rounded-lg border border-stone-200 bg-stone-100 p-3 sm:flex-row sm:items-center dark:border-stone-700 dark:bg-stone-800"
         data-testid="filters"
       >
         <CalendarDateRangePicker
@@ -198,21 +232,14 @@ export function DividendCalendar({
         {/* Country filter (Req 24.17) */}
         {availableCountries.length > 0 && (
           <div className="flex items-center gap-2">
-            <label
-              htmlFor="dividend-country"
-              className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}
-            >
+            <label htmlFor="dividend-country" className={CALENDAR_FILTER_LABEL}>
               Country:
             </label>
             <select
               id="dividend-country"
               value={countryFilter}
               onChange={(e) => setCountryFilter(e.target.value)}
-              className={`text-sm rounded px-2 py-1 border ${
-                isDark
-                  ? "bg-gray-700 border-gray-600 text-gray-200"
-                  : "bg-white border-gray-300 text-gray-700"
-              }`}
+              className={`${CALENDAR_SELECT} px-2 py-1`}
               data-testid="country-filter"
             >
               <option value="all">All Countries</option>
@@ -230,7 +257,7 @@ export function DividendCalendar({
           <div className="flex items-center gap-2">
             <label
               htmlFor="dividend-timezone"
-              className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}
+              className={CALENDAR_FILTER_LABEL}
             >
               Timezone:
             </label>
@@ -238,11 +265,7 @@ export function DividendCalendar({
               id="dividend-timezone"
               value={timezoneFilter}
               onChange={(e) => setTimezoneFilter(e.target.value)}
-              className={`text-sm rounded px-2 py-1 border ${
-                isDark
-                  ? "bg-gray-700 border-gray-600 text-gray-200"
-                  : "bg-white border-gray-300 text-gray-700"
-              }`}
+              className={`${CALENDAR_SELECT} px-2 py-1`}
               data-testid="timezone-filter"
             >
               <option value="all">All Timezones</option>
@@ -258,15 +281,11 @@ export function DividendCalendar({
 
       {/* Events grouped by day */}
       {filteredEvents.length === 0 ? (
-        <p
-          className={`text-center py-4 text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          data-testid="no-events"
-        >
+        <p className={CALENDAR_EMPTY_TEXT} data-testid="no-events">
           No dividend events match the selected filters.
           {!externalData && (
             <span className="block mt-1 text-xs">
-              The data source may be temporarily unavailable. Try again in a few
-              minutes.
+              {MARKET_UI_COPY.calendar.emptyHint}
             </span>
           )}
         </p>
@@ -277,40 +296,24 @@ export function DividendCalendar({
             return (
               <div key={dateKey} data-testid={`day-group-${dateKey}`}>
                 <div
-                  className={`sticky top-0 z-10 px-3 py-2 rounded-t-lg text-sm font-semibold ${
-                    isToday
-                      ? isDark
-                        ? "bg-blue-900/40 text-blue-300 border-b border-blue-500/30"
-                        : "bg-blue-50 text-blue-800 border-b border-blue-200"
-                      : isDark
-                        ? "bg-gray-700 text-gray-200 border-b border-gray-600"
-                        : "bg-gray-100 text-gray-800 border-b border-gray-200"
+                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 ${DNA_SUBHEADING} ${
+                    isToday ? CALENDAR_TODAY_HEADER : CALENDAR_DAY_HEADER
                   }`}
                   data-testid={`day-header-${dateKey}`}
                 >
                   {formatDayHeader(dateKey)}
                   {isToday && (
-                    <span
-                      className={`ml-2 text-xs font-normal px-1.5 py-0.5 rounded ${
-                        isDark
-                          ? "bg-blue-800 text-blue-200"
-                          : "bg-blue-200 text-blue-700"
-                      }`}
-                    >
+                    <span className={`ml-2 ${CALENDAR_TODAY_BADGE}`}>
                       Today
                     </span>
                   )}
-                  <span
-                    className={`ml-2 text-xs font-normal ${isDark ? "text-gray-300" : "text-gray-500"}`}
-                  >
+                  <span className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}>
                     ({events.length} event
                     {events.length !== 1 ? "s" : ""})
                   </span>
                 </div>
 
-                <div
-                  className={`divide-y ${isDark ? "divide-gray-700" : "divide-gray-100"}`}
-                >
+                <div className={CALENDAR_EVENT_LIST}>
                   {events.map((event) => {
                     const payDate =
                       typeof event.paymentDate === "string"
@@ -320,19 +323,13 @@ export function DividendCalendar({
                     return (
                       <div
                         key={event.id}
-                        className={`flex items-start gap-3 px-3 py-2 ${
-                          isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"
-                        }`}
+                        className={CALENDAR_EVENT_ROW}
                         data-testid={`event-${event.id}`}
                       >
                         {/* Symbol badge */}
                         <button
                           onClick={() => onSymbolClick?.(event.symbol)}
-                          className={`text-xs font-semibold px-2 py-0.5 rounded shrink-0 w-16 text-center inline-block cursor-pointer transition-colors ${
-                            isDark
-                              ? "bg-green-900/40 text-green-300 hover:bg-green-800/60"
-                              : "bg-green-100 text-green-700 hover:bg-green-200"
-                          }`}
+                          className={`text-xs font-semibold px-2 py-0.5 rounded shrink-0 w-16 text-center inline-block cursor-pointer transition-colors ${MARKET_UP_BADGE} hover:opacity-90`}
                           data-testid={`symbol-${event.id}`}
                           aria-label={`View details for ${event.symbol}`}
                         >
@@ -342,13 +339,11 @@ export function DividendCalendar({
                         {/* Details */}
                         <div className="flex-1 min-w-0">
                           <span
-                            className={`text-sm font-medium truncate block ${isDark ? "text-gray-200" : "text-gray-900"}`}
+                            className={`block truncate ${CALENDAR_EVENT_TITLE}`}
                           >
                             {event.companyName}
                           </span>
-                          <div
-                            className={`flex flex-wrap gap-3 mt-1 text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-                          >
+                          <div className={CALENDAR_EVENT_META}>
                             <span data-testid={`amount-${event.id}`}>
                               Div: {formatCurrency(event.amount)}
                             </span>
@@ -359,9 +354,7 @@ export function DividendCalendar({
                               Pay: {toDateString(payDate)}
                             </span>
                             <span
-                              className={`capitalize ${
-                                isDark ? "text-gray-400" : "text-gray-500"
-                              }`}
+                              className={`capitalize ${DNA_CAPTION}`}
                               data-testid={`frequency-${event.id}`}
                             >
                               {event.frequency}

@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { MARKET_UI_COPY, userFacingApiError } from "@/lib/api-user-error";
 import { marketDataService } from "@/services/market-data.service";
 import { logger } from "@/lib/logger";
 
@@ -37,10 +38,7 @@ export async function GET(
     return NextResponse.json(
       {
         success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to fetch seasonal patterns",
+        error: userFacingApiError(error, MARKET_UI_COPY.load.seasonal),
         timestamp: new Date(),
       },
       { status: 500 }

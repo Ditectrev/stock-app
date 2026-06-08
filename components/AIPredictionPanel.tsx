@@ -1,11 +1,27 @@
 "use client";
 
-import Link from "next/link";
+import {
+  DNA_BADGE,
+  DNA_BODY,
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_EYEBROW,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import type { AIPredictionReport, PricingTier } from "@/types";
+import { AiFeatureErrorNotice } from "@/components/AiFeatureErrorNotice";
 import { AI_PREDICTION_SECTIONS } from "@/lib/ai-prediction";
 import { ConfidenceInfoTooltip } from "@/components/ConfidenceInfoTooltip";
+import { InsightPanel, InsightPanelHeader } from "@/components/InsightPanel";
+import { SubscriptionGate } from "@/components/ProductShell";
 import { getAiSubscriptionGateMessage } from "@/lib/ai-subscription-ux";
-import { isMissingByokApiKeyMessage } from "@/lib/missing-byok-api-key";
+import { marketChangeBadgeClass } from "@/lib/market-semantics";
+import {
+  HOME_CALLOUT,
+  HOME_FACTOR_GROUP,
+  HOME_INSTRUMENT_PANEL,
+  HOME_PRIMARY_BUTTON,
+} from "@/lib/home-ui";
 
 interface AIPredictionPanelProps {
   prediction: AIPredictionReport | null;
@@ -21,47 +37,126 @@ function RecommendationBadge({
   recommendation?: AIPredictionReport["recommendation"];
 }) {
   const recommendationValue = recommendation ?? "hold";
-  const styles =
-    recommendationValue === "buy"
-      ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300"
-      : recommendationValue === "sell"
-        ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"
-        : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300";
+  const styles = marketChangeBadgeClass(recommendationValue);
 
   return (
-    <span
-      className={`px-2.5 py-1 rounded-full text-xs font-semibold ${styles}`}
-    >
+    <span className={`rounded-md px-2.5 py-1 ${DNA_BADGE} ${styles}`}>
       {recommendationValue.toUpperCase()}
     </span>
   );
 }
 
-function FactorList({
+type FactorId = (typeof AI_PREDICTION_SECTIONS)[number]["id"];
+
+const MAX_FACTOR_SENTENCES = 2;
+const MAX_SYMBOL_SENTENCES = 3;
+
+function editorialExcerpt(
+  items: string[],
+  max: number
+): {
+  text: string;
+  omitted: number;
+} {
+  const slice = items.slice(0, max);
+  return {
+    text: slice.join(" "),
+    omitted: Math.max(0, items.length - max),
+  };
+}
+
+const FACTOR_GROUPS: ReadonlyArray<{
+  title: string;
+  sectionIds: FactorId[];
+  tone?: "default" | "risk";
+}> = [
+  { title: "Market setup", sectionIds: ["technical", "valuation"] },
+  {
+    title: "Macro context",
+    sectionIds: ["sentiment", "macro", "globalMarkets"],
+  },
+  { title: "Risk watch", sectionIds: ["risks"], tone: "risk" },
+];
+
+function FactorGroup({
   title,
-  items,
-  variant = "default",
+  sectionIds,
+  factors,
+  tone = "default",
 }: {
   title: string;
-  items: string[];
-  variant?: "default" | "risk";
+  sectionIds: FactorId[];
+  factors: AIPredictionReport["factors"] | undefined;
+  tone?: "default" | "risk";
 }) {
-  if (items.length === 0) return null;
+  const entries = sectionIds
+    .map((id) => ({
+      section: AI_PREDICTION_SECTIONS.find((x) => x.id === id),
+      items: factors?.[id] ?? [],
+    }))
+    .filter((entry) => entry.section && entry.items.length > 0);
+
+  if (entries.length === 0) return null;
+
+  const shellClass =
+    tone === "risk"
+      ? "rounded-lg border border-amber-200/80 bg-amber-50/70 p-3 dark:border-amber-900/80 dark:bg-amber-950/30"
+      : HOME_FACTOR_GROUP;
 
   const headingClass =
-    variant === "risk"
-      ? "font-medium text-amber-800 dark:text-amber-200 mb-1"
-      : "font-medium text-gray-900 dark:text-gray-100 mb-1";
+    tone === "risk"
+      ? `mb-2 ${DNA_SUBHEADING} text-amber-900 dark:text-amber-200`
+      : `mb-2 ${DNA_SUBHEADING}`;
 
   return (
-    <div>
+    <div className={shellClass}>
       <h3 className={headingClass}>{title}</h3>
-      <ul className="space-y-1 text-gray-600 dark:text-gray-300">
-        {items.map((item, index) => (
-          <li key={`${title}-${index}`}>- {item}</li>
+
+      <div className="space-y-3">
+        {entries.map(({ section, items }) => (
+          <div key={section!.id}>
+            <p className={DNA_EYEBROW}>{section!.label}</p>
+            {(() => {
+              const { text, omitted } = editorialExcerpt(
+                items,
+                MAX_FACTOR_SENTENCES
+              );
+              return (
+                <>
+                  <p className={`mt-1 ${DNA_BODY}`}>{text}</p>
+                  {omitted > 0 && (
+                    <p className={`mt-1 ${DNA_CAPTION}`}>
+                      +{omitted} more points in this section
+                    </p>
+                  )}
+                </>
+              );
+            })()}
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
+  );
+}
+
+function LockedGate({ pricingTier }: { pricingTier?: PricingTier | null }) {
+  return (
+    <SubscriptionGate
+      title="AI Prediction"
+      message={getAiSubscriptionGateMessage(pricingTier ?? undefined)}
+      ctaHref="/pricing"
+      ctaLabel="Upgrade to unlock"
+      buttonClassName={HOME_PRIMARY_BUTTON}
+    />
+  );
+}
+
+function isHostedSetupMessage(error: string): boolean {
+  const normalized = error.toLowerCase();
+  return (
+    normalized.includes("hosted ai is not configured") ||
+    normalized.includes("ai_provider") ||
+    normalized.includes("ai_api_key")
   );
 }
 
@@ -74,109 +169,131 @@ export function AIPredictionPanel({
 }: AIPredictionPanelProps) {
   const factors = prediction?.factors;
   const symbolSpecific = prediction?.symbolSpecific;
+  const showLockedOverlay = locked && Boolean(prediction);
+  const showLockedGateOnly = locked && !prediction && !loading;
+  const gateMessage = getAiSubscriptionGateMessage(pricingTier ?? undefined);
 
   return (
-    <section className="mt-6">
-      <div className="relative rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
-        <div
-          className={locked ? "blur-sm select-none pointer-events-none" : ""}
-        >
-          <div className="flex items-center justify-between gap-4 mb-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
-              AI Prediction
-            </h2>
-            {prediction && (
-              <div className="flex items-center gap-2">
-                <RecommendationBadge
-                  recommendation={prediction.recommendation}
-                />
-                <span className="flex items-center text-xs text-gray-500 dark:text-gray-400">
-                  <span>
-                    Confidence {Math.round(prediction.confidence * 100)}%
-                  </span>
-                  <ConfidenceInfoTooltip variant="prediction" />
-                </span>
-              </div>
-            )}
-          </div>
-
-          {loading && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Generating AI prediction...
-            </p>
-          )}
-
-          {!loading && prediction && (
-            <div className="space-y-4 text-sm">
-              <p className="text-gray-700 dark:text-gray-200">
-                {prediction.summary}
-              </p>
-
-              {AI_PREDICTION_SECTIONS.map((section) => (
-                <FactorList
-                  key={section.id}
-                  title={section.label}
-                  items={factors?.[section.id] ?? []}
-                  variant={section.id === "risks" ? "risk" : "default"}
-                />
-              ))}
-
-              {symbolSpecific && symbolSpecific.bullets.length > 0 && (
-                <FactorList
-                  title={symbolSpecific.title}
-                  items={symbolSpecific.bullets}
-                />
-              )}
-            </div>
-          )}
-
-          {!loading && !prediction && !locked && error && (
+    <InsightPanel>
+      <div
+        className={`relative ${HOME_INSTRUMENT_PANEL}`}
+        data-testid="ai-prediction-panel"
+      >
+        {showLockedGateOnly ? (
+          <LockedGate pricingTier={pricingTier} />
+        ) : (
+          <>
             <div
-              className={`rounded-md border px-3 py-3 text-sm ${
-                isMissingByokApiKeyMessage(error)
-                  ? "border-blue-300 bg-blue-50 text-blue-900 dark:border-blue-600 dark:bg-blue-950/50 dark:text-blue-100"
-                  : "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200"
-              }`}
+              className={
+                showLockedOverlay
+                  ? "blur-sm select-none pointer-events-none"
+                  : ""
+              }
             >
-              <p className="font-medium">{error}</p>
-              {isMissingByokApiKeyMessage(error) && (
-                <div className="mt-3 space-y-2">
-                  <p className="text-xs opacity-90">
-                    Add your API key on the Profile page under API keys, then
-                    pick the same provider as your explanation model.
-                  </p>
-                  <a
-                    href="/profile"
-                    className="inline-flex items-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
-                  >
-                    Open profile
-                  </a>
+              <InsightPanelHeader
+                title="AI Prediction"
+                right={
+                  prediction ? (
+                    <div className="flex items-center gap-2">
+                      <RecommendationBadge
+                        recommendation={prediction.recommendation}
+                      />
+                      <span className={`flex items-center ${DNA_CAPTION}`}>
+                        <span>
+                          Confidence {Math.round(prediction.confidence * 100)}%
+                        </span>
+                        <ConfidenceInfoTooltip variant="prediction" />
+                      </span>
+                    </div>
+                  ) : undefined
+                }
+              />
+
+              {loading && (
+                <p className={`${DNA_BODY_SECONDARY}`}>
+                  Building your AI prediction...
+                </p>
+              )}
+
+              {!loading && prediction && (
+                <div className="space-y-4">
+                  <div className={HOME_CALLOUT}>{prediction.summary}</div>
+
+                  <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+                    {FACTOR_GROUPS.map((group) => (
+                      <FactorGroup
+                        key={group.title}
+                        title={group.title}
+                        sectionIds={group.sectionIds}
+                        factors={factors}
+                        tone={group.tone}
+                      />
+                    ))}
+                  </div>
+
+                  {symbolSpecific && symbolSpecific.bullets.length > 0 && (
+                    <div className="rounded-lg border border-stone-200 bg-stone-100 p-3 dark:border-stone-700 dark:bg-stone-800">
+                      <p className={`mb-1 ${DNA_SUBHEADING}`}>
+                        {symbolSpecific.title}
+                      </p>
+                      {(() => {
+                        const { text, omitted } = editorialExcerpt(
+                          symbolSpecific.bullets,
+                          MAX_SYMBOL_SENTENCES
+                        );
+                        return (
+                          <>
+                            <p className={DNA_BODY}>{text}</p>
+                            {omitted > 0 && (
+                              <p className={`mt-1 ${DNA_CAPTION}`}>
+                                +{omitted} more symbol-specific notes
+                              </p>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
               )}
+
+              {!loading && !prediction && !locked && error && (
+                <AiFeatureErrorNotice
+                  error={error}
+                  title="AI prediction unavailable"
+                  isHostedSetup={isHostedSetupMessage(error)}
+                  hostedSetupHint={
+                    isHostedSetupMessage(error) ? (
+                      <p>
+                        If you are on the Ditectrev AI plan, ask support to
+                        verify deployment env setup for this region.
+                      </p>
+                    ) : undefined
+                  }
+                />
+              )}
+
+              {!loading && !prediction && !locked && !error && (
+                <p className={`${DNA_BODY_SECONDARY}`}>
+                  No prediction yet. Try another symbol or refresh this panel.
+                </p>
+              )}
             </div>
-          )}
 
-          {!loading && !prediction && !locked && !error && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              No AI prediction returned yet. Try another symbol or refresh.
-            </p>
-          )}
-        </div>
-
-        {locked && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-lg bg-white/70 px-6 text-center dark:bg-gray-900/70">
-            <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100">
-              {getAiSubscriptionGateMessage(pricingTier ?? undefined)}
-            </p>
-            <Link
-              href="/pricing"
-              className="mt-3 inline-flex items-center rounded-lg bg-blue-600 text-white px-4 py-2 text-sm font-medium hover:bg-blue-700"
-            >
-              Upgrade to unlock
-            </Link>
-          </div>
+            {showLockedOverlay && (
+              <SubscriptionGate
+                title="AI Prediction"
+                message={gateMessage}
+                ctaHref="/pricing"
+                ctaLabel="Upgrade to unlock"
+                align="center"
+                overlay
+                buttonClassName={HOME_PRIMARY_BUTTON}
+              />
+            )}
+          </>
         )}
       </div>
-    </section>
+    </InsightPanel>
   );
 }

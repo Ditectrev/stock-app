@@ -8,6 +8,7 @@ import {
   getBrowserOAuthRedirectOrigin,
   getGoogleOAuthCallbackUrl,
 } from "@/lib/auth/oauth-redirect-origin";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import { getBrowserAccount } from "./browser-config";
 
 function missingConfigError(): { ok: false; error: string } {
@@ -41,7 +42,7 @@ export function startGoogleOAuth():
     account.createOAuth2Session(OAuthProvider.Google, callback, callback);
   } catch (err: unknown) {
     const message =
-      err instanceof Error ? err.message : "Failed to start Google sign-in.";
+      err instanceof Error ? err.message : AUTH_UI_COPY.googleSignInFailed;
     return { ok: false, error: message };
   }
   return { ok: true };
@@ -102,9 +103,7 @@ export async function sendEmailOTP(
     return { success: true };
   } catch (err: unknown) {
     const message =
-      err instanceof Error
-        ? err.message
-        : "Failed to send verification email. Please try again.";
+      err instanceof Error ? err.message : AUTH_UI_COPY.verificationEmailFailed;
     return { success: false, error: message };
   }
 }

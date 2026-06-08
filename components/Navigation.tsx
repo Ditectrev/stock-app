@@ -1,8 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import {
+  DNA_LABEL,
+  DNA_NAV_BAR,
+  DNA_NAV_BRAND_TAGLINE,
+  DNA_NAV_DIVIDER,
+  DNA_NAV_LINK_ACTIVE,
+  DNA_NAV_LINK_IDLE,
+  DNA_NAV_LOGO_RULE,
+  DNA_NAV_MOBILE,
+  DNA_NAV_WORDMARK,
+  DNA_NAV_WORDMARK_MOBILE,
+} from "@/lib/design-dna";
+import { Fragment, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SearchBar } from "@/components/SearchBar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserProfileMenu } from "@/components/UserProfileMenu";
@@ -12,6 +24,7 @@ import {
   SITE_NAV_MOBILE_LABEL,
   SITE_SHORT_NAME,
 } from "@/lib/site-seo";
+import { HOME_SEGMENTED_NAV } from "@/lib/home-ui";
 
 export interface NavigationProps {
   /** Override active section (e.g. tests); default: derived from URL */
@@ -23,9 +36,13 @@ export function Navigation({
 }: NavigationProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
 
   const activeSection = activeSectionProp ?? pathnameToNavId(pathname ?? "/");
+  const selectedSymbol = searchParams.get("symbol")?.trim() ?? "";
+  const showDesktopSearch =
+    (pathname ?? "/") !== "/" || Boolean(selectedSymbol);
 
   const handleSymbolSelect = (symbol: string) => {
     router.push(`/?symbol=${encodeURIComponent(symbol)}`);
@@ -34,55 +51,74 @@ export function Navigation({
 
   return (
     <nav
-      className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 overflow-visible"
+      className={`overflow-visible backdrop-blur ${DNA_NAV_BAR}`}
+      data-nav-archetype="terminal"
       aria-label="Main navigation"
       data-testid="navigation"
       data-active-section={activeSection}
     >
-      <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16 gap-4 overflow-visible">
+      <div className="mx-auto max-w-7xl px-4 xl:max-w-[1400px] sm:px-6">
+        <div className="flex h-16 items-center justify-between gap-4 overflow-visible">
           <Link
             href="/"
-            className="flex-shrink-0 text-lg font-bold text-gray-900 dark:text-gray-100"
+            className="flex shrink-0 items-center text-stone-900 dark:text-stone-100"
             aria-label={`${SITE_NAME} home`}
           >
-            <span className="hidden sm:inline">{SITE_SHORT_NAME}</span>
-            <span className="sm:hidden">{SITE_NAV_MOBILE_LABEL}</span>
+            <span className={`leading-tight ${DNA_NAV_LOGO_RULE}`}>
+              <span className={`hidden sm:inline ${DNA_NAV_WORDMARK}`}>
+                {SITE_SHORT_NAME}
+              </span>
+              <span className={`sm:hidden ${DNA_NAV_WORDMARK_MOBILE}`}>
+                {SITE_NAV_MOBILE_LABEL}
+              </span>
+              <span className={`hidden sm:block ${DNA_NAV_BRAND_TAGLINE}`}>
+                Markets · AI
+              </span>
+            </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-2">
-            {MAIN_NAV.map((link) => (
-              <Link
-                key={link.id}
-                href={link.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors
-                  ${
+          <div
+            className={`hidden items-center gap-1 md:flex ${HOME_SEGMENTED_NAV}`}
+          >
+            {MAIN_NAV.map((link, index) => (
+              <Fragment key={link.id}>
+                {index > 0 ? (
+                  <span className={DNA_NAV_DIVIDER} aria-hidden />
+                ) : null}
+                <Link
+                  href={link.href}
+                  className={`rounded-lg px-3 py-1.5 transition-colors ${DNA_LABEL} ${
                     activeSection === link.id
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                      ? DNA_NAV_LINK_ACTIVE
+                      : DNA_NAV_LINK_IDLE
                   }`}
-                aria-current={activeSection === link.id ? "page" : undefined}
-              >
-                {link.label}
-              </Link>
+                  aria-current={activeSection === link.id ? "page" : undefined}
+                >
+                  {link.label}
+                </Link>
+              </Fragment>
             ))}
           </div>
 
-          <div className="hidden md:block flex-1 max-w-sm">
-            <SearchBar
-              placeholder="Search symbols..."
-              onSelect={handleSymbolSelect}
-              className="w-full"
-            />
-          </div>
+          {showDesktopSearch ? (
+            <div className="hidden max-w-sm flex-1 md:block">
+              <SearchBar
+                placeholder="Search stocks by symbol (e.g., AAPL, TSLA, MSFT)..."
+                onSelect={handleSymbolSelect}
+                className="w-full"
+              />
+            </div>
+          ) : (
+            <div className="hidden flex-1 md:block" />
+          )}
 
-          <div className="relative z-[10060] flex items-center gap-2 flex-shrink-0">
+          <div className="relative z-[10060] flex shrink-0 items-center gap-2">
             <UserProfileMenu />
             <ThemeToggle />
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="rounded-md p-2 text-stone-700 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-stone-600 dark:text-stone-200 dark:hover:bg-stone-800 md:hidden"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-nav-menu"
               aria-label="Toggle navigation menu"
@@ -126,7 +162,7 @@ export function Navigation({
       {mobileMenuOpen && (
         <div
           id="mobile-nav-menu"
-          className="md:hidden border-t border-gray-200 dark:border-gray-700"
+          className="border-t border-stone-200 dark:border-stone-700 md:hidden"
         >
           <div className="px-4 py-3">
             <SearchBar
@@ -134,18 +170,17 @@ export function Navigation({
               onSelect={handleSymbolSelect}
             />
           </div>
-          <div className="px-2 pb-3 space-y-1">
+          <div className="space-y-1 px-2 pb-3">
             {MAIN_NAV.map((link) => (
               <Link
                 key={link.id}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors
-                  ${
-                    activeSection === link.id
-                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
-                  }`}
+                className={`block w-full rounded-md px-3 py-2 text-left transition-colors ${DNA_NAV_MOBILE} ${
+                  activeSection === link.id
+                    ? DNA_NAV_LINK_ACTIVE
+                    : DNA_NAV_LINK_IDLE
+                }`}
                 aria-current={activeSection === link.id ? "page" : undefined}
               >
                 {link.label}

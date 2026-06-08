@@ -8,11 +8,28 @@
  * Requirements: 23.1, 23.2, 23.3, 23.4, 23.5, 23.6, 23.7, 23.8, 23.9, 23.10, 23.11, 23.12
  */
 
+import {
+  DNA_EYEBROW,
+  DNA_LABEL_STRONG,
+  DNA_METRIC_COMPACT,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { SectorData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import {
+  marketChangeTextClass,
+  marketPerformanceBarClass,
+  marketPerformanceBarTrackClass,
+} from "@/lib/market-semantics";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import {
+  HOME_CHIP,
+  HOME_INSTRUMENT_PANEL,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 type TimePeriod = "1D" | "1W" | "1M" | "3M" | "1Y" | "5Y" | "YTD" | "Max";
 type SortField = "sector" | "changePercent";
@@ -72,12 +89,14 @@ export function SectorHub({
     setError(null);
     try {
       const res = await fetch(`/api/market/sectors?period=${timePeriod}`);
-      if (!res.ok) throw new Error("Failed to fetch sector data");
+      if (!res.ok) throw new Error(MARKET_UI_COPY.load.sectorHub);
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "Unknown error");
       setData(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(
+        err instanceof Error ? err.message : MARKET_UI_COPY.load.sectorHub
+      );
     } finally {
       setLoading(false);
     }
@@ -135,10 +154,7 @@ export function SectorHub({
   // --- Loading ---
   if (loading) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="sector-hub-loading"
-      >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="sector-hub-loading">
         <LoadingSpinner className="py-8" />
       </div>
     );
@@ -147,10 +163,7 @@ export function SectorHub({
   // --- Error ---
   if (error) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="sector-hub-error"
-      >
+      <div className={HOME_INSTRUMENT_PANEL} data-testid="sector-hub-error">
         <ErrorMessage
           type="api"
           message={error}
@@ -172,29 +185,23 @@ export function SectorHub({
 
   return (
     <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className={HOME_INSTRUMENT_PANEL}
       data-testid="sector-hub"
       role="region"
       aria-label="Sectors Hub"
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-3">
-        <h3
-          className={`text-lg font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
-        >
-          Sectors Hub
-        </h3>
+      <header
+        className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between"
+        data-testid="sector-hub-header"
+      >
+        <div>
+          <p className={DNA_EYEBROW}>Market structure</p>
+          <h2 className={`mt-1 ${DNA_SUBHEADING}`}>Sectors</h2>
+        </div>
         <div className="flex items-center gap-2">
-          {/* Sort toggle */}
           <button
             onClick={() => handleSort("changePercent")}
-            className={`text-xs px-3 py-2 rounded min-h-[36px] ${
-              sortField === "changePercent"
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300"
-                  : "bg-gray-100 text-gray-600"
-            }`}
+            className={`text-xs px-3 py-2 rounded min-h-[36px] ${homeChipClasses(sortField === "changePercent")}`}
             data-testid="sort-performance"
             aria-label={`Sort by performance ${sortDirection === "asc" ? "ascending" : "descending"}`}
           >
@@ -207,13 +214,7 @@ export function SectorHub({
           </button>
           <button
             onClick={() => handleSort("sector")}
-            className={`text-xs px-3 py-2 rounded min-h-[36px] ${
-              sortField === "sector"
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300"
-                  : "bg-gray-100 text-gray-600"
-            }`}
+            className={`text-xs px-3 py-2 rounded min-h-[36px] ${homeChipClasses(sortField === "sector")}`}
             data-testid="sort-name"
             aria-label={`Sort by name ${sortDirection === "asc" ? "ascending" : "descending"}`}
           >
@@ -225,7 +226,7 @@ export function SectorHub({
               : ""}
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Time period selector */}
       <div
@@ -238,13 +239,7 @@ export function SectorHub({
           <button
             key={period}
             onClick={() => setTimePeriod(period)}
-            className={`text-xs px-2.5 py-2 rounded min-h-[36px] min-w-[36px] flex items-center justify-center ${
-              timePeriod === period
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            className={`${HOME_CHIP} ${homeChipClasses(timePeriod === period)}`}
             data-testid={`period-${period}`}
           >
             {period}
@@ -259,26 +254,22 @@ export function SectorHub({
       >
         {sortedData.map((sector) => {
           const isPositive = sector.changePercent >= 0;
-          const colorClass = isPositive ? "text-green-500" : "text-red-500";
+          const colorClass = marketChangeTextClass(isPositive ? 1 : -1);
           const barWidth = Math.min(
             (Math.abs(sector.changePercent) / maxAbsChange) * 100,
             100
           );
-          const barColor = isPositive ? "bg-green-500/20" : "bg-red-500/20";
+          const barColor = marketPerformanceBarTrackClass(isPositive);
           const isSelected = selectedSectors.includes(sector.sector);
           const isHovered = hoveredSector === sector.sector;
 
           return (
             <div
               key={sector.sector}
-              className={`relative p-3 sm:p-3 rounded-lg cursor-pointer transition-all min-h-[44px] ${
+              className={`relative min-h-[44px] cursor-pointer rounded-lg p-3 transition-all ${
                 isSelected
-                  ? isDark
-                    ? "ring-2 ring-blue-500 bg-gray-700"
-                    : "ring-2 ring-blue-500 bg-blue-50"
-                  : isDark
-                    ? "bg-gray-700/50 hover:bg-gray-700"
-                    : "bg-gray-50 hover:bg-gray-100"
+                  ? "bg-stone-100 ring-2 ring-stone-500 dark:bg-stone-700"
+                  : "bg-stone-50 hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-700"
               }`}
               data-testid={`sector-${sector.sector.replace(/\s+/g, "-")}`}
               onClick={() => toggleSectorComparison(sector.sector)}
@@ -301,13 +292,9 @@ export function SectorHub({
               />
 
               <div className="flex items-center justify-between">
+                <p className={DNA_LABEL_STRONG}>{sector.sector}</p>
                 <p
-                  className={`text-sm font-medium ${isDark ? "text-gray-200" : "text-gray-900"}`}
-                >
-                  {sector.sector}
-                </p>
-                <p
-                  className={`text-sm font-semibold ${colorClass}`}
+                  className={`${DNA_METRIC_COMPACT} ${colorClass}`}
                   data-testid={`change-${sector.sector.replace(/\s+/g, "-")}`}
                 >
                   {formatPercent(sector.changePercent)}
@@ -317,7 +304,7 @@ export function SectorHub({
               {/* Tooltip on hover */}
               {isHovered && SECTOR_DESCRIPTIONS[sector.sector] && (
                 <div
-                  className={`mt-2 text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
+                  className={`mt-2 text-xs ${isDark ? "text-stone-300" : "text-stone-600"}`}
                   role="tooltip"
                   data-testid={`tooltip-${sector.sector.replace(/\s+/g, "-")}`}
                 >
@@ -333,14 +320,10 @@ export function SectorHub({
       {comparisonData && comparisonData.length > 0 && (
         <div className="mt-6" data-testid="comparison-view">
           <div className="flex items-center justify-between mb-3">
-            <h4
-              className={`text-sm font-semibold ${isDark ? "text-gray-300" : "text-gray-700"}`}
-            >
-              Sector Comparison
-            </h4>
+            <h4 className={DNA_SUBHEADING}>Sector Comparison</h4>
             <button
               onClick={() => setSelectedSectors([])}
-              className="text-xs text-blue-500 hover:underline"
+              className={`text-xs text-stone-600 hover:underline dark:text-stone-300`}
               data-testid="clear-comparison"
             >
               Clear
@@ -356,20 +339,20 @@ export function SectorHub({
               return (
                 <div key={sector.sector} className="flex items-center gap-3">
                   <span
-                    className={`text-xs w-40 truncate ${isDark ? "text-gray-300" : "text-gray-700"}`}
+                    className={`w-40 truncate text-xs ${isDark ? "text-stone-300" : "text-stone-700"}`}
                   >
                     {sector.sector}
                   </span>
                   <div
-                    className={`flex-1 h-4 rounded ${isDark ? "bg-gray-700" : "bg-gray-100"}`}
+                    className={`h-4 flex-1 rounded ${isDark ? "bg-stone-700" : "bg-stone-100"}`}
                   >
                     <div
-                      className={`h-full rounded ${isPositive ? "bg-green-500" : "bg-red-500"}`}
+                      className={`h-full rounded ${marketPerformanceBarClass(isPositive)}`}
                       style={{ width: `${barWidth}%` }}
                     />
                   </div>
                   <span
-                    className={`text-xs font-medium w-16 text-right ${isPositive ? "text-green-500" : "text-red-500"}`}
+                    className={`text-xs font-medium w-16 text-right ${marketChangeTextClass(isPositive ? 1 : -1)}`}
                   >
                     {formatPercent(sector.changePercent)}
                   </span>

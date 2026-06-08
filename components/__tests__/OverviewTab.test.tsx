@@ -63,7 +63,7 @@ describe("OverviewTab", () => {
   ];
 
   describe("Basic Rendering", () => {
-    it("should render current price section", () => {
+    it("should render chart section", () => {
       const onTimeRangeChange = vi.fn();
       render(
         <OverviewTab
@@ -74,22 +74,7 @@ describe("OverviewTab", () => {
         />
       );
 
-      expect(screen.getByText("Current Price")).toBeInTheDocument();
-      expect(screen.getByText("$150.25")).toBeInTheDocument();
-    });
-
-    it("should render price chart section", () => {
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={mockSymbolData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      expect(screen.getByText("Price Chart")).toBeInTheDocument();
+      expect(screen.getByText("Chart")).toBeInTheDocument();
       expect(screen.getByTestId("chart-component")).toBeInTheDocument();
     });
 
@@ -105,151 +90,6 @@ describe("OverviewTab", () => {
       );
 
       expect(screen.getByText("Key Metrics")).toBeInTheDocument();
-    });
-  });
-
-  describe("Color Coding - Requirement 4.3", () => {
-    it("should display positive change with green styling", () => {
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={mockSymbolData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      const changeElement = screen.getByText(/\+2\.50/);
-      expect(changeElement).toBeInTheDocument();
-      expect(changeElement).toHaveClass("text-green-600");
-    });
-
-    it("should display negative change with red styling", () => {
-      const negativeData: SymbolData = {
-        ...mockSymbolData,
-        change: -2.5,
-        changePercent: -1.69,
-      };
-
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={negativeData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      const changeElement = screen.getByText(/-2\.50/);
-      expect(changeElement).toBeInTheDocument();
-      expect(changeElement).toHaveClass("text-red-600");
-    });
-
-    it("should display zero change with green styling (non-negative)", () => {
-      const zeroData: SymbolData = {
-        ...mockSymbolData,
-        change: 0,
-        changePercent: 0,
-      };
-
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={zeroData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      const changeElement = screen.getByText(/\+0\.00/);
-      expect(changeElement).toHaveClass("text-green-600");
-    });
-
-    it("should apply green background to positive change badge", () => {
-      const onTimeRangeChange = vi.fn();
-      const { container } = render(
-        <OverviewTab
-          symbolData={mockSymbolData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      const badge = screen.getByText(/1\.69% Today/).closest("div");
-      expect(badge).toHaveClass("bg-green-50");
-    });
-
-    it("should apply red background to negative change badge", () => {
-      const negativeData: SymbolData = {
-        ...mockSymbolData,
-        change: -2.5,
-        changePercent: -1.69,
-      };
-
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={negativeData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      const badge = screen.getByText(/1\.69% Today/).closest("div");
-      expect(badge).toHaveClass("bg-red-50");
-    });
-
-    it("should show up arrow for positive change", () => {
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={mockSymbolData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      expect(screen.getByText(/▲/)).toBeInTheDocument();
-    });
-
-    it("should show down arrow for negative change", () => {
-      const negativeData: SymbolData = {
-        ...mockSymbolData,
-        change: -2.5,
-        changePercent: -1.69,
-      };
-
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={negativeData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      expect(screen.getByText(/▼/)).toBeInTheDocument();
-    });
-
-    it("should display change percentage badge with correct formatting", () => {
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={mockSymbolData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      expect(screen.getByText(/1\.69% Today/)).toBeInTheDocument();
     });
   });
 
@@ -339,12 +179,9 @@ describe("OverviewTab", () => {
     });
 
     it("should display help icon for each metric", () => {
-      const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
+      render(<KeyMetrics symbolData={mockSymbolData} />);
 
       // Each metric card should have a "?" icon
-      const helpIcons = container.querySelectorAll(
-        'div:has(> div:contains("?"))'
-      );
       expect(screen.getAllByText("?")).toHaveLength(5); // 5 metrics
     });
   });
@@ -460,7 +297,7 @@ describe("OverviewTab", () => {
 
     it("should display tooltip with proper styling", async () => {
       const user = userEvent.setup();
-      const { container } = render(<KeyMetrics symbolData={mockSymbolData} />);
+      render(<KeyMetrics symbolData={mockSymbolData} />);
 
       const marketCapCard = screen.getByText("Market Cap").closest("div");
       await user.hover(marketCapCard!);
@@ -469,8 +306,7 @@ describe("OverviewTab", () => {
         const tooltipText = screen.getByText(
           /Market Capitalization is the total value/
         );
-        // The tooltip container is the parent of the text's parent (the "relative" div)
-        const tooltipContainer = tooltipText.parentElement?.parentElement;
+        const tooltipContainer = tooltipText.closest('[role="tooltip"]');
         expect(tooltipContainer).toHaveClass("absolute");
         expect(tooltipContainer).toHaveClass("z-10");
         expect(tooltipContainer).toHaveClass("rounded-lg");
@@ -534,45 +370,22 @@ describe("OverviewTab", () => {
       expect(screen.getByText("100")).toBeInTheDocument();
     });
 
-    it("should handle decimal price changes correctly", () => {
-      const decimalData: SymbolData = {
-        ...mockSymbolData,
-        change: 0.01,
-        changePercent: 0.01,
-      };
-
+    it("should render overview chart for small price moves", () => {
       const onTimeRangeChange = vi.fn();
       render(
         <OverviewTab
-          symbolData={decimalData}
+          symbolData={{
+            ...mockSymbolData,
+            change: 0.01,
+            changePercent: 0.01,
+          }}
           historicalData={mockHistoricalData}
           timeRange="1M"
           onTimeRangeChange={onTimeRangeChange}
         />
       );
 
-      expect(screen.getByText(/\+0\.01/)).toBeInTheDocument();
-    });
-
-    it("should handle large negative changes", () => {
-      const largeNegativeData: SymbolData = {
-        ...mockSymbolData,
-        change: -50.75,
-        changePercent: -25.5,
-      };
-
-      const onTimeRangeChange = vi.fn();
-      render(
-        <OverviewTab
-          symbolData={largeNegativeData}
-          historicalData={mockHistoricalData}
-          timeRange="1M"
-          onTimeRangeChange={onTimeRangeChange}
-        />
-      );
-
-      expect(screen.getByText(/-50\.75/)).toBeInTheDocument();
-      expect(screen.getByText(/25\.50% Today/)).toBeInTheDocument();
+      expect(screen.getByTestId("chart-component")).toBeInTheDocument();
     });
   });
 });

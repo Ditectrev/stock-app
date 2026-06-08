@@ -227,7 +227,7 @@ describe("ScreenerService", () => {
       const result = makeResult({ peRatio: 20 });
       const filter = {
         field: "peRatio",
-        operator: "invalid" as any,
+        operator: "invalid" as unknown as ScreenerFilter["operator"],
         value: 10,
         label: "test",
       };
@@ -239,7 +239,7 @@ describe("ScreenerService", () => {
       const filter: ScreenerFilter = {
         field: "peRatio",
         operator: "between",
-        value: 10 as any,
+        value: 10 as unknown as ScreenerFilter["value"],
         label: "test",
       };
       expect(screenerService.matchesFilter(result, filter)).toBe(false);
@@ -250,7 +250,7 @@ describe("ScreenerService", () => {
       const filter: ScreenerFilter = {
         field: "sector",
         operator: "in",
-        value: "Technology" as any,
+        value: "Technology" as unknown as ScreenerFilter["value"],
         label: "test",
       };
       expect(screenerService.matchesFilter(result, filter)).toBe(false);

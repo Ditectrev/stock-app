@@ -1,6 +1,9 @@
 import { ID, Query } from "node-appwrite";
 import { createServerClient } from "@/lib/appwrite";
-import { assertAppwriteTrialEnv } from "@/lib/appwrite-trial-env";
+import {
+  assertAppwriteTrialEnv,
+  isAppwriteTrialConfigured,
+} from "@/lib/appwrite-trial-env";
 import { env } from "@/lib/env";
 import type { TrialSession, TrialStatus } from "@/types";
 
@@ -32,9 +35,38 @@ export class ServerTrialManagementService {
     this.durationMs = env.trial.durationMinutes * 60 * 1000;
   }
 
+  /** Local dev / CI when Appwrite trial collections are not configured. */
+  private offlineTrialStatus(): TrialStatus {
+    return {
+      isActive: true,
+      remainingSeconds: Math.floor(this.durationMs / 1000),
+      hasUsedTrial: false,
+    };
+  }
+
+  private offlineTrialSession(identity: TrialIdentity): TrialSession {
+    const now = new Date();
+    const endTime = new Date(now.getTime() + this.durationMs);
+    return {
+      id: "offline-trial",
+      deviceFingerprint: identity.fingerprint,
+      ipAddress: identity.ipAddress,
+      startTime: now,
+      endTime,
+      isActive: true,
+      userAgent: identity.userAgent,
+      screenResolution: identity.screenResolution,
+      timezone: identity.timezone,
+      createdAt: now,
+    };
+  }
+
   async startTrial(identity: TrialIdentity): Promise<TrialSession> {
     if (!identity.fingerprint) {
       throw new Error("Missing trial fingerprint.");
+    }
+    if (!isAppwriteTrialConfigured()) {
+      return this.offlineTrialSession(identity);
     }
     const eligible = await this.checkTrialEligibility(identity);
     if (!eligible) {
@@ -66,9 +98,19 @@ export class ServerTrialManagementService {
   }
 
   async getTrialStatus(identity: TrialIdentity): Promise<TrialStatus> {
-    const session = await this.getLatestSession(identity);
+    if (!isAppwriteTrialConfigured()) {
+      return this.offlineTrialStatus();
+    }
+
+    const session = await this.getSessionByFingerprint(identity.fingerprint);
+
     if (!session) {
-      return { isActive: false, remainingSeconds: 0, hasUsedTrial: false };
+      const ipUsed = await this.hasSessionForIp(identity.ipAddress);
+      return {
+        isActive: false,
+        remainingSeconds: 0,
+        hasUsedTrial: ipUsed,
+      };
     }
 
     const now = Date.now();
@@ -88,52 +130,74 @@ export class ServerTrialManagementService {
   }
 
   async endTrial(identity: TrialIdentity): Promise<void> {
-    const session = await this.getLatestSession(identity);
+    if (!isAppwriteTrialConfigured()) {
+      return;
+    }
+
+    const session = await this.getSessionByFingerprint(identity.fingerprint);
     if (!session || !session.isActive) return;
     await this.updateSessionActiveFlag(session.$id, false);
   }
 
   async checkTrialEligibility(identity: TrialIdentity): Promise<boolean> {
     if (!identity.fingerprint) return false;
-    const session = await this.getLatestSession(identity);
-    return !session;
+    if (!isAppwriteTrialConfigured()) {
+      return true;
+    }
+
+    const [fingerprintUsed, ipUsed] = await Promise.all([
+      this.hasSessionForFingerprint(identity.fingerprint),
+      this.hasSessionForIp(identity.ipAddress),
+    ]);
+
+    return !fingerprintUsed && !ipUsed;
   }
 
-  private async getLatestSession(
-    identity: TrialIdentity
+  /** Active session lookup — fingerprint only (never inherit another user's time via shared IP). */
+  private async getSessionByFingerprint(
+    fingerprint: string
   ): Promise<TrialSessionDocument | null> {
+    if (!fingerprint) return null;
+
     const { databaseId, sessionsCollectionId } = assertAppwriteTrialEnv();
     const { databases } = createServerClient();
 
-    const fingerprintQueries = [
-      Query.equal("fingerprint", identity.fingerprint),
-      Query.orderDesc("$createdAt"),
-      Query.limit(1),
-    ];
-
-    const fingerprintResult = (await databases.listDocuments(
-      databaseId,
-      sessionsCollectionId,
-      fingerprintQueries
-    )) as unknown as { documents: TrialSessionDocument[] };
-    if (fingerprintResult.documents.length > 0) {
-      return fingerprintResult.documents[0];
-    }
-
-    if (!identity.ipAddress) {
-      return null;
-    }
-
-    const ipResult = (await databases.listDocuments(
+    const result = (await databases.listDocuments(
       databaseId,
       sessionsCollectionId,
       [
-        Query.equal("ipAddress", identity.ipAddress),
+        Query.equal("fingerprint", fingerprint),
         Query.orderDesc("$createdAt"),
         Query.limit(1),
       ]
     )) as unknown as { documents: TrialSessionDocument[] };
-    return ipResult.documents[0] ?? null;
+
+    return result.documents[0] ?? null;
+  }
+
+  private async hasSessionForFingerprint(
+    fingerprint: string
+  ): Promise<boolean> {
+    const session = await this.getSessionByFingerprint(fingerprint);
+    return session !== null;
+  }
+
+  /** IP is used only for abuse prevention at start — not for status countdown. */
+  private async hasSessionForIp(
+    ipAddress: string | undefined
+  ): Promise<boolean> {
+    if (!ipAddress) return false;
+
+    const { databaseId, sessionsCollectionId } = assertAppwriteTrialEnv();
+    const { databases } = createServerClient();
+
+    const result = (await databases.listDocuments(
+      databaseId,
+      sessionsCollectionId,
+      [Query.equal("ipAddress", ipAddress), Query.limit(1)]
+    )) as unknown as { documents: TrialSessionDocument[] };
+
+    return result.documents.length > 0;
   }
 
   private async updateSessionActiveFlag(

@@ -42,7 +42,7 @@ export const env: EnvConfig = {
     rateLimitWindowSeconds: 60,
   },
   trial: {
-    durationMinutes: 15,
+    durationMinutes: 60,
   },
   ipServices: {
     primary: "https://api.ipify.org?format=json",

@@ -119,6 +119,9 @@ pnpm-lock.yaml
 # Testing
 /coverage
 *.lcov
+/playwright-report/
+/test-results/
+/playwright/.cache/
 
 # Vercel
 .vercel

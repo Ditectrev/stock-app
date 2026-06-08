@@ -7,12 +7,37 @@
  * Requirements: 24.4, 24.5, 24.6, 24.7
  */
 
+import {
+  DNA_BODY_SECONDARY,
+  DNA_CAPTION,
+  DNA_SUBHEADING,
+} from "@/lib/design-dna";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useTheme } from "@/lib/theme-context";
 import { EconomicEvent } from "@/types";
 import { CalendarDateRangePicker } from "@/components/CalendarDateRangePicker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorMessage } from "@/components/ErrorMessage";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import {
+  CALENDAR_IMPORTANCE_HIGH,
+  CALENDAR_IMPORTANCE_LOW,
+  CALENDAR_IMPORTANCE_MEDIUM,
+  MARKET_NEUTRAL_TEXT,
+  marketChangeTextClass,
+} from "@/lib/market-semantics";
+import {
+  CALENDAR_DAY_HEADER,
+  CALENDAR_CHIP_IDLE,
+  CALENDAR_EMPTY_TEXT,
+  CALENDAR_EVENT_LIST,
+  CALENDAR_EVENT_ROW,
+  CALENDAR_EVENT_TITLE,
+  CALENDAR_FILTER_LABEL,
+  CALENDAR_SELECT,
+  CALENDAR_TODAY_BADGE,
+  CALENDAR_TODAY_HEADER,
+  HOME_PANEL_TITLE,
+} from "@/lib/home-ui";
 
 const COUNTRIES = [
   "All",
@@ -59,14 +84,27 @@ const IMPORTANCE_LEVELS = ["high", "medium", "low"] as const;
 type ImportanceLevel = (typeof IMPORTANCE_LEVELS)[number];
 
 const IMPORTANCE_STYLES: Record<ImportanceLevel, string> = {
-  high: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  medium:
-    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  low: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300",
+  high: CALENDAR_IMPORTANCE_HIGH,
+  medium: CALENDAR_IMPORTANCE_MEDIUM,
+  low: CALENDAR_IMPORTANCE_LOW,
 };
 
 export interface EconomicCalendarProps {
   data?: EconomicEvent[];
+}
+
+function parseMetricValue(value: string): number | null {
+  const parsed = parseFloat(value.replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function economicActualTextClass(actual: string, forecast?: string): string {
+  if (!forecast) return MARKET_NEUTRAL_TEXT;
+  const actualNum = parseMetricValue(actual);
+  const forecastNum = parseMetricValue(forecast);
+  if (actualNum === null || forecastNum === null) return MARKET_NEUTRAL_TEXT;
+  if (actualNum === forecastNum) return MARKET_NEUTRAL_TEXT;
+  return marketChangeTextClass(actualNum - forecastNum);
 }
 
 function toDateString(d: Date): string {
@@ -94,9 +132,6 @@ const defaultEnd = "";
 export function EconomicCalendar({
   data: externalData,
 }: EconomicCalendarProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-
   const [data, setData] = useState<EconomicEvent[] | null>(
     externalData ?? null
   );
@@ -113,12 +148,16 @@ export function EconomicCalendar({
     setError(null);
     try {
       const res = await fetch("/api/calendar/economic");
-      if (!res.ok) throw new Error("Failed to fetch economic events");
+      if (!res.ok) throw new Error(MARKET_UI_COPY.load.economicCalendar);
       const json = await res.json();
       if (!json.success) throw new Error(json.error ?? "Unknown error");
       setData(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load data");
+      setError(
+        err instanceof Error
+          ? err.message
+          : MARKET_UI_COPY.load.economicCalendar
+      );
     } finally {
       setLoading(false);
     }
@@ -184,7 +223,7 @@ export function EconomicCalendar({
   if (loading) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className="border-t border-stone-200 pt-4 dark:border-stone-700"
         data-testid="economic-calendar-loading"
       >
         <LoadingSpinner className="py-8" />
@@ -196,7 +235,7 @@ export function EconomicCalendar({
   if (error) {
     return (
       <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+        className="border-t border-stone-200 pt-4 dark:border-stone-700"
         data-testid="economic-calendar-error"
       >
         <ErrorMessage
@@ -213,38 +252,43 @@ export function EconomicCalendar({
 
   return (
     <div
-      className={`p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className="border-t border-stone-200 pt-4 sm:pt-6 dark:border-stone-700"
       data-testid="economic-calendar"
       role="region"
       aria-label="Economic Calendar"
     >
-      <h3
-        className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        Economic Calendar
-      </h3>
+      <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h3 className={HOME_PANEL_TITLE}>Economic Calendar</h3>
+          <p className={`mt-1 ${DNA_BODY_SECONDARY}`}>
+            Macro events ordered by day with country, importance, and release
+            values.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="rounded-full border border-stone-300 bg-stone-100 px-2.5 py-1 text-stone-700 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200">
+            {filteredEvents.length} matched
+          </span>
+          <span className={`rounded-full px-2.5 py-1 ${CALENDAR_CHIP_IDLE}`}>
+            {countryFilter === "All" ? "All countries" : countryFilter}
+          </span>
+        </div>
+      </div>
 
       {/* Filters */}
       <div
-        className="flex flex-col sm:flex-row gap-3 mb-4"
+        className="mb-4 flex flex-col gap-3 rounded-lg border border-stone-200 bg-stone-100 p-3 sm:flex-row sm:items-center dark:border-stone-700 dark:bg-stone-800"
         data-testid="filters"
       >
         <div className="flex items-center gap-2">
-          <label
-            htmlFor="country-filter"
-            className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}
-          >
+          <label htmlFor="country-filter" className={CALENDAR_FILTER_LABEL}>
             Country:
           </label>
           <select
             id="country-filter"
             value={countryFilter}
             onChange={(e) => setCountryFilter(e.target.value)}
-            className={`text-sm rounded px-2 py-1 border ${
-              isDark
-                ? "bg-gray-700 border-gray-600 text-gray-200"
-                : "bg-white border-gray-300 text-gray-700"
-            }`}
+            className={`${CALENDAR_SELECT} px-2 py-1`}
             data-testid="country-filter"
           >
             {COUNTRIES.map((c) => (
@@ -258,11 +302,7 @@ export function EconomicCalendar({
         </div>
 
         <div className="flex items-center gap-2">
-          <span
-            className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}
-          >
-            Importance:
-          </span>
+          <span className={CALENDAR_FILTER_LABEL}>Importance:</span>
           {IMPORTANCE_LEVELS.map((level) => (
             <button
               key={level}
@@ -270,9 +310,7 @@ export function EconomicCalendar({
               className={`text-xs px-2 py-1 rounded capitalize ${
                 importanceFilter.has(level)
                   ? IMPORTANCE_STYLES[level]
-                  : isDark
-                    ? "bg-gray-700 text-gray-400"
-                    : "bg-gray-100 text-gray-500"
+                  : CALENDAR_CHIP_IDLE
               }`}
               data-testid={`importance-${level}`}
               aria-pressed={importanceFilter.has(level)}
@@ -293,15 +331,11 @@ export function EconomicCalendar({
 
       {/* Events grouped by day */}
       {filteredEvents.length === 0 ? (
-        <p
-          className={`text-center py-4 text-sm ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          data-testid="no-events"
-        >
+        <p className={CALENDAR_EMPTY_TEXT} data-testid="no-events">
           No events match the selected filters.
           {!externalData && (
             <span className="block mt-1 text-xs">
-              The data source may be temporarily unavailable. Try again in a few
-              minutes.
+              {MARKET_UI_COPY.calendar.emptyHint}
             </span>
           )}
         </p>
@@ -313,53 +347,33 @@ export function EconomicCalendar({
               <div key={dateKey} data-testid={`day-group-${dateKey}`}>
                 {/* Day header */}
                 <div
-                  className={`sticky top-0 z-10 px-3 py-2 rounded-t-lg text-sm font-semibold ${
-                    isToday
-                      ? isDark
-                        ? "bg-blue-900/40 text-blue-300 border-b border-blue-500/30"
-                        : "bg-blue-50 text-blue-800 border-b border-blue-200"
-                      : isDark
-                        ? "bg-gray-700 text-gray-200 border-b border-gray-600"
-                        : "bg-gray-100 text-gray-800 border-b border-gray-200"
+                  className={`sticky top-0 z-10 rounded-t-lg px-3 py-2 ${DNA_SUBHEADING} ${
+                    isToday ? CALENDAR_TODAY_HEADER : CALENDAR_DAY_HEADER
                   }`}
                   data-testid={`day-header-${dateKey}`}
                 >
                   {formatDayHeader(dateKey)}
                   {isToday && (
-                    <span
-                      className={`ml-2 text-xs font-normal px-1.5 py-0.5 rounded ${
-                        isDark
-                          ? "bg-blue-800 text-blue-200"
-                          : "bg-blue-200 text-blue-700"
-                      }`}
-                    >
+                    <span className={`ml-2 ${CALENDAR_TODAY_BADGE}`}>
                       Today
                     </span>
                   )}
-                  <span
-                    className={`ml-2 text-xs font-normal ${isDark ? "text-gray-300" : "text-gray-500"}`}
-                  >
+                  <span className={`ml-2 text-xs font-normal ${DNA_CAPTION}`}>
                     ({events.length} event{events.length !== 1 ? "s" : ""})
                   </span>
                 </div>
 
                 {/* Events table for this day */}
-                <div
-                  className={`divide-y ${isDark ? "divide-gray-700" : "divide-gray-100"}`}
-                >
+                <div className={CALENDAR_EVENT_LIST}>
                   {events.map((event) => (
                     <div
                       key={event.id}
-                      className={`flex items-start gap-3 px-3 py-2 ${
-                        isDark ? "hover:bg-gray-700/50" : "hover:bg-gray-50"
-                      }`}
+                      className={CALENDAR_EVENT_ROW}
                       data-testid={`event-${event.id}`}
                     >
                       {/* Time */}
                       <span
-                        className={`text-xs w-12 shrink-0 pt-0.5 font-mono ${
-                          isDark ? "text-gray-300" : "text-gray-500"
-                        }`}
+                        className={`text-xs w-12 shrink-0 pt-0.5 font-mono ${DNA_CAPTION}`}
                       >
                         {event.time || "—"}
                       </span>
@@ -384,17 +398,13 @@ export function EconomicCalendar({
                           >
                             {event.importance}
                           </span>
-                          <span
-                            className={`text-sm font-medium truncate ${isDark ? "text-gray-200" : "text-gray-900"}`}
-                          >
+                          <span className={CALENDAR_EVENT_TITLE}>
                             {event.name}
                           </span>
                         </div>
                         {event.description &&
                           event.description !== event.name && (
-                            <p
-                              className={`text-xs mt-0.5 ${isDark ? "text-gray-300" : "text-gray-500"}`}
-                            >
+                            <p className={`text-xs mt-0.5 ${DNA_CAPTION}`}>
                               {event.description}
                             </p>
                           )}
@@ -403,7 +413,7 @@ export function EconomicCalendar({
                       {/* Values: Prev / Forecast / Actual */}
                       {(event.previous || event.forecast || event.actual) && (
                         <div
-                          className={`flex gap-3 text-xs shrink-0 pt-0.5 ${isDark ? "text-gray-300" : "text-gray-500"}`}
+                          className={`flex gap-3 text-xs shrink-0 pt-0.5 ${DNA_CAPTION}`}
                         >
                           {event.previous && (
                             <span>Prev: {event.previous}</span>
@@ -413,11 +423,10 @@ export function EconomicCalendar({
                           )}
                           {event.actual && (
                             <span
-                              className={
-                                isDark
-                                  ? "text-green-400 font-medium"
-                                  : "text-green-700 font-medium"
-                              }
+                              className={`font-medium ${economicActualTextClass(
+                                event.actual,
+                                event.forecast
+                              )}`}
                             >
                               Act: {event.actual}
                             </span>

@@ -9,12 +9,16 @@
  * Requirements: 26.12, 26.13, 26.15
  */
 
+import { DNA_BODY_SECONDARY, DNA_CAPTION, DNA_LABEL } from "@/lib/design-dna";
 import { useState, useEffect, useCallback } from "react";
 import type { ScreenerFilter, ScreenerPreset } from "@/types";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+import {
+  HOME_INPUT_SM,
+  HOME_PRIMARY_BUTTON,
+  HOME_SECONDARY_BUTTON,
+} from "@/lib/home-ui";
+import { MARKET_DOWN_TEXT, MARKET_NEUTRAL_BADGE } from "@/lib/market-semantics";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 export interface ScreenerPresetsProps {
   currentFilters: ScreenerFilter[];
@@ -47,12 +51,16 @@ export function ScreenerPresets({
       try {
         const res = await fetch("/api/screener/presets");
         if (!res.ok) {
-          throw new Error("Failed to fetch presets");
+          throw new Error(MARKET_UI_COPY.load.screenerPresetsLoad);
         }
         const json = await res.json();
         setPresets(json.data ?? []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load presets");
+        setError(
+          err instanceof Error
+            ? err.message
+            : MARKET_UI_COPY.load.screenerPresetsLoad
+        );
       } finally {
         setLoading(false);
       }
@@ -84,7 +92,7 @@ export function ScreenerPresets({
       });
 
       if (!res.ok) {
-        throw new Error("Failed to save preset");
+        throw new Error(MARKET_UI_COPY.load.screenerPresetsSave);
       }
 
       const json = await res.json();
@@ -94,7 +102,11 @@ export function ScreenerPresets({
       setSaveName("");
       setSaveDescription("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save preset");
+      setError(
+        err instanceof Error
+          ? err.message
+          : MARKET_UI_COPY.load.screenerPresetsSave
+      );
     } finally {
       setSaving(false);
     }
@@ -104,10 +116,7 @@ export function ScreenerPresets({
 
   if (loading) {
     return (
-      <div
-        className="text-sm text-gray-500 dark:text-gray-300"
-        data-testid="presets-loading"
-      >
+      <div className={`${DNA_BODY_SECONDARY}`} data-testid="presets-loading">
         Loading presets…
       </div>
     );
@@ -117,9 +126,7 @@ export function ScreenerPresets({
     <div data-testid="screener-presets" className="space-y-3">
       {/* Preset row */}
       <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 shrink-0">
-          Presets:
-        </span>
+        <span className={`shrink-0 ${DNA_LABEL}`}>Presets:</span>
         <div
           className="flex items-center gap-2 overflow-x-auto pb-1"
           data-testid="presets-row"
@@ -130,10 +137,10 @@ export function ScreenerPresets({
               type="button"
               onClick={() => handlePresetClick(preset)}
               data-testid={`preset-${preset.id}`}
-              className={`relative shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+              className={`relative shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-600 ${
                 selectedPresetId === preset.id
-                  ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-900/30 dark:text-blue-300"
-                  : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700"
+                  ? "border-stone-600 bg-stone-900 text-stone-50 dark:border-stone-400 dark:bg-stone-100 dark:text-stone-900"
+                  : "border-stone-200 bg-white text-stone-700 hover:border-stone-400 hover:bg-stone-50 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200 dark:hover:border-stone-500 dark:hover:bg-stone-700"
               }`}
               aria-pressed={selectedPresetId === preset.id}
               title={preset.description}
@@ -141,7 +148,7 @@ export function ScreenerPresets({
               {preset.name}
               {!preset.isDefault && (
                 <span
-                  className="ml-1.5 inline-block rounded bg-purple-100 px-1 py-0.5 text-[10px] font-semibold text-purple-700 dark:bg-purple-900/40 dark:text-purple-300"
+                  className={`ml-1.5 inline-block px-1 py-0.5 text-[10px] font-semibold ${MARKET_NEUTRAL_BADGE}`}
                   data-testid={`custom-badge-${preset.id}`}
                 >
                   Custom
@@ -159,7 +166,7 @@ export function ScreenerPresets({
             type="button"
             onClick={() => setShowSaveForm(true)}
             disabled={currentFilters.length === 0}
-            className="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+            className={`${HOME_SECONDARY_BUTTON} px-3 py-1.5 text-xs disabled:opacity-50`}
             data-testid="save-preset-btn"
           >
             Save Current Filters
@@ -172,7 +179,7 @@ export function ScreenerPresets({
             <div className="space-y-1">
               <label
                 htmlFor="preset-name"
-                className="text-xs font-medium text-gray-600 dark:text-gray-300"
+                className={`text-xs font-medium ${DNA_CAPTION}`}
               >
                 Name
               </label>
@@ -182,14 +189,14 @@ export function ScreenerPresets({
                 value={saveName}
                 onChange={(e) => setSaveName(e.target.value)}
                 placeholder="My preset"
-                className="rounded border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className={HOME_INPUT_SM}
                 data-testid="preset-name-input"
               />
             </div>
             <div className="space-y-1">
               <label
                 htmlFor="preset-description"
-                className="text-xs font-medium text-gray-600 dark:text-gray-300"
+                className={`text-xs font-medium ${DNA_CAPTION}`}
               >
                 Description
               </label>
@@ -199,7 +206,7 @@ export function ScreenerPresets({
                 value={saveDescription}
                 onChange={(e) => setSaveDescription(e.target.value)}
                 placeholder="Optional description"
-                className="rounded border border-gray-300 bg-white px-2 py-1 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className={HOME_INPUT_SM}
                 data-testid="preset-description-input"
               />
             </div>
@@ -207,7 +214,7 @@ export function ScreenerPresets({
               type="button"
               onClick={handleSave}
               disabled={saving || !saveName.trim()}
-              className="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className={`${HOME_PRIMARY_BUTTON} px-3 py-1.5 text-xs disabled:opacity-50`}
               data-testid="save-preset-confirm"
             >
               {saving ? "Saving…" : "Save"}
@@ -219,7 +226,7 @@ export function ScreenerPresets({
                 setSaveName("");
                 setSaveDescription("");
               }}
-              className="rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+              className={`${HOME_SECONDARY_BUTTON} px-3 py-1.5 text-xs`}
               data-testid="save-preset-cancel"
             >
               Cancel
@@ -231,7 +238,7 @@ export function ScreenerPresets({
       {/* Error */}
       {error && (
         <div
-          className="text-sm text-red-600 dark:text-red-400"
+          className={`text-sm ${MARKET_DOWN_TEXT}`}
           data-testid="presets-error"
         >
           {error}

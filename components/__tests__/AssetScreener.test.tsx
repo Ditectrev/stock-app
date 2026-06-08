@@ -56,7 +56,7 @@ describe("AssetScreener", () => {
 
   it("should render the screener heading", () => {
     render(<AssetScreener />);
-    expect(screen.getByText("Asset Screener")).toBeDefined();
+    expect(screen.getByText("Valuation Metrics")).toBeDefined();
   });
 
   // --- Filter sections present (Req 26.1) ---
@@ -230,7 +230,9 @@ describe("AssetScreener", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Failed to fetch screener results")
+        screen.getByText(
+          "We couldn't run the screener. Check your filters and try again."
+        )
       ).toBeDefined();
     });
   });

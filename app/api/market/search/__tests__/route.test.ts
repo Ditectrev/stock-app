@@ -75,7 +75,7 @@ describe("GET /api/market/search", () => {
       },
     ];
 
-    (marketDataService.searchSymbols as any).mockResolvedValue(mockResults);
+    vi.mocked(marketDataService.searchSymbols).mockResolvedValue(mockResults);
 
     const request = new NextRequest(
       "http://localhost:3000/api/market/search?q=AAPL"
@@ -91,7 +91,7 @@ describe("GET /api/market/search", () => {
   });
 
   it("should return 500 on service error", async () => {
-    (marketDataService.searchSymbols as any).mockRejectedValue(
+    vi.mocked(marketDataService.searchSymbols).mockRejectedValue(
       new Error("Service error")
     );
 
@@ -117,7 +117,7 @@ describe("GET /api/market/search", () => {
       },
     ];
 
-    (marketDataService.searchSymbols as any).mockResolvedValue(mockResults);
+    vi.mocked(marketDataService.searchSymbols).mockResolvedValue(mockResults);
 
     const request = new NextRequest(
       "http://localhost:3000/api/market/search?q=AAPL"

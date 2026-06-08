@@ -9,10 +9,22 @@
  * Requirements: 25.3, 25.4, 25.5, 25.6, 25.12, 25.13, 25.14, 25.15, 25.16, 25.17, 25.18, 25.19
  */
 
+import { DNA_CAPTION, DNA_HEATMAP_CELL } from "@/lib/design-dna";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme-context";
 import { HeatmapData } from "@/types";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import {
+  getHeatmapFillColor,
+  getHeatmapNeutralLegendColor,
+  getHeatmapTextClass,
+} from "@/lib/heatmap-colors";
+import {
+  HOME_CHIP,
+  HOME_LEGEND_DIVIDER,
+  HOME_LEGEND_TEXT,
+  homeChipClasses,
+} from "@/lib/home-ui";
 
 export type HeatmapTimePeriod =
   | "1D"
@@ -65,24 +77,6 @@ export interface HeatmapComponentProps {
   refreshInterval?: number;
   /** Callback invoked at each refresh interval for the parent to re-fetch data */
   onRefresh?: () => void;
-}
-
-/**
- * Returns a background color string based on changePercent.
- * Green for positive, red for negative, intensity scales with magnitude.
- */
-function getTileColor(changePercent: number, isDark: boolean): string {
-  const clamped = Math.min(Math.abs(changePercent), 10);
-  // Intensity from 0.15 (near zero) to 0.9 (at ±10% or beyond)
-  const intensity = 0.15 + (clamped / 10) * 0.75;
-
-  if (changePercent === 0) {
-    return isDark ? "rgba(107,114,128,0.3)" : "rgba(156,163,175,0.3)";
-  }
-  if (changePercent > 0) {
-    return `rgba(34,197,94,${intensity})`;
-  }
-  return `rgba(239,68,68,${intensity})`;
 }
 
 function formatPercent(pct: number): string {
@@ -184,10 +178,7 @@ export function HeatmapComponent({
   // --- Loading state ---
   if (loading) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="heatmap-loading"
-      >
+      <div className="py-8" data-testid="heatmap-loading">
         <LoadingSpinner className="py-8" />
       </div>
     );
@@ -196,13 +187,8 @@ export function HeatmapComponent({
   // --- Empty state ---
   if (!data || data.length === 0) {
     return (
-      <div
-        className={`p-6 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
-        data-testid="heatmap-empty"
-      >
-        <p
-          className={`text-center ${isDark ? "text-gray-300" : "text-gray-500"}`}
-        >
+      <div className="py-8" data-testid="heatmap-empty">
+        <p className={`text-center ${DNA_CAPTION}`}>
           No heatmap data available.
         </p>
       </div>
@@ -211,7 +197,7 @@ export function HeatmapComponent({
 
   return (
     <div
-      className={`p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm ${isDark ? "bg-gray-800" : "bg-white"}`}
+      className="border-t border-stone-200 pt-4 sm:pt-6 dark:border-stone-700"
       data-testid="heatmap"
       role="region"
       aria-label="Market heatmap"
@@ -227,13 +213,9 @@ export function HeatmapComponent({
           <button
             key={period}
             data-testid={`heatmap-period-${period}`}
-            className={`px-3 py-2 text-xs font-medium rounded transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center ${
+            className={`${HOME_CHIP} ${homeChipClasses(
               timePeriod === period
-                ? "bg-blue-600 text-white"
-                : isDark
-                  ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                  : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-            }`}
+            )} transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1`}
             aria-pressed={timePeriod === period}
             onClick={() => onTimePeriodChange?.(period)}
           >
@@ -260,13 +242,9 @@ export function HeatmapComponent({
             <button
               key={field}
               data-testid={`heatmap-sort-${field}`}
-              className={`px-3 py-2 text-xs font-medium rounded transition-colors min-h-[36px] ${
+              className={`${HOME_CHIP} ${homeChipClasses(
                 sortField === field
-                  ? "bg-blue-600 text-white"
-                  : isDark
-                    ? "bg-gray-700 text-gray-300 hover:bg-gray-600"
-                    : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-              }`}
+              )} transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1`}
               aria-pressed={sortField === field}
               onClick={() => handleSortClick(field)}
             >
@@ -278,11 +256,9 @@ export function HeatmapComponent({
 
         <select
           data-testid="heatmap-sector-filter"
-          className={`px-3 py-2 text-xs font-medium rounded transition-colors min-h-[36px] ${
-            isDark
-              ? "bg-gray-700 text-gray-300 border-gray-600"
-              : "bg-gray-200 text-gray-600 border-gray-300"
-          }`}
+          className={`${HOME_CHIP} border ${homeChipClasses(false)} ${
+            isDark ? "border-stone-600" : "border-stone-200"
+          } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1`}
           value={sectorFilter ?? ""}
           onChange={(e) => onSectorFilterChange?.(e.target.value)}
           aria-label="Filter by sector"
@@ -298,22 +274,26 @@ export function HeatmapComponent({
 
       {/* Tile grid */}
       <div
-        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 sm:gap-2 lg:gap-3"
+        className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
         data-testid="heatmap-grid"
       >
         {processedData.map((item) => {
-          const bgColor = getTileColor(item.changePercent, isDark);
-          const textColor =
-            item.changePercent === 0
-              ? isDark
-                ? "text-gray-300"
-                : "text-gray-700"
-              : "text-white";
+          const bgColor = getHeatmapFillColor(item.changePercent, isDark);
+          const textColor = getHeatmapTextClass(item.changePercent, isDark);
+          const isHovered = hoveredSymbol === item.symbol;
+          const detailLines = [
+            item.name,
+            item.sector ? `Sector: ${item.sector}` : null,
+            item.marketCap != null
+              ? `Mkt Cap: ${formatMarketCap(item.marketCap)}`
+              : null,
+            `Value: ${formatValue(item.value)}`,
+          ].filter(Boolean);
 
           return (
             <div
               key={item.symbol}
-              className={`rounded-lg p-2 sm:p-3 md:p-3 lg:p-4 flex flex-col items-center justify-center min-h-[70px] sm:min-h-[80px] md:min-h-[90px] lg:min-h-[100px] transition-transform hover:scale-105 active:scale-95 cursor-pointer ${textColor}`}
+              className={`relative flex min-h-[70px] cursor-pointer flex-col rounded-lg p-2 transition-colors duration-150 hover:ring-2 hover:ring-stone-900/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-500 focus-visible:ring-offset-1 dark:hover:ring-stone-100/25 sm:min-h-[80px] sm:p-3 md:min-h-[90px] lg:min-h-[100px] lg:p-4 ${textColor}`}
               style={{ backgroundColor: bgColor }}
               data-testid={`heatmap-tile-${item.symbol}`}
               aria-label={`${item.symbol}: ${formatPercent(item.changePercent)}`}
@@ -329,33 +309,31 @@ export function HeatmapComponent({
                 }
               }}
             >
-              <span
-                className="text-sm font-bold truncate max-w-full"
-                data-testid={`heatmap-symbol-${item.symbol}`}
-              >
-                {item.symbol}
-              </span>
-              <span
-                className="text-xs font-medium mt-1"
-                data-testid={`heatmap-change-${item.symbol}`}
-              >
-                {formatPercent(item.changePercent)}
-              </span>
-              {hoveredSymbol === item.symbol && (
+              <div className="flex w-full items-start justify-between gap-2">
+                <span
+                  className={`${DNA_HEATMAP_CELL} min-w-0 truncate`}
+                  data-testid={`heatmap-symbol-${item.symbol}`}
+                >
+                  {item.symbol}
+                </span>
+                <span
+                  className={`${DNA_CAPTION} shrink-0 font-medium`}
+                  data-testid={`heatmap-change-${item.symbol}`}
+                >
+                  {formatPercent(item.changePercent)}
+                </span>
+              </div>
+              {isHovered && detailLines.length > 0 && (
                 <div
-                  className={`mt-1 px-2 py-1 rounded text-xs w-full text-center ${
-                    isDark
-                      ? "bg-black/50 text-gray-200"
-                      : "bg-white/50 text-gray-800"
-                  }`}
+                  className="mt-2 w-full space-y-0.5 text-xs leading-snug opacity-90"
+                  role="tooltip"
                   data-testid={`heatmap-tooltip-${item.symbol}`}
                 >
-                  <div className="font-medium truncate">{item.name}</div>
-                  {item.sector && <div>Sector: {item.sector}</div>}
-                  {item.marketCap != null && (
-                    <div>Mkt Cap: {formatMarketCap(item.marketCap)}</div>
-                  )}
-                  <div>Value: {formatValue(item.value)}</div>
+                  {detailLines.map((line) => (
+                    <div key={line} className="truncate">
+                      {line}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -365,23 +343,19 @@ export function HeatmapComponent({
 
       {/* Legend */}
       <div
-        className={`mt-4 pt-3 border-t ${isDark ? "border-gray-700" : "border-gray-200"}`}
+        className={HOME_LEGEND_DIVIDER}
         data-testid="heatmap-legend"
         aria-label="Heatmap color legend"
       >
         <div className="flex items-center justify-center gap-2 flex-wrap">
-          <span
-            className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          >
-            Strong decline
-          </span>
+          <span className={HOME_LEGEND_TEXT}>Strong decline</span>
           {/* Gradient swatches from deep red → neutral → deep green */}
           <div className="flex gap-0.5">
             {[
               "rgba(239,68,68,0.9)",
               "rgba(239,68,68,0.6)",
               "rgba(239,68,68,0.3)",
-              isDark ? "rgba(107,114,128,0.3)" : "rgba(156,163,175,0.3)",
+              getHeatmapNeutralLegendColor(isDark),
               "rgba(34,197,94,0.3)",
               "rgba(34,197,94,0.6)",
               "rgba(34,197,94,0.9)",
@@ -393,11 +367,7 @@ export function HeatmapComponent({
               />
             ))}
           </div>
-          <span
-            className={`text-xs ${isDark ? "text-gray-300" : "text-gray-500"}`}
-          >
-            Strong gain
-          </span>
+          <span className={HOME_LEGEND_TEXT}>Strong gain</span>
         </div>
       </div>
     </div>

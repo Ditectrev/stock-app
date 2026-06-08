@@ -5,6 +5,10 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import type { PricingTier, PricingTierInfo } from "@/types";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
+import { DNA_BODY } from "@/lib/design-dna";
+import { MARKET_UP_TEXT } from "@/lib/market-semantics";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 
 const PricingPage = dynamic(
   () => import("@/components/PricingPage").then((m) => m.PricingPage),
@@ -58,7 +62,7 @@ function PricingRouteContent() {
       }
     } catch {
       setMessage({
-        text: "Failed to load pricing details. Please refresh.",
+        text: MARKET_UI_COPY.load.pricingDetails,
         tone: "warning",
       });
     }
@@ -90,9 +94,7 @@ function PricingRouteContent() {
         if (cancelled) return;
         if (!res.ok || !payload.success) {
           setMessage({
-            text:
-              payload.error ??
-              "Could not confirm your subscription. If you were charged, contact support.",
+            text: payload.error ?? AUTH_UI_COPY.subscriptionConfirmFailed,
             tone: "warning",
           });
           return;
@@ -107,7 +109,7 @@ function PricingRouteContent() {
       } catch {
         if (!cancelled) {
           setMessage({
-            text: "Could not confirm checkout. Please refresh the page.",
+            text: AUTH_UI_COPY.checkoutConfirmFailed,
             tone: "warning",
           });
         }
@@ -147,14 +149,14 @@ function PricingRouteContent() {
       };
       if (!response.ok || !payload.data?.url) {
         setMessage({
-          text: payload.error ?? "Failed to start checkout.",
+          text: payload.error ?? MARKET_UI_COPY.load.checkout,
           tone: "warning",
         });
         return;
       }
       window.location.assign(payload.data.url);
     } catch {
-      setMessage({ text: "Failed to start checkout.", tone: "warning" });
+      setMessage({ text: MARKET_UI_COPY.load.checkout, tone: "warning" });
     }
   };
 
@@ -167,9 +169,9 @@ function PricingRouteContent() {
       />
       {message && (
         <p
-          className={`mt-4 text-center text-sm ${
+          className={`mt-4 text-center ${DNA_BODY} ${
             message.tone === "success"
-              ? "text-emerald-600 dark:text-emerald-400"
+              ? MARKET_UP_TEXT
               : "text-amber-600 dark:text-amber-400"
           }`}
         >

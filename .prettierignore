@@ -1,0 +1,16 @@
+# Build & dependencies
+.next/
+out/
+node_modules/
+.vercel/
+
+# Test & Playwright artifacts (generated locally / in CI)
+coverage/
+playwright-report/
+test-results/
+.lighthouseci/
+e2e/**/*.png
+**/*-snapshots/**
+
+# Lockfiles Prettier doesn't need to touch
+bun.lockb

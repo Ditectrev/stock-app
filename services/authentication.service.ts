@@ -7,6 +7,7 @@
 import { Client, Account, OAuthProvider, ID } from "node-appwrite";
 import { getAppwriteServerEnv } from "@/lib/appwrite-server-env";
 import { logger } from "@/lib/logger";
+import { AUTH_UI_COPY } from "@/lib/auth-ui-copy";
 import { AuthResult } from "@/types";
 
 export class AuthenticationService {
@@ -50,9 +51,7 @@ export class AuthenticationService {
         "Apple SSO sign-in failed",
         error instanceof Error ? error : new Error(String(error))
       );
-      throw new AuthenticationError(
-        "Failed to initiate Apple sign-in. Please try again."
-      );
+      throw new AuthenticationError(AUTH_UI_COPY.appleSignInFailed);
     }
   }
 
@@ -77,9 +76,7 @@ export class AuthenticationService {
         "Google SSO sign-in failed",
         error instanceof Error ? error : new Error(String(error))
       );
-      throw new AuthenticationError(
-        "Failed to initiate Google sign-in. Please try again."
-      );
+      throw new AuthenticationError(AUTH_UI_COPY.googleSignInFailed);
     }
   }
 
@@ -98,9 +95,7 @@ export class AuthenticationService {
         error instanceof Error ? error : new Error(String(error)),
         { email }
       );
-      throw new AuthenticationError(
-        "Failed to send verification email. Please check the address and try again."
-      );
+      throw new AuthenticationError(AUTH_UI_COPY.verificationEmailFailed);
     }
   }
 
@@ -126,8 +121,7 @@ export class AuthenticationService {
       );
       return {
         success: false,
-        error:
-          "Verification failed. The code may have expired — please request a new one.",
+        error: AUTH_UI_COPY.emailOtpVerifyFailed,
       };
     }
   }
@@ -156,7 +150,7 @@ export class AuthenticationService {
       );
       return {
         success: false,
-        error: "Authentication failed. Please try signing in again.",
+        error: AUTH_UI_COPY.oauthSessionFailed,
       };
     }
   }
@@ -174,7 +168,7 @@ export class AuthenticationService {
         "Sign-out failed",
         error instanceof Error ? error : new Error(String(error))
       );
-      throw new AuthenticationError("Failed to sign out. Please try again.");
+      throw new AuthenticationError(AUTH_UI_COPY.signOutFailed);
     }
   }
 

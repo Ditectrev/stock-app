@@ -3,17 +3,17 @@
 /**
  * HeatmapHub Component
  * Wraps HeatmapNavigation with the active heatmap panel.
- * Provides unified heatmap switching experience.
  *
  * Requirements: 25.2
  */
 
+import { DNA_EYEBROW, DNA_SUBHEADING } from "@/lib/design-dna";
 import { useState } from "react";
-import { useTheme } from "@/lib/theme-context";
 import { HeatmapNavigation, HeatmapType } from "@/components/HeatmapNavigation";
 import { ETFHeatmap } from "@/components/ETFHeatmap";
 import { CryptoHeatmap } from "@/components/CryptoHeatmap";
 import { StockHeatmap } from "@/components/StockHeatmap";
+import { HOME_INSTRUMENT_PANEL } from "@/lib/home-ui";
 
 export interface HeatmapHubProps {
   defaultHeatmap?: HeatmapType;
@@ -26,18 +26,15 @@ export function HeatmapHub({
   refreshInterval = 60000,
   onSymbolClick,
 }: HeatmapHubProps) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   const [activeHeatmap, setActiveHeatmap] =
     useState<HeatmapType>(defaultHeatmap);
 
   return (
-    <div data-testid="heatmap-hub">
-      <h2
-        className={`text-xl font-semibold mb-4 ${isDark ? "text-white" : "text-gray-900"}`}
-      >
-        Heatmaps
-      </h2>
+    <div className={HOME_INSTRUMENT_PANEL} data-testid="heatmap-hub">
+      <header className="mb-4 sm:mb-6" data-testid="heatmap-hub-header">
+        <p className={DNA_EYEBROW}>Market breadth</p>
+        <h2 className={`mt-1 ${DNA_SUBHEADING}`}>Heatmaps</h2>
+      </header>
       <HeatmapNavigation
         activeHeatmap={activeHeatmap}
         onHeatmapChange={setActiveHeatmap}

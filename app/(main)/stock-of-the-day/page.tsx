@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import { usePricingTier } from "@/lib/use-pricing-tier";
 import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
+import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import {
+  DNA_BODY_SECONDARY,
+  DNA_DISPLAY,
+  DNA_PAGE_STACK,
+} from "@/lib/design-dna";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
 import type { StockOfTheDayResult } from "@/types";
 
@@ -52,7 +58,7 @@ export default function StockOfTheDayPage() {
       } catch (err) {
         setItem(null);
         setLoadError(
-          err instanceof Error ? err.message : "Failed to load stock of the day"
+          err instanceof Error ? err.message : MARKET_UI_COPY.load.stockOfTheDay
         );
       } finally {
         setLoading(false);
@@ -88,13 +94,13 @@ export default function StockOfTheDayPage() {
   }, []);
 
   return (
-    <div>
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
-        Stock of the day
-      </h1>
-      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-        AI-ranked daily opportunity across stocks and select liquid assets.
-      </p>
+    <div className={DNA_PAGE_STACK} data-testid="stock-of-the-day-page">
+      <header className="space-y-2">
+        <h1 className={DNA_DISPLAY}>Stock of the day</h1>
+        <p className={DNA_BODY_SECONDARY}>
+          AI-ranked daily opportunity across stocks and select liquid assets.
+        </p>
+      </header>
 
       <StockOfTheDayPanel
         item={item}

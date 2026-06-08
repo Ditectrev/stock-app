@@ -1,5 +1,10 @@
 import { scoreToConfidence } from "@/lib/ai-confidence";
 import {
+  getServerAIApiKey,
+  getServerAIModel,
+  getServerAIProvider,
+} from "@/lib/server-ai-env";
+import {
   AI_PREDICTION_MAX_OUTPUT_TOKENS,
   buildAIPredictionPrompt,
   explainAIPredictionParseFailure,
@@ -54,10 +59,10 @@ function getLLMConfigFromEnv(): {
   apiKey?: string;
   model?: string;
 } | null {
-  const providerEnv = process.env.AI_PROVIDER;
+  const providerEnv = getServerAIProvider();
   if (!providerEnv) return null;
 
-  const provider = providerEnv.toUpperCase() as AIProvider;
+  const provider = providerEnv as AIProvider;
   const allowed = new Set<AIProvider>([
     "OLLAMA",
     "OPENAI",
@@ -69,7 +74,7 @@ function getLLMConfigFromEnv(): {
 
   if (!allowed.has(provider)) return null;
 
-  const model = process.env.AI_MODEL;
+  const model = getServerAIModel();
 
   // Ollama doesn't require an API key.
   if (provider === "OLLAMA") {
@@ -83,7 +88,7 @@ function getLLMConfigFromEnv(): {
     provider === "MISTRAL" ||
     provider === "DEEPSEEK"
   ) {
-    const apiKey = process.env.AI_API_KEY;
+    const apiKey = getServerAIApiKey();
     if (!apiKey) return null;
     return { provider, apiKey, model };
   }

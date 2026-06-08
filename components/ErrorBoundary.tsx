@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { ErrorMessage } from "@/components/ErrorMessage";
 
 export interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -27,7 +28,6 @@ export class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log to structured logger (console in client context)
     console.error(
       JSON.stringify({
         timestamp: new Date().toISOString(),
@@ -48,28 +48,15 @@ export class ErrorBoundary extends React.Component<
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div
-          className="flex flex-col items-center justify-center rounded-lg border border-red-200 bg-red-50 p-6 text-center dark:border-red-800 dark:bg-red-950"
-          role="alert"
-          aria-live="assertive"
-          data-testid="error-boundary-fallback"
-        >
-          <span className="text-3xl" aria-hidden="true">
-            ⚠️
-          </span>
-          <h3 className="mt-3 text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Something went wrong
-          </h3>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-            {this.state.error?.message || "An unexpected error occurred."}
-          </p>
-          <button
-            type="button"
-            onClick={this.handleReset}
-            className="mt-4 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-700 dark:hover:bg-red-600"
-          >
-            Try again
-          </button>
+        <div data-testid="error-boundary-fallback">
+          <ErrorMessage
+            type="api"
+            message={
+              this.state.error?.message ||
+              "An unexpected error occurred. Try again."
+            }
+            onRetry={this.handleReset}
+          />
         </div>
       );
     }

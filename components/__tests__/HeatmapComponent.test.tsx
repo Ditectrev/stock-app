@@ -122,25 +122,29 @@ describe("HeatmapComponent", () => {
 
   // --- Color coding (Req 25.4, 25.5) ---
 
-  it("should apply green background for positive change", () => {
+  it("should apply emerald background for positive change", () => {
     render(<HeatmapComponent data={mockData} />);
     const tile = screen.getByTestId("heatmap-tile-AAPL");
-    // Positive → green rgba(34,197,94,...)
-    expect(tile.style.backgroundColor).toContain("34, 197, 94");
+    expect(tile.style.backgroundColor).toMatch(/5,\s*150,\s*105/);
   });
 
-  it("should apply red background for negative change", () => {
+  it("should apply rose background for negative change", () => {
     render(<HeatmapComponent data={mockData} />);
     const tile = screen.getByTestId("heatmap-tile-MSFT");
-    // Negative → red rgba(239,68,68,...)
-    expect(tile.style.backgroundColor).toContain("239, 68, 68");
+    expect(tile.style.backgroundColor).toMatch(/225,\s*29,\s*72/);
   });
 
   it("should apply neutral background for zero change", () => {
     render(<HeatmapComponent data={mockData} />);
     const tile = screen.getByTestId("heatmap-tile-JNJ");
-    // Zero → gray
-    expect(tile.style.backgroundColor).toContain("156, 163, 175");
+    // Zero → solid stone-200
+    expect(tile.style.backgroundColor).toMatch(/231,\s*229,\s*228/);
+  });
+
+  it("should use dark text on small moves in light mode", () => {
+    render(<HeatmapComponent data={mockData} />);
+    const tile = screen.getByTestId("heatmap-tile-JPM");
+    expect(tile.className).toContain("text-stone-900");
   });
 
   it("should vary color intensity based on magnitude", () => {
@@ -185,7 +189,7 @@ describe("HeatmapComponent", () => {
   it("should highlight the active time period", () => {
     render(<HeatmapComponent data={mockData} timePeriod="1M" />);
     const btn = screen.getByTestId("heatmap-period-1M");
-    expect(btn.className).toContain("bg-blue-600");
+    expect(btn.className).toContain("bg-stone-900");
     expect(btn.getAttribute("aria-pressed")).toBe("true");
 
     const other = screen.getByTestId("heatmap-period-1D");
@@ -213,7 +217,7 @@ describe("HeatmapComponent", () => {
   it("should highlight the active sort button", () => {
     render(<HeatmapComponent data={mockData} sortField="changePercent" />);
     const btn = screen.getByTestId("heatmap-sort-changePercent");
-    expect(btn.className).toContain("bg-blue-600");
+    expect(btn.className).toContain("bg-stone-900");
     expect(btn.getAttribute("aria-pressed")).toBe("true");
   });
 

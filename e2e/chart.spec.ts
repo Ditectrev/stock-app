@@ -4,7 +4,7 @@
  * Playwright E2E tests for Task 6
  */
 
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("Chart Component E2E Tests", () => {
   test.beforeEach(async ({ page }) => {
@@ -40,8 +40,8 @@ test.describe("Chart Component E2E Tests", () => {
     // Wait for chart to re-render
     await page.waitForTimeout(500);
 
-    // Check if Area button is now active (has blue background)
-    await expect(areaButton).toHaveClass(/bg-blue-600/);
+    // Check if Area button is now active (stone range chip)
+    await expect(areaButton).toHaveClass(/bg-stone-900|dark:bg-stone-100/);
   });
 
   test("should switch chart type to Candlestick", async ({ page }) => {
@@ -50,7 +50,7 @@ test.describe("Chart Component E2E Tests", () => {
 
     await page.waitForTimeout(500);
 
-    await expect(candlesButton).toHaveClass(/bg-blue-600/);
+    await expect(candlesButton).toHaveClass(/bg-stone-900|dark:bg-stone-100/);
   });
 
   test("should switch time range to 1W", async ({ page }) => {
@@ -59,7 +59,7 @@ test.describe("Chart Component E2E Tests", () => {
 
     await page.waitForTimeout(300);
 
-    await expect(oneWeekButton).toHaveClass(/bg-blue-600/);
+    await expect(oneWeekButton).toHaveClass(/bg-stone-900|dark:bg-stone-100/);
   });
 
   test("should switch time range to 1Y", async ({ page }) => {
@@ -68,7 +68,7 @@ test.describe("Chart Component E2E Tests", () => {
 
     await page.waitForTimeout(300);
 
-    await expect(oneYearButton).toHaveClass(/bg-blue-600/);
+    await expect(oneYearButton).toHaveClass(/bg-stone-900|dark:bg-stone-100/);
   });
 
   test("should display technical indicators panel", async ({ page }) => {
@@ -126,7 +126,7 @@ test.describe("Chart Component E2E Tests", () => {
 
     // Line should be active
     await expect(page.getByRole("button", { name: "Line" })).toHaveClass(
-      /bg-blue-600/
+      /bg-stone-900|dark:bg-stone-100/
     );
   });
 
@@ -143,7 +143,7 @@ test.describe("Chart Component E2E Tests", () => {
 
     // 1Y should be active
     await expect(page.getByRole("button", { name: "1Y" })).toHaveClass(
-      /bg-blue-600/
+      /bg-stone-900|dark:bg-stone-100/
     );
   });
 
@@ -182,10 +182,10 @@ test.describe("Chart Component E2E Tests", () => {
 
     // Both should remain active
     await expect(page.getByRole("button", { name: "Area" })).toHaveClass(
-      /bg-blue-600/
+      /bg-stone-900|dark:bg-stone-100/
     );
     await expect(page.getByRole("button", { name: "1Y" })).toHaveClass(
-      /bg-blue-600/
+      /bg-stone-900|dark:bg-stone-100/
     );
   });
 });

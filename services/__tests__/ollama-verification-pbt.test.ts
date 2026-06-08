@@ -125,7 +125,7 @@ describe("Property 21: Ollama Verification", () => {
         fc.array(modelArb, { minLength: 1, maxLength: 5 }),
         baseUrlArb,
         async (version, models, baseUrl) => {
-          global.fetch = mockOllamaAvailable(version, models) as any;
+          global.fetch = mockOllamaAvailable(version, models) as typeof fetch;
 
           const service = new OllamaService(baseUrl);
           const result = await service.verify();
@@ -146,7 +146,7 @@ describe("Property 21: Ollama Verification", () => {
     // **Validates: Requirements 22.10**
     await fc.assert(
       fc.asyncProperty(baseUrlArb, async (baseUrl) => {
-        global.fetch = mockOllamaUnavailable() as any;
+        global.fetch = mockOllamaUnavailable() as typeof fetch;
 
         const service = new OllamaService(baseUrl);
         const result = await service.verify();
@@ -170,7 +170,7 @@ describe("Property 21: Ollama Verification", () => {
         fc.constantFrom(400, 401, 403, 500, 502, 503),
         baseUrlArb,
         async (status, baseUrl) => {
-          global.fetch = mockOllamaBadStatus(status) as any;
+          global.fetch = mockOllamaBadStatus(status) as typeof fetch;
 
           const service = new OllamaService(baseUrl);
           const result = await service.verify();
@@ -191,7 +191,7 @@ describe("Property 21: Ollama Verification", () => {
         versionArb,
         fc.array(modelArb, { minLength: 0, maxLength: 10 }),
         async (version, models) => {
-          global.fetch = mockOllamaAvailable(version, models) as any;
+          global.fetch = mockOllamaAvailable(version, models) as typeof fetch;
 
           const service = new OllamaService();
           const result = await service.verify();
@@ -220,9 +220,9 @@ describe("Property 21: Ollama Verification", () => {
         fc.array(modelArb, { minLength: 0, maxLength: 3 }),
         async (isAvailable, version, models) => {
           if (isAvailable) {
-            global.fetch = mockOllamaAvailable(version, models) as any;
+            global.fetch = mockOllamaAvailable(version, models) as typeof fetch;
           } else {
-            global.fetch = mockOllamaUnavailable() as any;
+            global.fetch = mockOllamaUnavailable() as typeof fetch;
           }
 
           const service = new OllamaService();

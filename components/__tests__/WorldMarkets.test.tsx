@@ -117,23 +117,23 @@ describe("WorldMarkets", () => {
 
     // Positive: SPX (+0.87%)
     const spxChange = screen.getByTestId("change-SPX");
-    expect(spxChange.className).toContain("text-green-500");
+    expect(spxChange.className).toContain("text-emerald-600");
 
     // Negative: DJI (-0.31%)
     const djiChange = screen.getByTestId("change-DJI");
-    expect(djiChange.className).toContain("text-red-500");
+    expect(djiChange.className).toContain("text-rose-600");
 
     // Negative: FTSE (-0.27%)
     const ftseChange = screen.getByTestId("change-FTSE");
-    expect(ftseChange.className).toContain("text-red-500");
+    expect(ftseChange.className).toContain("text-rose-600");
 
     // Positive: N225 (+0.81%)
     const n225Change = screen.getByTestId("change-N225");
-    expect(n225Change.className).toContain("text-green-500");
+    expect(n225Change.className).toContain("text-emerald-600");
   });
 
   it("should show loading state when fetching data", () => {
-    (global.fetch as any).mockImplementation(
+    vi.mocked(global.fetch).mockImplementation(
       () => new Promise(() => {}) // never resolves
     );
     render(<WorldMarkets />);
@@ -141,7 +141,7 @@ describe("WorldMarkets", () => {
   });
 
   it("should show error state on fetch failure with retry button", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: false,
       json: async () => ({ success: false, error: "API error" }),
     });
@@ -155,7 +155,7 @@ describe("WorldMarkets", () => {
   });
 
   it("should fetch data from API when no data prop is provided", async () => {
-    (global.fetch as any).mockResolvedValue({
+    vi.mocked(global.fetch).mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, data: mockData }),
     });
@@ -186,7 +186,7 @@ describe("WorldMarkets", () => {
         value: 1000.0,
         change: 5.0,
         changePercent: 0.5,
-        region: "Unknown" as any,
+        region: "Unknown" as unknown as MarketIndex["region"],
       },
     ];
 

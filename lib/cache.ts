@@ -11,7 +11,7 @@ interface CacheEntry<T> {
 }
 
 class CacheService {
-  private cache: Map<string, CacheEntry<any>>;
+  private cache: Map<string, CacheEntry<unknown>>;
 
   constructor() {
     this.cache = new Map();

@@ -7,7 +7,7 @@ export function getAiSubscriptionGateMessage(
   tier: PricingTier | null | undefined
 ): string {
   if (tier === "FREE" || tier === "ADS_FREE") {
-    return "Your current plan does not include AI. Upgrade to Local AI for Ollama on your machine, Bring Your Own Key for OpenAI/Gemini/Mistral/DeepSeek, or Ditectrev AI for managed AI.";
+    return "AI is available on Local AI, BYOK, and Ditectrev AI plans. Upgrade to unlock predictions, chart analysis, and daily ideas.";
   }
-  return "Enable a Local AI, Bring Your Own Key, or Ditectrev AI subscription to unlock this section.";
+  return "Enable Local AI, BYOK, or Ditectrev AI to unlock this section.";
 }
