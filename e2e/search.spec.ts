@@ -31,6 +31,23 @@ test.describe("SearchBar Component E2E Tests", () => {
   });
 
   test("should show loading spinner while searching", async ({ page }) => {
+    await page.route("**/api/market/search*", async (route) => {
+      await new Promise((r) => setTimeout(r, 400));
+      const q = new URL(route.request().url()).searchParams.get("q") ?? "";
+      const symbol = q.trim().toUpperCase();
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          data: symbol
+            ? [{ symbol, name: `${symbol} Test Co.`, type: "equity" }]
+            : [],
+          timestamp: "2024-01-15T12:00:00.000Z",
+        }),
+      });
+    });
+
     const searchInput = page.getByPlaceholder(
       "Search stocks by symbol (e.g., AAPL, TSLA, MSFT)..."
     );
@@ -246,7 +263,7 @@ test.describe("SearchBar Component E2E Tests", () => {
     await page.waitForTimeout(500);
 
     // Should show no results message
-    await expect(page.getByText("No results found")).toBeVisible({
+    await expect(page.getByText("No symbols match that search.")).toBeVisible({
       timeout: 2000,
     });
   });

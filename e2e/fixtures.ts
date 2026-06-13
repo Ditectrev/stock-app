@@ -1,5 +1,64 @@
 import { test as base, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { installMarketDataMocks } from "./market-mocks";
+
+const STABLE_TS = "2024-01-15T12:00:00.000Z";
+
+const STABLE_SCREENER_RESULTS = [
+  {
+    symbol: "AAPL",
+    name: "Apple Inc.",
+    sector: "Technology",
+    price: 175.5,
+    changePercent: 1.2,
+    volume: 50_000_000,
+    marketCap: 2_800_000_000_000,
+    peRatio: 28,
+    pbRatio: 45,
+    pegRatio: 2.5,
+    valuationContext: "overpriced",
+    matchScore: 0,
+  },
+];
+
+const STABLE_SCREENER_PRESETS = [
+  {
+    id: "day-gainers",
+    name: "Day Gainers",
+    description: "Stocks with the highest daily gains",
+    filters: [
+      {
+        field: "changePercent",
+        operator: "gt",
+        value: 3,
+        label: "Change > 3%",
+      },
+    ],
+    isDefault: true,
+    createdAt: STABLE_TS,
+  },
+];
+
+const STABLE_SECTORS = [
+  {
+    sector: "Technology",
+    performance: 2.1,
+    changePercent: 1.2,
+    constituents: 120,
+  },
+  {
+    sector: "Financial",
+    performance: -0.8,
+    changePercent: -0.4,
+    constituents: 95,
+  },
+  {
+    sector: "Healthcare",
+    performance: 0.5,
+    changePercent: 0.3,
+    constituents: 80,
+  },
+];
 
 const STABLE_TRIAL_STATUS = {
   isActive: true,
@@ -114,11 +173,102 @@ export async function installE2eMocks(page: Page) {
             change: 12.34,
             changePercent: 0.16,
           },
+          {
+            symbol: "N225",
+            name: "Nikkei 225",
+            region: "Asia-Pacific",
+            value: 38400.5,
+            change: -120.2,
+            changePercent: -0.31,
+          },
+          {
+            symbol: "FTSE",
+            name: "FTSE 100",
+            region: "Europe",
+            value: 8120.4,
+            change: 8.5,
+            changePercent: 0.1,
+          },
         ],
-        timestamp: "2024-01-15T12:00:00.000Z",
+        timestamp: STABLE_TS,
       }),
     })
   );
+
+  await page.route("**/api/market/sectors*", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        data: STABLE_SECTORS,
+        timestamp: STABLE_TS,
+      }),
+    })
+  );
+
+  await page.route("**/api/screener/**", async (route) => {
+    const url = route.request().url();
+    const method = route.request().method();
+
+    if (url.includes("/presets")) {
+      if (method === "POST") {
+        const body = route.request().postDataJSON() as {
+          name?: string;
+          description?: string;
+        };
+        await route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify({
+            success: true,
+            data: {
+              id: "custom-e2e",
+              name: body.name ?? "Custom Preset",
+              description: body.description ?? "",
+              filters: [],
+              isDefault: false,
+              createdAt: STABLE_TS,
+            },
+            timestamp: STABLE_TS,
+          }),
+        });
+        return;
+      }
+
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          data: STABLE_SCREENER_PRESETS,
+          timestamp: STABLE_TS,
+        }),
+      });
+      return;
+    }
+
+    if (url.includes("/search") && method === "POST") {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          data: STABLE_SCREENER_RESULTS,
+          timestamp: STABLE_TS,
+        }),
+      });
+      return;
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ success: true, data: [], timestamp: STABLE_TS }),
+    });
+  });
+
+  await installMarketDataMocks(page);
 }
 
 export const test = base.extend({

@@ -53,7 +53,7 @@ export interface AuthResult {
 // ============================================================================
 
 export type TimeRange = "1D" | "1W" | "1M" | "3M" | "1Y" | "5Y" | "YTD" | "Max";
-export type ChartType = "line" | "area" | "candlestick";
+export type ChartType = "area" | "candlestick";
 
 export interface SymbolData {
   symbol: string;

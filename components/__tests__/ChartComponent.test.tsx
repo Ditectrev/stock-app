@@ -60,26 +60,29 @@ describe("ChartComponent", () => {
   });
 
   describe("Chart Type Switching", () => {
-    it("should render with default line chart type", () => {
-      render(<ChartWithTheme data={mockData} type="line" />);
+    it("should render with default area chart type", () => {
+      render(<ChartWithTheme data={mockData} />);
 
-      const lineButton = screen.getByText("Line");
-      expect(lineButton).toHaveClass("bg-stone-900");
+      expect(screen.getByText("Area")).toHaveClass("bg-stone-900");
+      expect(screen.queryByText("Line")).not.toBeInTheDocument();
     });
 
-    it("should switch to area chart when Area button is clicked", async () => {
-      render(<ChartWithTheme data={mockData} type="line" />);
-
-      const areaButton = screen.getByText("Area");
-      fireEvent.click(areaButton);
+    it("should render area chart without layout-shifting hover tooltip", async () => {
+      const { container } = render(
+        <ChartWithTheme data={mockData} type="area" />
+      );
 
       await waitFor(() => {
-        expect(areaButton).toHaveClass("bg-stone-900");
+        expect(container.querySelector(".chart-wrapper")).toBeInTheDocument();
       });
+
+      const tooltip = container.querySelector("[aria-live='polite']");
+      expect(tooltip).toHaveClass("absolute");
+      expect(tooltip).toHaveClass("pointer-events-none");
     });
 
     it("should switch to candlestick chart when Candles button is clicked", async () => {
-      render(<ChartWithTheme data={mockData} type="line" />);
+      render(<ChartWithTheme data={mockData} type="area" />);
 
       const candlesButton = screen.getByText("Candles");
       fireEvent.click(candlesButton);
@@ -90,29 +93,22 @@ describe("ChartComponent", () => {
     });
 
     it("should maintain selected chart type after switching", async () => {
-      render(<ChartWithTheme data={mockData} type="line" />);
-
-      const areaButton = screen.getByText("Area");
-      fireEvent.click(areaButton);
-
-      await waitFor(() => {
-        expect(areaButton).toHaveClass("bg-stone-900");
-        expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
-      });
-    });
-
-    it("should render with area chart as initial type", () => {
       render(<ChartWithTheme data={mockData} type="area" />);
 
-      expect(screen.getByText("Area")).toHaveClass("bg-stone-900");
-      expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
+      const candlesButton = screen.getByText("Candles");
+      fireEvent.click(candlesButton);
+
+      await waitFor(() => {
+        expect(candlesButton).toHaveClass("bg-stone-900");
+        expect(screen.getByText("Area")).not.toHaveClass("bg-stone-900");
+      });
     });
 
     it("should render with candlestick chart as initial type", () => {
       render(<ChartWithTheme data={mockData} type="candlestick" />);
 
       expect(screen.getByText("Candles")).toHaveClass("bg-stone-900");
-      expect(screen.getByText("Line")).not.toHaveClass("bg-stone-900");
+      expect(screen.queryByText("Line")).not.toBeInTheDocument();
     });
   });
 
@@ -179,7 +175,7 @@ describe("ChartComponent", () => {
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
 
       // Chart should render without errors
-      expect(screen.getByText("Line")).toBeInTheDocument();
+      expect(screen.getByTestId("price-chart-panel")).toBeInTheDocument();
     });
 
     it("should handle multiple indicators", () => {
@@ -190,7 +186,7 @@ describe("ChartComponent", () => {
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
 
-      expect(screen.getByText("Line")).toBeInTheDocument();
+      expect(screen.getByTestId("price-chart-panel")).toBeInTheDocument();
     });
 
     it("should not render invisible indicators", () => {
@@ -201,7 +197,7 @@ describe("ChartComponent", () => {
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
 
       // Chart should render without errors
-      expect(screen.getByText("Line")).toBeInTheDocument();
+      expect(screen.getByTestId("price-chart-panel")).toBeInTheDocument();
     });
 
     it("should render RSI indicator without errors", () => {
@@ -211,7 +207,7 @@ describe("ChartComponent", () => {
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
 
-      expect(screen.getByText("Line")).toBeInTheDocument();
+      expect(screen.getByTestId("price-chart-panel")).toBeInTheDocument();
     });
 
     it("should render MACD indicator without errors", () => {
@@ -219,7 +215,7 @@ describe("ChartComponent", () => {
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
 
-      expect(screen.getByText("Line")).toBeInTheDocument();
+      expect(screen.getByTestId("price-chart-panel")).toBeInTheDocument();
     });
 
     it("should render Bollinger Bands indicator without errors", () => {
@@ -229,7 +225,7 @@ describe("ChartComponent", () => {
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
 
-      expect(screen.getByText("Line")).toBeInTheDocument();
+      expect(screen.getByTestId("price-chart-panel")).toBeInTheDocument();
     });
 
     it("should render all indicator types simultaneously", () => {
@@ -243,7 +239,7 @@ describe("ChartComponent", () => {
 
       render(<ChartWithTheme data={mockData} indicators={indicators} />);
 
-      expect(screen.getByText("Line")).toBeInTheDocument();
+      expect(screen.getByTestId("price-chart-panel")).toBeInTheDocument();
     });
   });
 
@@ -306,7 +302,7 @@ describe("ChartComponent", () => {
       );
 
       // Chart should render
-      expect(screen.getByText("Line")).toBeInTheDocument();
+      expect(screen.getByTestId("price-chart-panel")).toBeInTheDocument();
     });
   });
 

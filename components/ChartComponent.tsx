@@ -9,13 +9,26 @@
  */
 
 import { DNA_CAPTION } from "@/lib/design-dna";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { ChartWrapper, IChartApi } from "./ChartWrapper";
+import {
+  ChartSparkleOverlay,
+  type ChartSparkleOverlayHandle,
+} from "./ChartSparkleOverlay";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
 import { homeChipClasses, HOME_CALLOUT } from "@/lib/home-ui";
+import { animateChartTrail, type ChartTrailCancel } from "@/lib/chart-trail";
+import {
+  applyPlotClip,
+  clearPlotClip,
+  computePlotClipPath,
+  HIDDEN_PLOT_CLIP,
+  revealRatio,
+} from "@/lib/chart-plot-clip";
 import {
   getMarketChartColors,
+  marketChartAtmosphereGradient,
   marketChartOverlayColor,
   marketChartSignedColor,
   MARKET_DOWN_TEXT,
@@ -37,6 +50,7 @@ import {
   AreaSeries,
   LineSeries,
   HistogramSeries,
+  LineType,
   Time,
 } from "lightweight-charts";
 
@@ -50,6 +64,8 @@ export interface ChartComponentProps {
   responsive?: boolean;
   height?: number;
 }
+
+const EMPTY_INDICATORS: ChartIndicator[] = [];
 
 const TIME_RANGES: TimeRange[] = [
   "1D",
@@ -68,21 +84,81 @@ const TIME_RANGES: TimeRange[] = [
  */
 export function ChartComponent({
   data,
-  type = "line",
+  type = "area",
   initialTimeRange = "1M",
-  indicators = [],
+  indicators = EMPTY_INDICATORS,
   onTimeRangeChange,
   onDataPointHover,
   height = 400,
 }: ChartComponentProps) {
   const [selectedTimeRange, setSelectedTimeRange] =
     useState<TimeRange>(initialTimeRange);
-  const [chartType, setChartType] = useState<ChartType>(type);
+  const [chartType, setChartType] = useState<ChartType>(
+    type === "candlestick" ? "candlestick" : "area"
+  );
   const [error, setError] = useState<string | null>(null);
   const [hoveredPoint, setHoveredPoint] = useState<PriceData | null>(null);
+  const [plotClipPath, setPlotClipPath] = useState<string | null>(null);
   const [chartKey, setChartKey] = useState(0);
+  const chartApiRef = useRef<IChartApi | null>(null);
+  const mainSeriesRef = useRef<ISeriesApi<"Area"> | null>(null);
+  const plotContainerRef = useRef<HTMLDivElement | null>(null);
+  const sparkleRef = useRef<ChartSparkleOverlayHandle>(null);
+  const isChartLoadingRef = useRef(false);
+  const isPointerDownRef = useRef(false);
+  const isPanningRef = useRef(false);
+  const lastHoverTimeRef = useRef<Time | undefined>(undefined);
+  const trailCancelRef = useRef<ChartTrailCancel | null>(null);
+  const trailRevealCountRef = useRef(2);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
+
+  const finishTrailAnimation = useCallback(() => {
+    trailCancelRef.current?.(true);
+    trailCancelRef.current = null;
+  }, []);
+
+  const handlePointerDown = useCallback(() => {
+    isPointerDownRef.current = true;
+    isPanningRef.current = false;
+    finishTrailAnimation();
+  }, [finishTrailAnimation]);
+
+  const handlePointerUp = useCallback(() => {
+    isPointerDownRef.current = false;
+    isPanningRef.current = false;
+    sparkleRef.current?.setCrosshairGlow(null);
+    sparkleRef.current?.syncLivePoint();
+  }, []);
+
+  const disposeTrailAnimation = useCallback(() => {
+    trailCancelRef.current?.(true);
+    trailCancelRef.current = null;
+    clearPlotClip(plotContainerRef.current);
+    setPlotClipPath(null);
+  }, []);
+
+  const applyRevealClip = useCallback(
+    (
+      _chart: IChartApi,
+      _series: ISeriesApi<"Area">,
+      revealedCount: number,
+      totalPoints: number
+    ) => {
+      trailRevealCountRef.current = revealedCount;
+      const clip = computePlotClipPath(
+        revealedCount,
+        totalPoints,
+        plotContainerRef.current
+      );
+      applyPlotClip(plotContainerRef.current, clip);
+      setPlotClipPath(clip);
+      const ratio = revealRatio(revealedCount, totalPoints);
+      sparkleRef.current?.setRevealProgress(ratio);
+      sparkleRef.current?.syncLiveTip(Math.max(0, revealedCount - 1));
+    },
+    []
+  );
 
   // Filter data based on selected time range
   const getFilteredData = useCallback(
@@ -111,6 +187,10 @@ export function ChartComponent({
         case "5Y":
           startDate.setFullYear(now.getFullYear() - 5);
           break;
+        case "YTD":
+          startDate.setMonth(0, 1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
         case "Max":
           return allData;
       }
@@ -130,18 +210,63 @@ export function ChartComponent({
     []
   );
 
-  const filteredData = getFilteredData(data, selectedTimeRange);
+  const filteredData = useMemo(
+    () => getFilteredData(data, selectedTimeRange),
+    [data, selectedTimeRange, getFilteredData]
+  );
+  const filteredDataRef = useRef(filteredData);
+  filteredDataRef.current = filteredData;
+  const onDataPointHoverRef = useRef(onDataPointHover);
+  onDataPointHoverRef.current = onDataPointHover;
+
+  const isPeriodPositive =
+    filteredData.length >= 2
+      ? filteredData[filteredData.length - 1]!.close >= filteredData[0]!.close
+      : true;
+
+  const chartDataRevision = useMemo(() => {
+    if (filteredData.length === 0) return `${selectedTimeRange}:empty`;
+    const first = filteredData[0]!.timestamp;
+    const last = filteredData[filteredData.length - 1]!.timestamp;
+    return `${selectedTimeRange}:${chartType}:${filteredData.length}:${String(first)}:${String(last)}`;
+  }, [filteredData, selectedTimeRange, chartType]);
 
   // Handle time range change
   const handleTimeRangeChange = useCallback(
     (range: TimeRange) => {
+      finishTrailAnimation();
       setSelectedTimeRange(range);
-      if (onTimeRangeChange) {
-        onTimeRangeChange(range);
-      }
+      onTimeRangeChange?.(range);
     },
-    [onTimeRangeChange]
+    [onTimeRangeChange, finishTrailAnimation]
   );
+
+  useEffect(() => () => disposeTrailAnimation(), [disposeTrailAnimation]);
+
+  useEffect(() => {
+    if (!plotClipPath) return;
+
+    const recalc = () => {
+      const series = mainSeriesRef.current;
+      if (!series) return;
+      applyRevealClip(
+        chartApiRef.current!,
+        series,
+        trailRevealCountRef.current,
+        series.data().length
+      );
+    };
+
+    window.addEventListener("resize", recalc);
+    chartApiRef.current?.timeScale().subscribeVisibleLogicalRangeChange(recalc);
+
+    return () => {
+      window.removeEventListener("resize", recalc);
+      chartApiRef.current
+        ?.timeScale()
+        .unsubscribeVisibleLogicalRangeChange(recalc);
+    };
+  }, [plotClipPath, applyRevealClip]);
 
   // Handle chart type change
   const handleChartTypeChange = useCallback((newType: ChartType) => {
@@ -163,10 +288,18 @@ export function ChartComponent({
       }
 
       // For line and area charts
-      return priceData.map((d) => ({
-        time: Math.floor(new Date(d.timestamp).getTime() / 1000) as Time,
-        value: d.close,
-      }));
+      return priceData
+        .map((d) => {
+          const close = d.close;
+          if (close == null || !Number.isFinite(close)) return null;
+          const ms = new Date(d.timestamp).getTime();
+          if (!Number.isFinite(ms)) return null;
+          return {
+            time: Math.floor(ms / 1000) as Time,
+            value: close,
+          };
+        })
+        .filter((point): point is LineData => point !== null);
     },
     [chartType]
   );
@@ -194,13 +327,13 @@ export function ChartComponent({
         setError(null);
         const chartData = convertToChartData(filteredData);
         const volumeData = convertVolumeData(filteredData);
-        const chartColors = getMarketChartColors(isDark);
+        const chartColors = getMarketChartColors(isDark, {
+          signed: true,
+          isPositive: isPeriodPositive,
+          variant: "area",
+        });
 
-        // Create main series based on chart type
-        let mainSeries:
-          | ISeriesApi<"Candlestick">
-          | ISeriesApi<"Area">
-          | ISeriesApi<"Line">;
+        let mainSeries: ISeriesApi<"Candlestick"> | ISeriesApi<"Area">;
 
         if (chartType === "candlestick") {
           mainSeries = chart.addSeries(CandlestickSeries, {
@@ -210,40 +343,86 @@ export function ChartComponent({
             wickUpColor: chartColors.wickUp,
             wickDownColor: chartColors.wickDown,
           });
-        } else if (chartType === "area") {
+        } else {
+          chart.timeScale().applyOptions({
+            fixLeftEdge: true,
+            fixRightEdge: true,
+            shiftVisibleRangeOnNewBar: false,
+            rightOffset: 0,
+          });
+
           mainSeries = chart.addSeries(AreaSeries, {
             lineColor: chartColors.series,
             topColor: chartColors.areaTop,
             bottomColor: chartColors.areaBottom,
-            lineWidth: 2,
-          });
-        } else {
-          // line chart
-          mainSeries = chart.addSeries(LineSeries, {
-            color: chartColors.series,
-            lineWidth: 2,
+            lineWidth: chartColors.lineWidth,
+            lineType: LineType.Curved,
+            crosshairMarkerVisible: true,
+            crosshairMarkerRadius: 5,
+            lastValueVisible: false,
+            priceLineVisible: false,
           });
         }
 
-        mainSeries.setData(chartData);
+        disposeTrailAnimation();
 
-        // Add volume histogram
-        const volumeSeries = chart.addSeries(HistogramSeries, {
-          color: chartColors.up,
-          priceFormat: {
-            type: "volume",
-          },
-          priceScaleId: "",
-        });
+        chartApiRef.current = chart;
+        mainSeriesRef.current =
+          chartType === "candlestick"
+            ? null
+            : (mainSeries as ISeriesApi<"Area">);
 
-        volumeSeries.priceScale().applyOptions({
-          scaleMargins: {
-            top: 0.8,
-            bottom: 0,
-          },
-        });
+        if (chartType === "candlestick") {
+          mainSeries.setData(chartData);
+        } else {
+          const lineData = chartData as LineData[];
+          const areaSeries = mainSeries as ISeriesApi<"Area">;
 
-        volumeSeries.setData(volumeData);
+          applyPlotClip(plotContainerRef.current, HIDDEN_PLOT_CLIP);
+          setPlotClipPath(HIDDEN_PLOT_CLIP);
+
+          isChartLoadingRef.current = true;
+          sparkleRef.current?.setLoadingSplash(true);
+
+          trailCancelRef.current = animateChartTrail(areaSeries, lineData, {
+            chart,
+            onStep: (revealedCount) => {
+              applyRevealClip(
+                chart,
+                areaSeries,
+                revealedCount,
+                lineData.length
+              );
+            },
+            onComplete: () => {
+              isChartLoadingRef.current = false;
+              clearPlotClip(plotContainerRef.current);
+              setPlotClipPath(null);
+              areaSeries.applyOptions({ lastValueVisible: true });
+              sparkleRef.current?.setLoadingSplash(false);
+              sparkleRef.current?.syncLivePoint();
+            },
+          });
+        }
+
+        if (chartType === "candlestick") {
+          const volumeSeries = chart.addSeries(HistogramSeries, {
+            color: chartColors.up,
+            priceFormat: {
+              type: "volume",
+            },
+            priceScaleId: "",
+          });
+
+          volumeSeries.priceScale().applyOptions({
+            scaleMargins: {
+              top: 0.8,
+              bottom: 0,
+            },
+          });
+
+          volumeSeries.setData(volumeData);
+        }
 
         // Add technical indicators
         indicators.forEach((indicator) => {
@@ -375,27 +554,63 @@ export function ChartComponent({
           }
         });
 
-        // Setup crosshair move handler for hover events
+        chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
+          if (!isPointerDownRef.current) return;
+          isPanningRef.current = true;
+          sparkleRef.current?.setCrosshairGlow(null);
+        });
+
         chart.subscribeCrosshairMove((param) => {
-          if (!param.time) {
-            setHoveredPoint(null);
-            if (onDataPointHover) onDataPointHover(null);
+          if (!param.point || param.time === undefined) {
+            sparkleRef.current?.setCrosshairGlow(null);
+            if (lastHoverTimeRef.current !== undefined) {
+              lastHoverTimeRef.current = undefined;
+              setHoveredPoint(null);
+              onDataPointHoverRef.current?.(null);
+            }
             return;
           }
 
-          const point = filteredData.find(
+          if (
+            chartType !== "candlestick" &&
+            !isChartLoadingRef.current &&
+            !isPanningRef.current
+          ) {
+            const seriesPoint = param.seriesData.get(mainSeries);
+            if (
+              seriesPoint &&
+              "value" in seriesPoint &&
+              seriesPoint.value !== undefined
+            ) {
+              const y = mainSeries.priceToCoordinate(seriesPoint.value);
+              if (y !== null) {
+                sparkleRef.current?.setCrosshairGlow({
+                  x: param.point.x,
+                  y,
+                });
+              }
+            }
+          }
+
+          if (param.time === lastHoverTimeRef.current) return;
+
+          const point = filteredDataRef.current.find(
             (d) =>
               Math.floor(new Date(d.timestamp).getTime() / 1000) === param.time
           );
 
+          lastHoverTimeRef.current = param.time as Time;
           if (point) {
             setHoveredPoint(point);
-            if (onDataPointHover) onDataPointHover(point);
+            onDataPointHoverRef.current?.(point);
           }
         });
 
-        // Fit content to visible range
-        chart.timeScale().fitContent();
+        if (chartType === "candlestick") {
+          chart.timeScale().fitContent();
+        }
+
+        return disposeTrailAnimation;
       } catch (err) {
         console.error("Error initializing chart:", err);
         setError(MARKET_UI_COPY.chart.initFailed);
@@ -407,8 +622,10 @@ export function ChartComponent({
       indicators,
       convertToChartData,
       convertVolumeData,
-      onDataPointHover,
       isDark,
+      isPeriodPositive,
+      disposeTrailAnimation,
+      applyRevealClip,
     ]
   );
 
@@ -474,36 +691,79 @@ export function ChartComponent({
         />
       </div>
 
-      {/* Hovered Point Info */}
-      {hoveredPoint && (
-        <div className={`mb-2 rounded p-2 text-xs sm:text-sm ${HOME_CALLOUT}`}>
-          <span className="font-semibold">
-            {new Date(hoveredPoint.timestamp).toLocaleDateString()}
-          </span>
-          <span className="hidden sm:inline">
-            {" - "}
-            <span>O: ${hoveredPoint.open.toFixed(2)}</span>
-            {" | "}
-            <span>H: ${hoveredPoint.high.toFixed(2)}</span>
-            {" | "}
-            <span>L: ${hoveredPoint.low.toFixed(2)}</span>
-            {" | "}
-            <span>C: ${hoveredPoint.close.toFixed(2)}</span>
-            {" | "}
-            <span>Vol: {(hoveredPoint.volume / 1000000).toFixed(2)}M</span>
-          </span>
-          <div className="sm:hidden mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
-            <span>C: ${hoveredPoint.close.toFixed(2)}</span>
-            <span>H: ${hoveredPoint.high.toFixed(2)}</span>
-            <span>L: ${hoveredPoint.low.toFixed(2)}</span>
+      {/* Chart — tooltip is absolutely positioned so hover never shifts layout */}
+      <div
+        className="relative"
+        onMouseDown={handlePointerDown}
+        onMouseUp={handlePointerUp}
+        onMouseLeave={handlePointerUp}
+        onTouchStart={handlePointerDown}
+        onTouchEnd={handlePointerUp}
+      >
+        <div
+          aria-live="polite"
+          className={`pointer-events-none absolute inset-x-0 top-2 z-10 px-2 transition-opacity duration-150 ${
+            hoveredPoint ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <div className={`rounded p-2 text-xs sm:text-sm ${HOME_CALLOUT}`}>
+            {hoveredPoint ? (
+              <>
+                <span className="font-semibold">
+                  {new Date(hoveredPoint.timestamp).toLocaleDateString()}
+                </span>
+                <span className="hidden sm:inline">
+                  {" - "}
+                  <span>O: ${hoveredPoint.open.toFixed(2)}</span>
+                  {" | "}
+                  <span>H: ${hoveredPoint.high.toFixed(2)}</span>
+                  {" | "}
+                  <span>L: ${hoveredPoint.low.toFixed(2)}</span>
+                  {" | "}
+                  <span>C: ${hoveredPoint.close.toFixed(2)}</span>
+                  {" | "}
+                  <span>
+                    Vol: {(hoveredPoint.volume / 1000000).toFixed(2)}M
+                  </span>
+                </span>
+                <div className="sm:hidden mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                  <span>C: ${hoveredPoint.close.toFixed(2)}</span>
+                  <span>H: ${hoveredPoint.high.toFixed(2)}</span>
+                  <span>L: ${hoveredPoint.low.toFixed(2)}</span>
+                </div>
+              </>
+            ) : (
+              <span className="invisible">—</span>
+            )}
           </div>
         </div>
-      )}
 
-      {/* Chart */}
-      <ChartWrapper key={chartKey} height={height} isDark={isDark}>
-        {initializeChart}
-      </ChartWrapper>
+        <ChartWrapper
+          key={chartKey}
+          dataRevision={chartDataRevision}
+          height={height}
+          isDark={isDark}
+          chartType={chartType}
+          plotClipPath={plotClipPath}
+          plotContainerRef={plotContainerRef}
+          atmosphereGradient={marketChartAtmosphereGradient(
+            isPeriodPositive,
+            isDark
+          )}
+          overlay={
+            <ChartSparkleOverlay
+              ref={sparkleRef}
+              chartRef={chartApiRef}
+              seriesRef={mainSeriesRef}
+              chartType={chartType}
+              isPositive={isPeriodPositive}
+              dataRevision={chartDataRevision}
+            />
+          }
+        >
+          {initializeChart}
+        </ChartWrapper>
+      </div>
 
       {/* Chart Instructions */}
       <div className={`mt-2 ${DNA_CAPTION}`}>
@@ -562,7 +822,6 @@ function ChartTypeSelector({
   onTypeChange,
 }: ChartTypeSelectorProps) {
   const types: { value: ChartType; label: string }[] = [
-    { value: "line", label: "Line" },
     { value: "area", label: "Area" },
     { value: "candlestick", label: "Candles" },
   ];
