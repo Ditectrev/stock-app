@@ -1,3 +1,5 @@
+import type { LineWidth } from "lightweight-charts";
+
 /** Muted up/down/neutral styling and chart hex palette (emerald / rose). */
 
 /** Lightweight Charts hex palette (emerald / rose; matches heatmap fills). */
@@ -16,7 +18,7 @@ export type MarketChartColors = {
   series: string;
   areaTop: string;
   areaBottom: string;
-  lineWidth: number;
+  lineWidth: LineWidth;
 };
 
 export type MarketChartVariant = "line" | "area";

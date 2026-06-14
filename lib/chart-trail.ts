@@ -1,4 +1,10 @@
-import type { IChartApi, ISeriesApi, LineData, Time } from "lightweight-charts";
+import type {
+  IChartApi,
+  ISeriesApi,
+  LineData,
+  Time,
+  WhitespaceData,
+} from "lightweight-charts";
 
 const DEFAULT_DURATION_MS = 3000;
 const TRAIL_STEPS = 48;
@@ -34,7 +40,7 @@ export function sanitizeLineData(data: LineData[]): LineData[] {
 export function buildTrailRevealData(
   clean: LineData[],
   revealedCount: number
-): LineData[] {
+): Array<LineData | WhitespaceData> {
   return clean.map((point, index) =>
     index < revealedCount ? point : { time: point.time as Time }
   );
