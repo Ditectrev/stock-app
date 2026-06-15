@@ -67,18 +67,19 @@ describe("ChartComponent", () => {
       expect(screen.queryByText("Line")).not.toBeInTheDocument();
     });
 
-    it("should render area chart without layout-shifting hover tooltip", async () => {
+    it("should render area chart with magnifier tooltip shell", async () => {
       const { container } = render(
-        <ChartWithTheme data={mockData} type="area" />
+        <ChartWithTheme data={mockData} type="area" symbol="AAPL" />
       );
 
       await waitFor(() => {
         expect(container.querySelector(".chart-wrapper")).toBeInTheDocument();
       });
 
-      const tooltip = container.querySelector("[aria-live='polite']");
-      expect(tooltip).toHaveClass("absolute");
+      const tooltip = screen.getByTestId("chart-magnifier-tooltip");
+      expect(tooltip).toHaveClass("chart-magnifier-tooltip");
       expect(tooltip).toHaveClass("pointer-events-none");
+      expect(tooltip).toHaveClass("absolute");
     });
 
     it("should switch to candlestick chart when Candles button is clicked", async () => {

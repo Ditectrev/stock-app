@@ -12,6 +12,8 @@ import type { ChartType } from "@/types";
 import {
   chartAtmosphereEnabled,
   chartEffectTone,
+  CHART_LOAD_SPLASH_LOOP_MS,
+  CHART_LOAD_SPLASH_LOOPS,
   chartLiveFlashClass,
   chartLiveFlashCoreClass,
   chartLiveFlashRingClass,
@@ -24,6 +26,37 @@ import {
 } from "@/lib/chart-effects";
 
 type MainSeries = ISeriesApi<"Area">;
+
+function restartLoadSplashAnimation(
+  sweep: HTMLDivElement | null,
+  flash: HTMLDivElement | null
+) {
+  const timing = `${CHART_LOAD_SPLASH_LOOP_MS}ms ease-in-out ${CHART_LOAD_SPLASH_LOOPS}`;
+
+  for (const el of [sweep, flash]) {
+    if (!el) continue;
+    el.style.animation = "none";
+    void el.offsetWidth;
+    el.style.animation = "";
+  }
+
+  if (sweep) {
+    sweep.style.animation = `chart-sparkle-sweep ${timing}`;
+  }
+  if (flash) {
+    flash.style.animation = `chart-sparkle-flash ${timing}`;
+  }
+}
+
+function stopLoadSplashAnimation(
+  sweep: HTMLDivElement | null,
+  flash: HTMLDivElement | null
+) {
+  for (const el of [sweep, flash]) {
+    if (!el) continue;
+    el.style.animation = "none";
+  }
+}
 
 export type ChartSparkleOverlayHandle = {
   setCrosshairGlow: (glow: ChartGlowPoint | null) => void;
@@ -42,11 +75,23 @@ export interface ChartSparkleOverlayProps {
   dataRevision: string;
 }
 
-function restartAnimation(element: HTMLElement | null) {
-  if (!element) return;
-  element.style.animation = "none";
-  void element.offsetWidth;
-  element.style.animation = "";
+function applyVoidMask(
+  voidEl: HTMLDivElement,
+  ratio: number,
+  frontierX: number | null
+) {
+  voidEl.style.left = "0";
+  voidEl.style.right = "0";
+  voidEl.style.width = "100%";
+  voidEl.style.willChange = "clip-path";
+  voidEl.style.opacity = "1";
+
+  if (frontierX !== null) {
+    voidEl.style.clipPath = `inset(0 0 0 ${frontierX}px)`;
+    return;
+  }
+
+  voidEl.style.clipPath = `inset(0 0 0 ${ratio * 100}%)`;
 }
 
 export const ChartSparkleOverlay = forwardRef<
@@ -68,6 +113,7 @@ export const ChartSparkleOverlay = forwardRef<
   const crosshairGlowRef = useRef(false);
   const loadingSplashRef = useRef(false);
   const revealRatioRef = useRef(0);
+  const frontierXRef = useRef<number | null>(null);
   const liveTipIndexRef = useRef<number | null>(null);
   const pendingGlowRef = useRef<ChartGlowPoint | null | undefined>(undefined);
   const glowRafRef = useRef(0);
@@ -95,12 +141,21 @@ export const ChartSparkleOverlay = forwardRef<
     const y = series.priceToCoordinate(point.value);
     if (x === null || y === null) {
       live.style.opacity = "0";
+      frontierXRef.current = null;
       return;
     }
 
+    frontierXRef.current = x;
     live.style.left = `${x}px`;
     live.style.top = `${y}px`;
-    live.style.opacity = "1";
+    live.style.opacity = loadingSplashRef.current ? "0" : "1";
+
+    if (loadingSplashRef.current) {
+      const voidEl = voidRef.current;
+      if (voidEl) {
+        applyVoidMask(voidEl, revealRatioRef.current, x);
+      }
+    }
   }, [chartRef, seriesRef]);
 
   const applyCrosshairGlow = (glow: ChartGlowPoint | null) => {
@@ -109,26 +164,31 @@ export const ChartSparkleOverlay = forwardRef<
     if (!beam || !crosshairPoint) return;
 
     crosshairGlowRef.current = glow !== null;
+    const active = glow !== null;
+
+    beam.classList.toggle("chart-scrub-beam--active", active);
+    crosshairPoint.classList.toggle("chart-scrub-point--active", active);
 
     if (!glow) {
-      beam.style.opacity = "0";
-      crosshairPoint.style.opacity = "0";
+      beam.style.left = "";
+      crosshairPoint.style.left = "";
+      crosshairPoint.style.top = "";
       positionLivePoint();
       return;
     }
 
     beam.style.left = `${glow.x}px`;
-    beam.style.opacity = "1";
     crosshairPoint.style.left = `${glow.x}px`;
     crosshairPoint.style.top = `${glow.y}px`;
-    crosshairPoint.style.opacity = "1";
 
     if (liveRef.current) liveRef.current.style.opacity = "0";
   };
 
   const scheduleCrosshairGlow = (glow: ChartGlowPoint | null) => {
     pendingGlowRef.current = glow;
-    if (glowRafRef.current) return;
+    if (glowRafRef.current) {
+      cancelAnimationFrame(glowRafRef.current);
+    }
     glowRafRef.current = requestAnimationFrame(() => {
       glowRafRef.current = 0;
       applyCrosshairGlow(pendingGlowRef.current ?? null);
@@ -138,14 +198,18 @@ export const ChartSparkleOverlay = forwardRef<
   const setRevealProgress = (ratio: number) => {
     revealRatioRef.current = Math.max(0, Math.min(1, ratio));
     const voidEl = voidRef.current;
-    if (!voidEl) return;
+
     if (!loadingSplashRef.current) {
-      voidEl.style.opacity = "0";
-      voidEl.style.left = "100%";
+      if (voidEl) {
+        voidEl.style.opacity = "0";
+        voidEl.style.left = "100%";
+      }
       return;
     }
-    voidEl.style.left = `${revealRatioRef.current * 100}%`;
-    voidEl.style.opacity = "1";
+
+    if (voidEl) {
+      applyVoidMask(voidEl, revealRatioRef.current, frontierXRef.current);
+    }
   };
 
   const setLoadingSplash = (active: boolean) => {
@@ -161,8 +225,9 @@ export const ChartSparkleOverlay = forwardRef<
         active
       );
       if (active) {
-        restartAnimation(sweepRef.current);
-        restartAnimation(flashRef.current);
+        restartLoadSplashAnimation(sweepRef.current, flashRef.current);
+      } else {
+        stopLoadSplashAnimation(sweepRef.current, flashRef.current);
       }
     }
 
@@ -256,19 +321,17 @@ export const ChartSparkleOverlay = forwardRef<
       <div
         ref={beamRef}
         aria-hidden
-        className={`${chartScrubBeamClass(tone, false)} z-[2]`}
-        style={{ opacity: 0 }}
+        className={chartScrubBeamClass(tone, false)}
       />
       <div
         ref={crosshairPointRef}
         aria-hidden
-        className={`${chartScrubPointClass(tone, false)} z-[2]`}
-        style={{ opacity: 0 }}
+        className={chartScrubPointClass(tone, false)}
       />
       <div
         ref={liveRef}
         aria-hidden
-        className={`${chartLiveFlashClass(tone)} z-[2]`}
+        className={`${chartLiveFlashClass(tone)} z-[8]`}
         style={{ opacity: 0 }}
       >
         <div className={chartLiveFlashRingClass(tone)} />

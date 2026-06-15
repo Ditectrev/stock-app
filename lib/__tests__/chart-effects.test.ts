@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   chartAtmosphereEnabled,
+  chartEffectTone,
   CHART_LOAD_SPLASH_LOOPS,
   CHART_LOAD_SPLASH_LOOP_MS,
-  chartEffectTone,
+  CHART_REVEAL_DURATION_MS,
   chartLiveFlashCoreClass,
   chartLiveFlashRingClass,
   chartScrubBeamClass,
@@ -22,8 +23,9 @@ describe("chart-effects", () => {
 
   it("exposes sparkle, scrub, and live flash classes", () => {
     expect(chartEffectTone(false)).toBe("down");
-    expect(CHART_LOAD_SPLASH_LOOP_MS).toBe(1500);
-    expect(CHART_LOAD_SPLASH_LOOPS).toBe(2);
+    expect(CHART_REVEAL_DURATION_MS).toBe(1200);
+    expect(CHART_LOAD_SPLASH_LOOPS).toBe(1);
+    expect(CHART_LOAD_SPLASH_LOOP_MS).toBe(1200);
     expect(chartSparkleSweepClass("up")).toContain("chart-sparkle-sweep--up");
     expect(chartSparkleFlashClass("down")).toContain(
       "chart-sparkle-flash--down"

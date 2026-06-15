@@ -43,6 +43,8 @@ export function OverviewTab({
         <div className="h-[300px] md:h-[380px] lg:h-[420px] xl:h-[500px]">
           <ChartComponent
             data={historicalData}
+            symbol={symbolData.symbol}
+            symbolName={symbolData.name}
             type="area"
             initialTimeRange={timeRange}
             onTimeRangeChange={onTimeRangeChange}

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   computePlotClipPath,
+  computePlotClipPathFromRatio,
+  computePlotClipPathFromX,
   HIDDEN_PLOT_CLIP,
   revealRatio,
 } from "@/lib/chart-plot-clip";
@@ -21,6 +23,12 @@ describe("computePlotClipPath", () => {
   it("uses linear ratio polygon clip", () => {
     const plot = { clientWidth: 400 } as HTMLElement;
     expect(computePlotClipPath(50, 100, plot)).toBe(
+      "polygon(0 0, 200px 0, 200px 100%, 0 100%)"
+    );
+    expect(computePlotClipPathFromRatio(0.5, plot)).toBe(
+      "polygon(0 0, 200px 0, 200px 100%, 0 100%)"
+    );
+    expect(computePlotClipPathFromX(200, plot)).toBe(
       "polygon(0 0, 200px 0, 200px 100%, 0 100%)"
     );
   });

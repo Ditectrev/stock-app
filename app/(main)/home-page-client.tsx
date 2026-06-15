@@ -165,60 +165,36 @@ export function HomePageClient() {
 
       setLoading(true);
       setError(null);
+      setSymbolData(null);
+      setHistoricalData([]);
+      setTechnicalIndicators(null);
+      setForecastData(null);
+      setSeasonalData(null);
+      setFinancialData(null);
 
       try {
-        const symbolResponse = await fetch(
-          `/api/market/symbol/${selectedSymbol}`
-        );
+        const [symbolResponse, historicalResponse] = await Promise.all([
+          fetch(`/api/market/symbol/${selectedSymbol}`),
+          fetch(`/api/market/historical/${selectedSymbol}?range=${timeRange}`),
+        ]);
+
         if (!symbolResponse.ok) {
           const body = (await symbolResponse.json().catch(() => ({}))) as {
             error?: string;
           };
           throw new Error(body.error ?? MARKET_UI_COPY.load.symbolData);
         }
-        const symbolResult = await symbolResponse.json();
-        setSymbolData(symbolResult.data);
-
-        const historicalResponse = await fetch(
-          `/api/market/historical/${selectedSymbol}?range=${timeRange}`
-        );
         if (!historicalResponse.ok) {
           throw new Error(MARKET_UI_COPY.load.historicalData);
         }
-        const historicalResult = await historicalResponse.json();
+
+        const [symbolResult, historicalResult] = await Promise.all([
+          symbolResponse.json(),
+          historicalResponse.json(),
+        ]);
+
+        setSymbolData(symbolResult.data);
         setHistoricalData(historicalResult.data);
-
-        const indicatorsResponse = await fetch(
-          `/api/market/indicators/${selectedSymbol}`
-        );
-        if (indicatorsResponse.ok) {
-          const indicatorsResult = await indicatorsResponse.json();
-          setTechnicalIndicators(indicatorsResult.data);
-        }
-
-        const forecastResponse = await fetch(
-          `/api/market/forecast/${selectedSymbol}`
-        );
-        if (forecastResponse.ok) {
-          const forecastResult = await forecastResponse.json();
-          setForecastData(forecastResult.data);
-        }
-
-        const seasonalResponse = await fetch(
-          `/api/market/seasonal/${selectedSymbol}`
-        );
-        if (seasonalResponse.ok) {
-          const seasonalResult = await seasonalResponse.json();
-          setSeasonalData(seasonalResult.data);
-        }
-
-        const financialsResponse = await fetch(
-          `/api/market/financials/${selectedSymbol}`
-        );
-        if (financialsResponse.ok) {
-          const financialsResult = await financialsResponse.json();
-          setFinancialData(financialsResult.data);
-        }
       } catch (err) {
         console.error("Error fetching symbol data:", err);
         setError(
@@ -227,6 +203,43 @@ export function HomePageClient() {
       } finally {
         setLoading(false);
       }
+
+      const symbol = selectedSymbol;
+      const loadSecondaryData = async () => {
+        const [
+          indicatorsResponse,
+          forecastResponse,
+          seasonalResponse,
+          financialsResponse,
+        ] = await Promise.all([
+          fetch(`/api/market/indicators/${symbol}`),
+          fetch(`/api/market/forecast/${symbol}`),
+          fetch(`/api/market/seasonal/${symbol}`),
+          fetch(`/api/market/financials/${symbol}`),
+        ]);
+
+        if (indicatorsResponse.ok) {
+          const indicatorsResult = await indicatorsResponse.json();
+          setTechnicalIndicators(indicatorsResult.data);
+        }
+
+        if (forecastResponse.ok) {
+          const forecastResult = await forecastResponse.json();
+          setForecastData(forecastResult.data);
+        }
+
+        if (seasonalResponse.ok) {
+          const seasonalResult = await seasonalResponse.json();
+          setSeasonalData(seasonalResult.data);
+        }
+
+        if (financialsResponse.ok) {
+          const financialsResult = await financialsResponse.json();
+          setFinancialData(financialsResult.data);
+        }
+      };
+
+      void loadSecondaryData();
     };
 
     fetchSymbolData();

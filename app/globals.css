@@ -44,7 +44,7 @@ h6 {
   }
 }
 
-/* Revolut-style chart sparkle / ambient splash (area charts) */
+/* Revolut-style chart sparkle — full-width ambient splash (area charts) */
 @keyframes chart-sparkle-sweep {
   0% {
     transform: translateX(-130%) skewX(-14deg);
@@ -80,12 +80,13 @@ h6 {
   pointer-events: none;
   mix-blend-mode: screen;
   opacity: 0;
-  z-index: 3;
+  z-index: 4;
 }
 
 .chart-sparkle-sweep--loading {
   opacity: 1;
-  animation: chart-sparkle-sweep 1.5s ease-in-out 2;
+  /* Duration/loops set inline from chart-effects; fallback matches 1200ms × 1 */
+  animation: chart-sparkle-sweep 1200ms ease-in-out 1;
 }
 
 .chart-sparkle-sweep--up {
@@ -120,7 +121,7 @@ h6 {
 
 .chart-sparkle-flash--loading {
   opacity: 1;
-  animation: chart-sparkle-flash 1.5s ease-in-out 2;
+  animation: chart-sparkle-flash 1200ms ease-in-out 1;
 }
 
 .chart-sparkle-flash--up {
@@ -141,7 +142,52 @@ h6 {
   );
 }
 
+/* TradingView-style magnifier tooltip — frosted card along top edge */
+.chart-magnifier-tooltip {
+  padding: 8px 10px;
+  border-radius: 6px 6px 0 0;
+  border-bottom: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.88);
+  color: #1c1917;
+}
+
+.dark .chart-magnifier-tooltip,
+.chart-magnifier-tooltip--dark {
+  background: rgba(28, 25, 23, 0.85);
+  color: #fafaf9;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.chart-magnifier-tooltip__date {
+  opacity: 0.72;
+}
+
 /* Revolut-style chart glow: scrub beam + live flash */
+
+@keyframes chart-scrub-point-pulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.92);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes chart-scrub-beam-breathe {
+  0%,
+  100% {
+    opacity: 0.82;
+  }
+  50% {
+    opacity: 1;
+  }
+}
 
 @keyframes chart-live-flash-ring {
   0% {
@@ -186,16 +232,21 @@ h6 {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 96px;
+  width: 112px;
   transform: translateX(-50%);
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.08s ease-out;
-  z-index: 2;
+  mix-blend-mode: screen;
+  transition:
+    opacity 0.1s ease-out,
+    left 0.04s linear;
+  will-change: left, opacity;
+  z-index: 6;
 }
 
 .chart-scrub-beam--active {
   opacity: 1;
+  animation: chart-scrub-beam-breathe 1.6s ease-in-out infinite;
 }
 
 .chart-scrub-beam--up {
@@ -222,19 +273,24 @@ h6 {
 
 .chart-scrub-point {
   position: absolute;
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   transform: translate(-50%, -50%);
   border-radius: 9999px;
   pointer-events: none;
   opacity: 0;
-  filter: blur(7px);
-  transition: opacity 0.08s ease-out;
-  z-index: 3;
+  filter: blur(8px);
+  transition:
+    opacity 0.1s ease-out,
+    left 0.04s linear,
+    top 0.04s linear;
+  will-change: left, top, opacity;
+  z-index: 7;
 }
 
 .chart-scrub-point--active {
   opacity: 1;
+  animation: chart-scrub-point-pulse 1.4s ease-in-out infinite;
 }
 
 .chart-scrub-point--up {
@@ -315,11 +371,17 @@ h6 {
 @media (prefers-reduced-motion: reduce) {
   .chart-sparkle-sweep--loading,
   .chart-sparkle-flash--loading,
-  .chart-scrub-point,
+  .chart-scrub-beam--active,
+  .chart-scrub-point--active,
   .chart-live-flash-ring,
   .chart-live-flash-core--up,
   .chart-live-flash-core--down {
     animation: none;
+  }
+
+  .chart-scrub-beam--active,
+  .chart-scrub-point--active {
+    opacity: 1;
   }
 
   .chart-sparkle-flash--loading {

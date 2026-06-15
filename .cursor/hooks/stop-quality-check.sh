@@ -3,6 +3,9 @@
 
 set -euo pipefail
 
+# Cursor hook processes often inherit a minimal PATH; bun is usually in ~/.bun/bin.
+export PATH="${HOME}/.bun/bin:/opt/homebrew/bin:/usr/local/bin:${PATH:-}"
+
 cat >/dev/null
 
 project_root="${CURSOR_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"

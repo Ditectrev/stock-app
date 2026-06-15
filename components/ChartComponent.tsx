@@ -15,16 +15,17 @@ import {
   ChartSparkleOverlay,
   type ChartSparkleOverlayHandle,
 } from "./ChartSparkleOverlay";
+import { ChartMagnifierTooltip } from "./ChartMagnifierTooltip";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
-import { homeChipClasses, HOME_CALLOUT } from "@/lib/home-ui";
+import { homeChipClasses } from "@/lib/home-ui";
 import { animateChartTrail, type ChartTrailCancel } from "@/lib/chart-trail";
 import {
   applyPlotClip,
   clearPlotClip,
-  computePlotClipPath,
+  computePlotClipPathFromRatio,
+  computePlotClipPathFromX,
   HIDDEN_PLOT_CLIP,
-  revealRatio,
 } from "@/lib/chart-plot-clip";
 import {
   getMarketChartColors,
@@ -34,6 +35,11 @@ import {
   MARKET_DOWN_TEXT,
   MARKET_ERROR_SURFACE,
 } from "@/lib/market-semantics";
+import {
+  CHART_MAGNIFIER_TOOLTIP_WIDTH,
+  clampMagnifierTooltipLeft,
+  resolveMagnifierPoint,
+} from "@/lib/chart-magnifier-tooltip";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import {
   calculateRSI,
@@ -56,6 +62,8 @@ import {
 
 export interface ChartComponentProps {
   data: PriceData[];
+  symbol?: string;
+  symbolName?: string;
   type?: ChartType;
   initialTimeRange?: TimeRange;
   indicators?: ChartIndicator[];
@@ -84,6 +92,8 @@ const TIME_RANGES: TimeRange[] = [
  */
 export function ChartComponent({
   data,
+  symbol,
+  symbolName,
   type = "area",
   initialTimeRange = "1M",
   indicators = EMPTY_INDICATORS,
@@ -97,7 +107,10 @@ export function ChartComponent({
     type === "candlestick" ? "candlestick" : "area"
   );
   const [error, setError] = useState<string | null>(null);
-  const [hoveredPoint, setHoveredPoint] = useState<PriceData | null>(null);
+  const [magnifier, setMagnifier] = useState<{
+    left: number;
+    point: PriceData;
+  } | null>(null);
   const [plotClipPath, setPlotClipPath] = useState<string | null>(null);
   const [chartKey, setChartKey] = useState(0);
   const chartApiRef = useRef<IChartApi | null>(null);
@@ -109,7 +122,7 @@ export function ChartComponent({
   const isPanningRef = useRef(false);
   const lastHoverTimeRef = useRef<Time | undefined>(undefined);
   const trailCancelRef = useRef<ChartTrailCancel | null>(null);
-  const trailRevealCountRef = useRef(2);
+  const trailRevealProgressRef = useRef(0);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -129,6 +142,7 @@ export function ChartComponent({
     isPanningRef.current = false;
     sparkleRef.current?.setCrosshairGlow(null);
     sparkleRef.current?.syncLivePoint();
+    setMagnifier(null);
   }, []);
 
   const disposeTrailAnimation = useCallback(() => {
@@ -138,27 +152,29 @@ export function ChartComponent({
     setPlotClipPath(null);
   }, []);
 
-  const applyRevealClip = useCallback(
-    (
-      _chart: IChartApi,
-      _series: ISeriesApi<"Area">,
-      revealedCount: number,
-      totalPoints: number
-    ) => {
-      trailRevealCountRef.current = revealedCount;
-      const clip = computePlotClipPath(
-        revealedCount,
-        totalPoints,
-        plotContainerRef.current
-      );
-      applyPlotClip(plotContainerRef.current, clip);
-      setPlotClipPath(clip);
-      const ratio = revealRatio(revealedCount, totalPoints);
-      sparkleRef.current?.setRevealProgress(ratio);
-      sparkleRef.current?.syncLiveTip(Math.max(0, revealedCount - 1));
-    },
-    []
-  );
+  const applyRevealClip = useCallback((progress: number, tipIndex: number) => {
+    trailRevealProgressRef.current = progress;
+
+    const chart = chartApiRef.current;
+    const series = mainSeriesRef.current;
+    const plotEl = plotContainerRef.current;
+    let clip = computePlotClipPathFromRatio(progress, plotEl);
+
+    if (chart && series) {
+      const data = series.data() as LineData[];
+      const point = data[tipIndex];
+      if (point) {
+        const frontierX = chart.timeScale().timeToCoordinate(point.time);
+        if (frontierX !== null) {
+          clip = computePlotClipPathFromX(frontierX, plotEl);
+        }
+      }
+    }
+
+    applyPlotClip(plotEl, clip);
+    sparkleRef.current?.syncLiveTip(tipIndex);
+    sparkleRef.current?.setRevealProgress(progress);
+  }, []);
 
   // Filter data based on selected time range
   const getFilteredData = useCallback(
@@ -247,13 +263,16 @@ export function ChartComponent({
     if (!plotClipPath) return;
 
     const recalc = () => {
-      const series = mainSeriesRef.current;
-      if (!series) return;
+      if (trailRevealProgressRef.current <= 0) return;
       applyRevealClip(
-        chartApiRef.current!,
-        series,
-        trailRevealCountRef.current,
-        series.data().length
+        trailRevealProgressRef.current,
+        Math.max(
+          0,
+          Math.round(
+            trailRevealProgressRef.current *
+              (mainSeriesRef.current?.data().length ?? 0)
+          ) - 1
+        )
       );
     };
 
@@ -383,19 +402,16 @@ export function ChartComponent({
 
           isChartLoadingRef.current = true;
           sparkleRef.current?.setLoadingSplash(true);
+          setMagnifier(null);
 
           trailCancelRef.current = animateChartTrail(areaSeries, lineData, {
             chart,
-            onStep: (revealedCount) => {
-              applyRevealClip(
-                chart,
-                areaSeries,
-                revealedCount,
-                lineData.length
-              );
+            onStep: (progress, tipIndex) => {
+              applyRevealClip(progress, tipIndex);
             },
             onComplete: () => {
               isChartLoadingRef.current = false;
+              trailRevealProgressRef.current = 0;
               clearPlotClip(plotContainerRef.current);
               setPlotClipPath(null);
               areaSeries.applyOptions({ lastValueVisible: true });
@@ -558,14 +574,15 @@ export function ChartComponent({
           if (!isPointerDownRef.current) return;
           isPanningRef.current = true;
           sparkleRef.current?.setCrosshairGlow(null);
+          setMagnifier(null);
         });
 
         chart.subscribeCrosshairMove((param) => {
           if (!param.point || param.time === undefined) {
             sparkleRef.current?.setCrosshairGlow(null);
+            setMagnifier(null);
             if (lastHoverTimeRef.current !== undefined) {
               lastHoverTimeRef.current = undefined;
-              setHoveredPoint(null);
               onDataPointHoverRef.current?.(null);
             }
             return;
@@ -592,16 +609,35 @@ export function ChartComponent({
             }
           }
 
-          if (param.time === lastHoverTimeRef.current) return;
-
-          const point = filteredDataRef.current.find(
-            (d) =>
-              Math.floor(new Date(d.timestamp).getTime() / 1000) === param.time
+          const point = resolveMagnifierPoint(
+            filteredDataRef.current,
+            param.time,
+            mainSeries,
+            param.seriesData
           );
+
+          if (
+            point &&
+            !isChartLoadingRef.current &&
+            !isPanningRef.current &&
+            param.point.x >= 0 &&
+            param.point.y >= 0
+          ) {
+            const plotWidth = chart.timeScale().width();
+            const left = clampMagnifierTooltipLeft(
+              param.point.x,
+              CHART_MAGNIFIER_TOOLTIP_WIDTH,
+              plotWidth
+            );
+            setMagnifier({ left, point });
+          } else {
+            setMagnifier(null);
+          }
+
+          if (param.time === lastHoverTimeRef.current) return;
 
           lastHoverTimeRef.current = param.time as Time;
           if (point) {
-            setHoveredPoint(point);
             onDataPointHoverRef.current?.(point);
           }
         });
@@ -700,44 +736,6 @@ export function ChartComponent({
         onTouchStart={handlePointerDown}
         onTouchEnd={handlePointerUp}
       >
-        <div
-          aria-live="polite"
-          className={`pointer-events-none absolute inset-x-0 top-2 z-10 px-2 transition-opacity duration-150 ${
-            hoveredPoint ? "opacity-100" : "opacity-0"
-          }`}
-        >
-          <div className={`rounded p-2 text-xs sm:text-sm ${HOME_CALLOUT}`}>
-            {hoveredPoint ? (
-              <>
-                <span className="font-semibold">
-                  {new Date(hoveredPoint.timestamp).toLocaleDateString()}
-                </span>
-                <span className="hidden sm:inline">
-                  {" - "}
-                  <span>O: ${hoveredPoint.open.toFixed(2)}</span>
-                  {" | "}
-                  <span>H: ${hoveredPoint.high.toFixed(2)}</span>
-                  {" | "}
-                  <span>L: ${hoveredPoint.low.toFixed(2)}</span>
-                  {" | "}
-                  <span>C: ${hoveredPoint.close.toFixed(2)}</span>
-                  {" | "}
-                  <span>
-                    Vol: {(hoveredPoint.volume / 1000000).toFixed(2)}M
-                  </span>
-                </span>
-                <div className="sm:hidden mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
-                  <span>C: ${hoveredPoint.close.toFixed(2)}</span>
-                  <span>H: ${hoveredPoint.high.toFixed(2)}</span>
-                  <span>L: ${hoveredPoint.low.toFixed(2)}</span>
-                </div>
-              </>
-            ) : (
-              <span className="invisible">—</span>
-            )}
-          </div>
-        </div>
-
         <ChartWrapper
           key={chartKey}
           dataRevision={chartDataRevision}
@@ -751,14 +749,23 @@ export function ChartComponent({
             isDark
           )}
           overlay={
-            <ChartSparkleOverlay
-              ref={sparkleRef}
-              chartRef={chartApiRef}
-              seriesRef={mainSeriesRef}
-              chartType={chartType}
-              isPositive={isPeriodPositive}
-              dataRevision={chartDataRevision}
-            />
+            <>
+              <ChartMagnifierTooltip
+                symbol={symbol ?? symbolName}
+                isDark={isDark}
+                isPositive={isPeriodPositive}
+                left={magnifier?.left}
+                point={magnifier?.point ?? null}
+              />
+              <ChartSparkleOverlay
+                ref={sparkleRef}
+                chartRef={chartApiRef}
+                seriesRef={mainSeriesRef}
+                chartType={chartType}
+                isPositive={isPeriodPositive}
+                dataRevision={chartDataRevision}
+              />
+            </>
           }
         >
           {initializeChart}

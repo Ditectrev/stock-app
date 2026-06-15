@@ -23,6 +23,40 @@ export function revealRatio(
   return Math.max(0, Math.min(1, revealedCount / totalPoints));
 }
 
+/** Smooth per-frame clip from eased progress (0–1). */
+export function computePlotClipPathFromRatio(
+  ratio: number,
+  plotEl: HTMLElement | null
+): string {
+  const clamped = Math.max(0, Math.min(1, ratio));
+  if (clamped <= 0) return HIDDEN_PLOT_CLIP;
+
+  const plotWidth = plotEl?.clientWidth ?? 0;
+
+  if (plotWidth > 0) {
+    const x = Math.max(1, Math.ceil(plotWidth * clamped));
+    return `polygon(0 0, ${x}px 0, ${x}px 100%, 0 100%)`;
+  }
+
+  return `inset(0 calc(100% - ${Math.max(1, clamped * 100)}%) 0 0)`;
+}
+
+/** Clip through the chart frontier in plot pixels (matches timeToCoordinate). */
+export function computePlotClipPathFromX(
+  frontierX: number,
+  plotEl: HTMLElement | null
+): string {
+  if (!Number.isFinite(frontierX) || frontierX <= 0) return HIDDEN_PLOT_CLIP;
+
+  const plotWidth = plotEl?.clientWidth ?? 0;
+  const x =
+    plotWidth > 0
+      ? Math.max(1, Math.min(plotWidth, Math.ceil(frontierX)))
+      : Math.max(1, Math.ceil(frontierX));
+
+  return `polygon(0 0, ${x}px 0, ${x}px 100%, 0 100%)`;
+}
+
 /**
  * Clip the plot from the left edge through the reveal frontier.
  * Uses ONLY linear ratio so the frontier never tracks LWC's right-anchored fit.

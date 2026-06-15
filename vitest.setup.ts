@@ -112,6 +112,7 @@ vi.mock("lightweight-charts", () => {
         setVisibleLogicalRange: vi.fn(),
         getVisibleLogicalRange: vi.fn(() => ({ from: 0, to: 100 })),
         timeToCoordinate: vi.fn(() => 180),
+        width: vi.fn(() => 640),
         subscribeVisibleLogicalRangeChange: vi.fn(),
         unsubscribeVisibleLogicalRangeChange: vi.fn(),
         subscribeVisibleTimeRangeChange: vi.fn(),

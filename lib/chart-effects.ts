@@ -19,11 +19,16 @@ export function chartAtmosphereEnabled(chartType: ChartType): boolean {
   return chartType === "area";
 }
 
-/** Duration of one load splash sweep loop (keep in sync with globals.css). */
-export const CHART_LOAD_SPLASH_LOOP_MS = 1500;
+/** Chart line reveal duration (ms). */
+export const CHART_REVEAL_DURATION_MS = 1200;
 
-/** Splash loops during chart load (keep in sync with globals.css animation iteration count). */
-export const CHART_LOAD_SPLASH_LOOPS = 2;
+/** Full-chart splash loops during load (independent of reveal frontier). */
+export const CHART_LOAD_SPLASH_LOOPS = 1;
+
+/** One splash sweep across the full chart width (ms). */
+export const CHART_LOAD_SPLASH_LOOP_MS = Math.round(
+  CHART_REVEAL_DURATION_MS / CHART_LOAD_SPLASH_LOOPS
+);
 
 export function chartSparkleSweepClass(tone: ChartEffectTone): string {
   return `chart-sparkle-sweep chart-sparkle-sweep--${tone}`;

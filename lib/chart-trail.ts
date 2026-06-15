@@ -6,16 +6,15 @@ import type {
   WhitespaceData,
 } from "lightweight-charts";
 
-const DEFAULT_DURATION_MS = 3000;
-const TRAIL_STEPS = 48;
+const DEFAULT_DURATION_MS = 1200;
 const PRICE_PAD_RATIO = 0.06;
 
 export type ChartTrailOptions = {
   durationMs?: number;
   chart?: IChartApi;
   onComplete?: () => void;
-  /** Called with the number of revealed points (for live-tip + plot clip). */
-  onStep?: (revealedCount: number) => void;
+  /** Called each animation frame with eased progress (0–1) and tip index. */
+  onStep?: (progress: number, tipIndex: number) => void;
 };
 
 function prefersReducedMotion(): boolean {
@@ -72,17 +71,17 @@ export function computeLineValueRange(data: LineData[]): {
   return { minValue: min - pad, maxValue: max + pad };
 }
 
+function easeOutCubic(t: number): number {
+  return 1 - (1 - t) ** 3;
+}
+
 export function revealCountForProgress(
   progress: number,
   totalPoints: number
 ): number {
   if (progress >= 1) return totalPoints;
-
-  const step = Math.min(
-    TRAIL_STEPS,
-    Math.max(1, Math.ceil(progress * TRAIL_STEPS))
-  );
-  const count = Math.round((step / TRAIL_STEPS) * totalPoints);
+  const eased = easeOutCubic(Math.max(0, Math.min(1, progress)));
+  const count = Math.round(eased * totalPoints);
   return Math.max(2, Math.min(totalPoints, count));
 }
 
@@ -252,9 +251,7 @@ export function animateChartTrail(
   let finished = false;
   let cancelled = false;
   let raf = 0;
-  let pinRaf = 0;
   let startAt = 0;
-  let lastRevealedCount = 0;
   let timeWindowReady = false;
   let watchdog: ReturnType<typeof setTimeout> | undefined;
   let rangeGuard: (() => void) | null = null;
@@ -284,15 +281,6 @@ export function animateChartTrail(
     setVisibleWindow(chart, fromTime, toTime);
   };
 
-  const schedulePinChartWindow = () => {
-    pinChartWindow();
-    cancelAnimationFrame(pinRaf);
-    pinRaf = requestAnimationFrame(() => {
-      pinChartWindow();
-      requestAnimationFrame(() => pinChartWindow());
-    });
-  };
-
   const detachRangeGuard = () => {
     if (chart && rangeGuard) {
       chart.timeScale().unsubscribeVisibleLogicalRangeChange(rangeGuard);
@@ -308,10 +296,9 @@ export function animateChartTrail(
     if (finished) return;
     try {
       detachRangeGuard();
-      cancelAnimationFrame(pinRaf);
-      schedulePinChartWindow();
+      pinChartWindow();
       unlockSeriesPriceRange(series);
-      onStep?.(clean.length);
+      onStep?.(1, clean.length - 1);
       onComplete?.();
       markFinished();
     } catch {
@@ -323,7 +310,6 @@ export function animateChartTrail(
     if (finished) return;
     cancelled = true;
     cancelAnimationFrame(raf);
-    cancelAnimationFrame(pinRaf);
     clearWatchdog();
     detachRangeGuard();
     if (snapToFull) {
@@ -336,7 +322,7 @@ export function animateChartTrail(
   if (clean.length <= 2 || prefersReducedMotion()) {
     setSeriesDataSafely(series, clean);
     fitChart(chart);
-    onStep?.(clean.length);
+    onStep?.(1, clean.length - 1);
     onComplete?.();
     markFinished();
     return stop;
@@ -344,7 +330,7 @@ export function animateChartTrail(
 
   if (!chart || fromTime === undefined || toTime === undefined) {
     setSeriesDataSafely(series, clean);
-    onStep?.(clean.length);
+    onStep?.(1, clean.length - 1);
     onComplete?.();
     markFinished();
     return stop;
@@ -354,27 +340,28 @@ export function animateChartTrail(
   lockTimeScale(chart);
   lockChartInteraction(chart);
   timeWindowReady = establishTimeWindow(chart, series, clean);
-  lastRevealedCount = timeWindowReady ? 2 : 0;
 
   if (!timeWindowReady) {
     markFinished();
     return stop;
   }
 
-  schedulePinChartWindow();
-  onStep?.(lastRevealedCount);
+  pinChartWindow();
+  onStep?.(0, 0);
 
   rangeGuard = () => {
-    if (!finished && !cancelled) schedulePinChartWindow();
+    if (!finished && !cancelled) pinChartWindow();
   };
   chart.timeScale().subscribeVisibleLogicalRangeChange(rangeGuard);
 
-  const revealTo = (count: number) => {
+  const revealTo = (progress: number) => {
     if (finished || cancelled) return false;
-    if (count === lastRevealedCount) return true;
-    lastRevealedCount = count;
-    schedulePinChartWindow();
-    onStep?.(count);
+    const eased = easeOutCubic(progress);
+    const tipIndex = Math.max(
+      0,
+      Math.min(clean.length - 1, Math.round(eased * clean.length) - 1)
+    );
+    onStep?.(eased, tipIndex);
     return true;
   };
 
@@ -383,9 +370,8 @@ export function animateChartTrail(
 
     if (!startAt) startAt = now;
     const progress = Math.min(1, (now - startAt) / durationMs);
-    const count = revealCountForProgress(progress, clean.length);
 
-    if (!revealTo(count)) {
+    if (!revealTo(progress)) {
       stop(false);
       return;
     }
@@ -402,10 +388,8 @@ export function animateChartTrail(
   }, durationMs + 300);
 
   raf = requestAnimationFrame(() => {
-    raf = requestAnimationFrame(() => {
-      schedulePinChartWindow();
-      raf = requestAnimationFrame(tick);
-    });
+    pinChartWindow();
+    raf = requestAnimationFrame(tick);
   });
 
   return stop;

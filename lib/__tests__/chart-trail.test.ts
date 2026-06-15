@@ -159,8 +159,10 @@ describe("animateChartTrail", () => {
     const loaded = series.setData.mock.calls[0]?.[0] ?? [];
     expect(loaded).toHaveLength(120);
     expect(countValuedPoints(loaded)).toBe(120);
-    expect(onStep.mock.calls[0]?.[0]).toBe(2);
+    expect(onStep.mock.calls[0]?.[0]).toBe(0);
+    expect(onStep.mock.calls[0]?.[1]).toBe(0);
     expect(onStep.mock.calls.length).toBeGreaterThan(1);
+    expect(onStep.mock.calls.at(-1)?.[0]).toBe(1);
     expect(onComplete).toHaveBeenCalled();
   });
 
