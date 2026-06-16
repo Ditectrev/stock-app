@@ -23,6 +23,11 @@ import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider"
 import { fetchAIPredictionForCurrentProvider } from "@/lib/local-ollama-ai-prediction";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import {
+  fetchPrimarySymbolData,
+  fetchSecondarySymbolData,
+} from "@/lib/home-page-symbol-fetch";
+import { normalizeMarketSymbol } from "@/lib/market-symbol";
 import { AIPredictionPanel } from "@/components/AIPredictionPanel";
 import { HomeHub } from "@/components/HomeHub";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
@@ -147,11 +152,7 @@ export function HomePageClient() {
   );
 
   useEffect(() => {
-    if (symbolFromUrl && symbolFromUrl.trim()) {
-      setSelectedSymbol(symbolFromUrl.trim().toUpperCase());
-    } else {
-      setSelectedSymbol(null);
-    }
+    setSelectedSymbol(normalizeMarketSymbol(symbolFromUrl));
   }, [symbolFromUrl]);
 
   const clearSymbol = () => {
@@ -160,7 +161,7 @@ export function HomePageClient() {
   };
 
   useEffect(() => {
-    const fetchSymbolData = async () => {
+    const loadSymbolData = async () => {
       if (!selectedSymbol) return;
 
       setLoading(true);
@@ -173,28 +174,9 @@ export function HomePageClient() {
       setFinancialData(null);
 
       try {
-        const [symbolResponse, historicalResponse] = await Promise.all([
-          fetch(`/api/market/symbol/${selectedSymbol}`),
-          fetch(`/api/market/historical/${selectedSymbol}?range=${timeRange}`),
-        ]);
-
-        if (!symbolResponse.ok) {
-          const body = (await symbolResponse.json().catch(() => ({}))) as {
-            error?: string;
-          };
-          throw new Error(body.error ?? MARKET_UI_COPY.load.symbolData);
-        }
-        if (!historicalResponse.ok) {
-          throw new Error(MARKET_UI_COPY.load.historicalData);
-        }
-
-        const [symbolResult, historicalResult] = await Promise.all([
-          symbolResponse.json(),
-          historicalResponse.json(),
-        ]);
-
-        setSymbolData(symbolResult.data);
-        setHistoricalData(historicalResult.data);
+        const primary = await fetchPrimarySymbolData(selectedSymbol, timeRange);
+        setSymbolData(primary.symbolData);
+        setHistoricalData(primary.historicalData);
       } catch (err) {
         console.error("Error fetching symbol data:", err);
         setError(
@@ -205,44 +187,18 @@ export function HomePageClient() {
       }
 
       const symbol = selectedSymbol;
-      const loadSecondaryData = async () => {
-        const [
-          indicatorsResponse,
-          forecastResponse,
-          seasonalResponse,
-          financialsResponse,
-        ] = await Promise.all([
-          fetch(`/api/market/indicators/${symbol}`),
-          fetch(`/api/market/forecast/${symbol}`),
-          fetch(`/api/market/seasonal/${symbol}`),
-          fetch(`/api/market/financials/${symbol}`),
-        ]);
-
-        if (indicatorsResponse.ok) {
-          const indicatorsResult = await indicatorsResponse.json();
-          setTechnicalIndicators(indicatorsResult.data);
-        }
-
-        if (forecastResponse.ok) {
-          const forecastResult = await forecastResponse.json();
-          setForecastData(forecastResult.data);
-        }
-
-        if (seasonalResponse.ok) {
-          const seasonalResult = await seasonalResponse.json();
-          setSeasonalData(seasonalResult.data);
-        }
-
-        if (financialsResponse.ok) {
-          const financialsResult = await financialsResponse.json();
-          setFinancialData(financialsResult.data);
-        }
-      };
-
-      void loadSecondaryData();
+      try {
+        const secondary = await fetchSecondarySymbolData(symbol);
+        setTechnicalIndicators(secondary.technicalIndicators);
+        setForecastData(secondary.forecastData);
+        setSeasonalData(secondary.seasonalData);
+        setFinancialData(secondary.financialData);
+      } catch (err) {
+        console.warn("Error fetching secondary symbol data:", err);
+      }
     };
 
-    fetchSymbolData();
+    void loadSymbolData();
   }, [selectedSymbol, timeRange]);
 
   useEffect(() => {

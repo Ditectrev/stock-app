@@ -163,7 +163,9 @@ export function ChartWrapper({
 
     chartRef.current = chart;
 
-    const cleanupChildren = childrenRef.current?.(chart);
+    const init = childrenRef.current;
+    const cleanupChildren =
+      typeof init === "function" ? init(chart) : undefined;
 
     return () => {
       cleanupChildren?.();

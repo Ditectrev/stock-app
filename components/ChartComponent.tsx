@@ -41,6 +41,7 @@ import {
   resolveMagnifierPoint,
 } from "@/lib/chart-magnifier-tooltip";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import { validatePriceDataSeries } from "@/lib/chart-price-data";
 import {
   calculateRSI,
   calculateMACD,
@@ -101,6 +102,7 @@ export function ChartComponent({
   onDataPointHover,
   height = 400,
 }: ChartComponentProps) {
+  const priceData = useMemo(() => validatePriceDataSeries(data), [data]);
   const [selectedTimeRange, setSelectedTimeRange] =
     useState<TimeRange>(initialTimeRange);
   const [chartType, setChartType] = useState<ChartType>(
@@ -227,8 +229,8 @@ export function ChartComponent({
   );
 
   const filteredData = useMemo(
-    () => getFilteredData(data, selectedTimeRange),
-    [data, selectedTimeRange, getFilteredData]
+    () => getFilteredData(priceData, selectedTimeRange),
+    [priceData, selectedTimeRange, getFilteredData]
   );
   const filteredDataRef = useRef(filteredData);
   filteredDataRef.current = filteredData;
@@ -246,6 +248,14 @@ export function ChartComponent({
     const last = filteredData[filteredData.length - 1]!.timestamp;
     return `${selectedTimeRange}:${chartType}:${filteredData.length}:${String(first)}:${String(last)}`;
   }, [filteredData, selectedTimeRange, chartType]);
+
+  useEffect(() => {
+    if (priceData.length === 0) {
+      setError(MARKET_UI_COPY.chart.noData);
+      return;
+    }
+    setError(null);
+  }, [priceData]);
 
   // Handle time range change
   const handleTimeRangeChange = useCallback(
