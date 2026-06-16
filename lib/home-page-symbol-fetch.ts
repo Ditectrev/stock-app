@@ -26,6 +26,22 @@ async function fetchMarketJson<T>(url: string): Promise<T | null> {
   }
 }
 
+export async function fetchHistoricalData(
+  symbol: string,
+  timeRange: TimeRange
+): Promise<PriceData[]> {
+  const response = await fetch(
+    `/api/market/historical/${encodeURIComponent(symbol)}?range=${encodeURIComponent(timeRange)}`
+  );
+
+  if (!response.ok) {
+    throw new Error(MARKET_UI_COPY.load.historicalData);
+  }
+
+  const body = (await response.json()) as MarketJsonResponse<PriceData[]>;
+  return body.data ?? [];
+}
+
 export async function fetchPrimarySymbolData(
   symbol: string,
   timeRange: TimeRange

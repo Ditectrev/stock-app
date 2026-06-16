@@ -4,6 +4,15 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function coerceNumber(value: unknown): number | null {
+  if (isFiniteNumber(value)) return value;
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
 function parseTimestamp(value: unknown): Date | null {
   if (value instanceof Date && Number.isFinite(value.getTime())) {
     return value;
@@ -26,17 +35,17 @@ export function validatePriceDataSeries(input: unknown): PriceData[] {
 
     const record = row as Record<string, unknown>;
     const timestamp = parseTimestamp(record.timestamp);
-    const close = record.close;
+    const close = coerceNumber(record.close);
 
-    if (!timestamp || !isFiniteNumber(close)) continue;
+    if (!timestamp || close === null) continue;
 
     points.push({
       timestamp,
-      open: isFiniteNumber(record.open) ? record.open : close,
-      high: isFiniteNumber(record.high) ? record.high : close,
-      low: isFiniteNumber(record.low) ? record.low : close,
+      open: coerceNumber(record.open) ?? close,
+      high: coerceNumber(record.high) ?? close,
+      low: coerceNumber(record.low) ?? close,
       close,
-      volume: isFiniteNumber(record.volume) ? record.volume : 0,
+      volume: coerceNumber(record.volume) ?? 0,
     });
   }
 

@@ -48,6 +48,7 @@ export function OverviewTab({
             type="area"
             initialTimeRange={timeRange}
             onTimeRangeChange={onTimeRangeChange}
+            serverRangeScoped
             responsive={true}
             height={300}
           />

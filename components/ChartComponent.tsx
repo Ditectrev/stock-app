@@ -42,6 +42,7 @@ import {
 } from "@/lib/chart-magnifier-tooltip";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
 import { validatePriceDataSeries } from "@/lib/chart-price-data";
+import { filterPriceDataByTimeRange } from "@/lib/chart-time-range";
 import {
   calculateRSI,
   calculateMACD,
@@ -72,6 +73,8 @@ export interface ChartComponentProps {
   onDataPointHover?: (point: PriceData | null) => void;
   responsive?: boolean;
   height?: number;
+  /** Parent already fetches history for the active range (symbol overview). */
+  serverRangeScoped?: boolean;
 }
 
 const EMPTY_INDICATORS: ChartIndicator[] = [];
@@ -101,10 +104,15 @@ export function ChartComponent({
   onTimeRangeChange,
   onDataPointHover,
   height = 400,
+  serverRangeScoped = false,
 }: ChartComponentProps) {
   const priceData = useMemo(() => validatePriceDataSeries(data), [data]);
   const [selectedTimeRange, setSelectedTimeRange] =
     useState<TimeRange>(initialTimeRange);
+
+  useEffect(() => {
+    setSelectedTimeRange(initialTimeRange);
+  }, [initialTimeRange]);
   const [chartType, setChartType] = useState<ChartType>(
     type === "candlestick" ? "candlestick" : "area"
   );
@@ -178,60 +186,10 @@ export function ChartComponent({
     sparkleRef.current?.setRevealProgress(progress);
   }, []);
 
-  // Filter data based on selected time range
-  const getFilteredData = useCallback(
-    (allData: PriceData[], range: TimeRange): PriceData[] => {
-      if (!allData || allData.length === 0) return [];
-
-      const now = new Date();
-      const startDate = new Date();
-
-      switch (range) {
-        case "1D":
-          startDate.setHours(now.getHours() - 24);
-          break;
-        case "1W":
-          startDate.setDate(now.getDate() - 7);
-          break;
-        case "1M":
-          startDate.setMonth(now.getMonth() - 1);
-          break;
-        case "3M":
-          startDate.setMonth(now.getMonth() - 3);
-          break;
-        case "1Y":
-          startDate.setFullYear(now.getFullYear() - 1);
-          break;
-        case "5Y":
-          startDate.setFullYear(now.getFullYear() - 5);
-          break;
-        case "YTD":
-          startDate.setMonth(0, 1);
-          startDate.setHours(0, 0, 0, 0);
-          break;
-        case "Max":
-          return allData;
-      }
-
-      const filtered = allData.filter(
-        (d) => new Date(d.timestamp) >= startDate
-      );
-
-      // If no data found, return at least the last few points
-      if (filtered.length === 0 && allData.length > 0) {
-        const count = Math.min(10, allData.length);
-        return allData.slice(-count);
-      }
-
-      return filtered;
-    },
-    []
-  );
-
-  const filteredData = useMemo(
-    () => getFilteredData(priceData, selectedTimeRange),
-    [priceData, selectedTimeRange, getFilteredData]
-  );
+  const filteredData = useMemo(() => {
+    if (serverRangeScoped) return priceData;
+    return filterPriceDataByTimeRange(priceData, selectedTimeRange);
+  }, [priceData, selectedTimeRange, serverRangeScoped]);
   const filteredDataRef = useRef(filteredData);
   filteredDataRef.current = filteredData;
   const onDataPointHoverRef = useRef(onDataPointHover);
@@ -250,12 +208,12 @@ export function ChartComponent({
   }, [filteredData, selectedTimeRange, chartType]);
 
   useEffect(() => {
-    if (priceData.length === 0) {
+    if (priceData.length === 0 || filteredData.length === 0) {
       setError(MARKET_UI_COPY.chart.noData);
       return;
     }
     setError(null);
-  }, [priceData]);
+  }, [priceData, filteredData]);
 
   // Handle time range change
   const handleTimeRangeChange = useCallback(

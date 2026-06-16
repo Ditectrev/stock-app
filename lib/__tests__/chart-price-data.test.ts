@@ -32,4 +32,20 @@ describe("chart-price-data", () => {
       },
     ]);
   });
+
+  it("coerces numeric strings from JSON payloads", () => {
+    const points = validatePriceDataSeries([
+      {
+        timestamp: "2024-01-02T00:00:00.000Z",
+        open: "100",
+        high: "102",
+        low: "99",
+        close: "101.5",
+        volume: "1000",
+      },
+    ]);
+
+    expect(points).toHaveLength(1);
+    expect(points[0]?.close).toBe(101.5);
+  });
 });
