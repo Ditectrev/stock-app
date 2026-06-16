@@ -87,6 +87,8 @@ vi.mock("lightweight-charts", () => {
     setData: vi.fn(),
     applyOptions: vi.fn(),
     setMarkers: vi.fn(),
+    data: vi.fn(() => [{ time: 1_700_000_000, value: 100 }]),
+    priceToCoordinate: vi.fn(() => 120),
     priceScale: vi.fn(() => ({
       applyOptions: vi.fn(),
     })),
@@ -107,6 +109,14 @@ vi.mock("lightweight-charts", () => {
         scrollToRealTime: vi.fn(),
         getVisibleRange: vi.fn(),
         setVisibleRange: vi.fn(),
+        setVisibleLogicalRange: vi.fn(),
+        getVisibleLogicalRange: vi.fn(() => ({ from: 0, to: 100 })),
+        timeToCoordinate: vi.fn(() => 180),
+        width: vi.fn(() => 640),
+        subscribeVisibleLogicalRangeChange: vi.fn(),
+        unsubscribeVisibleLogicalRangeChange: vi.fn(),
+        subscribeVisibleTimeRangeChange: vi.fn(),
+        unsubscribeVisibleTimeRangeChange: vi.fn(),
       })),
       priceScale: vi.fn(() => ({
         applyOptions: vi.fn(),

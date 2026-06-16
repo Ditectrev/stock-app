@@ -1,4 +1,5 @@
 import { test, expect } from "./fixtures";
+import { waitForChartReveal } from "./helpers";
 import type { PricingTierInfo } from "../types";
 
 const STABLE_PRICING_TIERS: PricingTierInfo[] = [
@@ -555,6 +556,7 @@ test.describe("Hallmark visual regression", () => {
 
     const chart = page.getByTestId("price-chart-panel");
     await expect(chart).toBeVisible({ timeout: 15000 });
+    await waitForChartReveal(page);
     await expect(chart).toHaveScreenshot("symbol-price-chart.png", {
       maxDiffPixelRatio: 0.03,
     });
@@ -645,6 +647,7 @@ test.describe("Hallmark visual regression", () => {
 
     const chart = page.getByTestId("price-chart-panel");
     await expect(chart).toBeVisible({ timeout: 15000 });
+    await waitForChartReveal(page);
     await expect(chart).toHaveScreenshot("symbol-price-chart-dark.png", {
       maxDiffPixelRatio: 0.03,
     });

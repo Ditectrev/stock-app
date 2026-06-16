@@ -4,6 +4,9 @@
 
 set -euo pipefail
 
+# Cursor hook processes often inherit a minimal PATH; bun is usually in ~/.bun/bin.
+export PATH="${HOME}/.bun/bin:/opt/homebrew/bin:/usr/local/bin:${PATH:-}"
+
 input=$(cat)
 file_path=$(
   printf '%s' "$input" | python3 -c "import sys, json; print(json.load(sys.stdin).get('file_path', ''))"

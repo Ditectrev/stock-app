@@ -1412,14 +1412,46 @@ export class YahooFinanceService {
     const close = quotes.close || [];
     const volume = quotes.volume || [];
 
-    return timestamps.map((timestamp: number, index: number) => ({
-      timestamp: new Date(timestamp * 1000),
-      open: open[index] || 0,
-      high: high[index] || 0,
-      low: low[index] || 0,
-      close: close[index] || 0,
-      volume: volume[index] || 0,
-    }));
+    const points: PriceData[] = [];
+
+    for (let index = 0; index < timestamps.length; index++) {
+      const timestamp = timestamps[index];
+      const closeValue = close[index];
+
+      // Yahoo often emits trailing null/0 placeholders for incomplete bars.
+      if (
+        typeof timestamp !== "number" ||
+        !Number.isFinite(timestamp) ||
+        typeof closeValue !== "number" ||
+        !Number.isFinite(closeValue) ||
+        closeValue <= 0
+      ) {
+        continue;
+      }
+
+      points.push({
+        timestamp: new Date(timestamp * 1000),
+        open:
+          typeof open[index] === "number" && Number.isFinite(open[index])
+            ? open[index]
+            : closeValue,
+        high:
+          typeof high[index] === "number" && Number.isFinite(high[index])
+            ? high[index]
+            : closeValue,
+        low:
+          typeof low[index] === "number" && Number.isFinite(low[index])
+            ? low[index]
+            : closeValue,
+        close: closeValue,
+        volume:
+          typeof volume[index] === "number" && Number.isFinite(volume[index])
+            ? volume[index]
+            : 0,
+      });
+    }
+
+    return points;
   }
 
   /**

@@ -10,7 +10,7 @@ import { test, expect } from "./fixtures";
 
 test.describe("Asset Screener", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/screener");
   });
 
   // --- Screener visible on home page ---
@@ -18,7 +18,7 @@ test.describe("Asset Screener", () => {
   test("should display the Asset Screener section", async ({ page }) => {
     const hub = page.getByTestId("screener-hub");
     await expect(hub).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText("Asset Screener")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Screener" })).toBeVisible();
   });
 
   // --- Filter selection (Req 26.1) ---

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getMarketChartColors,
+  marketChartAtmosphereGradient,
   marketChartSignedColor,
   marketSentimentGaugeColor,
   marketSentimentGaugeArcSegments,
@@ -22,6 +23,37 @@ describe("market chart colors", () => {
   it("returns signed colors for volume and MACD histograms", () => {
     expect(marketChartSignedColor(true, false)).toBe(MARKET_CHART_UP_LIGHT);
     expect(marketChartSignedColor(false, true)).not.toBe(MARKET_CHART_UP_LIGHT);
+  });
+
+  it("uses performance-based signed palette for area and line charts", () => {
+    const upArea = getMarketChartColors(false, {
+      signed: true,
+      isPositive: true,
+      variant: "area",
+    });
+    const downArea = getMarketChartColors(false, {
+      signed: true,
+      isPositive: false,
+      variant: "area",
+    });
+    const upLine = getMarketChartColors(false, {
+      signed: true,
+      isPositive: true,
+      variant: "line",
+    });
+
+    expect(upArea.series).toBe(MARKET_CHART_UP_LIGHT);
+    expect(downArea.series).toBe(MARKET_CHART_DOWN_LIGHT);
+    expect(upArea.areaTop).toContain("0.55");
+    expect(upLine.areaTop).toBe("transparent");
+    expect(upLine.lineWidth).toBeGreaterThan(upArea.lineWidth);
+  });
+
+  it("exposes diagonal atmosphere gradients for chart backdrops", () => {
+    expect(marketChartAtmosphereGradient(true, true)).toContain(
+      "linear-gradient"
+    );
+    expect(marketChartAtmosphereGradient(false, true)).toContain("244, 63, 94");
   });
 
   it("maps fear and greed extremes to rose and emerald", () => {

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   SymbolData,
@@ -23,6 +23,12 @@ import { EXPLANATIONS_PROVIDER_CHANGED_EVENT } from "@/lib/explanation-provider"
 import { fetchAIPredictionForCurrentProvider } from "@/lib/local-ollama-ai-prediction";
 import { fetchStockOfTheDayForCurrentProvider } from "@/lib/local-ollama-stock-of-the-day";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import {
+  fetchHistoricalData,
+  fetchPrimarySymbolData,
+  fetchSecondarySymbolData,
+} from "@/lib/home-page-symbol-fetch";
+import { normalizeMarketSymbol } from "@/lib/market-symbol";
 import { AIPredictionPanel } from "@/components/AIPredictionPanel";
 import { HomeHub } from "@/components/HomeHub";
 import { StockOfTheDayPanel } from "@/components/StockOfTheDayPanel";
@@ -122,6 +128,8 @@ export function HomePageClient() {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [symbolData, setSymbolData] = useState<SymbolData | null>(null);
   const [historicalData, setHistoricalData] = useState<PriceData[]>([]);
+  const [loadedHistoryRange, setLoadedHistoryRange] = useState<TimeRange>("1M");
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [timeRange, setTimeRange] = useState<TimeRange>("1M");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -147,11 +155,7 @@ export function HomePageClient() {
   );
 
   useEffect(() => {
-    if (symbolFromUrl && symbolFromUrl.trim()) {
-      setSelectedSymbol(symbolFromUrl.trim().toUpperCase());
-    } else {
-      setSelectedSymbol(null);
-    }
+    setSelectedSymbol(normalizeMarketSymbol(symbolFromUrl));
   }, [symbolFromUrl]);
 
   const clearSymbol = () => {
@@ -159,77 +163,81 @@ export function HomePageClient() {
     router.replace("/", { scroll: false });
   };
 
-  useEffect(() => {
-    const fetchSymbolData = async () => {
-      if (!selectedSymbol) return;
+  const loadedSymbolRef = useRef<string | null>(null);
 
-      setLoading(true);
-      setError(null);
+  useEffect(() => {
+    if (!selectedSymbol) {
+      loadedSymbolRef.current = null;
+      return;
+    }
+
+    let cancelled = false;
+    const symbolChanged = loadedSymbolRef.current !== selectedSymbol;
+    loadedSymbolRef.current = selectedSymbol;
+
+    const load = async () => {
+      if (symbolChanged) {
+        setLoading(true);
+        setError(null);
+        setSymbolData(null);
+        setHistoricalData([]);
+        setTechnicalIndicators(null);
+        setForecastData(null);
+        setSeasonalData(null);
+        setFinancialData(null);
+
+        try {
+          const primary = await fetchPrimarySymbolData(
+            selectedSymbol,
+            timeRange
+          );
+          if (cancelled) return;
+          setSymbolData(primary.symbolData);
+          setHistoricalData(primary.historicalData);
+          setLoadedHistoryRange(timeRange);
+        } catch (err) {
+          if (cancelled) return;
+          console.error("Error fetching symbol data:", err);
+          setError(
+            err instanceof Error ? err.message : MARKET_UI_COPY.load.symbolData
+          );
+        } finally {
+          if (!cancelled) setLoading(false);
+        }
+
+        try {
+          const secondary = await fetchSecondarySymbolData(selectedSymbol);
+          if (cancelled) return;
+          setTechnicalIndicators(secondary.technicalIndicators);
+          setForecastData(secondary.forecastData);
+          setSeasonalData(secondary.seasonalData);
+          setFinancialData(secondary.financialData);
+        } catch (err) {
+          console.warn("Error fetching secondary symbol data:", err);
+        }
+        return;
+      }
+
+      setHistoryLoading(true);
+      setHistoricalData([]);
 
       try {
-        const symbolResponse = await fetch(
-          `/api/market/symbol/${selectedSymbol}`
-        );
-        if (!symbolResponse.ok) {
-          const body = (await symbolResponse.json().catch(() => ({}))) as {
-            error?: string;
-          };
-          throw new Error(body.error ?? MARKET_UI_COPY.load.symbolData);
-        }
-        const symbolResult = await symbolResponse.json();
-        setSymbolData(symbolResult.data);
-
-        const historicalResponse = await fetch(
-          `/api/market/historical/${selectedSymbol}?range=${timeRange}`
-        );
-        if (!historicalResponse.ok) {
-          throw new Error(MARKET_UI_COPY.load.historicalData);
-        }
-        const historicalResult = await historicalResponse.json();
-        setHistoricalData(historicalResult.data);
-
-        const indicatorsResponse = await fetch(
-          `/api/market/indicators/${selectedSymbol}`
-        );
-        if (indicatorsResponse.ok) {
-          const indicatorsResult = await indicatorsResponse.json();
-          setTechnicalIndicators(indicatorsResult.data);
-        }
-
-        const forecastResponse = await fetch(
-          `/api/market/forecast/${selectedSymbol}`
-        );
-        if (forecastResponse.ok) {
-          const forecastResult = await forecastResponse.json();
-          setForecastData(forecastResult.data);
-        }
-
-        const seasonalResponse = await fetch(
-          `/api/market/seasonal/${selectedSymbol}`
-        );
-        if (seasonalResponse.ok) {
-          const seasonalResult = await seasonalResponse.json();
-          setSeasonalData(seasonalResult.data);
-        }
-
-        const financialsResponse = await fetch(
-          `/api/market/financials/${selectedSymbol}`
-        );
-        if (financialsResponse.ok) {
-          const financialsResult = await financialsResponse.json();
-          setFinancialData(financialsResult.data);
-        }
+        const historical = await fetchHistoricalData(selectedSymbol, timeRange);
+        if (cancelled) return;
+        setHistoricalData(historical);
+        setLoadedHistoryRange(timeRange);
       } catch (err) {
-        console.error("Error fetching symbol data:", err);
-        setError(
-          err instanceof Error ? err.message : MARKET_UI_COPY.load.symbolData
-        );
+        console.warn("Error fetching historical data for range:", err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setHistoryLoading(false);
       }
     };
 
-    fetchSymbolData();
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedSymbol, timeRange]);
 
   useEffect(() => {
@@ -410,6 +418,8 @@ export function HomePageClient() {
                     symbolData={symbolData}
                     historicalData={historicalData}
                     timeRange={timeRange}
+                    dataTimeRange={loadedHistoryRange}
+                    historyLoading={historyLoading}
                     onTimeRangeChange={handleTimeRangeChange}
                   />
                 )}

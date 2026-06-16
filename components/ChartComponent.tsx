@@ -8,20 +8,42 @@
  * Requirements: 4.2, 11.2, 11.3, 11.4, 11.5
  */
 
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { DNA_CAPTION } from "@/lib/design-dna";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { ChartWrapper, IChartApi } from "./ChartWrapper";
+import {
+  ChartSparkleOverlay,
+  type ChartSparkleOverlayHandle,
+} from "./ChartSparkleOverlay";
+import { ChartMagnifierTooltip } from "./ChartMagnifierTooltip";
 import { PriceData, TimeRange, ChartType, ChartIndicator } from "@/types";
 import { useTheme } from "@/lib/theme-context";
-import { homeChipClasses, HOME_CALLOUT } from "@/lib/home-ui";
+import { homeChipClasses } from "@/lib/home-ui";
+import { animateChartTrail, type ChartTrailCancel } from "@/lib/chart-trail";
+import {
+  applyPlotClip,
+  clearPlotClip,
+  computePlotClipPathFromRatio,
+  computePlotClipPathFromX,
+  HIDDEN_PLOT_CLIP,
+} from "@/lib/chart-plot-clip";
 import {
   getMarketChartColors,
+  marketChartAtmosphereGradient,
   marketChartOverlayColor,
   marketChartSignedColor,
   MARKET_DOWN_TEXT,
   MARKET_ERROR_SURFACE,
 } from "@/lib/market-semantics";
+import {
+  CHART_MAGNIFIER_TOOLTIP_WIDTH,
+  clampMagnifierTooltipLeft,
+  resolveMagnifierPoint,
+} from "@/lib/chart-magnifier-tooltip";
 import { MARKET_UI_COPY } from "@/lib/market-ui-copy";
+import { validatePriceDataSeries } from "@/lib/chart-price-data";
+import { filterPriceDataByTimeRange } from "@/lib/chart-time-range";
 import {
   calculateRSI,
   calculateMACD,
@@ -37,19 +59,32 @@ import {
   AreaSeries,
   LineSeries,
   HistogramSeries,
+  LineType,
   Time,
 } from "lightweight-charts";
 
 export interface ChartComponentProps {
   data: PriceData[];
+  symbol?: string;
+  symbolName?: string;
   type?: ChartType;
+  /** Active range — required when `serverRangeScoped` (parent-controlled). */
+  timeRange?: TimeRange;
   initialTimeRange?: TimeRange;
+  /** Range the current `data` was fetched for (server-scoped charts). */
+  dataTimeRange?: TimeRange;
+  /** Parent is refetching history for a new range. */
+  historyLoading?: boolean;
   indicators?: ChartIndicator[];
   onTimeRangeChange?: (range: TimeRange) => void;
   onDataPointHover?: (point: PriceData | null) => void;
   responsive?: boolean;
   height?: number;
+  /** Parent already fetches history for the active range (symbol overview). */
+  serverRangeScoped?: boolean;
 }
+
+const EMPTY_INDICATORS: ChartIndicator[] = [];
 
 const TIME_RANGES: TimeRange[] = [
   "1D",
@@ -68,80 +103,185 @@ const TIME_RANGES: TimeRange[] = [
  */
 export function ChartComponent({
   data,
-  type = "line",
+  symbol,
+  symbolName,
+  type = "area",
+  timeRange: controlledTimeRange,
   initialTimeRange = "1M",
-  indicators = [],
+  dataTimeRange,
+  historyLoading = false,
+  indicators = EMPTY_INDICATORS,
   onTimeRangeChange,
   onDataPointHover,
   height = 400,
+  serverRangeScoped = false,
 }: ChartComponentProps) {
-  const [selectedTimeRange, setSelectedTimeRange] =
+  const priceData = useMemo(() => validatePriceDataSeries(data), [data]);
+  const [localTimeRange, setLocalTimeRange] =
     useState<TimeRange>(initialTimeRange);
-  const [chartType, setChartType] = useState<ChartType>(type);
+  const activeTimeRange = serverRangeScoped
+    ? (controlledTimeRange ?? initialTimeRange)
+    : localTimeRange;
+  const dataMatchesRange =
+    !serverRangeScoped ||
+    (!historyLoading &&
+      dataTimeRange === activeTimeRange &&
+      priceData.length > 0);
+  const [chartType, setChartType] = useState<ChartType>(
+    type === "candlestick" ? "candlestick" : "area"
+  );
   const [error, setError] = useState<string | null>(null);
-  const [hoveredPoint, setHoveredPoint] = useState<PriceData | null>(null);
+  const [magnifier, setMagnifier] = useState<{
+    left: number;
+    point: PriceData;
+  } | null>(null);
+  const [plotClipPath, setPlotClipPath] = useState<string | null>(null);
   const [chartKey, setChartKey] = useState(0);
+  const chartApiRef = useRef<IChartApi | null>(null);
+  const mainSeriesRef = useRef<ISeriesApi<"Area"> | null>(null);
+  const plotContainerRef = useRef<HTMLDivElement | null>(null);
+  const sparkleRef = useRef<ChartSparkleOverlayHandle>(null);
+  const isChartLoadingRef = useRef(false);
+  const isPointerDownRef = useRef(false);
+  const isPanningRef = useRef(false);
+  const lastHoverTimeRef = useRef<Time | undefined>(undefined);
+  const trailCancelRef = useRef<ChartTrailCancel | null>(null);
+  const trailRevealProgressRef = useRef(0);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
-  // Filter data based on selected time range
-  const getFilteredData = useCallback(
-    (allData: PriceData[], range: TimeRange): PriceData[] => {
-      if (!allData || allData.length === 0) return [];
+  const finishTrailAnimation = useCallback(() => {
+    trailCancelRef.current?.(true);
+    trailCancelRef.current = null;
+  }, []);
 
-      const now = new Date();
-      const startDate = new Date();
+  const handlePointerDown = useCallback(() => {
+    isPointerDownRef.current = true;
+    isPanningRef.current = false;
+    finishTrailAnimation();
+  }, [finishTrailAnimation]);
 
-      switch (range) {
-        case "1D":
-          startDate.setHours(now.getHours() - 24);
-          break;
-        case "1W":
-          startDate.setDate(now.getDate() - 7);
-          break;
-        case "1M":
-          startDate.setMonth(now.getMonth() - 1);
-          break;
-        case "3M":
-          startDate.setMonth(now.getMonth() - 3);
-          break;
-        case "1Y":
-          startDate.setFullYear(now.getFullYear() - 1);
-          break;
-        case "5Y":
-          startDate.setFullYear(now.getFullYear() - 5);
-          break;
-        case "Max":
-          return allData;
+  const handlePointerUp = useCallback(() => {
+    isPointerDownRef.current = false;
+    isPanningRef.current = false;
+    sparkleRef.current?.setCrosshairGlow(null);
+    sparkleRef.current?.syncLivePoint();
+    setMagnifier(null);
+  }, []);
+
+  const disposeTrailAnimation = useCallback(() => {
+    trailCancelRef.current?.(true);
+    trailCancelRef.current = null;
+    clearPlotClip(plotContainerRef.current);
+    setPlotClipPath(null);
+  }, []);
+
+  const applyRevealClip = useCallback((progress: number, tipIndex: number) => {
+    trailRevealProgressRef.current = progress;
+
+    const chart = chartApiRef.current;
+    const series = mainSeriesRef.current;
+    const plotEl = plotContainerRef.current;
+    let clip = computePlotClipPathFromRatio(progress, plotEl);
+
+    if (chart && series) {
+      const data = series.data() as LineData[];
+      const point = data[tipIndex];
+      if (point) {
+        const frontierX = chart.timeScale().timeToCoordinate(point.time);
+        if (frontierX !== null) {
+          clip = computePlotClipPathFromX(frontierX, plotEl);
+        }
       }
+    }
 
-      const filtered = allData.filter(
-        (d) => new Date(d.timestamp) >= startDate
-      );
+    applyPlotClip(plotEl, clip);
+    sparkleRef.current?.syncLiveTip(tipIndex);
+    sparkleRef.current?.setRevealProgress(progress);
+  }, []);
 
-      // If no data found, return at least the last few points
-      if (filtered.length === 0 && allData.length > 0) {
-        const count = Math.min(10, allData.length);
-        return allData.slice(-count);
-      }
+  const filteredData = useMemo(() => {
+    if (serverRangeScoped) return priceData;
+    return filterPriceDataByTimeRange(priceData, activeTimeRange);
+  }, [priceData, activeTimeRange, serverRangeScoped]);
+  const filteredDataRef = useRef(filteredData);
+  filteredDataRef.current = filteredData;
+  const onDataPointHoverRef = useRef(onDataPointHover);
+  onDataPointHoverRef.current = onDataPointHover;
 
-      return filtered;
-    },
-    []
-  );
+  const isPeriodPositive =
+    filteredData.length >= 2
+      ? filteredData[filteredData.length - 1]!.close >= filteredData[0]!.close
+      : true;
 
-  const filteredData = getFilteredData(data, selectedTimeRange);
+  const chartDataRevision = useMemo(() => {
+    if (!dataMatchesRange) return `pending:${activeTimeRange}`;
+    if (filteredData.length === 0) return `${activeTimeRange}:empty`;
+    const first = filteredData[0]!.timestamp;
+    const last = filteredData[filteredData.length - 1]!.timestamp;
+    const revisionRange = serverRangeScoped
+      ? (dataTimeRange ?? activeTimeRange)
+      : activeTimeRange;
+    return `${revisionRange}:${chartType}:${filteredData.length}:${String(first)}:${String(last)}`;
+  }, [
+    filteredData,
+    activeTimeRange,
+    dataTimeRange,
+    chartType,
+    dataMatchesRange,
+    serverRangeScoped,
+  ]);
+
+  useEffect(() => {
+    if (!dataMatchesRange) return;
+    if (priceData.length === 0 || filteredData.length === 0) {
+      setError(MARKET_UI_COPY.chart.noData);
+      return;
+    }
+    setError(null);
+  }, [priceData, filteredData, dataMatchesRange]);
 
   // Handle time range change
   const handleTimeRangeChange = useCallback(
     (range: TimeRange) => {
-      setSelectedTimeRange(range);
-      if (onTimeRangeChange) {
-        onTimeRangeChange(range);
+      finishTrailAnimation();
+      if (!serverRangeScoped) {
+        setLocalTimeRange(range);
       }
+      onTimeRangeChange?.(range);
     },
-    [onTimeRangeChange]
+    [onTimeRangeChange, finishTrailAnimation, serverRangeScoped]
   );
+
+  useEffect(() => () => disposeTrailAnimation(), [disposeTrailAnimation]);
+
+  useEffect(() => {
+    if (!plotClipPath) return;
+
+    const recalc = () => {
+      if (trailRevealProgressRef.current <= 0) return;
+      applyRevealClip(
+        trailRevealProgressRef.current,
+        Math.max(
+          0,
+          Math.round(
+            trailRevealProgressRef.current *
+              (mainSeriesRef.current?.data().length ?? 0)
+          ) - 1
+        )
+      );
+    };
+
+    window.addEventListener("resize", recalc);
+    chartApiRef.current?.timeScale().subscribeVisibleLogicalRangeChange(recalc);
+
+    return () => {
+      window.removeEventListener("resize", recalc);
+      chartApiRef.current
+        ?.timeScale()
+        .unsubscribeVisibleLogicalRangeChange(recalc);
+    };
+  }, [plotClipPath, applyRevealClip]);
 
   // Handle chart type change
   const handleChartTypeChange = useCallback((newType: ChartType) => {
@@ -163,10 +303,18 @@ export function ChartComponent({
       }
 
       // For line and area charts
-      return priceData.map((d) => ({
-        time: Math.floor(new Date(d.timestamp).getTime() / 1000) as Time,
-        value: d.close,
-      }));
+      return priceData
+        .map((d) => {
+          const close = d.close;
+          if (close == null || !Number.isFinite(close)) return null;
+          const ms = new Date(d.timestamp).getTime();
+          if (!Number.isFinite(ms)) return null;
+          return {
+            time: Math.floor(ms / 1000) as Time,
+            value: close,
+          };
+        })
+        .filter((point): point is LineData => point !== null);
     },
     [chartType]
   );
@@ -194,13 +342,13 @@ export function ChartComponent({
         setError(null);
         const chartData = convertToChartData(filteredData);
         const volumeData = convertVolumeData(filteredData);
-        const chartColors = getMarketChartColors(isDark);
+        const chartColors = getMarketChartColors(isDark, {
+          signed: true,
+          isPositive: isPeriodPositive,
+          variant: "area",
+        });
 
-        // Create main series based on chart type
-        let mainSeries:
-          | ISeriesApi<"Candlestick">
-          | ISeriesApi<"Area">
-          | ISeriesApi<"Line">;
+        let mainSeries: ISeriesApi<"Candlestick"> | ISeriesApi<"Area">;
 
         if (chartType === "candlestick") {
           mainSeries = chart.addSeries(CandlestickSeries, {
@@ -210,40 +358,83 @@ export function ChartComponent({
             wickUpColor: chartColors.wickUp,
             wickDownColor: chartColors.wickDown,
           });
-        } else if (chartType === "area") {
+        } else {
+          chart.timeScale().applyOptions({
+            fixLeftEdge: true,
+            fixRightEdge: true,
+            shiftVisibleRangeOnNewBar: false,
+            rightOffset: 0,
+          });
+
           mainSeries = chart.addSeries(AreaSeries, {
             lineColor: chartColors.series,
             topColor: chartColors.areaTop,
             bottomColor: chartColors.areaBottom,
-            lineWidth: 2,
-          });
-        } else {
-          // line chart
-          mainSeries = chart.addSeries(LineSeries, {
-            color: chartColors.series,
-            lineWidth: 2,
+            lineWidth: chartColors.lineWidth,
+            lineType: LineType.Curved,
+            crosshairMarkerVisible: true,
+            crosshairMarkerRadius: 5,
+            lastValueVisible: false,
+            priceLineVisible: false,
           });
         }
 
-        mainSeries.setData(chartData);
+        disposeTrailAnimation();
 
-        // Add volume histogram
-        const volumeSeries = chart.addSeries(HistogramSeries, {
-          color: chartColors.up,
-          priceFormat: {
-            type: "volume",
-          },
-          priceScaleId: "",
-        });
+        chartApiRef.current = chart;
+        mainSeriesRef.current =
+          chartType === "candlestick"
+            ? null
+            : (mainSeries as ISeriesApi<"Area">);
 
-        volumeSeries.priceScale().applyOptions({
-          scaleMargins: {
-            top: 0.8,
-            bottom: 0,
-          },
-        });
+        if (chartType === "candlestick") {
+          mainSeries.setData(chartData);
+        } else {
+          const lineData = chartData as LineData[];
+          const areaSeries = mainSeries as ISeriesApi<"Area">;
 
-        volumeSeries.setData(volumeData);
+          applyPlotClip(plotContainerRef.current, HIDDEN_PLOT_CLIP);
+          setPlotClipPath(HIDDEN_PLOT_CLIP);
+
+          isChartLoadingRef.current = true;
+          sparkleRef.current?.setLoadingSplash(true);
+          setMagnifier(null);
+
+          trailCancelRef.current = animateChartTrail(areaSeries, lineData, {
+            chart,
+            onStep: (progress, tipIndex) => {
+              applyRevealClip(progress, tipIndex);
+            },
+            onComplete: () => {
+              isChartLoadingRef.current = false;
+              trailRevealProgressRef.current = 0;
+              clearPlotClip(plotContainerRef.current);
+              setPlotClipPath(null);
+              areaSeries.applyOptions({ lastValueVisible: true });
+              sparkleRef.current?.setLoadingSplash(false);
+              sparkleRef.current?.syncLivePoint();
+            },
+          });
+        }
+
+        if (chartType === "candlestick") {
+          const volumeSeries = chart.addSeries(HistogramSeries, {
+            color: chartColors.up,
+            priceFormat: {
+              type: "volume",
+            },
+            priceScaleId: "",
+          });
+
+          volumeSeries.priceScale().applyOptions({
+            scaleMargins: {
+              top: 0.8,
+              bottom: 0,
+            },
+          });
+
+          volumeSeries.setData(volumeData);
+        }
 
         // Add technical indicators
         indicators.forEach((indicator) => {
@@ -375,27 +566,83 @@ export function ChartComponent({
           }
         });
 
-        // Setup crosshair move handler for hover events
+        chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
+          if (!isPointerDownRef.current) return;
+          isPanningRef.current = true;
+          sparkleRef.current?.setCrosshairGlow(null);
+          setMagnifier(null);
+        });
+
         chart.subscribeCrosshairMove((param) => {
-          if (!param.time) {
-            setHoveredPoint(null);
-            if (onDataPointHover) onDataPointHover(null);
+          if (!param.point || param.time === undefined) {
+            sparkleRef.current?.setCrosshairGlow(null);
+            setMagnifier(null);
+            if (lastHoverTimeRef.current !== undefined) {
+              lastHoverTimeRef.current = undefined;
+              onDataPointHoverRef.current?.(null);
+            }
             return;
           }
 
-          const point = filteredData.find(
-            (d) =>
-              Math.floor(new Date(d.timestamp).getTime() / 1000) === param.time
+          if (
+            chartType !== "candlestick" &&
+            !isChartLoadingRef.current &&
+            !isPanningRef.current
+          ) {
+            const seriesPoint = param.seriesData.get(mainSeries);
+            if (
+              seriesPoint &&
+              "value" in seriesPoint &&
+              seriesPoint.value !== undefined
+            ) {
+              const y = mainSeries.priceToCoordinate(seriesPoint.value);
+              if (y !== null) {
+                sparkleRef.current?.setCrosshairGlow({
+                  x: param.point.x,
+                  y,
+                });
+              }
+            }
+          }
+
+          const point = resolveMagnifierPoint(
+            filteredDataRef.current,
+            param.time,
+            mainSeries,
+            param.seriesData
           );
 
+          if (
+            point &&
+            !isChartLoadingRef.current &&
+            !isPanningRef.current &&
+            param.point.x >= 0 &&
+            param.point.y >= 0
+          ) {
+            const plotWidth = chart.timeScale().width();
+            const left = clampMagnifierTooltipLeft(
+              param.point.x,
+              CHART_MAGNIFIER_TOOLTIP_WIDTH,
+              plotWidth
+            );
+            setMagnifier({ left, point });
+          } else {
+            setMagnifier(null);
+          }
+
+          if (param.time === lastHoverTimeRef.current) return;
+
+          lastHoverTimeRef.current = param.time as Time;
           if (point) {
-            setHoveredPoint(point);
-            if (onDataPointHover) onDataPointHover(point);
+            onDataPointHoverRef.current?.(point);
           }
         });
 
-        // Fit content to visible range
-        chart.timeScale().fitContent();
+        if (chartType === "candlestick") {
+          chart.timeScale().fitContent();
+        }
+
+        return disposeTrailAnimation;
       } catch (err) {
         console.error("Error initializing chart:", err);
         setError(MARKET_UI_COPY.chart.initFailed);
@@ -407,8 +654,10 @@ export function ChartComponent({
       indicators,
       convertToChartData,
       convertVolumeData,
-      onDataPointHover,
       isDark,
+      isPeriodPositive,
+      disposeTrailAnimation,
+      applyRevealClip,
     ]
   );
 
@@ -440,7 +689,7 @@ export function ChartComponent({
       <div className="chart-container">
         <div className="chart-controls">
           <TimeRangeSelector
-            selectedRange={selectedTimeRange}
+            selectedRange={activeTimeRange}
             onRangeChange={handleTimeRangeChange}
           />
           <ChartTypeSelector
@@ -465,7 +714,7 @@ export function ChartComponent({
       {/* Chart Controls */}
       <div className="chart-controls mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <TimeRangeSelector
-          selectedRange={selectedTimeRange}
+          selectedRange={activeTimeRange}
           onRangeChange={handleTimeRangeChange}
         />
         <ChartTypeSelector
@@ -474,36 +723,59 @@ export function ChartComponent({
         />
       </div>
 
-      {/* Hovered Point Info */}
-      {hoveredPoint && (
-        <div className={`mb-2 rounded p-2 text-xs sm:text-sm ${HOME_CALLOUT}`}>
-          <span className="font-semibold">
-            {new Date(hoveredPoint.timestamp).toLocaleDateString()}
-          </span>
-          <span className="hidden sm:inline">
-            {" - "}
-            <span>O: ${hoveredPoint.open.toFixed(2)}</span>
-            {" | "}
-            <span>H: ${hoveredPoint.high.toFixed(2)}</span>
-            {" | "}
-            <span>L: ${hoveredPoint.low.toFixed(2)}</span>
-            {" | "}
-            <span>C: ${hoveredPoint.close.toFixed(2)}</span>
-            {" | "}
-            <span>Vol: {(hoveredPoint.volume / 1000000).toFixed(2)}M</span>
-          </span>
-          <div className="sm:hidden mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
-            <span>C: ${hoveredPoint.close.toFixed(2)}</span>
-            <span>H: ${hoveredPoint.high.toFixed(2)}</span>
-            <span>L: ${hoveredPoint.low.toFixed(2)}</span>
+      {/* Chart — tooltip is absolutely positioned so hover never shifts layout */}
+      <div
+        className="relative"
+        onMouseDown={handlePointerDown}
+        onMouseUp={handlePointerUp}
+        onMouseLeave={handlePointerUp}
+        onTouchStart={handlePointerDown}
+        onTouchEnd={handlePointerUp}
+      >
+        {dataMatchesRange && !error ? (
+          <ChartWrapper
+            key={chartKey}
+            dataRevision={chartDataRevision}
+            height={height}
+            isDark={isDark}
+            chartType={chartType}
+            plotClipPath={plotClipPath}
+            plotContainerRef={plotContainerRef}
+            atmosphereGradient={marketChartAtmosphereGradient(
+              isPeriodPositive,
+              isDark
+            )}
+            overlay={
+              <>
+                <ChartMagnifierTooltip
+                  symbol={symbol ?? symbolName}
+                  isDark={isDark}
+                  isPositive={isPeriodPositive}
+                  left={magnifier?.left}
+                  point={magnifier?.point ?? null}
+                />
+                <ChartSparkleOverlay
+                  ref={sparkleRef}
+                  chartRef={chartApiRef}
+                  seriesRef={mainSeriesRef}
+                  chartType={chartType}
+                  isPositive={isPeriodPositive}
+                  dataRevision={chartDataRevision}
+                />
+              </>
+            }
+          >
+            {initializeChart}
+          </ChartWrapper>
+        ) : (
+          <div
+            className="flex items-center justify-center rounded-xl bg-stone-100/50 dark:bg-stone-900/40"
+            style={{ height: `${height}px` }}
+          >
+            <LoadingSpinner size="md" message="Updating chart..." />
           </div>
-        </div>
-      )}
-
-      {/* Chart */}
-      <ChartWrapper key={chartKey} height={height} isDark={isDark}>
-        {initializeChart}
-      </ChartWrapper>
+        )}
+      </div>
 
       {/* Chart Instructions */}
       <div className={`mt-2 ${DNA_CAPTION}`}>
@@ -562,7 +834,6 @@ function ChartTypeSelector({
   onTypeChange,
 }: ChartTypeSelectorProps) {
   const types: { value: ChartType; label: string }[] = [
-    { value: "line", label: "Line" },
     { value: "area", label: "Area" },
     { value: "candlestick", label: "Candles" },
   ];

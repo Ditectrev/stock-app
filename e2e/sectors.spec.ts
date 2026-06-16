@@ -2,7 +2,7 @@ import { test, expect } from "./fixtures";
 
 test.describe("Sectors Hub", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/sectors");
   });
 
   test("should display the Sectors Hub section on the home page", async ({
@@ -10,7 +10,9 @@ test.describe("Sectors Hub", () => {
   }) => {
     const sectorHub = page.getByTestId("sector-hub");
     await expect(sectorHub).toBeVisible({ timeout: 15000 });
-    await expect(sectorHub.getByText("Sectors Hub")).toBeVisible();
+    await expect(
+      sectorHub.getByRole("heading", { name: "Sectors" })
+    ).toBeVisible();
   });
 
   test("should display sector cards with performance percentages (Req 23.1, 23.3)", async ({
@@ -101,16 +103,31 @@ test.describe("Sectors Hub", () => {
       .locator("[data-testid^='sector-']")
       .first();
     const testId = await firstSector.getAttribute("data-testid");
-    expect(testId).toBe("sector-Communication");
+    expect(testId).toBe("sector-Financial");
   });
 
   test("should show loading state before data arrives", async ({ page }) => {
     await page.route("**/api/market/sectors*", async (route) => {
       await new Promise((r) => setTimeout(r, 3000));
-      await route.continue();
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          success: true,
+          data: [
+            {
+              sector: "Technology",
+              performance: 2.1,
+              changePercent: 1.2,
+              constituents: 120,
+            },
+          ],
+          timestamp: "2024-01-15T12:00:00.000Z",
+        }),
+      });
     });
 
-    await page.goto("/");
+    await page.goto("/sectors");
     const loading = page.getByTestId("sector-hub-loading");
     await expect(loading).toBeVisible({ timeout: 5000 });
   });

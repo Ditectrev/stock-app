@@ -70,6 +70,7 @@ describe("OverviewTab", () => {
           symbolData={mockSymbolData}
           historicalData={mockHistoricalData}
           timeRange="1M"
+          dataTimeRange="1M"
           onTimeRangeChange={onTimeRangeChange}
         />
       );
@@ -85,6 +86,7 @@ describe("OverviewTab", () => {
           symbolData={mockSymbolData}
           historicalData={mockHistoricalData}
           timeRange="1M"
+          dataTimeRange="1M"
           onTimeRangeChange={onTimeRangeChange}
         />
       );
@@ -381,6 +383,7 @@ describe("OverviewTab", () => {
           }}
           historicalData={mockHistoricalData}
           timeRange="1M"
+          dataTimeRange="1M"
           onTimeRangeChange={onTimeRangeChange}
         />
       );

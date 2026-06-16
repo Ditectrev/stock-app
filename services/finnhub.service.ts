@@ -51,7 +51,7 @@ function getRangeWindow(range: TimeRange): {
       return { from: toUnixSeconds(fromDate), to, resolution: "D" };
     case "5Y":
       fromDate.setFullYear(now.getFullYear() - 5);
-      return { from: toUnixSeconds(fromDate), to, resolution: "W" };
+      return { from: toUnixSeconds(fromDate), to, resolution: "D" };
     case "YTD":
       fromDate.setMonth(0, 1);
       fromDate.setHours(0, 0, 0, 0);
@@ -195,7 +195,7 @@ export class FinnhubService {
       const points: PriceData[] = [];
       for (let i = 0; i < data.t.length; i++) {
         const close = data.c[i];
-        if (close == null) continue;
+        if (close == null || !Number.isFinite(close) || close <= 0) continue;
         points.push({
           timestamp: new Date(data.t[i] * 1000),
           open: data.o?.[i] ?? close,

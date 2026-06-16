@@ -27,7 +27,7 @@ export interface ChartWithIndicatorsProps {
  */
 export function ChartWithIndicators({
   data,
-  type = "line",
+  type = "area",
   initialTimeRange = "1M",
   onTimeRangeChange,
   responsive = true,

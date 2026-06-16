@@ -1,3 +1,5 @@
+import type { LineWidth } from "lightweight-charts";
+
 /** Muted up/down/neutral styling and chart hex palette (emerald / rose). */
 
 /** Lightweight Charts hex palette (emerald / rose; matches heatmap fills). */
@@ -16,12 +18,65 @@ export type MarketChartColors = {
   series: string;
   areaTop: string;
   areaBottom: string;
+  lineWidth: LineWidth;
 };
 
-export function getMarketChartColors(isDark: boolean): MarketChartColors {
+export type MarketChartVariant = "line" | "area";
+
+export function getMarketChartColors(
+  isDark: boolean,
+  options?: {
+    signed?: boolean;
+    isPositive?: boolean;
+    variant?: MarketChartVariant;
+  }
+): MarketChartColors {
   const up = isDark ? MARKET_CHART_UP_DARK : MARKET_CHART_UP_LIGHT;
   const down = isDark ? MARKET_CHART_DOWN_DARK : MARKET_CHART_DOWN_LIGHT;
   const series = isDark ? MARKET_CHART_SERIES_DARK : MARKET_CHART_SERIES_LIGHT;
+  const variant = options?.variant ?? "area";
+
+  if (options?.signed) {
+    const isPositive = options.isPositive ?? true;
+    const signedSeries = marketChartSignedColor(isPositive, isDark);
+
+    if (variant === "line") {
+      return {
+        up,
+        down,
+        wickUp: up,
+        wickDown: down,
+        series: signedSeries,
+        areaTop: "transparent",
+        areaBottom: "transparent",
+        lineWidth: 3,
+      };
+    }
+
+    return {
+      up,
+      down,
+      wickUp: up,
+      wickDown: down,
+      series: signedSeries,
+      areaTop: isPositive
+        ? isDark
+          ? "rgba(16, 185, 129, 0.62)"
+          : "rgba(5, 150, 105, 0.55)"
+        : isDark
+          ? "rgba(244, 63, 94, 0.62)"
+          : "rgba(225, 29, 72, 0.55)",
+      areaBottom: isPositive
+        ? isDark
+          ? "rgba(16, 185, 129, 0.02)"
+          : "rgba(5, 150, 105, 0.04)"
+        : isDark
+          ? "rgba(244, 63, 94, 0.02)"
+          : "rgba(225, 29, 72, 0.04)",
+      lineWidth: 2,
+    };
+  }
+
   return {
     up,
     down,
@@ -30,7 +85,23 @@ export function getMarketChartColors(isDark: boolean): MarketChartColors {
     series,
     areaTop: series,
     areaBottom: isDark ? "rgba(52, 211, 153, 0.22)" : "rgba(5, 150, 105, 0.22)",
+    lineWidth: variant === "line" ? 3 : 2,
   };
+}
+
+/** Revolut-style diagonal glow tint behind charts (CSS linear-gradient stops). */
+export function marketChartAtmosphereGradient(
+  isPositive: boolean,
+  isDark: boolean
+): string {
+  if (isPositive) {
+    return isDark
+      ? "linear-gradient(225deg, rgba(16, 185, 129, 0.18) 0%, rgba(16, 185, 129, 0.04) 28%, transparent 55%)"
+      : "linear-gradient(225deg, rgba(5, 150, 105, 0.14) 0%, rgba(5, 150, 105, 0.03) 28%, transparent 55%)";
+  }
+  return isDark
+    ? "linear-gradient(225deg, rgba(244, 63, 94, 0.18) 0%, rgba(244, 63, 94, 0.04) 28%, transparent 55%)"
+    : "linear-gradient(225deg, rgba(225, 29, 72, 0.14) 0%, rgba(225, 29, 72, 0.03) 28%, transparent 55%)";
 }
 
 export function marketChartSignedColor(

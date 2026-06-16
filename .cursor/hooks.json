@@ -16,8 +16,7 @@
     "stop": [
       {
         "command": ".cursor/hooks/stop-quality-check.sh",
-        "timeout": 600,
-        "loop_limit": 0
+        "timeout": 600
       }
     ]
   }

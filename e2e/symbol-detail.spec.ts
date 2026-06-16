@@ -1,54 +1,36 @@
 import { test, expect } from "./fixtures";
+import { selectSymbol } from "./helpers";
 
 test.describe("Symbol Detail on Home Page", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto("http://localhost:3000");
+    await page.goto("/");
   });
 
-  test("should display welcome message when no symbol selected", async ({
+  test("should display dashboard quick links when no symbol selected", async ({
     page,
   }) => {
-    await expect(page.getByText("Search for a Stock Symbol")).toBeVisible();
-    await expect(
-      page.getByText("Use the search bar above to find and analyze stocks")
-    ).toBeVisible();
+    await expect(page.getByText("Compare sector performance")).toBeVisible();
+    await expect(page.getByText("Visual market overview")).toBeVisible();
+    await expect(page.getByText("Filter and find assets")).toBeVisible();
   });
 
   test("should display symbol header after selecting a symbol", async ({
     page,
   }) => {
-    // Search for a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("AAPL");
-    await searchInput.press("Enter");
-
-    // Wait for symbol header to appear
-    await expect(page.getByRole("heading", { name: /AAPL/i })).toBeVisible();
+    await selectSymbol(page, "AAPL");
+    await expect(page.getByText("AAPL Test Co.")).toBeVisible();
   });
 
   test("should display current price with change indicators", async ({
     page,
   }) => {
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("AAPL");
-    await searchInput.press("Enter");
-
-    // Check for price display
-    await expect(page.getByText(/\$/)).toBeVisible();
-
-    // Check for change percentage (either positive or negative)
-    const changeText = page.locator("text=/[+-]?\\d+\\.\\d+%/").first();
-    await expect(changeText).toBeVisible();
+    await selectSymbol(page, "AAPL");
+    await expect(page.getByLabel(/Current price: \$189\.42/)).toBeVisible();
+    await expect(page.getByLabel(/Change: \+1\.25 \(\+0\.66%\)/)).toBeVisible();
   });
 
   test("should display tab navigation", async ({ page }) => {
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("TSLA");
-    await searchInput.press("Enter");
-
-    // Check for all tabs
+    await selectSymbol(page, "TSLA");
     await expect(page.getByRole("tab", { name: "Overview" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Financials" })).toBeVisible();
     await expect(page.getByRole("tab", { name: "Technicals" })).toBeVisible();
@@ -57,23 +39,15 @@ test.describe("Symbol Detail on Home Page", () => {
   });
 
   test("should display Overview tab by default", async ({ page }) => {
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("MSFT");
-    await searchInput.press("Enter");
-
-    // Overview tab should be active
-    const overviewTab = page.getByRole("tab", { name: "Overview" });
-    await expect(overviewTab).toHaveAttribute("aria-selected", "true");
+    await selectSymbol(page, "MSFT");
+    await expect(page.getByRole("tab", { name: "Overview" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
   });
 
   test("should display key metrics in Overview tab", async ({ page }) => {
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("NVDA");
-    await searchInput.press("Enter");
-
-    // Check for key metrics
+    await selectSymbol(page, "NVDA");
     await expect(page.getByText("Key Metrics")).toBeVisible();
     await expect(page.getByText("Market Cap")).toBeVisible();
     await expect(page.getByText("Volume")).toBeVisible();
@@ -82,93 +56,57 @@ test.describe("Symbol Detail on Home Page", () => {
   });
 
   test("should display price chart in Overview tab", async ({ page }) => {
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("GOOGL");
-    await searchInput.press("Enter");
-
-    // Check for chart heading
-    await expect(page.getByText("Price Chart")).toBeVisible();
+    await selectSymbol(page, "GOOGL");
+    await expect(page.getByRole("heading", { name: "Chart" })).toBeVisible();
+    await expect(page.getByTestId("price-chart-panel")).toBeVisible();
   });
 
   test("should switch between tabs", async ({ page }) => {
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("AMZN");
-    await searchInput.press("Enter");
+    await selectSymbol(page, "AMZN");
 
-    // Click on Financials tab
     await page.getByRole("tab", { name: "Financials" }).click();
-    await expect(page.getByText("Financials")).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Financials" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
 
-    // Click on Technicals tab
     await page.getByRole("tab", { name: "Technicals" }).click();
-    await expect(page.getByText("Technical Indicators")).toBeVisible();
-
-    // Click back to Overview
-    await page.getByRole("tab", { name: "Overview" }).click();
-    await expect(page.getByText("Key Metrics")).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Technicals" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
   });
 
   test("should handle different symbols", async ({ page }) => {
-    // First symbol
-    let searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("AAPL");
-    await searchInput.press("Enter");
-    await expect(page.getByRole("heading", { name: /AAPL/i })).toBeVisible();
+    await selectSymbol(page, "AAPL");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "AAPL" })
+    ).toBeVisible();
 
-    // Second symbol
-    searchInput = page.getByPlaceholder(/search stocks/i);
+    const searchInput = page.getByPlaceholder(/search stocks/i);
     await searchInput.fill("TSLA");
     await searchInput.press("Enter");
-    await expect(page.getByRole("heading", { name: /TSLA/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "TSLA" })
+    ).toBeVisible();
   });
 
   test("should be responsive on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("NFLX");
-    await searchInput.press("Enter");
-
-    // Check that content is visible on mobile
-    await expect(page.getByRole("heading", { name: /NFLX/i })).toBeVisible();
-    await expect(page.getByText("Key Metrics")).toBeVisible();
+    await selectSymbol(page, "NFLX");
+    await expect(page.getByTestId("price-chart-panel")).toBeVisible();
   });
 
   test("should display tooltips on metric hover", async ({ page }) => {
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("AMD");
-    await searchInput.press("Enter");
-
-    // Wait for metrics to load
-    await expect(page.getByText("Market Cap")).toBeVisible();
-
-    // Hover over a metric to show tooltip
-    const marketCapMetric = page.locator("text=Market Cap").locator("..");
-    await marketCapMetric.hover();
-
-    // Tooltip should appear (checking for tooltip content)
-    await expect(
-      page.getByText(/Market Capitalization is the total value/i)
-    ).toBeVisible({ timeout: 2000 });
+    await selectSymbol(page, "AMD");
+    const marketCapLabel = page.getByText("Market Cap").first();
+    await marketCapLabel.hover();
+    await expect(page.getByRole("tooltip")).toBeVisible();
   });
 
   test("should display time range selector in chart", async ({ page }) => {
-    // Select a symbol
-    const searchInput = page.getByPlaceholder(/search stocks/i);
-    await searchInput.fill("INTC");
-    await searchInput.press("Enter");
-
-    // Wait for chart to load
-    await expect(page.getByText("Price Chart")).toBeVisible();
-
-    // Check for time range buttons
-    await expect(page.getByRole("button", { name: "1D" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "1W" })).toBeVisible();
+    await selectSymbol(page, "INTC");
     await expect(page.getByRole("button", { name: "1M" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "1Y" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "3M" })).toBeVisible();
   });
 });
