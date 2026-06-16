@@ -195,7 +195,7 @@ export class FinnhubService {
       const points: PriceData[] = [];
       for (let i = 0; i < data.t.length; i++) {
         const close = data.c[i];
-        if (close == null) continue;
+        if (close == null || !Number.isFinite(close) || close <= 0) continue;
         points.push({
           timestamp: new Date(data.t[i] * 1000),
           open: data.o?.[i] ?? close,

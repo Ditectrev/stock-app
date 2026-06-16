@@ -37,7 +37,7 @@ export function validatePriceDataSeries(input: unknown): PriceData[] {
     const timestamp = parseTimestamp(record.timestamp);
     const close = coerceNumber(record.close);
 
-    if (!timestamp || close === null) continue;
+    if (!timestamp || close === null || close <= 0) continue;
 
     points.push({
       timestamp,

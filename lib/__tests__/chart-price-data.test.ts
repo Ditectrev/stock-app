@@ -49,6 +49,21 @@ describe("chart-price-data", () => {
     expect(points[0]?.close).toBe(101.5);
   });
 
+  it("rejects zero or negative close values", () => {
+    expect(
+      validatePriceDataSeries([
+        {
+          timestamp: "2024-01-02T00:00:00.000Z",
+          open: 100,
+          high: 101,
+          low: 99,
+          close: 0,
+          volume: 1000,
+        },
+      ])
+    ).toEqual([]);
+  });
+
   it("sorts points chronologically", () => {
     const points = validatePriceDataSeries([
       {
