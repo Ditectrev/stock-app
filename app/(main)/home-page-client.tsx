@@ -128,6 +128,8 @@ export function HomePageClient() {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [symbolData, setSymbolData] = useState<SymbolData | null>(null);
   const [historicalData, setHistoricalData] = useState<PriceData[]>([]);
+  const [loadedHistoryRange, setLoadedHistoryRange] = useState<TimeRange>("1M");
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [timeRange, setTimeRange] = useState<TimeRange>("1M");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -192,6 +194,7 @@ export function HomePageClient() {
           if (cancelled) return;
           setSymbolData(primary.symbolData);
           setHistoricalData(primary.historicalData);
+          setLoadedHistoryRange(timeRange);
         } catch (err) {
           if (cancelled) return;
           console.error("Error fetching symbol data:", err);
@@ -215,12 +218,18 @@ export function HomePageClient() {
         return;
       }
 
+      setHistoryLoading(true);
+      setHistoricalData([]);
+
       try {
         const historical = await fetchHistoricalData(selectedSymbol, timeRange);
         if (cancelled) return;
         setHistoricalData(historical);
+        setLoadedHistoryRange(timeRange);
       } catch (err) {
         console.warn("Error fetching historical data for range:", err);
+      } finally {
+        if (!cancelled) setHistoryLoading(false);
       }
     };
 
@@ -409,6 +418,8 @@ export function HomePageClient() {
                     symbolData={symbolData}
                     historicalData={historicalData}
                     timeRange={timeRange}
+                    dataTimeRange={loadedHistoryRange}
+                    historyLoading={historyLoading}
                     onTimeRangeChange={handleTimeRangeChange}
                   />
                 )}

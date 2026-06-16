@@ -49,5 +49,17 @@ export function validatePriceDataSeries(input: unknown): PriceData[] {
     });
   }
 
-  return points;
+  points.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+  const deduped: PriceData[] = [];
+  for (const point of points) {
+    const last = deduped[deduped.length - 1];
+    if (last && last.timestamp.getTime() === point.timestamp.getTime()) {
+      deduped[deduped.length - 1] = point;
+    } else {
+      deduped.push(point);
+    }
+  }
+
+  return deduped;
 }

@@ -8,6 +8,7 @@
  * Requirements: 4.2, 11.2, 11.3, 11.4, 11.5
  */
 
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { DNA_CAPTION } from "@/lib/design-dna";
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { ChartWrapper, IChartApi } from "./ChartWrapper";
@@ -67,7 +68,13 @@ export interface ChartComponentProps {
   symbol?: string;
   symbolName?: string;
   type?: ChartType;
+  /** Active range — required when `serverRangeScoped` (parent-controlled). */
+  timeRange?: TimeRange;
   initialTimeRange?: TimeRange;
+  /** Range the current `data` was fetched for (server-scoped charts). */
+  dataTimeRange?: TimeRange;
+  /** Parent is refetching history for a new range. */
+  historyLoading?: boolean;
   indicators?: ChartIndicator[];
   onTimeRangeChange?: (range: TimeRange) => void;
   onDataPointHover?: (point: PriceData | null) => void;
@@ -99,7 +106,10 @@ export function ChartComponent({
   symbol,
   symbolName,
   type = "area",
+  timeRange: controlledTimeRange,
   initialTimeRange = "1M",
+  dataTimeRange,
+  historyLoading = false,
   indicators = EMPTY_INDICATORS,
   onTimeRangeChange,
   onDataPointHover,
@@ -107,12 +117,16 @@ export function ChartComponent({
   serverRangeScoped = false,
 }: ChartComponentProps) {
   const priceData = useMemo(() => validatePriceDataSeries(data), [data]);
-  const [selectedTimeRange, setSelectedTimeRange] =
+  const [localTimeRange, setLocalTimeRange] =
     useState<TimeRange>(initialTimeRange);
-
-  useEffect(() => {
-    setSelectedTimeRange(initialTimeRange);
-  }, [initialTimeRange]);
+  const activeTimeRange = serverRangeScoped
+    ? (controlledTimeRange ?? initialTimeRange)
+    : localTimeRange;
+  const dataMatchesRange =
+    !serverRangeScoped ||
+    (!historyLoading &&
+      dataTimeRange === activeTimeRange &&
+      priceData.length > 0);
   const [chartType, setChartType] = useState<ChartType>(
     type === "candlestick" ? "candlestick" : "area"
   );
@@ -188,8 +202,8 @@ export function ChartComponent({
 
   const filteredData = useMemo(() => {
     if (serverRangeScoped) return priceData;
-    return filterPriceDataByTimeRange(priceData, selectedTimeRange);
-  }, [priceData, selectedTimeRange, serverRangeScoped]);
+    return filterPriceDataByTimeRange(priceData, activeTimeRange);
+  }, [priceData, activeTimeRange, serverRangeScoped]);
   const filteredDataRef = useRef(filteredData);
   filteredDataRef.current = filteredData;
   const onDataPointHoverRef = useRef(onDataPointHover);
@@ -201,28 +215,42 @@ export function ChartComponent({
       : true;
 
   const chartDataRevision = useMemo(() => {
-    if (filteredData.length === 0) return `${selectedTimeRange}:empty`;
+    if (!dataMatchesRange) return `pending:${activeTimeRange}`;
+    if (filteredData.length === 0) return `${activeTimeRange}:empty`;
     const first = filteredData[0]!.timestamp;
     const last = filteredData[filteredData.length - 1]!.timestamp;
-    return `${selectedTimeRange}:${chartType}:${filteredData.length}:${String(first)}:${String(last)}`;
-  }, [filteredData, selectedTimeRange, chartType]);
+    const revisionRange = serverRangeScoped
+      ? (dataTimeRange ?? activeTimeRange)
+      : activeTimeRange;
+    return `${revisionRange}:${chartType}:${filteredData.length}:${String(first)}:${String(last)}`;
+  }, [
+    filteredData,
+    activeTimeRange,
+    dataTimeRange,
+    chartType,
+    dataMatchesRange,
+    serverRangeScoped,
+  ]);
 
   useEffect(() => {
+    if (!dataMatchesRange) return;
     if (priceData.length === 0 || filteredData.length === 0) {
       setError(MARKET_UI_COPY.chart.noData);
       return;
     }
     setError(null);
-  }, [priceData, filteredData]);
+  }, [priceData, filteredData, dataMatchesRange]);
 
   // Handle time range change
   const handleTimeRangeChange = useCallback(
     (range: TimeRange) => {
       finishTrailAnimation();
-      setSelectedTimeRange(range);
+      if (!serverRangeScoped) {
+        setLocalTimeRange(range);
+      }
       onTimeRangeChange?.(range);
     },
-    [onTimeRangeChange, finishTrailAnimation]
+    [onTimeRangeChange, finishTrailAnimation, serverRangeScoped]
   );
 
   useEffect(() => () => disposeTrailAnimation(), [disposeTrailAnimation]);
@@ -661,7 +689,7 @@ export function ChartComponent({
       <div className="chart-container">
         <div className="chart-controls">
           <TimeRangeSelector
-            selectedRange={selectedTimeRange}
+            selectedRange={activeTimeRange}
             onRangeChange={handleTimeRangeChange}
           />
           <ChartTypeSelector
@@ -686,7 +714,7 @@ export function ChartComponent({
       {/* Chart Controls */}
       <div className="chart-controls mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <TimeRangeSelector
-          selectedRange={selectedTimeRange}
+          selectedRange={activeTimeRange}
           onRangeChange={handleTimeRangeChange}
         />
         <ChartTypeSelector
@@ -704,40 +732,49 @@ export function ChartComponent({
         onTouchStart={handlePointerDown}
         onTouchEnd={handlePointerUp}
       >
-        <ChartWrapper
-          key={chartKey}
-          dataRevision={chartDataRevision}
-          height={height}
-          isDark={isDark}
-          chartType={chartType}
-          plotClipPath={plotClipPath}
-          plotContainerRef={plotContainerRef}
-          atmosphereGradient={marketChartAtmosphereGradient(
-            isPeriodPositive,
-            isDark
-          )}
-          overlay={
-            <>
-              <ChartMagnifierTooltip
-                symbol={symbol ?? symbolName}
-                isDark={isDark}
-                isPositive={isPeriodPositive}
-                left={magnifier?.left}
-                point={magnifier?.point ?? null}
-              />
-              <ChartSparkleOverlay
-                ref={sparkleRef}
-                chartRef={chartApiRef}
-                seriesRef={mainSeriesRef}
-                chartType={chartType}
-                isPositive={isPeriodPositive}
-                dataRevision={chartDataRevision}
-              />
-            </>
-          }
-        >
-          {initializeChart}
-        </ChartWrapper>
+        {dataMatchesRange && !error ? (
+          <ChartWrapper
+            key={chartKey}
+            dataRevision={chartDataRevision}
+            height={height}
+            isDark={isDark}
+            chartType={chartType}
+            plotClipPath={plotClipPath}
+            plotContainerRef={plotContainerRef}
+            atmosphereGradient={marketChartAtmosphereGradient(
+              isPeriodPositive,
+              isDark
+            )}
+            overlay={
+              <>
+                <ChartMagnifierTooltip
+                  symbol={symbol ?? symbolName}
+                  isDark={isDark}
+                  isPositive={isPeriodPositive}
+                  left={magnifier?.left}
+                  point={magnifier?.point ?? null}
+                />
+                <ChartSparkleOverlay
+                  ref={sparkleRef}
+                  chartRef={chartApiRef}
+                  seriesRef={mainSeriesRef}
+                  chartType={chartType}
+                  isPositive={isPeriodPositive}
+                  dataRevision={chartDataRevision}
+                />
+              </>
+            }
+          >
+            {initializeChart}
+          </ChartWrapper>
+        ) : (
+          <div
+            className="flex items-center justify-center rounded-xl bg-stone-100/50 dark:bg-stone-900/40"
+            style={{ height: `${height}px` }}
+          >
+            <LoadingSpinner size="md" message="Updating chart..." />
+          </div>
+        )}
       </div>
 
       {/* Chart Instructions */}

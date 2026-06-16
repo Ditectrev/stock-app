@@ -22,6 +22,8 @@ export interface OverviewTabProps {
   symbolData: SymbolData;
   historicalData: PriceData[];
   timeRange: TimeRange;
+  dataTimeRange: TimeRange;
+  historyLoading?: boolean;
   onTimeRangeChange: (range: TimeRange) => void;
 }
 
@@ -29,6 +31,8 @@ export function OverviewTab({
   symbolData,
   historicalData,
   timeRange,
+  dataTimeRange,
+  historyLoading = false,
   onTimeRangeChange,
 }: OverviewTabProps) {
   return (
@@ -46,7 +50,9 @@ export function OverviewTab({
             symbol={symbolData.symbol}
             symbolName={symbolData.name}
             type="area"
-            initialTimeRange={timeRange}
+            timeRange={timeRange}
+            dataTimeRange={dataTimeRange}
+            historyLoading={historyLoading}
             onTimeRangeChange={onTimeRangeChange}
             serverRangeScoped
             responsive={true}

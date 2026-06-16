@@ -51,7 +51,7 @@ function getRangeWindow(range: TimeRange): {
       return { from: toUnixSeconds(fromDate), to, resolution: "D" };
     case "5Y":
       fromDate.setFullYear(now.getFullYear() - 5);
-      return { from: toUnixSeconds(fromDate), to, resolution: "W" };
+      return { from: toUnixSeconds(fromDate), to, resolution: "D" };
     case "YTD":
       fromDate.setMonth(0, 1);
       fromDate.setHours(0, 0, 0, 0);

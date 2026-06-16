@@ -48,4 +48,27 @@ describe("chart-price-data", () => {
     expect(points).toHaveLength(1);
     expect(points[0]?.close).toBe(101.5);
   });
+
+  it("sorts points chronologically", () => {
+    const points = validatePriceDataSeries([
+      {
+        timestamp: "2024-01-03T00:00:00.000Z",
+        open: 3,
+        high: 3,
+        low: 3,
+        close: 3,
+        volume: 1,
+      },
+      {
+        timestamp: "2024-01-01T00:00:00.000Z",
+        open: 1,
+        high: 1,
+        low: 1,
+        close: 1,
+        volume: 1,
+      },
+    ]);
+
+    expect(points.map((p) => p.close)).toEqual([1, 3]);
+  });
 });
