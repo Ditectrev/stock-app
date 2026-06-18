@@ -772,7 +772,7 @@ export function ChartComponent({
             className="flex items-center justify-center rounded-xl bg-stone-100/50 dark:bg-stone-900/40"
             style={{ height: `${height}px` }}
           >
-            <LoadingSpinner size="md" message="Updating chart..." />
+            <LoadingSpinner size="md" />
           </div>
         )}
       </div>
