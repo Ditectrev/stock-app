@@ -86,7 +86,7 @@ describe("Color Contrast Compliance (Req 18.3)", () => {
   describe("LoadingSpinner", () => {
     it("uses readable stone text (not text-gray-400) for message text in dark mode", () => {
       const { container } = render(
-        <LoadingSpinner message="Loading data..." />
+        <LoadingSpinner message="Loading data..." showMessage />
       );
       const messageEl = container.querySelector("p");
       expect(messageEl).not.toBeNull();

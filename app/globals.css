@@ -5,6 +5,7 @@
 :root {
   --background: #fafaf9;
   --foreground: #1c1917;
+  --spinner-accent: #57534e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -12,6 +13,10 @@
     --background: #0c0a09;
     --foreground: #f5f5f4;
   }
+}
+
+.dark {
+  --spinner-accent: #a8a29e;
 }
 
 body {
@@ -368,6 +373,80 @@ h6 {
   animation: chart-live-flash-core-down 1.8s ease-in-out infinite;
 }
 
+/* 3D arc loading spinner */
+.loading-spinner {
+  position: relative;
+  transform-style: preserve-3d;
+  perspective: 800px;
+}
+
+.loading-spinner--sm {
+  width: 2rem;
+  height: 2rem;
+}
+
+.loading-spinner--md {
+  width: 3rem;
+  height: 3rem;
+}
+
+.loading-spinner--lg {
+  width: 4rem;
+  height: 4rem;
+}
+
+.loading-spinner__arc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border-bottom: 3px solid var(--spinner-accent);
+}
+
+.loading-spinner--sm .loading-spinner__arc {
+  border-bottom-width: 2px;
+}
+
+.loading-spinner__arc:nth-child(1) {
+  animation: loading-spinner-rotate-1 1.15s linear infinite;
+  animation-delay: -0.8s;
+}
+
+.loading-spinner__arc:nth-child(2) {
+  animation: loading-spinner-rotate-2 1.15s linear infinite;
+  animation-delay: -0.4s;
+}
+
+.loading-spinner__arc:nth-child(3) {
+  animation: loading-spinner-rotate-3 1.15s linear infinite;
+}
+
+@keyframes loading-spinner-rotate-1 {
+  from {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(0);
+  }
+  to {
+    transform: rotateX(35deg) rotateY(-45deg) rotateZ(1turn);
+  }
+}
+
+@keyframes loading-spinner-rotate-2 {
+  from {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(0);
+  }
+  to {
+    transform: rotateX(50deg) rotateY(10deg) rotateZ(1turn);
+  }
+}
+
+@keyframes loading-spinner-rotate-3 {
+  from {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(0);
+  }
+  to {
+    transform: rotateX(35deg) rotateY(55deg) rotateZ(1turn);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chart-sparkle-sweep--loading,
   .chart-sparkle-flash--loading,
@@ -375,7 +454,8 @@ h6 {
   .chart-scrub-point--active,
   .chart-live-flash-ring,
   .chart-live-flash-core--up,
-  .chart-live-flash-core--down {
+  .chart-live-flash-core--down,
+  .loading-spinner__arc {
     animation: none;
   }
 

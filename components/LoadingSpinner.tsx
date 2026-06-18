@@ -4,45 +4,53 @@ import { DNA_BODY } from "@/lib/design-dna";
 
 /**
  * LoadingSpinner Component
- * Reusable loading indicator with configurable size and optional message.
- * Supports dark mode via Tailwind CSS classes.
+ * 3D arc spinner with theme-aware accent color via `--spinner-accent`.
  *
  * Requirements: 14.1
  */
 
 export interface LoadingSpinnerProps {
-  /** Spinner size: "sm" (20px), "md" (32px), or "lg" (48px). Defaults to "md". */
+  /** Spinner size: "sm" (32px), "md" (48px), or "lg" (64px). Defaults to "md". */
   size?: "sm" | "md" | "lg";
-  /** Optional message displayed below the spinner */
+  /** Accessible label (screen readers only unless `showMessage` is true). */
   message?: string;
+  /** Show the message visibly below the spinner. Defaults to false. */
+  showMessage?: boolean;
   /** Additional CSS class names */
   className?: string;
 }
 
 const SIZE_CLASSES: Record<NonNullable<LoadingSpinnerProps["size"]>, string> = {
-  sm: "h-5 w-5 border-2",
-  md: "h-8 w-8 border-2",
-  lg: "h-12 w-12 border-[3px]",
+  sm: "loading-spinner--sm",
+  md: "loading-spinner--md",
+  lg: "loading-spinner--lg",
 };
 
 export function LoadingSpinner({
   size = "md",
   message,
+  showMessage = false,
   className = "",
 }: LoadingSpinnerProps) {
+  const label = message ?? "Loading";
+
   return (
     <div
       className={`flex flex-col items-center justify-center ${className}`}
       role="status"
       aria-live="polite"
-      aria-label={message ?? "Loading"}
+      aria-label={label}
       data-testid="loading-spinner"
     >
-      <div
-        className={`animate-spin rounded-full border-stone-700 border-b-transparent dark:border-stone-300 ${SIZE_CLASSES[size]}`}
-      />
-      {message && <p className={`mt-3 ${DNA_BODY}`}>{message}</p>}
-      <span className="sr-only">{message ?? "Loading"}</span>
+      <div className={`loading-spinner ${SIZE_CLASSES[size]}`} aria-hidden>
+        <div className="loading-spinner__arc" />
+        <div className="loading-spinner__arc" />
+        <div className="loading-spinner__arc" />
+      </div>
+      {showMessage && message && (
+        <p className={`mt-3 ${DNA_BODY}`}>{message}</p>
+      )}
+      <span className="sr-only">{label}</span>
     </div>
   );
 }
