@@ -344,6 +344,86 @@ describe("Provider switching", () => {
     expect(result.text).toBe("OpenAI response.");
   });
 
+  it("routes Gemini BYOK to a current generateContent model, not gemini-pro", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          candidates: [{ content: { parts: [{ text: "Gemini response." }] } }],
+        }),
+    });
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const service = await makeService();
+    await service.setAIProvider("GEMINI", {
+      provider: "GEMINI",
+      apiKey: "AIza-test-key",
+      settings: {},
+    });
+
+    const result = await service.explainMetric("rsi", 55, { symbol: "AAPL" });
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIza-test-key",
+      expect.objectContaining({ method: "POST" })
+    );
+    expect(result.text).toBe("Gemini response.");
+  });
+
+  it("uses AI_MODEL override for Gemini generateContent", async () => {
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          candidates: [{ content: { parts: [{ text: "Flash response." }] } }],
+        }),
+    });
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const service = await makeService();
+    await service.setAIProvider("GEMINI", {
+      provider: "GEMINI",
+      apiKey: "AIza-test-key",
+      model: "gemini-3.5-flash",
+      settings: {},
+    });
+
+    await service.explainMetric("rsi", 55, { symbol: "AAPL" });
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=AIza-test-key",
+      expect.objectContaining({ method: "POST" })
+    );
+  });
+
+  it("falls back to another Gemini model when the first returns HTTP 404", async () => {
+    const fetchSpy = vi.fn().mockImplementation(async (url: string) => {
+      if (String(url).includes("gemini-2.5-flash:generateContent")) {
+        return { ok: false, status: 404, json: async () => ({}) };
+      }
+      return {
+        ok: true,
+        json: async () => ({
+          candidates: [{ content: { parts: [{ text: "Fallback model." }] } }],
+        }),
+      };
+    });
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const service = await makeService();
+    await service.setAIProvider("GEMINI", {
+      provider: "GEMINI",
+      apiKey: "AIza-test-key",
+      settings: {},
+    });
+
+    const result = await service.explainMetric("rsi", 55, { symbol: "AAPL" });
+
+    expect(result.text).toBe("Fallback model.");
+    expect(String(fetchSpy.mock.calls[0][0])).toContain("gemini-2.5-flash");
+    expect(String(fetchSpy.mock.calls[1][0])).toContain("gemini-3.5-flash");
+  });
+
   it("switching from OLLAMA to HOSTED uses the new provider on next call", async () => {
     mockOllamaGenerate.mockResolvedValue("Ollama response.");
     mockHostedQuery.mockResolvedValue({

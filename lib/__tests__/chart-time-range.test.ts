@@ -22,10 +22,11 @@ function daysAgo(
 
 describe("chart-time-range", () => {
   it("returns different slices per range", () => {
-    const data = daysAgo(400);
-    const oneMonth = filterPriceDataByTimeRange(data, "1M");
-    const oneYear = filterPriceDataByTimeRange(data, "1Y");
-    const ytd = filterPriceDataByTimeRange(data, "YTD");
+    const now = new Date("2026-06-15T12:00:00");
+    const data = daysAgo(400, now);
+    const oneMonth = filterPriceDataByTimeRange(data, "1M", now);
+    const oneYear = filterPriceDataByTimeRange(data, "1Y", now);
+    const ytd = filterPriceDataByTimeRange(data, "YTD", now);
 
     expect(oneMonth.length).toBeLessThan(oneYear.length);
     expect(ytd.length).toBeLessThan(oneYear.length);

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       request.nextUrl.searchParams.get("limit") || "30",
       10
     );
-    // 0 means "all data" for the Alternative.me API
+    // 0 means "all available CNN history"
     const clampedLimit = limitParam === 0 ? 0 : Math.max(1, limitParam);
     const data = await marketDataService.getFearGreedIndex(clampedLimit);
 

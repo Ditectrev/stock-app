@@ -49,40 +49,143 @@ export interface AIResponse {
 
 const BYOK_ENDPOINTS: Record<BYOKProvider, string> = {
   OPENAI: "https://api.openai.com/v1/chat/completions",
-  GEMINI:
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+  GEMINI: "https://generativelanguage.googleapis.com/v1beta/models",
   MISTRAL: "https://api.mistral.ai/v1/chat/completions",
   DEEPSEEK: "https://api.deepseek.com/v1/chat/completions",
 };
 
-async function queryBYOK(
-  provider: BYOKProvider,
+const DEFAULT_BYOK_MODELS: Record<BYOKProvider, string> = {
+  OPENAI: "gpt-4o-mini",
+  GEMINI: "gemini-2.5-flash",
+  MISTRAL: "mistral-small-latest",
+  DEEPSEEK: "deepseek-chat",
+};
+
+const GEMINI_MODEL_FALLBACKS = [
+  "gemini-2.5-flash",
+  "gemini-3.5-flash",
+  "gemini-3.8-flash",
+  "gemini-flash-latest",
+];
+
+function resolveByokModel(provider: BYOKProvider, model?: string): string {
+  const trimmed = model?.trim();
+  return trimmed || DEFAULT_BYOK_MODELS[provider];
+}
+
+function geminiGenerateContentUrl(model: string, apiKey: string): string {
+  return `${BYOK_ENDPOINTS.GEMINI}/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+}
+
+function uniqueModels(models: Array<string | undefined>): string[] {
+  return [
+    ...new Set(
+      models.filter((model): model is string => Boolean(model?.trim()))
+    ),
+  ];
+}
+
+async function listGeminiGenerateModels(apiKey: string): Promise<string[]> {
+  const res = await fetch(
+    `${BYOK_ENDPOINTS.GEMINI}?key=${encodeURIComponent(apiKey)}`,
+    { signal: AbortSignal.timeout(10000) }
+  );
+  if (!res.ok) return [];
+  const data = (await res.json()) as {
+    models?: Array<{ name?: string; supportedGenerationMethods?: string[] }>;
+  };
+  return (data.models ?? [])
+    .filter((model) =>
+      (model.supportedGenerationMethods ?? []).includes("generateContent")
+    )
+    .map((model) => (model.name ?? "").replace(/^models\//, ""))
+    .filter((name) => name && !/image|tts|embed|imagen/i.test(name));
+}
+
+function pickPreferredGeminiModel(models: string[]): string | undefined {
+  return (
+    models.find((name) => /flash/i.test(name) && !/lite/i.test(name)) ||
+    models.find((name) => /flash/i.test(name)) ||
+    models[0]
+  );
+}
+
+async function queryGemini(
   apiKey: string,
   prompt: string,
-  maxTokens = 512
+  maxTokens: number,
+  preferredModel?: string
 ): Promise<string> {
-  const endpoint = BYOK_ENDPOINTS[provider];
+  const geminiBody: {
+    contents: Array<{ parts: Array<{ text: string }> }>;
+    generationConfig?: { maxOutputTokens: number };
+  } = {
+    contents: [{ parts: [{ text: prompt }] }],
+  };
+  if (maxTokens > 512) {
+    geminiBody.generationConfig = { maxOutputTokens: maxTokens };
+  }
 
-  if (provider === "GEMINI") {
-    const url = `${endpoint}?key=${apiKey}`;
-    const geminiBody: {
-      contents: Array<{ parts: Array<{ text: string }> }>;
-      generationConfig?: { maxOutputTokens: number };
-    } = {
-      contents: [{ parts: [{ text: prompt }] }],
-    };
-    if (maxTokens > 512) {
-      geminiBody.generationConfig = { maxOutputTokens: maxTokens };
-    }
-    const res = await fetch(url, {
+  const queue = uniqueModels([preferredModel, ...GEMINI_MODEL_FALLBACKS]);
+  const tried = new Set<string>();
+  let lastStatus = 0;
+
+  const postGenerate = async (model: string): Promise<Response> =>
+    fetch(geminiGenerateContentUrl(model, apiKey), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(geminiBody),
       signal: AbortSignal.timeout(30000),
     });
-    if (!res.ok) throw new Error(`Gemini error: HTTP ${res.status}`);
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+
+  while (queue.length > 0) {
+    const model = queue.shift()!;
+    if (tried.has(model)) continue;
+    tried.add(model);
+
+    const res = await postGenerate(model);
+    if (res.ok) {
+      const data = await res.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    }
+
+    lastStatus = res.status;
+    if (res.status !== 404) {
+      throw new Error(`Gemini error: HTTP ${res.status}`);
+    }
+  }
+
+  const discovered = await listGeminiGenerateModels(apiKey);
+  const liveModel = pickPreferredGeminiModel(
+    discovered.filter((model) => !tried.has(model))
+  );
+  if (liveModel) {
+    const res = await postGenerate(liveModel);
+    if (res.ok) {
+      const data = await res.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    }
+    lastStatus = res.status;
+    if (res.status !== 404) {
+      throw new Error(`Gemini error: HTTP ${res.status}`);
+    }
+  }
+
+  throw new Error(`Gemini error: HTTP ${lastStatus || 404}`);
+}
+
+async function queryBYOK(
+  provider: BYOKProvider,
+  apiKey: string,
+  prompt: string,
+  maxTokens = 512,
+  model?: string
+): Promise<string> {
+  const endpoint = BYOK_ENDPOINTS[provider];
+  const resolvedModel = resolveByokModel(provider, model);
+
+  if (provider === "GEMINI") {
+    return queryGemini(apiKey, prompt, maxTokens, resolvedModel);
   }
 
   // OpenAI-compatible format (OpenAI, Mistral, DeepSeek)
@@ -93,12 +196,7 @@ async function queryBYOK(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model:
-        provider === "OPENAI"
-          ? "gpt-4o-mini"
-          : provider === "MISTRAL"
-            ? "mistral-small-latest"
-            : "deepseek-chat",
+      model: resolvedModel,
       messages: [{ role: "user", content: prompt }],
       max_tokens: maxTokens,
     }),
@@ -320,7 +418,13 @@ Answer in 2-4 sentences. Do not use "buy" or "sell" language.`;
         );
       }
 
-      return await queryBYOK(byokProvider, apiKey, prompt, maxTokens);
+      return await queryBYOK(
+        byokProvider,
+        apiKey,
+        prompt,
+        maxTokens,
+        this.config.model
+      );
     } catch (error) {
       logger.error("AI prompt failed", error as Error, {
         provider: this.config.provider,
