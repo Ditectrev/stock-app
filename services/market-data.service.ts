@@ -43,6 +43,42 @@ import {
   getOverallSentiment,
 } from "@/lib/technical-indicators";
 
+function quoteNeedsYahooEnrichment(data: SymbolData): boolean {
+  return (
+    data.volume <= 0 || data.fiftyTwoWeekHigh <= 0 || data.fiftyTwoWeekLow <= 0
+  );
+}
+
+async function enrichQuoteFromYahoo(
+  data: SymbolData,
+  symbol: string
+): Promise<SymbolData> {
+  try {
+    const yahoo = await yahooFinanceService.getSymbolQuote(symbol);
+    return {
+      ...data,
+      name:
+        data.name && data.name !== data.symbol
+          ? data.name
+          : yahoo.name || data.name,
+      marketCap: data.marketCap > 0 ? data.marketCap : yahoo.marketCap,
+      volume: data.volume > 0 ? data.volume : yahoo.volume,
+      fiftyTwoWeekHigh:
+        data.fiftyTwoWeekHigh > 0
+          ? data.fiftyTwoWeekHigh
+          : yahoo.fiftyTwoWeekHigh,
+      fiftyTwoWeekLow:
+        data.fiftyTwoWeekLow > 0 ? data.fiftyTwoWeekLow : yahoo.fiftyTwoWeekLow,
+    };
+  } catch (error) {
+    logger.warn("Yahoo quote enrichment failed", {
+      symbol,
+      error: (error as Error).message,
+    });
+    return data;
+  }
+}
+
 export class MarketDataService {
   private cacheTTL: number;
 
@@ -156,6 +192,9 @@ export class MarketDataService {
     if (finnhubService.isConfigured()) {
       try {
         data = await finnhubService.getSymbolQuote(symbol);
+        if (quoteNeedsYahooEnrichment(data)) {
+          data = await enrichQuoteFromYahoo(data, symbol);
+        }
       } catch (error) {
         logger.warn("Finnhub quote failed, falling back to Yahoo", {
           symbol,

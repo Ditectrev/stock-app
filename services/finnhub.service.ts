@@ -24,6 +24,22 @@ function toUnixSeconds(date: Date): number {
   return Math.floor(date.getTime() / 1000);
 }
 
+function asFiniteNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+}
+
+/** Finnhub reports average trading volume in millions of shares. */
+function averageVolumeToShares(value: unknown): number {
+  const numeric = asFiniteNumber(value);
+  if (numeric == null || numeric <= 0) return 0;
+  return Math.round(numeric * 1_000_000);
+}
+
 function getRangeWindow(range: TimeRange): {
   from: number;
   to: number;
@@ -109,12 +125,25 @@ export class FinnhubService {
     return retryWithBackoff(async () => {
       const apiKey = requireFinnhubApiKey();
       const upperSymbol = symbol.trim().toUpperCase();
-      const [quoteRes, profileRes] = await Promise.all([
+      const token = encodeURIComponent(apiKey);
+      const encodedSymbol = encodeURIComponent(upperSymbol);
+      const candleFrom = toUnixSeconds(
+        new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)
+      );
+      const candleTo = toUnixSeconds(new Date());
+
+      const [quoteRes, profileRes, metricRes, candleRes] = await Promise.all([
         fetch(
-          `${FINNHUB_BASE_URL}/quote?symbol=${encodeURIComponent(upperSymbol)}&token=${encodeURIComponent(apiKey)}`
+          `${FINNHUB_BASE_URL}/quote?symbol=${encodedSymbol}&token=${token}`
         ),
         fetch(
-          `${FINNHUB_BASE_URL}/stock/profile2?symbol=${encodeURIComponent(upperSymbol)}&token=${encodeURIComponent(apiKey)}`
+          `${FINNHUB_BASE_URL}/stock/profile2?symbol=${encodedSymbol}&token=${token}`
+        ),
+        fetch(
+          `${FINNHUB_BASE_URL}/stock/metric?symbol=${encodedSymbol}&metric=all&token=${token}`
+        ),
+        fetch(
+          `${FINNHUB_BASE_URL}/stock/candle?symbol=${encodedSymbol}&resolution=D&from=${candleFrom}&to=${candleTo}&token=${token}`
         ),
       ]);
 
@@ -139,9 +168,44 @@ export class FinnhubService {
           })
         : {};
 
+      const metricPayload = metricRes.ok
+        ? ((await metricRes.json()) as {
+            metric?: Record<string, unknown>;
+          })
+        : {};
+      const metric = metricPayload.metric ?? {};
+
+      const candles = candleRes.ok
+        ? ((await candleRes.json()) as {
+            s?: string;
+            v?: number[];
+          })
+        : {};
+      const latestCandleVolume =
+        candles.s === "ok" && Array.isArray(candles.v)
+          ? [...candles.v]
+              .reverse()
+              .find(
+                (value) =>
+                  asFiniteNumber(value) != null && (value as number) > 0
+              )
+          : undefined;
+
       if (!quote.c || quote.c <= 0) {
         throw new Error(`Finnhub returned no valid quote for ${upperSymbol}`);
       }
+
+      const fiftyTwoWeekHigh =
+        asFiniteNumber(metric["52WeekHigh"]) ??
+        asFiniteNumber(metric["52WeekHighPrice"]) ??
+        0;
+      const fiftyTwoWeekLow =
+        asFiniteNumber(metric["52WeekLow"]) ??
+        asFiniteNumber(metric["52WeekLowPrice"]) ??
+        0;
+      const volume =
+        asFiniteNumber(latestCandleVolume) ??
+        averageVolumeToShares(metric["10DayAverageTradingVolume"]);
 
       return {
         symbol: upperSymbol,
@@ -152,9 +216,9 @@ export class FinnhubService {
         marketCap: profile.marketCapitalization
           ? Math.round(profile.marketCapitalization * 1_000_000)
           : 0,
-        volume: 0,
-        fiftyTwoWeekHigh: quote.h ?? 0,
-        fiftyTwoWeekLow: quote.l ?? 0,
+        volume: volume ?? 0,
+        fiftyTwoWeekHigh,
+        fiftyTwoWeekLow,
         lastUpdated: quote.t ? new Date(quote.t * 1000) : new Date(),
       };
     }, `Finnhub:Quote:${symbol}`);

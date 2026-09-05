@@ -1392,7 +1392,11 @@ export class YahooFinanceService {
       change: quote.regularMarketChange || 0,
       changePercent: quote.regularMarketChangePercent || 0,
       marketCap: quote.marketCap || 0,
-      volume: quote.regularMarketVolume || 0,
+      volume:
+        quote.regularMarketVolume ||
+        quote.averageDailyVolume10Day ||
+        quote.averageDailyVolume3Month ||
+        0,
       fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh || 0,
       fiftyTwoWeekLow: quote.fiftyTwoWeekLow || 0,
       lastUpdated: new Date(quote.regularMarketTime * 1000 || Date.now()),

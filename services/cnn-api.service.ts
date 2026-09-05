@@ -8,6 +8,39 @@ import { env } from "@/lib/env";
 import { retryWithBackoff } from "@/lib/retry";
 import { FearGreedData, MarketIndex, EconomicEvent } from "@/types";
 
+const CNN_BROWSER_HEADERS = {
+  Accept: "application/json, text/plain, */*",
+  Origin: "https://www.cnn.com",
+  Referer: "https://www.cnn.com/markets/fear-and-greed",
+  "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+};
+
+const CNN_FEAR_GREED_HISTORY_START = "2021-02-01";
+
+function fearGreedLabelFromScore(value: number): FearGreedData["label"] {
+  if (value <= 25) return "Extreme Fear";
+  if (value <= 45) return "Fear";
+  if (value <= 55) return "Neutral";
+  if (value <= 75) return "Greed";
+  return "Extreme Greed";
+}
+
+function fearGreedLabelFromRating(
+  rating: unknown,
+  score: number
+): FearGreedData["label"] {
+  const normalized = String(rating ?? "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "extreme fear") return "Extreme Fear";
+  if (normalized === "fear") return "Fear";
+  if (normalized === "neutral") return "Neutral";
+  if (normalized === "greed") return "Greed";
+  if (normalized === "extreme greed") return "Extreme Greed";
+  return fearGreedLabelFromScore(score);
+}
+
 export class CNNApiService {
   private baseUrl: string;
 
@@ -16,31 +49,32 @@ export class CNNApiService {
   }
 
   /**
-   * Fetch Fear & Greed Index
-   * Uses Alternative.me API as primary source (CNN blocks automated requests).
-   * @param limit Number of historical data points to fetch (default 30)
+   * Fetch the CNN stock-market Fear & Greed Index (not the crypto index).
+   * @param limit Number of historical data points to keep (0 = all available)
    */
   async getFearGreedIndex(limit: number = 30): Promise<FearGreedData> {
     return retryWithBackoff(async () => {
       try {
-        const response = await fetch(
-          `https://api.alternative.me/fng/?limit=${limit}`,
-          { headers: { Accept: "application/json" } }
-        );
+        const wantsFullHistory = limit === 0 || limit > 365;
+        const url = wantsFullHistory
+          ? `${this.baseUrl}/index/fearandgreed/graphdata/${CNN_FEAR_GREED_HISTORY_START}`
+          : `${this.baseUrl}/index/fearandgreed/graphdata`;
+
+        const response = await fetch(url, { headers: CNN_BROWSER_HEADERS });
 
         if (!response.ok) {
           throw new Error(
-            `Alternative.me API error: ${response.status} ${response.statusText}`
+            `CNN Fear & Greed API error: ${response.status} ${response.statusText}`
           );
         }
 
         const json = await response.json();
-        return this.parseAlternativeFngResponse(json);
+        return this.parseFearGreedResponse(json, limit);
       } catch (error) {
         logger.error("Failed to fetch Fear & Greed Index", error as Error);
         throw error;
       }
-    }, "AlternativeMe:FearGreedIndex");
+    }, "CNN:FearGreedIndex");
   }
 
   /**
@@ -115,60 +149,47 @@ export class CNNApiService {
   }
 
   /**
-   * Parse Alternative.me Fear & Greed response
+   * Parse CNN Fear & Greed graphdata (stock-market index).
    */
-  private parseAlternativeFngResponse(json: any): FearGreedData {
-    const entries = json.data || [];
-    const latest = entries[0];
-    const value = parseInt(latest?.value || "50", 10);
+  private parseFearGreedResponse(data: any, limit: number = 30): FearGreedData {
+    const snapshot = data.fear_and_greed ?? data;
+    const rawScore = snapshot.score ?? data.score ?? 50;
+    const value = Math.round(Number(rawScore));
+    const label = fearGreedLabelFromRating(snapshot.rating, value);
 
-    let label: FearGreedData["label"];
-    if (value <= 25) label = "Extreme Fear";
-    else if (value <= 45) label = "Fear";
-    else if (value <= 55) label = "Neutral";
-    else if (value <= 75) label = "Greed";
-    else label = "Extreme Greed";
+    const historicalEntries =
+      data.fear_and_greed_historical?.data ||
+      data.fear_and_greed?.history ||
+      data.history ||
+      [];
 
-    const history = entries
-      .map((item: any) => ({
-        date: new Date(parseInt(item.timestamp, 10) * 1000),
-        value: parseInt(item.value, 10),
-      }))
-      .reverse();
-
-    return {
-      value,
-      label,
-      timestamp: new Date(parseInt(latest?.timestamp || "0", 10) * 1000),
-      history,
-    };
-  }
-
-  /**
-   * Parse Fear & Greed Index response (CNN format, kept for reference)
-   */
-  private parseFearGreedResponse(data: any): FearGreedData {
-    const value = data.fear_and_greed?.score || data.score || 50;
-
-    let label: FearGreedData["label"];
-    if (value <= 25) label = "Extreme Fear";
-    else if (value <= 45) label = "Fear";
-    else if (value <= 55) label = "Neutral";
-    else if (value <= 75) label = "Greed";
-    else label = "Extreme Greed";
-
-    const history = (data.fear_and_greed?.history || data.history || []).map(
-      (item: any) => ({
-        date: new Date(item.date || item.timestamp),
-        value: item.score || item.value,
+    const history = (historicalEntries as any[])
+      .map((item) => {
+        const timestamp = item.x ?? item.date ?? item.timestamp;
+        const pointValue = item.y ?? item.score ?? item.value;
+        return {
+          date: new Date(timestamp),
+          value: Math.round(Number(pointValue)),
+        };
       })
-    );
+      .filter(
+        (item) =>
+          !Number.isNaN(item.date.getTime()) && Number.isFinite(item.value)
+      )
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+    const trimmedHistory =
+      limit > 0 ? history.slice(Math.max(0, history.length - limit)) : history;
+
+    const snapshotTime = snapshot.timestamp
+      ? new Date(snapshot.timestamp)
+      : trimmedHistory.at(-1)?.date || new Date();
 
     return {
-      value,
+      value: Number.isFinite(value) ? value : 50,
       label,
-      timestamp: new Date(data.timestamp || Date.now()),
-      history,
+      timestamp: snapshotTime,
+      history: trimmedHistory,
     };
   }
 
