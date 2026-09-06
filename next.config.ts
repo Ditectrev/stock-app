@@ -12,6 +12,40 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
+  async redirects() {
+    return [
+      {
+        source: "/vs/:slug",
+        destination: "/compare/:slug",
+        permanent: true,
+      },
+      {
+        source: "/openstock-alternative",
+        destination: "/compare/openstock",
+        permanent: true,
+      },
+      {
+        source: "/openstock-alternative-free",
+        destination: "/compare/openstock",
+        permanent: true,
+      },
+      {
+        source: "/finviz-alternative",
+        destination: "/compare/finviz",
+        permanent: true,
+      },
+      {
+        source: "/yahoo-finance-alternative",
+        destination: "/compare/yahoo-finance",
+        permanent: true,
+      },
+      {
+        source: "/tradingview-alternative",
+        destination: "/compare/tradingview",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
