@@ -50,6 +50,31 @@ describe("next.config.ts - static asset optimization", () => {
     expect(cacheHeader!.value).toContain("max-age=31536000");
   });
 
+  it("should redirect /vs/:slug and alternative URLs to /compare", async () => {
+    const { default: nextConfig } = await import("../next.config");
+    expect(nextConfig.redirects).toBeDefined();
+    const redirects = await nextConfig.redirects!();
+    expect(redirects).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          source: "/vs/:slug",
+          destination: "/compare/:slug",
+          permanent: true,
+        }),
+        expect.objectContaining({
+          source: "/openstock-alternative",
+          destination: "/compare/openstock",
+          permanent: true,
+        }),
+        expect.objectContaining({
+          source: "/finviz-alternative",
+          destination: "/compare/finviz",
+          permanent: true,
+        }),
+      ])
+    );
+  });
+
   it("should set cache headers for image file extensions", async () => {
     const { default: nextConfig } = await import("../next.config");
     const headers = await nextConfig.headers!();

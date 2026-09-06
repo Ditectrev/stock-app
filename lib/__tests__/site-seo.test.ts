@@ -35,4 +35,17 @@ describe("site-seo", () => {
     );
     expect(meta.openGraph?.title).toContain(SITE_NAME);
   });
+
+  it("buildPageMetadata prepends page keywords when provided", () => {
+    process.env.NEXT_PUBLIC_SITE_URL = "https://theopenstock.com";
+    const meta = buildPageMetadata({
+      title: "The Open Stock vs Finviz",
+      description: "Compare tools.",
+      path: "/compare/finviz",
+      keywords: ["finviz alternative"],
+    });
+    expect(meta.keywords).toEqual(
+      expect.arrayContaining(["finviz alternative", "stock screener"])
+    );
+  });
 });
